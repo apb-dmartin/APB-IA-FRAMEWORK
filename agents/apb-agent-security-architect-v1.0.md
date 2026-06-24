@@ -14,6 +14,7 @@ skills:
   - "apb-sec-forensic-v1.0"
   - "apb-sec-risk-analysis-v1.0"
   - "apb-sec-risk-policies-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 subagents:
   - "apb-sub-sec-ens-v1.0"
 runtime:

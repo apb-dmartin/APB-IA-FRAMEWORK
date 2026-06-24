@@ -9,6 +9,7 @@ domain: "orchestration"
 autonomy_level: 1
 skills:
   - "apb-plat-finops-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 runtime:
   - "copilot"
   - "claude"

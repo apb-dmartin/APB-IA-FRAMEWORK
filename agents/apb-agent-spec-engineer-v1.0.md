@@ -15,6 +15,7 @@ skills:
   - "apb-disc-adversarial-v1.0"
   - "apb-disc-epic-mono-v1.0"
   - "apb-gov-spec-sync-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 runtime:
   - "copilot"
   - "claude"

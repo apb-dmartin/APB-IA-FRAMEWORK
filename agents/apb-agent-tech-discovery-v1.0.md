@@ -10,6 +10,7 @@ autonomy_level: 1
 skills:
   - "apb-disc-business-v1.0"
   - "apb-gov-catalog-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 runtime:
   - "copilot"
   - "claude"

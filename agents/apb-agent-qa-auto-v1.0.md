@@ -15,6 +15,7 @@ skills:
   - "apb-qa-anonymize-v1.0"
   - "apb-qa-post-migration-v1.0"
   - "apb-qa-release-ready-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 subagents:
   - "apb-sub-qa-unit-v1.0"
   - "apb-sub-qa-e2e-v1.0"

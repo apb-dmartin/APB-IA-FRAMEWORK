@@ -1,18 +1,15 @@
-# Política de Bases de Datos Corporativas(1)
+# Política de Bases de Datos Corporativas
 
-Alcance
+## Alcance
 
 Esta política establece las normas, responsabilidades y procedimientos para el diseño, administración, mantenimiento, seguridad y operación de las Bases de Datos utilizadas por la organización. Esta política busca reforzar la seguridad, garantizar el cumplimiento normativo y reducir riesgos operativos en el acceso a bases de datos en entornos Cloud.
 
 Beneficios clave:
 
-Cumplimiento normativo (ENS, GDPR, ISO 27001).
-
-Menor riesgo de fuga de datos.
-
-Facilidad para auditorías externas.
-
-Mayor resiliencia ante incidentes.
+- Cumplimiento normativo (ENS, GDPR, ISO 27001).
+- Menor riesgo de fuga de datos.
+- Facilidad para auditorías externas.
+- Mayor resiliencia ante incidentes.
 
 Esta política aplica a todos los desarrolladores, administradores de bases de datos (DBA), personal de DevOps, proveedores y cualquier otra persona que interactúe con los sistemas de gestión de bases de datos en entornos de desarrollo, pruebas, preproducción, QA y producción.
 
@@ -22,7 +19,7 @@ Por otro lado, debido a la naturaleza específica de las tareas de BI y al uso i
 
 Mientras no exista una política específica para Business Intelligence, la presente política se aplica también en dichas Bases de Datos.
 
-Motores soportados
+## Motores soportados
 
 La presente política establece los motores de bases de datos autorizados por la organización para los distintos entornos tecnológicos, incluyendo plataformas on-premise, entornos cloud, servicios gestionados e infraestructuras híbridas.
 
@@ -30,56 +27,45 @@ El objetivo de este apartado es definir las familias de motores corporativos que
 
 A la hora de seleccionar el motor de base de datos más adecuado para cada caso, deberán tenerse en cuenta criterios técnicos, económicos, operativos, de seguridad, disponibilidad, mantenibilidad, integración con la arquitectura corporativa y capacidades internas de administración.
 
-Motores coporativos autorizados
+### Motores corporativos autorizados
 
 Se establecen como motores de bases de datos autorizados los siguientes:
 
-Microsoft SQL Server / Azure SQL Database
-Incluye tanto despliegues on-premise o sobre infraestructura IaaS mediante Microsoft SQL Server, como despliegues cloud mediante Azure SQL Database o servicios equivalentes aprobados por la organización.
+**Microsoft SQL Server / Azure SQL Database:** Incluye tanto despliegues on-premise o sobre infraestructura IaaS mediante Microsoft SQL Server, como despliegues cloud mediante Azure SQL Database o servicios equivalentes aprobados por la organización.
 
-PostgreSQL / Azure Database for PostgreSQL
-Incluye tanto despliegues PostgreSQL on-premise o sobre infraestructura IaaS, como despliegues cloud mediante Azure Database for PostgreSQL o servicios gestionados equivalentes aprobados por la organización.
+**PostgreSQL / Azure Database for PostgreSQL:** Incluye tanto despliegues PostgreSQL on-premise o sobre infraestructura IaaS, como despliegues cloud mediante Azure Database for PostgreSQL o servicios gestionados equivalentes aprobados por la organización.
 
-Bases de datos NoSQL documentales: Azure Cosmos DB / MongoDB
-Incluye el uso de Azure Cosmos DB en entornos cloud y MongoDB en aquellos casos en los que exista un requerimiento técnico específico, una necesidad derivada del modelo de datos o una dependencia de producto que justifique su uso.
+**Bases de datos NoSQL documentales: Azure Cosmos DB / MongoDB:** Incluye el uso de Azure Cosmos DB en entornos cloud y MongoDB en aquellos casos en los que exista un requerimiento técnico específico, una necesidad derivada del modelo de datos o una dependencia de producto que justifique su uso.
 
-Oracle Database
-Oracle Database se considera un motor autorizado para los sistemas existentes que actualmente dependen de esta tecnología, especialmente en entornos on-premise o legacy de la organización. Su utilización se admite para garantizar la continuidad, evolución, mantenimiento y operación de sistemas ya implantados, así como para aquellos casos en los que existan dependencias técnicas, funcionales, operativas o económicas que hagan inviable su sustitución a corto o medio plazo.
+**Oracle Database:** Oracle Database se considera un motor autorizado para los sistemas existentes que actualmente dependen de esta tecnología, especialmente en entornos on-premise o legacy de la organización. Su utilización se admite para garantizar la continuidad, evolución, mantenimiento y operación de sistemas ya implantados, así como para aquellos casos en los que existan dependencias técnicas, funcionales, operativas o económicas que hagan inviable su sustitución a corto o medio plazo.
 
 Para nuevos desarrollos, Oracle Database no tendrá carácter preferente y su utilización deberá estar debidamente justificada y validada por el área de Sistemas de Información, atendiendo a criterios de necesidad técnica, compatibilidad con sistemas existentes, impacto de migración, coste, criticidad del servicio y disponibilidad de capacidades de administración
 
-Modalidades de despliegue
+### Modalidades de despliegue
 
 Los motores anteriores podrán desplegarse en distintas modalidades, siempre que se cumplan los requisitos de seguridad, operación, monitorización, backup, trazabilidad y continuidad definidos en esta política:
 
-On-premise: bases de datos desplegadas sobre infraestructura propia o gestionada por APB en sus centros de datos.
-
-PaaS o servicio gestionado: bases de datos proporcionadas como servicio gestionado por un proveedor cloud, donde determinadas responsabilidades de operación, disponibilidad, backup o actualización son asumidas por el proveedor.
-
-Entornos híbridos: arquitecturas que combinen bases de datos on-premise y cloud, o mecanismos de replicación, integración o sincronización entre ambos entornos.
+- **On-premise:** bases de datos desplegadas sobre infraestructura propia o gestionada por APB en sus centros de datos.
+- **PaaS o servicio gestionado:** bases de datos proporcionadas como servicio gestionado por un proveedor cloud, donde determinadas responsabilidades de operación, disponibilidad, backup o actualización son asumidas por el proveedor.
+- **Entornos híbridos:** arquitecturas que combinen bases de datos on-premise y cloud, o mecanismos de replicación, integración o sincronización entre ambos entornos.
 
 La elección de la modalidad de despliegue deberá justificarse en función de los requisitos técnicos, la criticidad del servicio, la clasificación de los datos, los requisitos de rendimiento, la integración con otros sistemas, el modelo operativo, los costes y las capacidades de administración disponibles.
 
-Criterios para la selección del motor de base de datos
+## Criterios para la selección del motor de base de datos
 
 Para determinar el motor más adecuado en cada proyecto, se seguirá el siguiente orden de evaluación:
 
-Criterio técnico y funcional
-Se evaluará qué motor satisface mejor los requisitos funcionales, el modelo de datos, el volumen de información, concurrencia, criticidad, las necesidades de integración, los requisitos de rendimiento y las necesidades de disponibilidad del sistema.
+**Criterio técnico y funcional:** Se evaluará qué motor satisface mejor los requisitos funcionales, el modelo de datos, el volumen de información, concurrencia, criticidad, las necesidades de integración, los requisitos de rendimiento y las necesidades de disponibilidad del sistema.
 
-Alineación con la arquitectura corporativa
-Se priorizarán los motores que estén alineados con las plataformas tecnológicas corporativas, los estándares de seguridad, herramientas de monitorización y los procesos de despliegue, backup y mantenimiento de APB.
+**Alineación con la arquitectura corporativa:** Se priorizarán los motores que estén alineados con las plataformas tecnológicas corporativas, los estándares de seguridad, herramientas de monitorización y los procesos de despliegue, backup y mantenimiento de APB.
 
-Criterio operativo y de mantenibilidad
-Se valorará la capacidad real de administrar, monitorizar, parchear, securizar, respaldar y recuperar el motor seleccionado, tanto en modalidad on-premise como cloud. No deberá seleccionarse un motor si no existen capacidades suficientes para garantizar su operación segura y sostenible.
+**Criterio operativo y de mantenibilidad:** Se valorará la capacidad real de administrar, monitorizar, parchear, securizar, respaldar y recuperar el motor seleccionado, tanto en modalidad on-premise como cloud. No deberá seleccionarse un motor si no existen capacidades suficientes para garantizar su operación segura y sostenible.
 
-Criterio económico
-En caso de que dos o más motores resulten técnicamente viables, se tendrá en cuenta el coste total de propiedad, incluyendo licenciamiento, infraestructura, almacenamiento, backup, alta disponibilidad, soporte, operación, mantenimiento, perfiles técnicos necesarios y posibles costes de migración.
+**Criterio económico:** En caso de que dos o más motores resulten técnicamente viables, se tendrá en cuenta el coste total de propiedad, incluyendo licenciamiento, infraestructura, almacenamiento, backup, alta disponibilidad, soporte, operación, mantenimiento, perfiles técnicos necesarios y posibles costes de migración.
 
-Uso de motores no preferentes o condicionados
-Cuando se proponga el uso de un motor no preferente para nuevos desarrollos, deberá existir una justificación técnica documentada y validación por parte del área de Sistemas de Información. Esta justificación deberá incluir, como mínimo, los motivos técnicos de la elección, alternativas evaluadas, impacto económico, riesgos operativos, modelo de soporte, estrategia de backup, alta disponibilidad y plan de ciclo de vida.
+**Uso de motores no preferentes o condicionados:** Cuando se proponga el uso de un motor no preferente para nuevos desarrollos, deberá existir una justificación técnica documentada y validación por parte del área de Sistemas de Información. Esta justificación deberá incluir, como mínimo, los motivos técnicos de la elección, alternativas evaluadas, impacto económico, riesgos operativos, modelo de soporte, estrategia de backup, alta disponibilidad y plan de ciclo de vida.
 
-Criterios de uso por motor
+## Criterios de uso por motor
 
 Microsoft SQL Server / Azure SQL Database
 
@@ -171,9 +157,9 @@ Aplicaciones que requieran funcionalidades específicas del motor no cubiertas a
 
 Escenarios en los que la continuidad operativa, la criticidad del servicio o las dependencias existentes justifiquen su mantenimiento.
 
-Recomendación resumida
+## Recomendación resumida
 
-Roles y Responsabilidades
+## Roles y Responsabilidades
 
 Este apartado define los principales roles y responsabilidades en la gestión y operación de bases de datos.
 
@@ -215,7 +201,7 @@ Garantizar que los datos sensibles no se utilicen en entornos no productivos.
 
 Ejecutar migraciones de datos hasta un entorno determinado y con herramientas de ci/cd según procesos aprobados
 
-Seguridad y Control de Acceso
+## Seguridad y Control de Acceso
 
 En este apartado se definen aspectos relacionados con el acceso a las BBDD, teniendo como objetivos:
 
@@ -279,7 +265,7 @@ Separación de entornos: Evita que desarrollo acceda a datos reales en producci�
 
 Responsabilidad clara: Define un único responsable de la seguridad 
 
-Gestión de identidades y acceso 
+### Gestión de identidades y acceso
 
 En los entornos Cloud, el acceso a las bases de datos deberá realizarse preferentemente mediante identidades de aplicación, identidades gestionadas o mecanismos equivalentes, evitando siempre que sea posible el uso de credenciales de usuario o contraseñas estáticas.
 
@@ -349,17 +335,15 @@ Cualquier nuevo desarrollo, evolución significativa o migración deberá valora
 
 Cuando no sea posible aplicar el modelo objetivo por limitaciones técnicas, dependencia de producto o restricciones legacy, deberá quedar documentada la excepción y los controles compensatorios aplicados.
 
-Configuración
+## Configuración
 
-Cifrado en tránsito obligatorio (TLS 1.2+).
+- Cifrado en tránsito obligatorio (TLS 1.2+).
+- Cifrado en reposo obligatorio para todos los motores (algoritmos robustos AES-256).
+- Auditoría habilitada en SQL Server, PostgreSQL y NoSQL.
 
-Cifrado en reposo obligatorio para todos los motores (algoritmos robustos AES-256)
+### Seguridad
 
-Auditoría habilitada en SQL Server, PostgreSQL y NoSQL.
-
-4.3.1 Seguridad 
-
-Cifrado
+#### Cifrado
 
 Cifrado en tránsito (TLS 1 3 o superior) obligatorio para todos los motores.
 
@@ -367,7 +351,7 @@ Cifrado en reposo mediante claves gestionadas por el proveedor Cloud o por APB (
 
 Prohibición de deshabilitar TLS, puertos heredados o mecanismos de cifrado obsoletos.
 
-Acceso a red
+#### Acceso a red
 
 Acceso únicamente desde redes privadas, VNets o endpoints seguros.
 
@@ -379,7 +363,7 @@ Uso obligatorio de Private Endpoints para PaaS (Azure SQL, PostgreSQL, Cosmos DB
 
 Tráfico controlado por firewalls virtuales para permitir conexiones desde aplicaciones autorizadas, IP whitelisting.
 
-Identidades y autenticación
+#### Identidades y autenticación
 
 Acceso exclusivo mediante Managed Identities o identidades de servicio validadas.
 
@@ -387,9 +371,9 @@ No se permiten usuarios SQL locales, salvo excepciones justificadas y aprobadas.
 
 Integración obligatoria con Azure AD para autenticación y control de accesos.
 
-4.3.2 Configuración 
+### Parámetros de rendimiento y configuración
 
-Parámetros de rendimiento
+#### Parámetros de rendimiento
 
 Definición de límites de conexiones, pool y timeouts según buenas prácticas del motor.
 
@@ -397,7 +381,7 @@ Monitorización de locking, deadlocks y planes de ejecución activada por defect
 
 Planes de autoscaling definidos cuando aplique (Cosmos, PostgreSQL, SQL Server.).
 
-Auditoría
+#### Auditoría
 
 Auditoría obligatoria de:
 
@@ -411,7 +395,7 @@ Ejecución de sentencias privilegiadas.
 
 Retención mínima de 12 meses, integrada con Log Analytics y SIEM corporativo.
 
-Automatización (IaC / CaC)
+#### Automatización (IaC / CaC)
 
 Toda instancia debe desplegarse mediante:
 
@@ -425,7 +409,7 @@ Protección ante errores operativos
 
 Point-in-time restore o snapshots activados en todos los motores que lo soporten.
 
-4.3.3 configuración para despliegues
+#### Configuración para despliegues
 
 Configuraciones versionadas en repositorios Git corporativos.
 
@@ -443,9 +427,9 @@ Parámetros configurados.
 
 Políticas de backup y HA asociadas
 
-Estándares de Diseño y Desarrollo
+## Estándares de Diseño y Desarrollo
 
-Buenas prácticas 
+### Buenas prácticas
 
 Evitar SELECT *.
 
@@ -455,7 +439,7 @@ Definir claves primarias utilizando identificadores únicos.
 
 Documentar cualquier cambio de esquema en el repositorio del proyecto.
 
-Convenciones de Nombres
+### Convenciones de Nombres
 
 Tablas: snake_case en PostgreSQL y NoSQL; PascalCase permitido en SQL Server.
 
@@ -465,9 +449,9 @@ Columnas: snake_case consistente con el estándar del motor.
 
 Restricciones: pk_, fk_, chk_, uq_.
 
-Especificaciones por Motor
+### Especificaciones por Motor
 
-SQL Server
+#### SQL Server
 
 TDE (Transparent Data Encryption) activado por def
 
@@ -481,7 +465,7 @@ Bloqueo de autenticación SQL, salvo justificación.
 
 Database identifiers - SQL Server | Microsoft Learn
 
-PostgreSQL
+#### PostgreSQL
 
 Forced SSL activado.
 
@@ -491,9 +475,7 @@ Aprovechar índices GIN/GIST cuando corresponda.
 
 Evitar abuso de funciones en triggers que dificulten trazabilidad.
 
-Oracle Database
-
-(solo uso excepcional)
+#### Oracle Database (solo uso excepcional)
 
 Auditoría de SYS, SYSTEM y DBA habilitada.
 
@@ -501,7 +483,7 @@ Archivo de redo logs configurado para recuperación avanzada.
 
 Esquemas protegidos mediante roles mínimos y tablespaces dedicados.
 
-Bases NoSQL 
+#### Bases NoSQL
 
 Modelado basado en acceso, no en normalización.
 
@@ -511,7 +493,7 @@ Evitar documentos extremadamente grandes.
 
 Definir TTL en colecciones que gestionen datos temporales.
 
-Protección de Datos Sensibles
+### Protección de Datos Sensibles
 
 Aplicar enmascaramiento, pseudonimización o tokenización según criticidad.
 
@@ -521,7 +503,7 @@ Proveer datasets anonimizados para QA.
 
 Prohibido el uso de datos reales en entornos de desarrollo.
 
-Backups y Recuperación
+## Backups y Recuperación
 
 La estrategia de backup y recuperación deberá garantizar la protección, disponibilidad y recuperabilidad de los datos en todos los entornos de bases de datos de la organización, tanto cloud como on-premise, IaaS, PaaS o servicios gestionados.
 
@@ -529,7 +511,7 @@ La estrategia deberá apoyarse, según corresponda, en las capacidades nativas d
 
 Para los datos críticos, deberá garantizarse la existencia de copias o mecanismos de recuperación en una ubicación separada del entorno principal. En entornos cloud, se priorizará la redundancia en regiones o zonas dentro de la Unión Europea cuando aplique. En entornos on-premise, deberá existir una protección equivalente mediante almacenamiento separado, CPD alternativo, repositorio corporativo de backup, copia externa o mecanismo equivalente aprobado por la organización.
 
-Frecuencia y tipos de Backup
+### Frecuencia y tipos de Backup
 
 Motores relacionales: SQL Server / Azure SQL Database y PostgreSQL / Azure Database for PostgreSQL
 

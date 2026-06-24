@@ -13,6 +13,7 @@ skills:
   - "apb-ops-debt-remediation-plan-v1.0"
   - "apb-dev-sonar-clean-v1.0"
   - "apb-gov-policy-check-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 subagents: []
 runtime:
   - "copilot"

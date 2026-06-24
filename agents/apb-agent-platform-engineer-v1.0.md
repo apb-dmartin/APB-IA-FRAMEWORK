@@ -14,6 +14,7 @@ skills:
   - "apb-plat-terraform-v1.0"
   - "apb-plat-cloud-ready-v1.0"
   - "apb-ops-observability-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 subagents:
   - "apb-sub-plat-jenkins-v1.0"
   - "apb-sub-plat-ghactions-v1.0"

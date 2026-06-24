@@ -5,12 +5,12 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 232
+- **Total Components**: 235
 - **Last Generated**: 2026-06-24
 
 ## Component Breakdown
 
-### Skills APB-Owned (117 total)
+### Skills APB-Owned (119 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -79,6 +79,7 @@
 | `apb-gov-evidence-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-evidence-v1.0.md` |
 | `apb-gov-jira-evidence-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-jira-evidence-v1.0.md` |
 | `apb-gov-knowledge-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-knowledge-v1.0.md` |
+| `apb-gov-org-risk-report-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-org-risk-report-v1.0.md` |
 | `apb-gov-policy-check-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-policy-check-v1.0.md` |
 | `apb-gov-spec-sync-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-spec-sync-v1.0.md` |
 | `apb-gov-standards-v1.0` | governance | draft | `skills\apb-owned\governance\apb-gov-standards-v1.0.md` |
@@ -95,6 +96,7 @@
 | `apb-plat-cicd-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-cloud-ready-v1.0.md` |
 | `apb-plat-db-migration-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-db-migration-v1.0.md` |
+| `apb-plat-deliver-artifact-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-deliver-artifact-v1.0.md` |
 | `apb-plat-deployment-finish-v1.0` | platform | draft | `skills\apb-owned\deployment\apb-plat-deployment-finish-v1.0.md` |
 | `apb-plat-doc-to-markdown-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-doc-to-markdown-v1.0.md` |
 | `apb-plat-docker-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-docker-v1.0.md` |
@@ -188,7 +190,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills\third_party\third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills\third_party\trailofbits\third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (22 total)
+### Agentes (23 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -196,6 +198,7 @@
 | `apb-agent-catalog-manager-v1.0` | AI Catalog Manager Agent | draft | `agents\apb-agent-catalog-manager-v1.0.md` |
 | `apb-agent-cloud-architect-v1.0` | Cloud Architect Agent | draft | `agents\apb-agent-cloud-architect-v1.0.md` |
 | `apb-agent-code-reviewer-v1.0` | Code Reviewer Agent | draft | `agents\apb-agent-code-reviewer-v1.0.md` |
+| `apb-agent-compliance-audit-v1.0` | Compliance Audit Agent | draft | `agents\apb-agent-compliance-audit-v1.0.md` |
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents\apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents\apb-agent-domain-architect-v1.0.md` |
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents\apb-agent-finops-v1.0.md` |

@@ -12,6 +12,7 @@ skills:
   - "apb-arch-event-storming-v1.0"
   - "apb-disc-ddd-legacy-v1.0"
   - "apb-disc-reverse-code-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 runtime:
   - "copilot"
   - "claude"

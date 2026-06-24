@@ -16,6 +16,7 @@ skills:
   - "apb-arch-validate-v1.0"
   - "apb-arch-security-design-v1.0"
   - "apb-arch-cloud-infra-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -14,6 +14,7 @@ skills:
   - "apb-plat-docker-v1.0"
   - "apb-plat-finops-v1.0"
   - "apb-plat-cicd-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -22,6 +22,7 @@ skills:
   - "apb-dev-api-standard-v1.0"
   - "apb-dev-devexpress-front-v1.0"
   - "apb-dev-gis-django-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
 subagents:
   - "apb-sub-dev-net-v1.0"
   - "apb-sub-dev-devexpress-v1.0"
