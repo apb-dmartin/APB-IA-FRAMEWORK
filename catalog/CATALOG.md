@@ -5,12 +5,12 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 227
+- **Total Components**: 232
 - **Last Generated**: 2026-06-24
 
 ## Component Breakdown
 
-### Skills APB-Owned (115 total)
+### Skills APB-Owned (117 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -100,6 +100,8 @@
 | `apb-plat-docker-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-docker-v1.0.md` |
 | `apb-plat-finops-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-finops-v1.0.md` |
 | `apb-plat-mcp-building-v1.0` | platform | draft | `skills\apb-owned\mcp-building\apb-plat-mcp-building-v1.0.md` |
+| `apb-plat-ms-notify-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-ms-notify-v1.0.md` |
+| `apb-plat-sharepoint-io-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-sharepoint-io-v1.0.md` |
 | `apb-plat-terraform-v1.0` | platform | draft | `skills\apb-owned\platform\apb-plat-terraform-v1.0.md` |
 | `apb-pm-implementation-planning-v1.0` | pm | draft | `skills\apb-owned\pm\apb-pm-implementation-planning-v1.0.md` |
 | `apb-pm-parallel-execution-v1.0` | pm | draft | `skills\apb-owned\pm\apb-pm-parallel-execution-v1.0.md` |
@@ -243,7 +245,7 @@
 | `apb-wf-sdd-full-v1.0` | Spec Driven Development | draft | `workflows\apb-wf-sdd-full-v1.0.md` |
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows\apb-wf-spec-from-legacy-v1.0.md` |
 
-### Providers (10 total)
+### Providers (11 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -255,6 +257,7 @@
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers\prov-github-v1.0.md` |
 | `prov-k6-v1.0` | Provider: k6 MCP | draft | `providers\prov-k6-v1.0.md` |
 | `prov-ms-learn-v1.0` | Provider: Microsoft Learn MCP | draft | `providers\prov-ms-learn-v1.0.md` |
+| `prov-ms365-v1.0` | Provider: Microsoft 365 (Graph API) | draft | `providers\prov-ms365-v1.0.md` |
 | `prov-playwright-v1.0` | Provider: Playwright MCP | draft | `providers\prov-playwright-v1.0.md` |
 | `prov-sonar-v1.0` | Provider: SonarQube MCP | draft | `providers\prov-sonar-v1.0.md` |
 
@@ -270,10 +273,12 @@
 | `wrap-skills-sh-v1.0` | skills.sh | draft | `wrappers\wrap-skills-sh-v1.0.md` |
 | `wrap-thedotmack-mem-v1.0` | wrap-thedotmack-mem-v1.0 | draft | `wrappers\wrap-thedotmack-mem-v1.0.md` |
 
-### Adapters (2 total)
+### Adapters (4 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `adapter-claude-v1.0` | Claude (Anthropic) Adapter | draft | `adapters\claude\adapter-claude-v1.0.md` |
 | `adapter-copilot-v1.0` | GitHub Copilot Adapter | draft | `adapters\copilot\adapter-copilot-v1.0.md` |
+| `adapter-m365-copilot-v1.0` | Microsoft 365 Copilot Adapter | draft | `adapters\m365\adapter-m365-copilot-v1.0.md` |
+| `adapter-rovo-v1.0` | Atlassian Rovo Adapter | draft | `adapters\rovo\adapter-rovo-v1.0.md` |
 

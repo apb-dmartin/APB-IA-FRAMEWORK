@@ -14,7 +14,7 @@
 | `qa` | Quality Assurance | 12 | 🟢 |
 | `arch` | Architecture | 12 | 🟣 |
 | `disc` | Discovery | 12 | 🟡 |
-| `plat` | Platform | 9 | 🟠 |
+| `plat` | Platform | 11 | 🟠 |
 | `sec` | Security | 8 | 🔴 |
 | `gov` | Governance | 11 | ⚫ |
 | `ops` | Operation | 9 | 🔵 |
