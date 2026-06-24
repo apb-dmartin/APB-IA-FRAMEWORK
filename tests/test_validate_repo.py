@@ -135,11 +135,11 @@ class TestIterComponentFiles(unittest.TestCase):
 
     def test_ignores_template_and_git_dirs(self):
         (self.tmp_dir / "real").mkdir()
-        (self.tmp_dir / "real" / "a.md").write_text(VALID_SKILL_FRONTMATTER)
+        (self.tmp_dir / "real" / "a.md").write_text(VALID_SKILL_FRONTMATTER, encoding="utf-8")
         (self.tmp_dir / "templates").mkdir()
-        (self.tmp_dir / "templates" / "ignored.md").write_text(VALID_SKILL_FRONTMATTER)
+        (self.tmp_dir / "templates" / "ignored.md").write_text(VALID_SKILL_FRONTMATTER, encoding="utf-8")
         (self.tmp_dir / ".git").mkdir()
-        (self.tmp_dir / ".git" / "also_ignored.md").write_text(VALID_SKILL_FRONTMATTER)
+        (self.tmp_dir / ".git" / "also_ignored.md").write_text(VALID_SKILL_FRONTMATTER, encoding="utf-8")
 
         found = list(vr.iter_component_files(self.tmp_dir))
         found_names = {f.name for f in found}
@@ -187,7 +187,7 @@ review_date: "2026-06-24"
 ---
 # Agente Fixture
 """
-        (self.tmp_dir / "agents" / "apb-agent-fixture-v1.0.md").write_text(agent_content)
+        (self.tmp_dir / "agents" / "apb-agent-fixture-v1.0.md").write_text(agent_content, encoding="utf-8")
 
         all_ids = {"apb-agent-fixture-v1.0": "agents/apb-agent-fixture-v1.0.md"}
         result = vr.ValidationResult()
@@ -222,7 +222,7 @@ review_date: "2026-06-24"
 # Skill Fixture
 Usa `apb-agent-no-existe-v1.0` como agente consumidor.
 """
-        (self.tmp_dir / "skills" / "apb-owned" / "apb-dev-fixture-v1.0.md").write_text(skill_content)
+        (self.tmp_dir / "skills" / "apb-owned" / "apb-dev-fixture-v1.0.md").write_text(skill_content, encoding="utf-8")
 
         all_ids = {"apb-dev-fixture-v1.0": "skills/apb-owned/apb-dev-fixture-v1.0.md"}
         result = vr.ValidationResult()
@@ -271,8 +271,8 @@ review_date: "2026-06-24"
 ---
 # Skill Fixture
 """
-        (self.tmp_dir / "agents" / "apb-agent-fixture-v1.0.md").write_text(agent_content)
-        (self.tmp_dir / "skills" / "apb-owned" / "apb-dev-fixture-v1.0.md").write_text(skill_content)
+        (self.tmp_dir / "agents" / "apb-agent-fixture-v1.0.md").write_text(agent_content, encoding="utf-8")
+        (self.tmp_dir / "skills" / "apb-owned" / "apb-dev-fixture-v1.0.md").write_text(skill_content, encoding="utf-8")
 
         all_ids = {
             "apb-agent-fixture-v1.0": "agents/apb-agent-fixture-v1.0.md",
@@ -319,7 +319,7 @@ review_date: "2026-06-24"
 ---
 # Fixture {skill_id}
 """
-        (self.tmp_dir / "skills" / "apb-owned" / f"{skill_id}.md").write_text(content)
+        (self.tmp_dir / "skills" / "apb-owned" / f"{skill_id}.md").write_text(content, encoding="utf-8")
 
     def test_direct_circular_dependency_is_detected_once(self):
         self._write_skill("apb-dev-a-v1.0", ["apb-dev-b-v1.0"])
