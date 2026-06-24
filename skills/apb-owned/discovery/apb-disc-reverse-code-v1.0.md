@@ -1,0 +1,113 @@
+---
+id: "apb-disc-reverse-code-v1.0"
+name: "Ingeniería Inversa desde Código"
+description: "Analizar código fuente de sistemas legacy para extraer arquitectura, dependencias, reglas de negocio embebidas y comportamiento actual. Genera artefactos de comprensión para modernización."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "discovery"
+autonomy_level: 1
+created_date: "2026-06-20"
+review_date: "2026-06-22"
+---
+
+# Ingeniería Inversa desde Código
+
+---
+
+## 🎯 Propósito
+
+Analizar código fuente de sistemas legacy para extraer arquitectura, dependencias, reglas de negocio embebidas y comportamiento actual. Genera artefactos de comprensión para modernización.
+
+---
+
+## ⚡ Trigger
+
+Cuando no existe documentación actualizada de un sistema legacy, o cuando la documentación no refleja el comportamiento real del código en producción.
+
+---
+
+## 📥 Input
+
+- Código fuente completo del sistema
+- Base de datos (schema, datos de muestra)
+- Configuración de despliegue
+- Logs de ejecución (si disponibles)
+- Tests existentes (si hay)
+
+---
+
+## 📤 Output
+
+- Diagrama de arquitectura actual (C4 nivel 2-3)
+- Mapa de dependencias entre componentes
+- Inventario de reglas de negocio embebidas en código
+- Identificación de deuda técnica crítica
+- Propuesta de bounded contexts (si aplica modernización)
+- Documentación de APIs y puntos de integración
+
+---
+
+## 🔄 Proceso
+
+1. **Análisis de estructura**: Mapear proyectos, namespaces, capas, dependencias.
+2. **Análisis de dependencias**: Identificar referencias entre proyectos, librerías de terceros, servicios externos.
+3. **Análisis de datos**: Schema de BBDD, relaciones, stored procedures, triggers.
+4. **Extracción de reglas de negocio**: Identificar lógica de negocio en controllers, services, stored procedures.
+5. **Análisis de flujo**: Mapear flujos de ejecución principales (user journeys técnicos).
+6. **Identificación de deuda técnica**: Código duplicado, dependencias obsoletas, anti-patrones.
+7. **Documentación de APIs**: Endpoints, contratos, autenticación.
+8. **Síntesis**: Generar diagramas y documentación estructurada.
+9. **Validación**: Contrastar con stakeholders técnicos.
+
+---
+
+## 📋 Reglas y Constraints
+
+- No modificar código durante el análisis; solo lectura.
+- Documentar suposiciones explícitamente cuando el código sea ambiguo.
+- Identificar 'magic numbers', strings hardcodeados y lógica embebida en UI.
+- Mapear stored procedures como reglas de negocio críticas.
+- Detectar código muerto (no referenciado) pero no eliminarlo; documentar.
+- Priorizar comprensión de flujos críticos de negocio sobre detalles técnicos.
+- Mantener confidencialidad; el análisis puede exponer lógica sensible.
+
+---
+
+## 🛠 Stack Tecnológico Relevante
+
+- Análisis estático: SonarQube, NDepend, Roslyn analyzers
+- Decompiladores (si no hay código fuente)
+- Diagramas: C4, dependency graphs
+- SQL Server / PostgreSQL schema analysis
+- Git history (para entender evolución)
+
+---
+
+## 💡 Ejemplos de Uso
+
+**Ejemplo — Análisis de aplicación VB6:**
+> Estructura: 12 forms, 8 módulos, 15 clases.
+> Dependencias: ADO, Crystal Reports, librería propietaria de impresión.
+> Reglas de negocio: 23 identificadas, 8 en stored procedures SQL.
+> Deuda técnica: 5 dependencias sin soporte, 3 forms con > 2000 líneas.
+> Output: Diagrama de componentes, lista de reglas, propuesta de extracción por bounded contexts.
+
+---
+
+## 🔗 Dependencias
+
+- `apb-disc-reverse-doc-v1.0`
+- `apb-arch-decompose-v1.0`
+- `apb-dev-code-base-v1.0`
+
+---
+
+## 📝 Notas
+
+- El análisis de código legacy puede ser complejo; considerar herramientas especializadas por lenguaje.
+- Para sistemas muy grandes, priorizar módulos críticos y hacer análisis iterativo.
+
+---
+
+*Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*

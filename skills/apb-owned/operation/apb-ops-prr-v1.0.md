@@ -1,0 +1,110 @@
+---
+id: "apb-ops-prr-v1.0"
+name: "Production Readiness Review"
+description: "Realizar una revisión de preparación para producción (PRR) de servicios y sistemas antes de su despliegue en entornos productivos. Evalúa operabilidad, observabilidad, seguridad, rendimiento y gobierno, generando un checklist de aprobación o bloqueo."
+version: "1.0.0"
+status: "draft"
+owner: "SRE APB <arquitectura@portdebarcelona.cat>"
+domain: "operation"
+autonomy_level: 1
+created_date: "2026-06-20"
+review_date: "2026-06-22"
+---
+
+# Production Readiness Review
+
+## Propósito
+Realizar una revisión de preparación para producción (PRR) de servicios y sistemas antes de su despliegue en entornos productivos. Evalúa operabilidad, observabilidad, seguridad, rendimiento y gobierno, generando un checklist de aprobación o bloqueo.
+
+## Contexto de Uso
+- Gate obligatorio antes del primer despliegue a producción.
+- Revisión de preparación para releases mayores o cambios arquitectónicos significativos.
+- Validación de cumplimiento de requisitos de operación antes de migraciones.
+- Integración con workflows de release management y gobierno.
+
+## Entradas Requeridas
+| Entrada | Tipo | Descripción | Obligatorio |
+|---------|------|-------------|-------------|
+| `system_description` | Texto / Markdown | Descripción completa del sistema | ✅ |
+| `architecture_document` | Texto | Documento de arquitectura aprobado | ✅ |
+| `test_results` | Texto / JSON | Resultados de tests (unitarios, integración, E2E, performance) | ✅ |
+| `security_review` | Texto | Informe de revisión de seguridad | ✅ |
+| `operability_assessment` | Texto | Informe de evaluación de operabilidad | ❌ |
+| `observability_design` | Texto | Diseño de observabilidad | ✅ |
+| `runbooks` | Lista | Runbooks de operación y troubleshooting | ❌ |
+
+## Flujo de Trabajo (Pasos)
+1. **Checklist de PRR**: Evaluar cada ítem del checklist corporativo:
+   - **Arquitectura**: Diseño aprobado, escalabilidad validada, anti-patterns evitados.
+   - **Seguridad**: Threat model completado, vulnerabilidades mitigadas, secrets gestionados.
+   - **Testing**: Cobertura ≥ 80%, tests de integración y E2E pasados, performance validado.
+   - **Operabilidad**: Runbooks documentados, procedimientos de escalado definidos, rollback planificado.
+   - **Observabilidad**: Métricas, logs, traces y alertas configurados; dashboards operativos.
+   - **Datos**: Backup y recuperación validados, retención definida, GDPR/LOPD cumplido.
+   - **Gobierno**: Evidencias generadas, specs sincronizados, ADRs documentados.
+2. **Evaluación de riesgos residuales**: Identificar riesgos que no han sido mitigados completamente.
+3. **Decisión de PRR**:
+   - **Aprobado** — Sistema listo para producción.
+   - **Aprobado con condiciones** — Requiere acciones antes o inmediatamente después del despliegue.
+   - **Bloqueado** — No cumple requisitos críticos; requiere remediación antes del despliegue.
+4. **Generación de informe PRR**: Documento con resultado, hallazgos, condiciones y plan de seguimiento.
+5. **Registro de evidencia**: Metadatos para gobierno y release management.
+
+## Salida Esperada
+### Estructura del Informe PRR
+```markdown
+# Production Readiness Review — [Nombre Sistema]
+> Fecha: [YYYY-MM-DD] | Autor: SRE Agent | Resultado: [Aprobado/Condicional/Bloqueado]
+
+## 1. Alcance y Contexto
+## 2. Resumen Ejecutivo
+## 3. Checklist PRR
+| Categoría | Ítem | Estado | Evidencia | Notas |
+## 4. Riesgos Residuales
+## 5. Condiciones (si aplica)
+## 6. Plan de Seguimiento
+## 7. Recomendaciones
+## 8. Evidencia y Metadatos
+```
+
+## Criterios de Calidad
+- [ ] 100% de ítems del checklist PRR evaluados con estado y evidencia.
+- [ ] Cada ítem bloqueante tiene plan de remediación con responsable y plazo.
+- [ ] Los riesgos residuales están documentados con mitigación o aceptación formal.
+- [ ] Las condiciones de aprobación condicional son específicas, medibles y temporizadas.
+- [ ] El informe es firmable por el Release Manager y el SRE Lead sin intervención del agente.
+
+## Stack y Tecnologías
+- Framework: Google SRE PRR, Azure Well-Architected Framework
+- Checklist: Plantilla corporativa en Markdown
+- Formatos: Markdown, PDF para firma
+
+## Dependencias
+- `apb-ops-operability-v1.0` — para evaluación de operabilidad
+- `apb-ops-observability-v1.0` — para diseño de observabilidad
+- `apb-sec-threat-model-v1.0` — para threat model
+- `apb-qa-release-ready-v1.0` — para release readiness
+- `apb-gov-evidence-v1.0` — para evidencia de PRR
+
+## Ejemplo de Uso
+**Prompt de invocación:**
+```
+Realiza PRR para el microservicio de notificaciones:
+- Arquitectura: aprobada (ARCH-2042)
+- Tests: cobertura 85%, integración y E2E pasados, performance validado (500 req/s)
+- Seguridad: threat model completado, ENS Media cumplido, OWASP ASVS L2
+- Observabilidad: dashboards y alertas configurados en Azure Monitor
+- Runbooks: 3 runbooks documentados (escalado, failover, troubleshooting)
+- Datos: backup diario, RPO 1h, RTO 4h
+```
+
+## Notas y Advertencias
+- **Nivel 1**: El agente evalúa documentalmente; no realiza pruebas técnicas ni accede a entornos de producción.
+- **Revisión humana obligatoria** por Release Manager y SRE Lead antes de aprobar PRR.
+- Un resultado "Bloqueado" es vinculante; el despliegue a producción no puede proceder sin remediación.
+- El agente no aprueba despliegues; solo genera el informe de evaluación.
+
+## Historial de Cambios
+| Versión | Fecha | Autor | Cambio |
+|---------|-------|-------|--------|
+| 1.0.0 | 2026-06-20 | Arquitectura APB | Creación inicial |

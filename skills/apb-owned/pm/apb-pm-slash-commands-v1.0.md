@@ -1,0 +1,277 @@
+---
+id: "apb-pm-slash-commands-v1.0"
+name: "Slash Commands"
+description: "Comandos slash del APB AI Framework para invocar skills r\xE1pidamente. /apb:brainstorm,\
+  \ /apb:plan, /apb:implement, /apb:review, /apb:deploy, /apb:verify, /apb:retro."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "pm"
+autonomy_level: 1
+consumed_by:
+  - "apb-agent-governance-v1.0"
+created_date: "2026-06-20"
+review_date: "2026-06-24"
+---
+
+> Procedencia: Adaptado de wshobson/agents (workflow-patterns + track-management) (licencia MIT). Contenido adaptado y
+> generalizado para el APB AI Framework.
+
+# APB Slash Commands: Comandos Rápidos del Framework
+
+## Visión General
+
+Comandos slash para invocar rápidamente skills del APB AI Framework. Cada comando dispara un workflow completo con el contexto apropiado.
+
+## Lista de Comandos
+
+### `/apb:brainstorm [tema]`
+
+**Descripción:** Inicia sesión de brainstorming para un tema específico.
+
+**Workflow:**
+```
+1. Explorar contexto del proyecto
+2. Entender topología actual de eventos
+3. Hacer preguntas clarificadoras
+4. Proponer 2-3 enfoques
+5. Presentar diseño por secciones
+6. Escribir spec y commitear
+7. Auto-revisión de spec
+8. Revisión del usuario
+9. Transición a planning
+```
+
+**Ejemplo:**
+```
+/apb:brainstorm "Flujo de devolución de productos"
+```
+
+### `/apb:plan [spec-file]`
+
+**Descripción:** Crea plan de implementación a partir de un spec.
+
+**Workflow:**
+```
+1. Leer spec completo
+2. Verificar alcance
+3. Mapear archivos
+4. Descomponer en tareas
+5. Definir dependencias
+6. Revisar plan con subagente
+7. Guardar plan y commitear
+```
+
+**Ejemplo:**
+```
+/apb:plan docs/apb/specs/2026-06-20-return-flow-design.md
+```
+
+### `/apb:implement [plan-file]`
+
+**Descripción:** Ejecuta plan despachando subagentes por tarea.
+
+**Workflow:**
+```
+1. Leer plan completo
+2. Verificar worktree aislado
+3. Crear ledger de tareas
+4. Por cada tarea:
+   a. Despachar implementador
+   b. Revisar tarea (spec + calidad)
+   c. Actualizar ledger
+5. Revisión final de rama
+6. Verificación antes de completar
+```
+
+**Ejemplo:**
+```
+/apb:implement docs/apb/plans/2026-06-20-return-flow-plan.md
+```
+
+### `/apb:review [branch|sha-range]`
+
+**Descripción:** Revisa código con proceso de dos etapas.
+
+**Workflow:**
+```
+1. Obtener diff (BASE_SHA..HEAD_SHA)
+2. Revisión de tarea (task-scoped)
+3. Revisión amplia de rama (whole-branch)
+4. Verificaciones de event-driven:
+   - Schemas CloudEvents
+   - Contratos de eventos
+   - Idempotencia
+   - Compensación
+   - DLQ
+   - Ordenamiento
+```
+
+**Ejemplo:**
+```
+/apb:review feature/return-flow
+```
+
+### `/apb:verify`
+
+**Descripción:** Verifica que el trabajo está completo con evidencia.
+
+**Workflow:**
+```
+1. Identificar comando de verificación
+2. Ejecutar comando completo (fresh)
+3. Leer output completo
+4. Verificar que confirma la afirmación
+5. Solo entonces: hacer la afirmación
+```
+
+**Verificaciones específicas:**
+```bash
+npm test                    # Tests unitarios
+npm run test:integration    # Tests de integración
+npm run validate:schemas    # Validación CloudEvents
+npm run check:dlq           # Verificación DLQ
+npm run test:saga           # Tests de saga
+```
+
+**Ejemplo:**
+```
+/apb:verify
+```
+
+### `/apb:deploy [branch]`
+
+**Descripción:** Despliega microservicios con verificación.
+
+**Workflow:**
+```
+1. Verificar tests, linter, build
+2. Verificar tests de integración
+3. Verificar DLQs
+4. Verificar schemas
+5. Presentar opciones de merge/deploy
+6. Ejecutar despliegue con rolling update
+7. Health checks post-deploy
+8. Verificación de eventos fluyendo
+9. Documentar en changelog
+```
+
+**Ejemplo:**
+```
+/apb:deploy feature/return-flow
+```
+
+### `/apb:retro [epic-name]`
+
+**Descripción:** Genera retrospectiva de un epic completado.
+
+**Workflow:**
+```
+1. Revisar métricas del epic
+2. Analizar incidentes y problemas
+3. Identificar lo que funcionó bien
+4. Identificar lo que necesita mejora
+5. Extraer lecciones aprendidas
+6. Definir acciones de mejora
+7. Proponer ajustes arquitectónicos
+8. Generar documento de retrospectiva
+```
+
+**Ejemplo:**
+```
+/apb:retro "Flujo de orden completo"
+```
+
+### `/apb:status`
+
+**Descripción:** Muestra estado actual del framework.
+
+**Output:**
+```
+APB AI Framework Status
+=======================
+
+Skills: 46/46 disponibles
+Agentes: 18/18 activos
+Workflows: 7/7 operativos
+
+Tracks activos: [N]
+Tracks completados: [N]
+Tracks bloqueados: [N]
+
+Eventos registrados: [N]
+Schemas validados: [N]
+Sagas activas: [N]
+
+DLQ Status:
+- topic-orders: 0 mensajes ✅
+- topic-payments: 3 mensajes ⚠️
+- topic-inventory: 0 mensajes ✅
+
+Métricas del último sprint:
+- Throughput: [N] eventos/seg
+- Latencia p95: [N] ms
+- Error rate: [N]%
+```
+
+### `/apb:help [skill-name]`
+
+**Descripción:** Muestra ayuda de un skill específico.
+
+**Ejemplo:**
+```
+/apb:help apb-event-driven
+```
+
+**Output:**
+```
+# apb-event-driven
+
+Descripción: Skill maestro para arquitecturas orientadas a eventos...
+
+Patrones incluidos:
+1. CloudEvents Specification
+2. Topología de Azure Service Bus
+3. Outbox Pattern
+4. Idempotencia en Consumidores
+5. Saga Patterns
+6. Dead Letter Handling
+7. Versionado de Schemas
+8. Session Management
+9. CQRS con Event Sourcing
+
+Stack: Azure Service Bus | CloudEvents 1.0 + JSON | DevExpress + JS puro
+```
+
+## Mapeo de Comandos a Skills
+
+| Comando | Skill Principal | Skills Secundarios |
+|---------|----------------|-------------------|
+| `/apb:brainstorm` | `apb:brainstorming` | `apb:design-approval` |
+| `/apb:plan` | `apb:planning` | `apb:task-breakdown` |
+| `/apb:implement` | `apb:subagent-dev` | `apb:tdd`, `apb:code-review` |
+| `/apb:review` | `apb:code-review` | `apb:verification` |
+| `/apb:verify` | `apb:verification` | — |
+| `/apb:deploy` | `apb:deployment` | `apb:verification` |
+| `/apb:retro` | `apb:retrospective` | — |
+| `/apb:status` | — | Todos los skills |
+| `/apb:help` | — | Skill específico |
+
+## Alias de Comandos
+
+```
+/apb:bs    → /apb:brainstorm
+/apb:pl    → /apb:plan
+/apb:impl  → /apb:implement
+/apb:rev   → /apb:review
+/apb:ver   → /apb:verify
+/apb:dep   → /apb:deploy
+/apb:ret   → /apb:retro
+/apb:st    → /apb:status
+```
+
+## Integración con el Flujo APB
+
+```
+[usuario escribe comando] → apb:slash-commands → [skill invocado] → [workflow ejecutado]
+```

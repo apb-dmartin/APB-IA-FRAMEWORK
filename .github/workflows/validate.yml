@@ -1,0 +1,63 @@
+name: Validación APB AI Framework
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate-repo:
+    name: Validar estructura, frontmatter y referencias
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install pyyaml
+
+      - name: Ejecutar validate_repo.py (modo estricto)
+        run: python scripts/validate_repo.py --strict
+        # --strict: los warnings también bloquean el merge en CI, salvo
+        # 'source_commit: unverified' en skills/wrappers de terceros, que
+        # está exento por política deliberada (GOVERNANCE.md §4.2): no se
+        # inventa un SHA real sin acceso de red, y exigir su resolución
+        # bloquearía el repo indefinidamente por una causa fuera del
+        # control del autor del PR. Cualquier otro warning (carpeta
+        # ausente, referencia rota en el cuerpo, drift no resuelto) sigue
+        # bloqueando el merge sin excepción.
+
+  validate-catalog:
+    name: Verificar sincronización de catálogo e índice
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install pyyaml
+
+      - name: Comprobar drift de catalog/CATALOG.md, INDEX.md, DOMAIN_REGISTRY.md
+        run: python scripts/generate_catalog.py --check
+        # Exit 1 si hay drift. NO se hace auto-commit del catálogo
+        # regenerado (decisión explícita, GOVERNANCE.md: ningún proceso
+        # automático modifica el PR sin revisión humana). El autor debe
+        # ejecutar `python scripts/generate_catalog.py` localmente y subir
+        # el resultado como parte del mismo PR.
+
+      - name: Mensaje de ayuda si falla
+        if: failure()
+        run: |
+          echo "::error::El catálogo, INDEX.md o DOMAIN_REGISTRY.md no están sincronizados con el estado real del repositorio."
+          echo "::error::Ejecuta 'python scripts/generate_catalog.py' localmente, revisa los cambios y añádelos a este PR."

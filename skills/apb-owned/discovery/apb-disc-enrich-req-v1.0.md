@@ -1,0 +1,116 @@
+---
+id: "apb-disc-enrich-req-v1.0"
+name: "Enriquecimiento de Requisitos"
+description: "Transformar requisitos de negocio de alto nivel en requisitos técnicos detallados, completos y verificables. Añade criterios de aceptación, casos de uso, reglas de validación y dependencias."
+version: "1.0.0"
+status: "draft"
+owner: "Análisis Funcional <arquitectura@portdebarcelona.cat>"
+domain: "discovery"
+autonomy_level: 1
+created_date: "2026-06-20"
+review_date: "2026-06-22"
+---
+
+# Enriquecimiento de Requisitos
+
+---
+
+## 🎯 Propósito
+
+Transformar requisitos de negocio de alto nivel en requisitos técnicos detallados, completos y verificables. Añade criterios de aceptación, casos de uso, reglas de validación y dependencias.
+
+---
+
+## ⚡ Trigger
+
+Tras la fase de discovery de negocio, cuando se tienen requisitos iniciales que necesitan ser detallados para su implementación.
+
+---
+
+## 📥 Input
+
+- Requisitos de negocio (user stories, necesidades)
+- Modelo de dominio preliminar
+- Arquitectura de referencia
+- Estándares de especificación APB
+- Stakeholders disponibles para clarificación
+
+---
+
+## 📤 Output
+
+- Requisitos funcionales detallados
+- Criterios de aceptación por requisito
+- Reglas de negocio identificadas y documentadas
+- Casos de uso o escenarios
+- Matriz de trazabilidad (negocio → técnico)
+- Identificación de dependencias entre requisitos
+
+---
+
+## 🔄 Proceso
+
+1. **Análisis de requisitos originales**: Comprender intención, detectar ambigüedades.
+2. **Descomposición**: Dividir requisitos grandes en requisitos atómicos (INVEST).
+3. **Definición de criterios de aceptación**: Given-When-Then o checklist verificable.
+4. **Identificación de reglas de negocio**: Extraer reglas implícitas, validaciones, cálculos.
+5. **Identificación de casos edge**: Escenarios límite, errores, excepciones.
+6. **Análisis de dependencias**: Qué requisitos dependen de otros, orden de implementación.
+7. **Validación técnica**: Verificar viabilidad con arquitecto/desarrollador.
+8. **Documentación**: Estructurar en formato estándar APB.
+9. **Revisión con negocio**: Validar que el enriquecimiento no altera intención original.
+
+---
+
+## 📋 Reglas y Constraints
+
+- Todo requisito debe ser SMART (Specific, Measurable, Achievable, Relevant, Time-bound).
+- Criterios de aceptación deben ser verificables automáticamente cuando sea posible.
+- No asumir comportamiento no especificado; requerir clarificación.
+- Documentar reglas de negocio con identificador único (RB-001, etc.) para trazabilidad.
+- Identificar requisitos no funcionales asociados (rendimiento, seguridad, UX).
+- Mantener trazabilidad bidireccional: requisito de negocio ↔ requisito técnico.
+- Los requisitos deben ser independientes; si hay dependencia fuerte, considerar unificar.
+
+---
+
+## 🛠 Stack Tecnológico Relevante
+
+- Jira / Azure DevOps
+- Confluence / SharePoint (documentación)
+- Excel (matriz de trazabilidad)
+- BDD/Gherkin (criterios de aceptación)
+- Plantillas de especificación APB
+
+---
+
+## 💡 Ejemplos de Uso
+
+**Ejemplo — Enriquecimiento de 'Usuario puede crear pedido':**
+> Original: 'Como usuario, quiero crear pedidos para gestionar mis compras.'
+> Enriquecido:
+> - RF-001: El sistema permite crear pedidos con 1-N líneas.
+> - RF-002: Cada línea requiere producto, cantidad (>0), precio unitario.
+> - RB-001: El precio unitario debe ser el precio vigente del catálogo.
+> - CA-001: Given usuario autenticado, When añade producto válido al carrito and confirma pedido, Then pedido se crea con estado 'Pendiente' and stock se reserva.
+> - Edge: Producto sin stock → mensaje de error 'Producto no disponible'.
+> - NFR: Creación de pedido < 2s para < 100 líneas.
+
+---
+
+## 🔗 Dependencias
+
+- `apb-disc-business-v1.0`
+- `apb-disc-spec-gen-v1.0`
+- `apb-disc-adversarial-v1.0`
+
+---
+
+## 📝 Notas
+
+- El enriquecimiento es un proceso colaborativo; requiere interacción con negocio y técnico.
+- No sobre-especificar; dejar margen de implementación al equipo técnico.
+
+---
+
+*Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*

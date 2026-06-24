@@ -1,0 +1,109 @@
+---
+id: "apb-disc-reverse-doc-v1.0"
+name: "Ingeniería Inversa desde Documentación"
+description: "Reconstruir el modelo de dominio, procesos de negocio y requisitos funcionales a partir de documentación existente de sistemas legacy. Transforma documentación desestructurada en artefactos estructurados del framework APB."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "discovery"
+autonomy_level: 1
+created_date: "2026-06-20"
+review_date: "2026-06-22"
+---
+
+# Ingeniería Inversa desde Documentación
+
+---
+
+## 🎯 Propósito
+
+Reconstruir el modelo de dominio, procesos de negocio y requisitos funcionales a partir de documentación existente de sistemas legacy. Transforma documentación desestructurada en artefactos estructurados del framework APB.
+
+---
+
+## ⚡ Trigger
+
+Cuando se necesita comprender un sistema legacy que tiene documentación pero carece de especificaciones técnicas modernas, o cuando la documentación está desactualizada o fragmentada.
+
+---
+
+## 📥 Input
+
+- Documentación existente (manuales, especificaciones antiguas, diagramas)
+- Registros de procesos de negocio
+- Documentación de usuario
+- Notas técnicas y runbooks
+- Entrevistas con usuarios clave (transcripciones)
+
+---
+
+## 📤 Output
+
+- Mapa de procesos de negocio
+- Glosario de términos (ubiquitous language preliminar)
+- Lista de funcionalidades identificadas
+- Diagrama de casos de uso
+- Identificación de gaps en documentación
+- Propuesta de especificaciones a generar
+
+---
+
+## 🔄 Proceso
+
+1. **Recopilación**: Centralizar toda la documentación disponible en repositorio único.
+2. **Clasificación**: Categorizar por tipo (negocio, técnica, usuario, proceso).
+3. **Extracción de procesos**: Identificar flujos de negocio, actores, entradas, salidas, reglas.
+4. **Extracción de funcionalidades**: Listar capacidades del sistema desde perspectiva de usuario.
+5. **Identificación de términos**: Extraer vocabulario de negocio, detectar ambigüedades.
+6. **Validación cruzada**: Contrastar información de múltiples fuentes. Resolver conflictos.
+7. **Identificación de gaps**: Documentar lo que falta, es inconsistente o está desactualizado.
+8. **Síntesis**: Generar artefactos estructurados del framework APB.
+9. **Validación**: Revisar con stakeholders de negocio.
+
+---
+
+## 📋 Reglas y Constraints
+
+- Documentar la fuente de cada requisito extraído para trazabilidad.
+- Marcar explícitamente información contradictoria entre fuentes.
+- No asumir comportamiento no documentado; marcar como 'requiere validación'.
+- Priorizar funcionalidades por valor de negocio y frecuencia de uso.
+- Mantener registro de documentación descartada y por qué.
+- No inventar requisitos; si no está en documentación, requerir entrevista.
+
+---
+
+## 🛠 Stack Tecnológico Relevante
+
+- Procesamiento de documentos (PDF, Word, OCR si es escaneado)
+- Mermaid / PlantUML (diagramas)
+- Excel / Sheets (inventario)
+- Herramientas de colaboración (Teams, Confluence)
+
+---
+
+## 💡 Ejemplos de Uso
+
+**Ejemplo — Sistema de gestión documental legacy:**
+> Documentación: 5 manuales de usuario, 2 especificaciones técnicas de 2010, diagramas de flujo escaneados.
+> Procesos identificados: Alta de documento, Clasificación, Aprobación, Archivado, Búsqueda.
+> Gaps: No documenta proceso de borrado lógico, permisos granulares no están claros.
+> Output: 12 funcionalidades identificadas, 3 requieren validación con usuario.
+
+---
+
+## 🔗 Dependencias
+
+- `apb-disc-business-v1.0`
+- `apb-disc-spec-gen-v1.0`
+
+---
+
+## 📝 Notas
+
+- La calidad del output depende directamente de la calidad de la documentación de entrada.
+- Para documentación muy antigua, validar con usuarios actuales antes de considerarla vigente.
+
+---
+
+*Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*

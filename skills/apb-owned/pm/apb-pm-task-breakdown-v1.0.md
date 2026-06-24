@@ -1,0 +1,164 @@
+---
+id: "apb-pm-task-breakdown-v1.0"
+name: "Task Breakdown"
+description: "Usar dentro de apb-planning cuando una tarea es demasiado grande o toca m\xFAltiples\
+  \ servicios. Descompone tareas complejas en unidades manejables con l\xEDmites claros\
+  \ de eventos."
+version: "1.0.0"
+status: "draft"
+owner: "PMO APB <arquitectura@portdebarcelona.cat>"
+domain: "pm"
+autonomy_level: 1
+consumed_by:
+  - "apb-agent-spec-engineer-v1.0"
+created_date: "2026-06-20"
+review_date: "2026-06-24"
+---
+
+> Procedencia: Adaptado de obra/superpowers (writing-plans task decomposition) + wshobson/agents (task-coordination-strategies) (licencia MIT). Contenido adaptado y
+> generalizado para el APB AI Framework.
+
+# APB Task Breakdown: Descomposición de Tareas
+
+## Visión General
+
+Una tarea es la unidad más pequeña que lleva su propio ciclo de test y vale una revisión de calidad. Cuando una tarea crece demasiado o toca múltiples servicios, debe dividirse.
+
+**Principio fundamental:** Tareas pequeñas = menos riesgo, mejor calidad, merge más frecuente.
+
+## Cuándo Dividir una Tarea
+
+**Dividir cuando:**
+- La tarea toca más de 2 servicios/microservicios
+- La tarea requiere cambios en schemas + código + infraestructura
+- La estimación supera 1 día de trabajo
+- Hay dependencias secuenciales complejas
+- La tarea no tiene un criterio de aceptación claro y testeable
+
+**NO dividir cuando:**
+- Los cambios son cohesivos (setup + implementación + tests de un mismo feature)
+- La división crearía dependencias artificiales
+- La tarea ya es pequeña (< 4 horas estimadas)
+
+## Estrategias de Descomposición para Event-Driven
+
+### 1. Por Evento (Recomendada)
+
+Cada tarea maneja un evento de principio a fin:
+
+```
+Tarea Original: "Implementar flujo de orden completo"
+  ├── Tarea 1: "Definir schema OrderCreated v1"
+  ├── Tarea 2: "Implementar productor OrderCreated en OrderService"
+  ├── Tarea 3: "Implementar consumidor OrderCreated en InventoryService"
+  ├── Tarea 4: "Implementar consumidor OrderCreated en PaymentService"
+  ├── Tarea 5: "Definir schema PaymentCompleted v1"
+  ├── Tarea 6: "Implementar productor PaymentCompleted en PaymentService"
+  └── Tarea 7: "Implementar consumidor PaymentCompleted en OrderService"
+```
+
+**Ventajas:**
+- Cada tarea es testeable de forma aislada
+- Los contratos de eventos se definen primero
+- Los equipos pueden trabajar en paralelo
+
+### 2. Por Capa (Vertical Slice)
+
+```
+Tarea Original: "Implementar reporte de órdenes"
+  ├── Tarea 1: "Crear endpoint de query en OrderQueryService"
+  ├── Tarea 2: "Crear proyección de read model"
+  ├── Tarea 3: "Implementar UI en DevExpress (JavaScript)"
+  └── Tarea 4: "Integrar query con eventos existentes"
+```
+
+**Ventajas:**
+- Cada tarea produce valor visible
+- Fácil de demostrar al usuario
+- Menos dependencias entre tareas
+
+### 3. Por Patrón de Event-Driven
+
+```
+Tarea Original: "Implementar saga de reserva de hotel"
+  ├── Tarea 1: "Definir eventos de saga (HotelReserved, PaymentProcessed, etc.)"
+  ├── Tarea 2: "Implementar orquestador de saga"
+  ├── Tarea 3: "Implementar acciones de cada paso"
+  ├── Tarea 4: "Implementar compensaciones"
+  └── Tarea 5: "Tests de integración de saga completa"
+```
+
+**Ventajas:**
+- Cada patrón se implementa y testea por separado
+- Fácil de entender y revisar
+- Reutilizable en otras sagas
+
+## Reglas de Dependencia entre Tareas
+
+```
+Tarea A ──[produce evento X]──> Tarea B
+           [B depende de A]
+
+Tarea C ──[modifica schema]──> Tarea D
+           [D debe usar schema nuevo]
+
+Tarea E ──[configura topic]──> Tarea F
+           [F necesita topic existente]
+```
+
+**Reglas:**
+- Las tareas que definen schemas VAN PRIMERO
+- Las tareas que configuran infraestructura VAN PRIMERO
+- Las tareas de productor de eventos VAN ANTES que consumidores
+- Las tareas de compensación VAN DESPUÉS de las acciones principales
+
+## Plantilla de Tarea Descompuesta
+
+```markdown
+### Task N.M: [Nombre de sub-tarea]
+
+**Evento:** `[namespace].[event-name] v[version]`
+**Servicio(s):** [Lista de servicios]
+**Depende de:** [Task X.Y]
+**Bloquea a:** [Task Z.W]
+
+#### Alcance
+[Descripción clara de qué hace y qué NO hace]
+
+#### Pasos
+1. [Paso específico]
+2. [Paso específico]
+3. ...
+
+#### Archivos
+- Crear: `src/[servicio]/[ruta]`
+- Modificar: `src/[servicio]/[ruta]`
+
+#### Verificación
+- [ ] Tests unitarios pasan
+- [ ] Tests de integración pasan
+- [ ] Evento se publica/consume correctamente
+- [ ] Schema validado
+- [ ] No hay regressions
+```
+
+## Anti-Patrón: División Horizontal
+
+```
+❌ MALO: División por capa técnica
+  ├── Tarea 1: "Crear todos los models"
+  ├── Tarea 2: "Crear todos los controllers"
+  ├── Tarea 3: "Crear todos los handlers de eventos"
+  └── Tarea 4: "Crear todos los tests"
+
+✅ BUENO: División por evento/funcionalidad
+  ├── Tarea 1: "Implementar OrderCreated (model + controller + handler + tests)"
+  ├── Tarea 2: "Implementar PaymentCompleted (model + controller + handler + tests)"
+  └── ...
+```
+
+## Integración con el Flujo APB
+
+```
+apb:planning → [tarea muy grande] → apb:task-breakdown → [tareas pequeñas] → apb:subagent-dev
+```
