@@ -29,7 +29,8 @@ Cuando se requiere implementar o modificar una interfaz de usuario en aplicacion
 
 ## 📥 Input
 
-- Mockups o especificación de UI
+- Mockup estructurado de `apb-agent-ux-mockup-v1.0` (canal preferido: ya incluye selección de componentes validada)
+- O especificación de UI equivalente (diseño funcional, wireframe, ticket Jira)
 - Datos y esquemas de API asociados
 - Estándares de diseño corporativos
 - Plantillas de proyecto DevExpress disponibles
@@ -48,8 +49,8 @@ Cuando se requiere implementar o modificar una interfaz de usuario en aplicacion
 
 ## 🔄 Proceso
 
-1. **Análisis de requisitos UI**: Entender flujo de usuario, validaciones, estados.
-2. **Selección de componentes**: Elegir componentes DevExtreme apropiados (DataGrid, Form, Chart, etc.).
+1. **Análisis de requisitos UI**: Entender flujo de usuario, validaciones, estados. Si el input es un mockup de `apb-agent-ux-mockup-v1.0`, la selección de componentes ya está hecha — pasar directamente al paso 3.
+2. **Selección de componentes**: Si no hay mockup previo, usar `apb-dev-devexpress-selector-v1.0` para elegir el componente correcto antes de implementar (DataGrid, Form, Chart, etc.).
 3. **Configuración de DataSource**: Definir origen de datos (API REST, array local, OData).
 4. **Implementación**: Desarrollar componente con JavaScript puro, sin frameworks adicionales.
 5. **Validaciones**: Implementar validaciones client-side y server-side.
@@ -73,11 +74,12 @@ Cuando se requiere implementar o modificar una interfaz de usuario en aplicacion
 
 ## 🛠 Stack Tecnológico Relevante
 
-- DevExtreme (JavaScript)
+- DevExtreme (JavaScript) — componentes: https://js.devexpress.com/jQuery/Demos/WidgetsGallery/
 - jQuery (si requerido por versión legacy)
 - HTML5, CSS3
 - REST APIs
 - Azure CDN (assets estáticos)
+- Tema corporativo basado en Generic Light: https://devexpress.github.io/ThemeBuilder/master/generic/light
 
 ---
 
@@ -96,6 +98,7 @@ Cuando se requiere implementar o modificar una interfaz de usuario en aplicacion
 
 ## 🔗 Dependencias
 
+- `apb-dev-devexpress-selector-v1.0` (predecesor cuando no hay mockup funcional)
 - `apb-dev-implement-v1.0`
 - `apb-dev-api-standard-v1.0`
 - `apb-sub-dev-devexpress-v1.0`

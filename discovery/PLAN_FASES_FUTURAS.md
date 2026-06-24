@@ -11,8 +11,8 @@
 | 1 (OpenSpec/SDD) | 8 (parcial — cobertura cap. 5 proyecto.md) |
 | 2 (Guía de uso de agentes) | **13** |
 | 3 (flujo legacy→SDD) | 8 (parcial — checklist de cobertura) |
-| 4 (Sonar + PR automático) | **11** |
-| 5 (agente meta-gobernanza) | **10** |
+| 4 (Sonar + PR automático) | ✅ **Resuelto, Sesión 11** — discovery confirmó que ya existía: `apb-dev-sonar-clean-v1.0`, `apb-dev-pr-doc-v1.0`, `prov-sonar-v1.0`, conectados a `apb-agent-implementer-v1.0`. No se reimplementó. |
+| 5 (agente meta-gobernanza) | ✅ **Resuelto, Sesión 10** — `apb-agent-meta-builder-v1.0` creado (dominio `governance`). |
 | 6 (plantillas + ofimáticas) | **13** — requiere ejemplos de Debora |
 | 7 (mapa agentes↔Jira) | **13** |
 | 8 (COSMIC con histórico real) | **13** — requiere datos de Debora |
@@ -21,21 +21,23 @@
 | 11 (DDD + inventario dominios negocio) | ✅ **Unificado con #38 Fase 0** (decisión Debora post-Sesión 9) — mismo artefacto, se resuelve en la sesión de #38, no en 13 |
 | 12 (loops de iteración) | **13** |
 | 13 (guía UI/UX) | ✅ **Documentos recibidos** (ver bloque nuevo abajo) — tratamiento en **Sesión Frontend** |
-| 14 (licencia Understand-Anything) | **9** |
-| 15 (soporte incidencias técnicas) | **11** |
-| 16 (análisis de riesgos validación Ciber/Arq/QA) | **12** |
+| 14 (licencia Understand-Anything) | ✅ **Descartado** — decisión de Debora: no usar `Lum1104/Understand-Anything`. Componente `third-lum1104-knowledge-graph-v1.0.md` eliminado del repo. |
+| 15 (soporte incidencias técnicas) | **Sesión 21** |
+| 16 (análisis de riesgos validación Ciber/Arq/QA) | **Sesión 12** (parcial) + **Sesión 16** (pendiente). Sesión 12 construyó `apb-gov-ai-risk-gate-v1.0` — evalúa los 6 riesgos *específicos de uso de IA* de `proyecto.md` §3.5. **El alcance completo del punto #16 queda pendiente para Sesión 16:** informe de análisis de riesgos organizativo (incumplimientos de políticas APB, deuda técnica, ENS nivel alto) con procedimiento de excepciones corporativo, para validación por Ciberseguridad y Arquitectura — informe listo para que un humano decida si acepta el incumplimiento y qué plan de mitigación exige. Requiere: esbozo de contenido del informe que facilitará Debora + procedimiento corporativo de excepciones. |
 | 17 (auditoría Playwright/apb-ai-skills) | ✅ **Sesión QA — CERRADA** (4 fusiones realizadas, apb-ai-skills deprecado) |
 | 18 (comparar funcionalidad GitHub vs. zips previos) | **8** |
 | 19 (checklist exhaustivo proyecto.md) | **8** |
-| 20 (agente mockups UI para funcionales, añadido hoy) | **Sesión Frontend** (sesión propia, separada de QA) |
-| 21 (agente generación frontend para devs, añadido hoy) | **Sesión Frontend** |
-| 22 (análisis catálogo de componentes/sistema de diseño, añadido hoy) | **Sesión Frontend** — explícitamente "siguientes pasos", no la propia sesión |
+| 20 (agente mockups UI para funcionales, añadido hoy) | ✅ **Resuelto, Sesión Frontend** — `apb-agent-ux-mockup-v1.0` creado |
+| 21 (agente generación frontend para devs, añadido hoy) | ✅ **Resuelto, Sesión Frontend** — `apb-dev-devexpress-front-v1.0` actualizado + `apb-dev-devexpress-selector-v1.0` nuevo |
+| 22 (análisis catálogo de componentes/sistema de diseño, añadido hoy) | **Sesión Design System** — confirmado por Debora (2026-06-24): múltiples equipos usan DevExtreme, componentes corporativos ya se copian entre proyectos. Repo GitHub propio `apb-design-system`; skills/agentes quedan en `APB-IA-FRAMEWORK`. |
 | 23 (documentación por audiencias en Word, añadido hoy) | **14** — última sesión del plan |
 | 24 (incorporar enfoque andrej-karpathy-skills, añadido hoy) | ✅ **Confirmado: Sesión 10** (decisión Debora post-Sesión 9) — resolver antes/dentro del briefing, no después en 13 |
 | 25 (agente de deuda técnica/vulnerabilidades/remediación con Jira, añadido hoy) | ✅ **Confirmado: ampliación de Sesión 11** (decisión Debora post-Sesión 9) — alcance completo: deuda técnica, vulnerabilidades, dependencias obsoletas, rendimiento, incumplimientos de políticas APB |
 | 26 (telemetría para KPIs proyecto.md §6, añadido hoy — checklist Sesión 8) | A determinar — relacionado con Sesión 14 |
 | 31 (skill conversión universal a Markdown) | ✅ **Confirmado: Sesión 10** (decisión Debora post-Sesión 9), junto con #24 |
 | 38 Fase 0 (catálogo de dominios) | ✅ **Incluye #11** (decisión Debora post-Sesión 9) — sesión propia o ampliación de 13, pendiente de listado de APIs |
+| 33 (skills/agentes de SQL) | **Sesión 21** |
+| 34 (validación QA en flujos de despliegue) | **Sesión 21** — aplica a framework y aplicaciones APB; durante construcción del framework no se activa sobre el propio repo, pero se diseña para poder hacerlo. |
 | 43 (aplicación retroactiva de política "Generado por IA" + "Validado por humano" a TODO el catálogo) | ✅ **Confirmado: ÚLTIMA FASE del plan, posterior a Sesión 14** (decisión Debora, post-Sesión 11) — ver detalle en punto #43 abajo |
 
 **Nota Sesión 8 (3ª corrección, mismo día):** Debora pidió separar la
@@ -109,26 +111,31 @@ Sesión 8. Contenido confirmado de esta sesión:
    `validate-skills.yml`) que seguirán ejecutándose normalmente — Debora
    fue informada de esto y decidió no actuar sobre ello en esta sesión.
 
-## Sesión Frontend — nueva, propia y separada de QA (Debora, mismo día)
+## Sesión Frontend — ✅ CERRADA (ejecutada 2026-06-24)
 
 Inicialmente agrupada con la Sesión QA por compartir la guía de estilo como
 insumo común; Debora pidió explícitamente separarlas — QA trata pruebas,
 Frontend trata construcción de interfaz. Contenido:
 
-1. **(Punto #20)** Agente para que perfiles **funcionales** (no
-   desarrolladores) generen mockups de UI basados en la guía de estilo APB
-   (`Guía_Estilos__Port_de_Barcelona__2022__v1.pdf`, recibida) y componentes
-   DevExpress/DevExtreme.
-2. **(Punto #21)** Agente/skill para que **desarrolladores** generen
-   código de frontend real (no mockup) basado en la misma guía de estilo +
-   DevExpress/DevExtreme — coherente con `apb-dev-devexpress-front-v1.0`
-   ya existente en `APB-IA-FRAMEWORK`, a revisar si se amplía esa skill o se
-   crea una nueva complementaria.
-3. **(Punto #22 — explícitamente "siguientes pasos", no esta misma
-   sesión)** Analizar si APB necesita un **catálogo de componentes de
-   frontend** y un posible **sistema de diseño** (design system) formal,
-   más allá de la guía de estilo en PDF — decisión de alcance mayor, a
-   valorar tras completar los puntos 1 y 2 de esta sesión.
+1. ✅ **(Punto #20)** `apb-agent-ux-mockup-v1.0` creado (dominio `architecture`).
+   Agente para perfiles funcionales: traduce descripción en lenguaje natural a mockup
+   estructurado con componentes DevExtreme. Base: WidgetsGallery + ThemeBuilder.
+   Guía de estilos APB (PDFs) diferida — se añadirá en sesión futura.
+2. ✅ **(Punto #21)** Cubierto: `apb-dev-devexpress-front-v1.0` actualizado (v1.1 efectivo)
+   para referenciar `apb-dev-devexpress-selector-v1.0` como predecesor cuando no hay
+   mockup funcional, y aceptar output de `apb-agent-ux-mockup-v1.0` como input directo.
+   Stack ya existente (`apb-sub-dev-devexpress-v1.0`, `apb-agent-implementer-v1.0`)
+   cubre el flujo de generación de código real.
+3. ✅ **(Skill nueva)** `apb-dev-devexpress-selector-v1.0` creado — catálogo de
+   componentes DevExtreme con árbol de decisión, patrones de layout APB y guía de
+   theming ThemeBuilder. Usada por el agente de mockups y el subagente de desarrollo.
+4. **(Punto #22 — pendiente, sesión futura)** Analizar si APB necesita un catálogo
+   formal de componentes / design system más allá de la guía de estilo en PDF.
+
+**Componentes entregados en Sesión Frontend:**
+- `apb-dev-devexpress-selector-v1.0` (skill, domain: development)
+- `apb-agent-ux-mockup-v1.0` (agent, domain: architecture)
+- `apb-dev-devexpress-front-v1.0` actualizado (referencias a selector y agente de mockups)
 
 **Documentos ya disponibles para Sesión QA y Sesión Frontend** (en
 `/mnt/project/`, subidos por Debora antes de la Sesión 8):
@@ -214,10 +221,16 @@ Frontend trata construcción de interfaz. Contenido:
 
 ## Bloque añadido (cierre de Sesión 7 / apertura Sesión 8)
 
-14. **Verificar licencia de Understand-Anything**
+14. **Verificar licencia de Understand-Anything** ❌ **SIGUE PENDIENTE — no
+    resuelto pese a que la Sesión 9 ya cerró.**
     `third-lum1104-knowledge-graph-v1.0` quedó marcado como bloqueante para
     producción por licencia no verificada (ver `CONTINUIDAD_PROYECTO.md`
-    §4). Resolver al revisar terceros en Sesión 9.
+    §4). Se asignó a Sesión 9 ("resolver al revisar terceros"), pero la
+    Sesión 9 cerró sin que este punto concreto se abordara — fue una
+    omisión real, detectada en revisión post-Sesión QA. Sigue bloqueante
+    para cualquier uso productivo del componente. Requiere acceso directo
+    al repo `Lum1104/Understand-Anything` (o su fork
+    `Egonex-AI/Understand-Anything`) para verificar el archivo LICENSE.
 
 15. **Soporte a incidencias técnicas generalista**
     Agente/skill que ayude a diagnosticar y resolver incidencias técnicas de
@@ -828,6 +841,43 @@ y 11 (`apb-dev-simplicity-first-v1.0`, `apb-dev-surgical-changes-v1.0`,
 aplicado individualmente como precedente — la fase #43 es para el resto del catálogo
 retroactivamente, de una sola vez.
 
+### 44. Plantilla `context/apb/templates/AGENT.md` desactualizada respecto a `SCHEMA.md`
+
+**Hallazgo detectado durante Sesión 10, nunca registrado formalmente como tarea hasta esta
+revisión post-Sesión QA** (Debora detectó que la bitácora y el plan tenían huecos y pidió
+verificación exhaustiva). `context/apb/templates/AGENT.md` usa un formato antiguo (metadatos
+en blockquote `> **ID:**`) que **ya no es válido** según `SCHEMA.md` §1 — solo YAML
+frontmatter es válido para cualquier componente. Los agentes reales del repo (`agents/*.md`)
+usan correctamente YAML frontmatter; solo la plantilla de referencia quedó desactualizada,
+probablemente de una etapa anterior a la Sesión 0/2 (normalización de frontmatter).
+
+**Riesgo si no se corrige:** cualquier persona o agente que use esa plantilla como base para
+crear un agente nuevo (en vez de copiar el formato real observado en `agents/*.md`)
+generaría un componente inválido que fallaría el validador. No bloquea nada hoy porque
+`apb-agent-meta-builder-v1.0` (Sesión 10) ya fue instruido para seguir el formato real, no la
+plantilla — pero la plantilla en sí sigue siendo una trampa para cualquier humano que la use
+directamente. **Sesión a determinar** — corrección sencilla (reescribir
+`templates/AGENT.md` con YAML frontmatter, replicando la estructura de `templates/SKILL_APB.md`
+que sí está correcta), candidata a tarea trivial dentro de cualquier sesión de mantenimiento,
+o a resolverse junto con la Sesión 13.
+
+### 45. Carpeta `skills/_spec-driven/` de `apb-ai-skills` — sin decisión, solo mencionada
+
+**Hallazgo de la Sesión QA, documentado como dato pero nunca convertido en tarea con
+decisión pendiente** (mismo patrón de hueco que el #44). Al auditar `apb-ai-skills.zip` se
+encontró una carpeta `skills/_spec-driven/` con 3 skills (`spec-to-api-contract`,
+`spec-to-e2e-flows`, `spec-to-test-plan`) no contabilizadas en la descripción original del
+repo ("10 skills APB + 10 externas + agente + 5 subagentes"). Se documentó su existencia en
+`CONTINUIDAD_PROYECTO.md` §13.1, pero **nunca se decidió qué hacer con ellas** — a diferencia
+de las 10 skills APB, que sí se cruzaron una por una contra el catálogo de
+`APB-IA-FRAMEWORK` (resultando en las 4 fusiones de la Sesión QA), estas 3 nunca se evaluaron
+individualmente.
+
+**Pregunta pendiente para Debora:** ¿se evalúan estas 3 skills para posible fusión (mismo
+tratamiento que las 10 ya cruzadas), o se consideran cubiertas por la decisión general de
+deprecar `apb-ai-skills` y no requieren evaluación individual? Sesión a determinar — no
+bloquea nada del plan actual, pero queda abierta hasta que Debora decida el criterio.
+
 ---
 
 **Resumen de acción inmediata para Debora:** Punto #27 **cerrado en su
@@ -850,3 +900,36 @@ punto.
 > momento de abordar la sesión específica correspondiente, no antes. Este
 > resumen se mantiene como recordatorio de qué falta por punto, sin
 > bloquear el resto del plan.
+
+---
+
+## Plan de sesiones completo — confirmado por Debora (2026-06-24)
+
+> Decisión: a partir de ahora todo componente nuevo que se cree en cualquier sesión
+> sigue el protocolo de `apb-agent-meta-builder-v1.0`: discovery previo en
+> `CATALOG.md`/`INDEX.md`, YAML frontmatter conforme a `SCHEMA.md`, ejecución de
+> `validate_repo.py --strict` y regeneración de catálogo. Claude Code actúa como
+> ejecutor del protocolo.
+
+### Sesiones pendientes en orden de ejecución
+
+| Sesión | Tema principal | Puntos del plan | Bloqueante |
+|---|---|---|---|
+| ~~**Frontend**~~ | ~~Mockups para perfiles funcionales + generación de frontend para devs~~ | ~~#20, #21~~ | ✅ CERRADA |
+| **Design System** | Análisis y construcción del sistema de diseño APB sobre DevExtreme: tokens CSS, componentes compuestos corporativos (cabecera, menú, tarjetas de dominio), guía de estilos integrada. **Repo GitHub propio `apb-design-system`** (decisión Debora 2026-06-24). Skills y agentes de diseño permanecen en `APB-IA-FRAMEWORK`; los artefactos CSS/JS desplegables van al repo nuevo. | #22 | Crear repo + integrar guías de estilos PDF cuando se faciliten |
+| **15** | Integraciones Microsoft: Teams, mail, SharePoint + compatibilidad Copilot/Rovo | #30, #35 | Aclarar casos de uso concretos con Debora |
+| **16** | Informe de análisis de riesgos organizativo (ENS alto, políticas APB, deuda técnica, excepciones) para validación Ciberseguridad/Arquitectura | #16 (alcance completo, no el parcial de Sesión 12) | Debora debe facilitar: esbozo del informe de análisis + procedimiento corporativo de excepciones |
+| **17** | Observabilidad: dashboards Power BI/Grafana/Prometheus + logging + telemetría de KPIs del framework | #26, #39, #40 | — |
+| **13** | Cierre de pendientes históricos: guía de uso de agentes, plantillas, mapa Jira, COSMIC, loops, autonomía de agentes, plantilla AGENT.md | #2, #6, #7, #8, #12, #29, #41, #44 | #6 y #8 requieren ejemplos/datos de Debora |
+| **18** | DDD: catálogo corporativo de dominios (Fase 0) + descomposición de monolitos (Fase 1) + spec desde histórico Jira | #11/#38 Fase 0, #38 Fase 1, #37 | **Debora debe aportar listado de APIs** para Fase 0 |
+| **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | Items de #27 sin URL requieren que Debora las aporte |
+| **20** | Agentes de licitación (LCSP) | #36 | **Pendiente de briefing de Debora** |
+| **14** | Documentación Word por audiencias (arquitectos, devs/analistas, dirección) + mecanismo de actualización de documentación funcional | #23, #32 | — |
+| **#43** | Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo | #43 | **ÚLTIMA FASE — ejecutar después de que todas las sesiones de construcción hayan cerrado** |
+
+| **21** | SQL + soporte de primera línea de incidencias técnicas | #15, #33 | — |
+
+### Decisiones tomadas sobre puntos pendientes (2026-06-24)
+
+- **#34 (validación QA en despliegues):** aplica a todo — framework y aplicaciones APB. De momento, durante la fase de construcción del framework, no se aplica al propio repo; se diseña de forma que pueda activarse también sobre él en el futuro. Se incluye en Sesión 21 junto con #15 y #33.
+- **#15 y #33:** sesión propia (Sesión 21), no absorbidos en Sesión 13.

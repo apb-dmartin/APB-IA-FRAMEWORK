@@ -21,6 +21,7 @@
 | `doc` | Documentation | 7 | ⚪ |
 | `orch` | Orchestration | 1 | 🟤 |
 | `pm` | Project Management | 8 | 🟢 |
+| `design` | Design & UX | 1 | 🎨 |
 
 ---
 
@@ -39,6 +40,7 @@
 | documentation | `skills/apb-owned/documentation/` | — |
 | orchestration | `skills/apb-owned/orchestration/` | — |
 | pm | `skills/apb-owned/pm/` | — |
+| design | `skills/apb-owned/design/` | — |
 
 ---
 

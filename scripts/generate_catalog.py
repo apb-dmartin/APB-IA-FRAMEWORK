@@ -45,7 +45,7 @@ COMPONENT_FOLDERS = {
 DOMAIN_COLORS = {
     "development": "🔵", "qa": "🟢", "architecture": "🟣", "discovery": "🟡",
     "platform": "🟠", "security": "🔴", "governance": "⚫", "operation": "🔵",
-    "documentation": "⚪", "orchestration": "🟤", "pm": "🟢",
+    "documentation": "⚪", "orchestration": "🟤", "pm": "🟢", "design": "🎨",
 }
 
 FRONTMATTER = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
@@ -152,12 +152,12 @@ def generate_domain_registry_table(domain_counts):
         "platform": "Platform", "security": "Security",
         "governance": "Governance", "operation": "Operation",
         "documentation": "Documentation", "orchestration": "Orchestration",
-        "pm": "Project Management",
+        "pm": "Project Management", "design": "Design & UX",
     }
     short_ids = {
         "development": "dev", "qa": "qa", "architecture": "arch", "discovery": "disc",
         "platform": "plat", "security": "sec", "governance": "gov", "operation": "ops",
-        "documentation": "doc", "orchestration": "orch", "pm": "pm",
+        "documentation": "doc", "orchestration": "orch", "pm": "pm", "design": "design",
     }
     lines = ["| ID | Nombre | Skills | Color |", "|----|--------|--------|-------|"]
     for domain in domain_names:
@@ -220,7 +220,7 @@ def update_index_md(repo_path: Path, components, write: bool):
     short_ids = {
         "development": "dev", "qa": "qa", "architecture": "arch", "discovery": "disc",
         "platform": "plat", "security": "sec", "governance": "gov", "operation": "ops",
-        "documentation": "doc", "orchestration": "orch", "pm": "pm",
+        "documentation": "doc", "orchestration": "orch", "pm": "pm", "design": "design",
     }
     for domain, count in sorted(domain_counts.items(), key=lambda x: -x[1]):
         short = short_ids.get(domain, domain[:4])

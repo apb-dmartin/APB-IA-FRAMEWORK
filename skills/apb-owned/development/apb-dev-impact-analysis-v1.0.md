@@ -11,7 +11,7 @@ created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---
 
-> Inspirado en: Lum1104/knowledge-graph + mattpocock/codebase-architecture-analysis (licencia MIT).
+> Inspirado en: mattpocock/codebase-architecture-analysis (licencia MIT).
 
 # Impact Analysis
 
@@ -105,7 +105,6 @@ Mitigacion:
 - Ventana de mantenimiento, comunicacion a stakeholders
 
 ## Integration
-- Usa: `third-lum1104-knowledge-graph-v1.0` (para grafo de dependencias) — ⚠️ **PENDIENTE**: fuente citada (Lum1104/knowledge-graph) sin descriptor formal creado todavía en `skills/third_party/`. Ver Sesión 5.
 - Usa: `third-mattpocock-codebase-architecture-analysis-v1.0` (wrapper) — ⚠️ **PENDIENTE**: fuente citada (mattpocock/codebase-architecture-analysis) sin descriptor formal creado todavía. Ver Sesión 5.
 - Relacionado con: apb-dev-grill-before-code-v1.0 (evaluar si el cambio vale la pena)
 

@@ -2,10 +2,20 @@
 
 > Generado al cierre de la Sesión 6 (CI/CD), actualizado al cierre de la
 > Sesión 7 (huecos estructurales y cierre final), de la Sesión 8
-> (auditoría de cobertura) y de la Sesión 9 (terceros §8). Léeme primero si
-> retomas este trabajo en una conversación nueva: resume el estado exacto,
-> lo ejecutado, lo pendiente, y las decisiones de Debora que deben
-> respetarse.
+> (auditoría de cobertura), de la Sesión 9 (terceros §8), de la Sesión 10
+> (meta-gobernanza), de la Sesión 11 (deuda técnica ampliada), de la
+> Sesión 12 (AI Risk Gate) y de la Sesión QA (fusión con `apb-ai-skills`,
+> ahora deprecado). Léeme primero si retomas este trabajo en una
+> conversación nueva: resume el estado exacto, lo ejecutado, lo pendiente,
+> y las decisiones de Debora que deben respetarse.
+>
+> **Nota de corrección (post-Sesión QA):** este documento estuvo
+> desactualizado durante un tiempo — las Sesiones 10, 11, 12 y QA se
+> ejecutaron y cerraron en conversación, pero esta bitácora no se
+> actualizó hasta después de generar el primer zip de migración a Claude
+> Code. Si una instancia de Claude Code leyó este documento antes de esta
+> corrección, habrá visto esas sesiones marcadas como "❌ Pendiente"
+> incorrectamente. Esta es la versión corregida.
 
 ## 0. Qué es este zip
 
@@ -45,10 +55,10 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | 7 | Huecos estructurales (`tests/`, `docs/`) y cierre final | ✅ **Completa** — ver sección 4 |
 | 8 | Auditoría de cobertura (checklist `proyecto.md`, comparación GitHub/zips, limpieza skills "BMAD") | ✅ **Completa** — ver sección 9 |
 | 9 | Terceros (patrón + revisión repos `proyecto.md` §8) | ✅ **Completa** — ver sección 9 |
-| 10 | Agente meta-gobernanza | ❌ Pendiente |
-| 11 | Sonar + incidencias técnicas (+ posible deuda técnica/Jira, punto #25) | ❌ Pendiente |
-| 12 | Análisis de riesgos para validación Ciber/Arq/QA | ❌ Pendiente |
-| QA | Testing — auditoría `apb-ai-skills`, resolver solape | ❌ Pendiente |
+| 10 | Agente meta-gobernanza | ✅ **Completa** — ver sección 10 |
+| 11 | Sonar + incidencias técnicas (+ posible deuda técnica/Jira, punto #25) | ✅ **Completa** — ver sección 11 |
+| 12 | Análisis de riesgos para validación Ciber/Arq/QA | ✅ **Completa** — ver sección 12 |
+| QA | Testing — auditoría `apb-ai-skills`, resolver solape | ✅ **Completa** — ver sección 13 |
 | Frontend | Mockups, generación frontend, catálogo de componentes | ❌ Pendiente |
 | 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ❌ Pendiente |
 | 14 | Documentación por audiencias (Word) | ❌ Pendiente |
@@ -412,6 +422,213 @@ completo en `PLAN_FASES_FUTURAS.md` para asignación de sesión futura.
 Varios requieren información adicional de Debora antes de poder
 acometerse (URLs exactas de repos ambiguos, detalle de la licitación,
 confirmación de si existe un catálogo corporativo de dominios).
+
+## 10. Sesión 10 — qué se hizo (cerrada)
+
+**Alcance:** agente de meta-gobernanza (#5 del plan), resolviendo además
+los puntos #24 (disciplina karpathy) y #31 (normalización a Markdown)
+dentro de esta misma sesión — decisión de Debora para evitar que el
+meta-builder naciera sin esos principios y hubiera que retocarlo después.
+
+### 10.1 Discovery previo (evitó duplicar trabajo)
+
+Antes de construir, se verificó que el framework ya cubría 2 de los 4
+principios karpathy: `apb-dev-grill-before-code-v1.0` (Think Before
+Coding) y `apb-dev-verify-before-done-v1.0` (Goal-Driven Execution), con
+ejemplos reales y flujo `grill → atomic-plan → verify`. Solo se
+construyeron los 2 que faltaban genuinamente.
+
+### 10.2 Componentes construidos
+
+- `agents/apb-agent-meta-builder-v1.0.md` — agente nuevo, dominio
+  `governance`. Crea agentes/skills/subagentes siguiendo `SCHEMA.md`,
+  exige discovery previo, aplica las 5 skills de disciplina karpathy y
+  normaliza adjuntos ofimáticos. Nunca se auto-aprueba ni hace
+  commit/push directo.
+- `skills/apb-owned/development/apb-dev-simplicity-first-v1.0.md` —
+  principio karpathy "Simplicity First".
+- `skills/apb-owned/development/apb-dev-surgical-changes-v1.0.md` —
+  principio karpathy "Surgical Changes".
+- `skills/apb-owned/platform/apb-plat-doc-to-markdown-v1.0.md` —
+  normalización de adjuntos ofimáticos a Markdown (#31).
+
+### 10.3 Reforzado transversalmente (no son componentes, son gobernanza)
+
+- `README.md` — Principios Fundamentales #11 (disciplina de codificación
+  agéntica) y #12 (normalización a Markdown), añadidos sin romper la
+  numeración 1-10 existente.
+- `GOVERNANCE.md` §3.1 (Alta de componentes) — referencia explícita y
+  obligatoria a los Principios #11/#12 para cualquier alta, generada por
+  el meta-builder o por un humano.
+
+### 10.4 Resultado de validación final
+
+**0 errores, 59 warnings exentos, `--strict` en verde, 0 drift de
+catálogo, 19/19 tests OK.** Inventario: **221 componentes** (antes 217):
+110 skills APB (+3), 52 terceros (sin cambio), 20 agentes (+1).
+
+## 11. Sesión 11 — qué se hizo (cerrada)
+
+**Alcance:** corrección de un defecto de formato detectado al preparar la
+sesión, más la ampliación completa del punto #25 (deuda técnica,
+vulnerabilidades, dependencias, rendimiento — más allá de solo Sonar).
+
+### 11.1 Hallazgo y corrección de formato (a petición de Debora)
+
+Se detectaron 19 archivos de skills con comillas mal cerradas en la
+sección "Dependencias" del cuerpo (`` `apb-dev-code-review-v1.0" `` en
+vez de `` `apb-dev-code-review-v1.0` ``) — defecto cosmético, no afectaba
+al frontmatter YAML. Debora pidió explícitamente corregirlo ("Arregla el
+tema de las comillas"), tratado como excepción válida a la regla de
+cambios quirúrgicos (Debora, como Arquitectura, priorizó la corrección).
+47 líneas corregidas en 19 archivos, cambio puramente sintáctico,
+verificado diff por diff antes y después.
+
+### 11.2 Discovery previo (evitó duplicar trabajo)
+
+Se verificó que el flujo Sonar+PR del punto #4 original (alcance inicial
+de Sesión 11) ya estaba construido desde antes (`apb-dev-sonar-clean-v1.0`,
+`apb-dev-pr-doc-v1.0`, `prov-sonar-v1.0`, conectados a
+`apb-agent-implementer-v1.0`). También se verificó que
+`apb-gov-jira-evidence-v1.0` + `prov-atlassian-v1.0` ya existían para la
+creación real de tickets Jira — no se reimplementó, se reutilizó.
+
+### 11.3 Componentes construidos — ampliación de #25, dominio `operation`
+
+- `agents/apb-agent-tech-debt-v1.0.md` — agente nuevo, autonomy_level 2.
+  Diferenciado explícitamente de `apb-agent-risk-exception-v1.0` (gestiona
+  riesgo aceptado, no genera plan) y `apb-agent-sre-v1.0` (reactivo a
+  incidentes, no auditoría proactiva).
+- `skills/apb-owned/operation/apb-ops-dependency-audit-v1.0.md` —
+  dependencias obsoletas + vulnerabilidades CVE.
+- `skills/apb-owned/operation/apb-ops-perf-bottleneck-v1.0.md` — cuellos
+  de botella de rendimiento con propuesta concreta.
+- `skills/apb-owned/operation/apb-ops-debt-remediation-plan-v1.0.md` —
+  consolida hallazgos, **presenta el plan al humano, espera "OK" explícito,
+  solo entonces crea tickets Jira** (autonomy_level 2). Regla no
+  negociable, decisión expresa de Debora: nunca se crea ningún ticket sin
+  ese punto de control cumplido.
+
+### 11.4 Resultado de validación final
+
+**0 errores, 59 warnings exentos, `--strict` en verde, 0 drift de
+catálogo, 19/19 tests OK.** Inventario: **225 componentes** (antes 221):
+113 skills APB (+3), 21 agentes (+1).
+
+## 12. Sesión 12 — qué se hizo (cerrada)
+
+**Alcance:** punto #16 del plan — análisis de riesgos para validación de
+Ciberseguridad/Arquitectura/QA, con dos decisiones de diseño de Debora
+tomadas antes de construir.
+
+### 12.1 Decisiones de diseño de Debora
+
+- Se construye como **skill transversal** (no agente propio, no
+  subagente) — cualquier agente del framework la invoca antes de
+  presentar su output a validación humana, no es una sesión de trabajo en
+  sí misma.
+- La fila "Release" de la tabla de Puntos de Validación Obligatorios
+  (`SYSTEM.md` §6, equivalente a `proyecto.md` §3.6) se resuelve como
+  **"Release Manager / Arquitectura"** — corregido en `SYSTEM.md` (antes
+  decía "PMO / Operaciones / Arquitectura"). **`proyecto.md` no se pudo
+  actualizar** — es un documento externo de solo lectura para Claude;
+  Debora debe corregirlo manualmente en su copia.
+
+### 12.2 Componente construido
+
+- `skills/apb-owned/governance/apb-gov-ai-risk-gate-v1.0.md` — skill
+  transversal, dominio `governance`. Evalúa los 6 riesgos de uso de IA de
+  `proyecto.md` §3.5 (alucinaciones, información desactualizada,
+  incumplimiento de estándares, dependencia excesiva, pérdida de
+  conocimiento humano, código inseguro) y adjunta un aviso al artefacto
+  antes de la validación humana. Nunca aprueba ni bloquea — solo informa.
+  Diferenciada explícitamente de `apb-sec-risk-analysis-v1.0` (esa es
+  sobre seguridad de la información, ISO 27005; esta es sobre el proceso
+  de generación por IA).
+
+### 12.3 Resultado de validación final
+
+**0 errores, 59 warnings exentos, `--strict` en verde, 0 drift de
+catálogo, 19/19 tests OK.** Inventario: **226 componentes** (antes 225):
+114 skills APB (+1).
+
+## 13. Sesión QA — qué se hizo (cerrada)
+
+**Alcance:** punto #17 del plan — auditoría completa de
+`apb-ai-skills.zip` (subido de nuevo en esta sesión, el zip original no
+había persistido entre sesiones), y resolución del solapamiento detectado
+con `APB-IA-FRAMEWORK`.
+
+### 13.1 Auditoría — hallazgo no anticipado
+
+Confirmados 10 skills APB + 10 externas + 1 agente (`qa-orchestrator`) +
+5 subagentes, tal como esperaba el plan. **Hallazgo adicional no
+contabilizado en la descripción original:** una carpeta
+`skills/_spec-driven/` con 3 skills más (`spec-to-api-contract`,
+`spec-to-e2e-flows`, `spec-to-test-plan`).
+
+### 13.2 Solapamiento — 4 fusiones, no 1 como anticipaba el plan
+
+Decisión de Debora en los 4 casos: "fusionar e incorporar al repo de
+APB-IA-FRAMEWORK". Ninguna fusión se mantuvo duplicada en el repo de
+origen:
+
+- `apb-qa-unit-test-gen-v1.0` ← `apb-unit-test-generator` → v1.1.0
+  (cobertura JS/TS, ejemplos de código, tests de eventos).
+- `apb-qa-test-plan-v1.0` ← `apb-test-plan-lcsp` → v1.1.0 (marco
+  normativo LCSP/ENS/RGPD/WCAG con criterios cuantificados, contexto
+  contractual de licitación).
+- `apb-sec-ens-v1.0` ← `apb-ens-security-audit` → v1.1.0 (tablas
+  operativas de controles por nivel Alto/Medio, cruce OWASP, formato de
+  informe de hallazgos).
+- `apb-qa-anonymize-v1.0` ← `apb-test-data-rgpd` → v1.2.0 (tabla de
+  dominios ficticios APB con vocabulario portuario — IMO, código de
+  atraque —, fixtures concretos Oracle/Cosmos/PostGIS/.NET/TypeScript).
+
+### 13.3 Decisión arquitectónica de fondo: `apb-ai-skills` queda DEPRECADO
+
+Decisión de Debora. Todo desarrollo futuro de skills/agentes/subagentes
+de QA vive exclusivamente en `APB-IA-FRAMEWORK`. **No se ha tocado el
+repositorio `apb-ai-skills` físicamente** (decisión explícita de Debora:
+"no toques nada de apb-ai-skills, quédate solo con la decisión verbal").
+Sus referencias internas al `qa-orchestrator` y 3 subagentes
+(`dotnet-backend-agent`, `data-persistence-agent`, `django-gis-agent`)
+apuntan a nombres antiguos de las 4 skills ahora fusionadas, y sus 2
+GitHub Actions (`sync-skills.yml`, `validate-skills.yml`) seguirán
+ejecutándose salvo que alguien los desactive manualmente en ese repo.
+
+### 13.4 Resultado de validación final
+
+**0 errores, 59 warnings exentos, `--strict` en verde, 0 drift de
+catálogo, 19/19 tests OK.** Inventario: **226 componentes** (sin cambio
+respecto a Sesión 12 — las 4 fusiones fueron de contenido dentro de
+componentes ya existentes, no crearon componentes nuevos).
+
+## 14. Migración a Claude Code (post-Sesión QA)
+
+Tras el cierre de las Sesiones 10-12 y QA, Debora solicitó migrar todo el
+trabajo a un entorno local con Claude Code. Se generó
+`CONTEXTO_PARA_CLAUDE_CODE.md` (en la raíz del repo, dirigido a que
+Claude Code lo lea al iniciar) e `INSTRUCCIONES_MIGRACION_DEBORA.md`
+(fuera del repo, guía personal de Debora). Durante la migración se
+detectó y corrigió un bug real de compatibilidad Windows en
+`tests/test_validate_repo.py` (8 llamadas a `write_text()` sin
+`encoding="utf-8"` explícito, que fallaban en Windows por usar la
+codificación local del sistema en vez de UTF-8 — corregido, verificado
+19/19 tests OK tanto en el entorno de validación como en Windows real de
+Debora tras el fix).
+
+**Importante para cualquier instancia de Claude/Claude Code que retome
+este trabajo:** este mismo documento de continuidad estuvo
+desactualizado durante la migración — la tabla de la sección 1 marcaba
+las Sesiones 10, 11, 12 y QA como "❌ Pendiente" cuando ya estaban
+completas. Si encuentras inconsistencias similares en otros documentos
+(`PLAN_FASES_FUTURAS.md`, `CATALOG.md`, etc.), verifica siempre contra el
+estado real de los archivos (`scripts/validate_repo.py --strict` +
+inspección directa de `agents/`, `skills/`) antes de asumir que la
+bitácora es exacta — esta sección queda como recordatorio de que la
+bitácora puede desincronizarse si no se actualiza al cierre de cada
+sesión, no solo al generar el zip de entrega.
 
 
 

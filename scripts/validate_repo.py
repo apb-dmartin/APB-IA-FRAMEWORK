@@ -68,6 +68,7 @@ VALID_AUTONOMY_LEVELS = {0, 1, 2, 3, 4}
 VALID_DOMAINS = {
     "development", "qa", "architecture", "discovery", "platform",
     "security", "governance", "operation", "documentation", "orchestration", "pm",
+    "design",
 }
 
 ID_PATTERNS = {
