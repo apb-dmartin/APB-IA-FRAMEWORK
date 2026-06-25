@@ -180,7 +180,7 @@ def update_domain_registry(repo_path: Path, components, write: bool):
     new_content = pattern.sub(new_table + "\n", content, count=1)
     changed = new_content != content
     if write and changed:
-        path.write_text(new_content, encoding="utf-8")
+        path.write_text(new_content, encoding="utf-8", newline="\n")
     return changed, None
 
 
@@ -263,7 +263,7 @@ def update_index_md(repo_path: Path, components, write: bool):
 
     changed = new_content != content
     if write and changed:
-        path.write_text(new_content, encoding="utf-8")
+        path.write_text(new_content, encoding="utf-8", newline="\n")
     return changed, None
 
 
@@ -287,7 +287,7 @@ def main():
     old_catalog = catalog_path.read_text(encoding="utf-8") if catalog_path.exists() else ""
     catalog_changed = new_catalog != old_catalog
     if write:
-        catalog_path.write_text(new_catalog, encoding="utf-8")
+        catalog_path.write_text(new_catalog, encoding="utf-8", newline="\n")
 
     index_changed, index_err = update_index_md(repo_path, components, write)
     domain_changed, domain_err = update_domain_registry(repo_path, components, write)
