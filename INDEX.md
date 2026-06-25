@@ -20,13 +20,13 @@
 |---------|-------|
 | Skills APB | 120 / 120 |
 | Skills terceros | 51 / 51 |
-| Agentes | 24 / 24 |
-| Subagentes | 15 / 15 |
+| Agentes | 25 / 25 |
+| Subagentes | 20 / 20 |
 | Workflows | 7 / 7 |
 | Providers | 12 / 12 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **240** |
+| **Total** | **246** |
 
 ---
 
@@ -52,8 +52,8 @@ APB-IA-FRAMEWORK/
 ├── README.md, SYSTEM.md, GOVERNANCE.md, CONTRIBUTING.md, LICENSE.md
 ├── INDEX.md
 ├── DOMAIN_REGISTRY.md
-├── agents/                     # 24 agentes
-├── subagents/                  # 15 subagentes
+├── agents/                     # 25 agentes
+├── subagents/                  # 20 subagentes
 ├── workflows/                  # 7 workflows
 ├── skills/
 │   ├── apb-owned/             # 120 skills
@@ -109,9 +109,9 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Agentes (24)
+## ✅ Agentes (25)
 
-`apb-agent-business-analyst`, `apb-agent-catalog-manager`, `apb-agent-cloud-architect`, `apb-agent-code-reviewer`, `apb-agent-compliance-audit`, `apb-agent-documentation`, `apb-agent-domain-architect`, `apb-agent-finops`, `apb-agent-governance`, `apb-agent-implementer`, `apb-agent-meta-builder`, `apb-agent-modernization`, `apb-agent-observability`, `apb-agent-platform-engineer`, `apb-agent-qa-auto`, `apb-agent-release-manager`, `apb-agent-risk-exception`, `apb-agent-security-architect`, `apb-agent-spec-engineer`, `apb-agent-sre`, `apb-agent-tech-debt`, `apb-agent-tech-discovery`, `apb-agent-technical-architect`, `apb-agent-ux-mockup`
+`apb-agent-business-analyst`, `apb-agent-catalog-manager`, `apb-agent-cloud-architect`, `apb-agent-code-reviewer`, `apb-agent-compliance-audit`, `apb-agent-ddd`, `apb-agent-documentation`, `apb-agent-domain-architect`, `apb-agent-finops`, `apb-agent-governance`, `apb-agent-implementer`, `apb-agent-meta-builder`, `apb-agent-modernization`, `apb-agent-observability`, `apb-agent-platform-engineer`, `apb-agent-qa-auto`, `apb-agent-release-manager`, `apb-agent-risk-exception`, `apb-agent-security-architect`, `apb-agent-spec-engineer`, `apb-agent-sre`, `apb-agent-tech-debt`, `apb-agent-tech-discovery`, `apb-agent-technical-architect`, `apb-agent-ux-mockup`
 
 ---
 

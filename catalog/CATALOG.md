@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 240
+- **Total Components**: 246
 
 ## Component Breakdown
 
@@ -190,7 +190,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (24 total)
+### Agentes (25 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -199,6 +199,7 @@
 | `apb-agent-cloud-architect-v1.0` | Cloud Architect Agent | draft | `agents/apb-agent-cloud-architect-v1.0.md` |
 | `apb-agent-code-reviewer-v1.0` | Code Reviewer Agent | draft | `agents/apb-agent-code-reviewer-v1.0.md` |
 | `apb-agent-compliance-audit-v1.0` | Compliance Audit Agent | draft | `agents/apb-agent-compliance-audit-v1.0.md` |
+| `apb-agent-ddd-v1.0` | DDD Domain Discovery Agent | draft | `agents/apb-agent-ddd-v1.0.md` |
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents/apb-agent-finops-v1.0.md` |
@@ -219,10 +220,15 @@
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
 
-### Subagentes (15 total)
+### Subagentes (20 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
+| `apb-sub-ddd-code-v1.0` | DDD Code Analysis Subagent | draft | `subagents/apb-sub-ddd-code-v1.0.md` |
+| `apb-sub-ddd-db-v1.0` | DDD Database Schema Analysis Subagent | draft | `subagents/apb-sub-ddd-db-v1.0.md` |
+| `apb-sub-ddd-doc-v1.0` | DDD Documentation Analysis Subagent | draft | `subagents/apb-sub-ddd-doc-v1.0.md` |
+| `apb-sub-ddd-interview-v1.0` | DDD Domain Storytelling Subagent | draft | `subagents/apb-sub-ddd-interview-v1.0.md` |
+| `apb-sub-ddd-spec-v1.0` | DDD API Spec Analysis Subagent | draft | `subagents/apb-sub-ddd-spec-v1.0.md` |
 | `apb-sub-dev-devexpress-v1.0` | DevExpress Subagent | draft | `subagents/apb-sub-dev-devexpress-v1.0.md` |
 | `apb-sub-dev-django-v1.0` | Django/GIS Subagent | draft | `subagents/apb-sub-dev-django-v1.0.md` |
 | `apb-sub-dev-net-v1.0` | .NET Implementer Subagent | draft | `subagents/apb-sub-dev-net-v1.0.md` |

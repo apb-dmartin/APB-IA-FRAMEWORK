@@ -1,0 +1,3 @@
+[submodule "domain-catalog"]
+	path = domain-catalog
+	url = https://github.com/apb-dmartin/APB-DOMAIN-CATALOG
