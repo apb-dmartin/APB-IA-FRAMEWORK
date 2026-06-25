@@ -927,14 +927,19 @@ punto.
 | **14** | Documentación Word por audiencias (arquitectos, devs/analistas, dirección) + mecanismo de actualización de documentación funcional | #23, #32 | — |
 | **#43** | Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo | #43 | **ÚLTIMA FASE — ejecutar después de que todas las sesiones de construcción hayan cerrado** |
 
-| **21** | SQL + soporte de primera línea de incidencias técnicas | #15, #33 | — |
-| **22** | Refactorización de taxonomía de carpetas (Opción C): consolidar dominios inconsistentes en taxonomía canónica escalable a IT-general y negocio | #47bis | — |
+| **21** | SQL + soporte de primera línea de incidencias técnicas | #15, #33, #34, #50 (QA del propio framework) | — |
+| **21** | SQL + soporte de primera línea de incidencias técnicas + QA del propio framework | #15, #33, #34, #50 | — |
+| **22** | Refactorización de taxonomía de carpetas (Opción C) + propagación automática Design System | #47bis, #49 | Requiere decisión de Debora sobre mecanismo de distribución (#49) |
+| **Sesión 18 cont.** | Entrevista portuaria + verificación de dominio + actualización repo dominios | #54 | Verificar primero si `apb-sub-ddd-interview-v1.0` ya cubre parte del alcance |
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
 - **#34 (validación QA en despliegues):** aplica a todo — framework y aplicaciones APB. De momento, durante la fase de construcción del framework, no se aplica al propio repo; se diseña de forma que pueda activarse también sobre él en el futuro. Se incluye en Sesión 21 junto con #15 y #33.
 - **#15 y #33:** sesión propia (Sesión 21), no absorbidos en Sesión 13.
 - **#47 (gaps plataformas IA) y #47bis (taxonomía carpetas):** añadidos post-Sesión 17 (2026-06-25) — ver detalle abajo. Asignados a Sesiones 15 y 22 respectivamente.
+- **#48 (plantillas de arq + DevExpress):** asignado a Sesión 13 junto con #44.
+- **#50 (QA del propio framework):** asignado a Sesión 21 junto con #15, #33, #34.
+- **#52 (cambio contacto Arq → mail Jira):** tarea de mantenimiento en Sesión 13, pendiente de que Debora facilite la dirección.
 
 ---
 
@@ -1005,3 +1010,104 @@ El framework tiene adapters para cuatro runtimes, pero con distinto grado de com
 **Criterio de diseño para la taxonomía:** los dominios deben ser lo suficientemente amplios para absorber skills de IT-general y negocio futuras sin necesidad de restructurar de nuevo. Si el volumen de skills no-dev supera ~30 en algún momento, se evalúa añadir un nivel de área (`software/`, `it-operations/`, `business/`) encima — no antes.
 
 **Bloqueante:** ninguno. Puede ejecutarse en cualquier momento sin depender de insumos externos.
+
+---
+
+## Bloque añadido post-Sesión 18 (2026-06-25)
+
+### 48. Usar plantillas de arquitectura APB como base de nuevos componentes
+
+Las plantillas oficiales de Arquitectura APB (actualmente en `context/apb/templates/`) deben ser el punto de partida de cualquier componente nuevo que se cree en el framework. Relacionado con el punto #44 (plantilla `AGENT.md` desactualizada): la corrección de #44 debe alinear **todas** las plantillas con el formato real de `SCHEMA.md`, incluyendo la referencia a DevExpress como stack frontend estándar APB, que ya figura en las plantillas actuales.
+
+**Acción concreta:** verificar en Sesión 13 (junto con #44) que todas las plantillas (`SKILL_APB.md`, `AGENT.md`, `SUBAGENT.md`, `WORKFLOW.md`, `PROVIDER.md`) incluyen la referencia a DevExtreme/DevExpress como herramienta corporativa estándar en los campos relevantes (p. ej. `tools`, `context`), de forma que cualquier nuevo componente creado desde plantilla ya la tenga referenciada por defecto.
+
+**Sesión asignada:** Sesión 13 (junto con #44).
+
+---
+
+### 49. Sistema de diseño como repo central instanciable por apps APB
+
+El repo `APB-DESIGN-SYSTEM` (creado en Sesión Design System) debe configurarse como **dependencia centralizada** que las aplicaciones APB instancian directamente (npm package, git submodule, o similar), en lugar de que cada proyecto copie los artefactos CSS/JS manualmente. El objetivo es que un cambio en el Design System se propague automáticamente a todas las apps que lo consumen sin intervención manual por proyecto.
+
+**Decisiones pendientes para la sesión que aborde esto:**
+- Mecanismo de distribución: npm package privado (Azure Artifacts), git submodule versionado, o CDN corporativo APB.
+- Política de versiones semánticas: cuándo un cambio es breaking (major) vs. compatible (minor/patch).
+- CI del Design System: añadir job que publique la nueva versión al mecanismo elegido al hacer merge a main.
+- Qué apps APB existen ya y cuál es la primera candidata a pilotar la integración.
+
+**Sesión asignada:** pendiente — candidata natural: ampliación de la sesión de Design System o Sesión 22 (refactorización de taxonomía), dado que implica decisiones de infraestructura de distribución. Requiere confirmación de Debora sobre el mecanismo preferido.
+
+---
+
+### 50. Pruebas y QA del propio framework
+
+El framework construye skills y agentes para probar aplicaciones APB, pero no tiene una suite de pruebas propia que valide su propio comportamiento. Gap identificado: las GitHub Actions actuales (`validate.yml`, `telemetry.yml`) validan estructura/sintaxis y drift, pero no comportamiento funcional — no verifican que un agente dado produzca el output esperado para un input conocido.
+
+**Trabajo a definir:**
+- Batería de pruebas de integración para los scripts del framework (`validate_repo.py`, `generate_catalog.py`, `emit_telemetry.py`).
+- Tests de comportamiento de agentes: given a prompt + skill.md, assert that the agent's response meets defined criteria (formato, campos obligatorios, restricciones de autonomía).
+- Considerar si usar el propio `apb-qa-unit-test-gen-v1.0` (fusionado en Sesión QA) para generar estos tests — aplicar el framework a sí mismo.
+
+**Sesión asignada:** pendiente — candidata natural: Sesión 21 (SQL + incidencias técnicas ya incluye #34 de validación QA en despliegues; añadir aquí el QA del propio repo sería coherente). Confirmar con Debora si se prefiere sesión propia.
+
+---
+
+### 51. Prueba real de todos los agentes del catálogo
+
+Más allá de la validación estructural (`validate_repo.py --strict`), verificar que **todos los agentes activos del catálogo funcionan correctamente** cuando se invocan desde Claude con un caso de uso real. Hoy se crean componentes y se valida su sintaxis, pero no hay evidencia registrada de que cada agente haya sido ejercitado con un prompt real y producido output útil.
+
+**Alcance:**
+- Para cada agente en `agents/` y `subagents/`: documentar al menos un caso de prueba real (input → output observado → ¿cumple criterios del `purpose` declarado en el frontmatter?).
+- Marcar explícitamente los agentes que no se han podido probar por falta de datos/entorno (ej. agentes que requieren Jira real, Rovo activo, o tenant Azure específico).
+- Este trabajo alimenta directamente el punto #43 (política "Generado por IA + Validado por humano"): la validación real es la que convierte el campo `human_validated_by` de vacío a un nombre real.
+
+**Sesión asignada:** pendiente — candidata: post-Sesión 13 o como sub-fase de #43 (última fase del plan), ya que tiene sentido probar antes de marcar como validado.
+
+---
+
+### 52. Cambiar contacto de Arquitectura por mail de Jira en toda la documentación
+
+Las referencias a un contacto de arquitectura personal deben sustituirse por la dirección de correo/cola de Jira oficial del equipo de Arquitectura APB, para que las notificaciones y aprobaciones lleguen al canal correcto independientemente de quién esté disponible.
+
+**Acción concreta:** buscar en todo el repo (skills, agentes, documentos, configuración) cualquier mención a un correo personal o nombre directo de contacto de Arquitectura y reemplazarlo por el mail de Jira / cola de equipo que Debora indique.
+
+**Pendiente:** Debora debe facilitar la dirección de Jira / mail del equipo de Arquitectura APB antes de ejecutar este cambio.
+
+**Sesión asignada:** tarea de mantenimiento, sin sesión propia — ejecutar en la primera sesión disponible una vez Debora aporte la dirección. Candidata: Sesión 13 (cierre de pendientes históricos).
+
+---
+
+### 53. Mockup de validación: agente de diseño + verificación de uso del Design System
+
+Una vez el agente `apb-agent-ux-mockup-v1.0` (creado en Sesión Frontend) y el repo `APB-DESIGN-SYSTEM` estén ambos operativos, realizar una prueba de extremo a extremo:
+
+1. Invocar `apb-agent-ux-mockup-v1.0` con un caso de uso real portuario (p. ej. pantalla de gestión de atraques o ficha de buque).
+2. Verificar que el mockup generado usa **exclusivamente** componentes del Design System APB (tokens CSS, componentes compuestos de `APB-DESIGN-SYSTEM`), no componentes DevExtreme "en crudo" sin wrapper corporativo.
+3. Si el agente usa componentes fuera del Design System, actualizar su `context`/`tools` para restringirlo explícitamente al catálogo de `APB-DESIGN-SYSTEM`.
+
+**Objetivo:** cerrar el ciclo Frontend → Design System: no basta con que el Design System exista, los agentes que generan UI deben referenciarlo activamente.
+
+**Sesión asignada:** pendiente — se puede ejecutar en cuanto `APB-DESIGN-SYSTEM` tenga al menos un componente compuesto publicado. Candidata: ampliación de la sesión que cierre el punto #49, o tarea inline en la sesión de Design System si el tiempo lo permite.
+
+---
+
+### 54. Agente de análisis funcional: entrevista portuaria + verificación de dominio + actualización de repo de dominios
+
+Ampliación del agente `apb-agent-ddd-v1.0` (creado en Sesión 18) o posible agente/subagente complementario que cubra el flujo de análisis funcional desde el inicio:
+
+**Comportamiento deseado:**
+
+1. **Entrevista al funcional:** en lugar de esperar que el funcional describa el problema de forma estructurada, el agente hace preguntas activas específicas del negocio portuario y del dominio que toque (p. ej. si el dominio es "atraques": ¿escala de tiempo?, ¿integración con GISPEM?, ¿tipos de buque involucrados?, ¿permisos de Autoridad Portuaria?). Las preguntas deben estar contextualizadas al vocabulario APB, no ser genéricas.
+
+2. **Verifica si el dominio ya existe:** antes de proponer un dominio nuevo, consulta el repo `APB-DOMAIN-CATALOG` (submodule ya integrado en `APB-IA-FRAMEWORK`) y avisa al funcional si el dominio solicitado ya existe, ya sea exacto o parcialmente — evita proliferación de dominios duplicados o fragmentados.
+
+3. **Actualiza el repo de dominios:** si el dominio es nuevo y se valida, el agente genera el artefacto correspondiente en `APB-DOMAIN-CATALOG` (conforme al schema de ese repo) y propone el commit — con aprobación humana previa obligatoria (nivel de autonomía 1, coherente con `SYSTEM.md` §5.1).
+
+**Relación con componentes existentes:**
+- `apb-agent-ddd-v1.0` (Sesión 18): análisis DDD una vez el dominio está identificado — este punto es el paso anterior, el de identificación y validación.
+- `apb-sub-ddd-interview-v1.0` (creado en Sesión 18 como subagente de entrevista): verificar si ya cubre parte de este alcance o si el punto #54 lo amplía significativamente.
+- `APB-DOMAIN-CATALOG` (repo submodule): es el repositorio de destino para las actualizaciones.
+
+**Pendiente de verificar:** leer el contenido de `apb-sub-ddd-interview-v1.0` para determinar si ya implementa la entrevista portuaria contextualizada (#54.1) o si ese subagente es más genérico. En función de eso, puede ser ampliación del subagente existente o componente nuevo.
+
+**Sesión asignada:** pendiente — candidata natural: sesión de continuación de Sesión 18 (la Fase 1 de descomposición de monolitos ya está marcada como pendiente en esa sesión; este punto podría incluirse en la misma sesión o en la de Sesión 13 si el volumen lo permite). Confirmar con Debora.
