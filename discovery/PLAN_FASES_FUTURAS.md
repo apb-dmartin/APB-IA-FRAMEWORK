@@ -917,7 +917,7 @@ punto.
 |---|---|---|---|
 | ~~**Frontend**~~ | ~~Mockups para perfiles funcionales + generación de frontend para devs~~ | ~~#20, #21~~ | ✅ CERRADA |
 | **Design System** | Análisis y construcción del sistema de diseño APB sobre DevExtreme: tokens CSS, componentes compuestos corporativos (cabecera, menú, tarjetas de dominio), guía de estilos integrada. **Repo GitHub propio `apb-design-system`** (decisión Debora 2026-06-24). Skills y agentes de diseño permanecen en `APB-IA-FRAMEWORK`; los artefactos CSS/JS desplegables van al repo nuevo. | #22 | Crear repo + integrar guías de estilos PDF cuando se faciliten |
-| **15** | Integraciones Microsoft: Teams, mail, SharePoint + compatibilidad Copilot/Rovo | #30, #35 | Aclarar casos de uso concretos con Debora |
+| **15** | Integraciones Microsoft (Teams, mail, SharePoint) + cierre de gaps de otras plataformas IA: Rovo (Forge App skeleton + guía activación) y M365 Copilot (OpenAPI spec + manifest plugin). Claude web y GitHub Copilot VS Code ya funcionan hoy sin desarrollo adicional. | #30, #35, #47 | — |
 | **16** | Informe de análisis de riesgos organizativo (ENS alto, políticas APB, deuda técnica, excepciones) para validación Ciberseguridad/Arquitectura | #16 (alcance completo, no el parcial de Sesión 12) | Debora debe facilitar: esbozo del informe de análisis + procedimiento corporativo de excepciones |
 | ~~**17**~~ | ~~Observabilidad: dashboards Power BI/Grafana/Prometheus + logging + telemetría de KPIs del framework~~ | ~~#26, #39, #40~~ | ✅ CERRADA — ver punto #46 para pendiente de telemetría en chat |
 | **13** | Cierre de pendientes históricos: guía de uso de agentes, plantillas, mapa Jira, COSMIC, loops, autonomía de agentes, plantilla AGENT.md | #2, #6, #7, #8, #12, #29, #41, #44 | #6 y #8 requieren ejemplos/datos de Debora |
@@ -928,11 +928,13 @@ punto.
 | **#43** | Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo | #43 | **ÚLTIMA FASE — ejecutar después de que todas las sesiones de construcción hayan cerrado** |
 
 | **21** | SQL + soporte de primera línea de incidencias técnicas | #15, #33 | — |
+| **22** | Refactorización de taxonomía de carpetas (Opción C): consolidar dominios inconsistentes en taxonomía canónica escalable a IT-general y negocio | #47bis | — |
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
 - **#34 (validación QA en despliegues):** aplica a todo — framework y aplicaciones APB. De momento, durante la fase de construcción del framework, no se aplica al propio repo; se diseña de forma que pueda activarse también sobre él en el futuro. Se incluye en Sesión 21 junto con #15 y #33.
 - **#15 y #33:** sesión propia (Sesión 21), no absorbidos en Sesión 13.
+- **#47 (gaps plataformas IA) y #47bis (taxonomía carpetas):** añadidos post-Sesión 17 (2026-06-25) — ver detalle abajo. Asignados a Sesiones 15 y 22 respectivamente.
 
 ---
 
@@ -953,3 +955,53 @@ Los usuarios funcionales que solo interactúan por chat (Claude.ai, GitHub Copil
 - Aceptar cobertura parcial y documentarlo en el informe ejecutivo de KPIs.
 
 **Sesión a determinar.** No bloquea ninguna sesión del plan actual — la telemetría de desarrolladores con Claude Code ya es funcional y cubre el caso de uso principal.
+
+---
+
+### 47. Cierre de gaps de uso desde otras plataformas IA (Sesión 15)
+
+**Detectado durante Sesión 17 al anticipar respuesta para pruebas de Debora (2026-06-25).**
+
+El framework tiene adapters para cuatro runtimes, pero con distinto grado de completitud:
+
+| Plataforma | Estado hoy | Gap |
+|---|---|---|
+| Claude (web / Claude Code) | ✅ Usable hoy | Ninguno — adjuntar .md al chat o usar Claude Code directamente |
+| GitHub Copilot (VS Code) | ✅ Usable hoy | `#file:agents/xxx.md` en el chat de Copilot |
+| Rovo (Atlassian) | ⚠️ Adapter definido, no desplegable | Falta: Forge App skeleton (manifest + estructura) + `docs/rovo-getting-started.md` |
+| M365 Copilot (Teams/Word/Outlook) | ⚠️ Adapter definido, no desplegable | Falta: OpenAPI 3.0 spec de los endpoints APB + manifest `ai-plugin.json` |
+
+**Trabajo concreto para Sesión 15:**
+
+**Rovo:**
+- Generar el esqueleto de la Forge App (`forge/manifest.yml` + estructura de carpetas) lista para que el equipo de desarrollo la complete y publique en el tenant Atlassian APB.
+- Crear `docs/rovo-getting-started.md` con guía de activación paso a paso.
+- Prerrequisito operativo (no de framework): tenant Atlassian con Rovo activado (previsto julio 2026).
+
+**M365 Copilot:**
+- Generar la especificación OpenAPI 3.0 (`openapi/apb-framework-api.yaml`) de los endpoints que M365 Copilot consumiría como API Plugin.
+- Generar el manifest del plugin (`openapi/ai-plugin.json`).
+- Nota explícita: el backend que sirve esos endpoints (Azure APIM o Azure Function) es infraestructura de plataforma, no competencia del framework — el framework entrega la spec, no el backend desplegado.
+
+**Lo que NO se construye en Sesión 15:** backends reales (Forge App desplegada, Azure APIM aprovisionado) — eso es trabajo de plataforma APB.
+
+---
+
+### 47bis. Refactorización de taxonomía de carpetas de skills (Sesión 22)
+
+**Detectado durante Sesión 17 al revisar escalabilidad hacia IT-general y negocio (2026-06-25).**
+
+**Problema actual:** `skills/apb-owned/` mezcla dominios funcionales (`development`, `qa`, `security`) con categorías de capacidad (`api-design`, `code-review`, `event-driven`) y tiene duplicidades aparentes (`architecture` + `architecture-design`, `docs` + `documentation`, `design` + `design-approval`). Con 114 skills APB y crecimiento previsto hacia IT-general y negocio, la inconsistencia escala mal.
+
+**Opción elegida (Debora, 2026-06-25): Opción C — limpiar taxonomía primero, escalar después.**
+
+**Trabajo concreto para Sesión 22:**
+
+1. **Auditoría completa** de las ~114 skills APB: mapear cada carpeta actual a un dominio canónico propuesto.
+2. **Propuesta de taxonomía** (8-10 dominios canónicos con criterio claro) — presentar a Debora antes de mover nada. Checkpoint humano obligatorio en este punto.
+3. **Ejecución tras aprobación:** mover archivos, actualizar referencias cruzadas en frontmatter (`depends_on`, `consumed_by`, `skills`, `subagents`), actualizar el validador si detecta rutas hardcodeadas.
+4. **Validación final:** `validate_repo.py --strict` en verde, 0 drift, 19/19 tests OK.
+
+**Criterio de diseño para la taxonomía:** los dominios deben ser lo suficientemente amplios para absorber skills de IT-general y negocio futuras sin necesidad de restructurar de nuevo. Si el volumen de skills no-dev supera ~30 en algún momento, se evalúa añadir un nivel de área (`software/`, `it-operations/`, `business/`) encima — no antes.
+
+**Bloqueante:** ninguno. Puede ejecutarse en cualquier momento sin depender de insumos externos.
