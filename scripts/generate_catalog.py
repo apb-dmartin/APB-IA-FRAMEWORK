@@ -63,7 +63,7 @@ def load_component(filepath: Path, repo_path: Path):
         return None
     if not isinstance(data, dict):
         return None
-    data["_rel_path"] = str(filepath.relative_to(repo_path))
+    data["_rel_path"] = filepath.relative_to(repo_path).as_posix()
     return data
 
 
@@ -95,7 +95,6 @@ def generate_catalog_md(components, repo_path: Path):
         "",
         "## Overview",
         f"- **Total Components**: {total}",
-        f"- **Last Generated**: {today}",
         "",
         "## Component Breakdown",
         "",
