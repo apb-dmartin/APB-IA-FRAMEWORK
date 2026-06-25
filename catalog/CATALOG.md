@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 246
+- **Total Components**: 247
 
 ## Component Breakdown
 
-### Skills APB-Owned (120 total)
+### Skills APB-Owned (121 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -26,6 +26,7 @@
 | `apb-arch-tech-plan-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-tech-plan-v1.0.md` |
 | `apb-arch-validate-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-validate-v1.0.md` |
 | `apb-dev-devexpress-selector-v1.0` | design | draft | `skills/apb-owned/design/apb-dev-devexpress-selector-v1.0.md` |
+| `apb-skill-frontend-design-system-v1.0` | design | draft | `skills/apb-owned/design/apb-skill-frontend-design-system-v1.0.md` |
 | `apb-dev-api-design-v1.0` | development | draft | `skills/apb-owned/api-design/apb-dev-api-design-v1.0.md` |
 | `apb-dev-api-standard-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-standard-v1.0.md` |
 | `apb-dev-atomic-plan-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-atomic-plan-v1.0.md` |

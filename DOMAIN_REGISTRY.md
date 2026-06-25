@@ -21,7 +21,7 @@
 | `doc` | Documentation | 7 | ⚪ |
 | `orch` | Orchestration | 1 | 🟤 |
 | `pm` | Project Management | 8 | 🟢 |
-| `design` | Design & UX | 1 | 🎨 |
+| `design` | Design & UX | 2 | 🎨 |
 
 ---
 

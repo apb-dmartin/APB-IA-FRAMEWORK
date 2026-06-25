@@ -47,7 +47,7 @@ jobs:
           with open('telemetry/events.jsonl') as f:
               for line in f:
                   line = line.strip()
-                  if line:
+                  if line and not line.startswith('#'):
                       r = json.loads(line)
                       if r.get('sent') is False:
                           count += 1
