@@ -1,0 +1,81 @@
+name: Telemetry Sync
+
+# Mecanismo secundario de envío de telemetría a Azure Monitor.
+# Primario: Claude Code ejecuta emit_telemetry.py automáticamente al finalizar cada agente.
+# Este workflow actúa como fallback para eventos guardados en telemetry/events.jsonl
+# con sent:false (p.ej. si el envío directo falló o el flujo fue commit-based).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "telemetry/events.jsonl"
+  schedule:
+    # Reintento nocturno a las 02:00 UTC (03:00 hora peninsular)
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    # Permite disparo manual desde GitHub Actions UI
+
+jobs:
+  sync-telemetry:
+    name: Sync pending telemetry events to Azure Monitor
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write  # necesario para OIDC / Managed Identity federation
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install azure-identity azure-monitor-ingestion
+
+      - name: Check for pending events
+        id: check
+        run: |
+          if [ -f telemetry/events.jsonl ]; then
+            PENDING=$(python3 -c "
+          import json
+          count = 0
+          with open('telemetry/events.jsonl') as f:
+              for line in f:
+                  line = line.strip()
+                  if line:
+                      r = json.loads(line)
+                      if r.get('sent') is False:
+                          count += 1
+          print(count)
+          ")
+            echo "pending=$PENDING" >> "$GITHUB_OUTPUT"
+            echo "Eventos pendientes: $PENDING"
+          else
+            echo "pending=0" >> "$GITHUB_OUTPUT"
+            echo "No existe telemetry/events.jsonl — nada que procesar."
+          fi
+
+      - name: Send pending events to Azure Monitor
+        if: steps.check.outputs.pending != '0'
+        env:
+          AZURE_MONITOR_DCE_ENDPOINT: ${{ secrets.AZURE_MONITOR_DCE_ENDPOINT }}
+          AZURE_MONITOR_DCR_ID: ${{ secrets.AZURE_MONITOR_DCR_ID }}
+          AZURE_MONITOR_STREAM_NAME: ${{ secrets.AZURE_MONITOR_STREAM_NAME }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_MONITOR_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_MONITOR_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: python3 scripts/emit_telemetry.py --file telemetry/events.jsonl
+
+      - name: Commit updated events.jsonl (sent flags actualizados)
+        if: steps.check.outputs.pending != '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add telemetry/events.jsonl
+          git diff --cached --quiet || git commit -m "chore: mark telemetry events as sent [skip ci]"
+          git push

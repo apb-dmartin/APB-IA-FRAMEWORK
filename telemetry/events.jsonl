@@ -1,0 +1,7 @@
+# APB AI Framework — Telemetry Event Log
+# Formato: una línea JSON por evento, campo "sent" indica si fue enviado a Azure Monitor.
+# Este fichero es gestionado automáticamente por scripts/emit_telemetry.py.
+# El workflow .github/workflows/telemetry.yml reintenta los eventos con sent:false.
+# NO editar manualmente. NO incluir datos personales.
+# Ejemplo de registro (comentado, no es JSON válido):
+# {"TimeGenerated":"2026-06-25T10:30:00Z","component_id":"apb-agent-observability-v1.0","component_type":"agent","component_domain":"operation","invocation_id":"uuid","runtime":"claude-code","user_profile":"developer","outcome":"success","human_approved":false,"sent":true}

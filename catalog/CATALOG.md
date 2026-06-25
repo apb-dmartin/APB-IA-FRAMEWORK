@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 235
+- **Total Components**: 240
 
 ## Component Breakdown
 
-### Skills APB-Owned (119 total)
+### Skills APB-Owned (120 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -91,6 +91,7 @@
 | `apb-ops-rca-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-rca-v1.0.md` |
 | `apb-ops-runbook-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-runbook-v1.0.md` |
 | `apb-ops-slo-design-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-slo-design-v1.0.md` |
+| `apb-ops-telemetry-emit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-telemetry-emit-v1.0.md` |
 | `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/multi-agent-orchestration/apb-orch-multi-agent-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
@@ -189,7 +190,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (23 total)
+### Agentes (24 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -205,6 +206,7 @@
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
 | `apb-agent-meta-builder-v1.0` | Meta Builder Agent | draft | `agents/apb-agent-meta-builder-v1.0.md` |
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
+| `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
 | `apb-agent-platform-engineer-v1.0` | Platform Engineer Agent | draft | `agents/apb-agent-platform-engineer-v1.0.md` |
 | `apb-agent-qa-auto-v1.0` | QA Automation Agent | draft | `agents/apb-agent-qa-auto-v1.0.md` |
 | `apb-agent-release-manager-v1.0` | Release Manager Agent | draft | `agents/apb-agent-release-manager-v1.0.md` |
@@ -217,7 +219,7 @@
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
 
-### Subagentes (13 total)
+### Subagentes (15 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -227,6 +229,8 @@
 | `apb-sub-dev-parallel-v1.0` | Subagent: Implementador con Despacho Paralelo | draft | `subagents/apb-sub-dev-parallel-v1.0.md` |
 | `apb-sub-dev-sql-v1.0` | SQL Specialist Subagent | draft | `subagents/apb-sub-dev-sql-v1.0.md` |
 | `apb-sub-gov-standards-v1.0` | Standards Validator Subagent | draft | `subagents/apb-sub-gov-standards-v1.0.md` |
+| `apb-sub-obs-grafana-v1.0` | Grafana + Prometheus Dashboard Subagent | draft | `subagents/apb-sub-obs-grafana-v1.0.md` |
+| `apb-sub-obs-powerbi-v1.0` | Power BI Dashboard Subagent | draft | `subagents/apb-sub-obs-powerbi-v1.0.md` |
 | `apb-sub-ops-azure-v1.0` | Azure Monitor Subagent | draft | `subagents/apb-sub-ops-azure-v1.0.md` |
 | `apb-sub-plat-ghactions-v1.0` | GitHub Actions Subagent | draft | `subagents/apb-sub-plat-ghactions-v1.0.md` |
 | `apb-sub-plat-jenkins-v1.0` | Jenkins Specialist Subagent | draft | `subagents/apb-sub-plat-jenkins-v1.0.md` |
@@ -247,13 +251,14 @@
 | `apb-wf-sdd-full-v1.0` | Spec Driven Development | draft | `workflows/apb-wf-sdd-full-v1.0.md` |
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 
-### Providers (11 total)
+### Providers (12 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `prov-akv-v1.0` | Provider: Azure Key Vault | draft | `providers/prov-akv-v1.0.md` |
 | `prov-apb-knowledge-v1.0` | Provider: Knowledge APB | draft | `providers/prov-apb-knowledge-v1.0.md` |
 | `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
+| `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-v1.0` | Provider: Azure MCP | draft | `providers/prov-azure-v1.0.md` |
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers/prov-github-v1.0.md` |

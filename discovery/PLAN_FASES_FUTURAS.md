@@ -919,7 +919,7 @@ punto.
 | **Design System** | Análisis y construcción del sistema de diseño APB sobre DevExtreme: tokens CSS, componentes compuestos corporativos (cabecera, menú, tarjetas de dominio), guía de estilos integrada. **Repo GitHub propio `apb-design-system`** (decisión Debora 2026-06-24). Skills y agentes de diseño permanecen en `APB-IA-FRAMEWORK`; los artefactos CSS/JS desplegables van al repo nuevo. | #22 | Crear repo + integrar guías de estilos PDF cuando se faciliten |
 | **15** | Integraciones Microsoft: Teams, mail, SharePoint + compatibilidad Copilot/Rovo | #30, #35 | Aclarar casos de uso concretos con Debora |
 | **16** | Informe de análisis de riesgos organizativo (ENS alto, políticas APB, deuda técnica, excepciones) para validación Ciberseguridad/Arquitectura | #16 (alcance completo, no el parcial de Sesión 12) | Debora debe facilitar: esbozo del informe de análisis + procedimiento corporativo de excepciones |
-| **17** | Observabilidad: dashboards Power BI/Grafana/Prometheus + logging + telemetría de KPIs del framework | #26, #39, #40 | — |
+| ~~**17**~~ | ~~Observabilidad: dashboards Power BI/Grafana/Prometheus + logging + telemetría de KPIs del framework~~ | ~~#26, #39, #40~~ | ✅ CERRADA — ver punto #46 para pendiente de telemetría en chat |
 | **13** | Cierre de pendientes históricos: guía de uso de agentes, plantillas, mapa Jira, COSMIC, loops, autonomía de agentes, plantilla AGENT.md | #2, #6, #7, #8, #12, #29, #41, #44 | #6 y #8 requieren ejemplos/datos de Debora |
 | **18** | DDD: catálogo corporativo de dominios (Fase 0) + descomposición de monolitos (Fase 1) + spec desde histórico Jira | #11/#38 Fase 0, #38 Fase 1, #37 | **Debora debe aportar listado de APIs** para Fase 0 |
 | **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | Items de #27 sin URL requieren que Debora las aporte |
@@ -933,3 +933,23 @@ punto.
 
 - **#34 (validación QA en despliegues):** aplica a todo — framework y aplicaciones APB. De momento, durante la fase de construcción del framework, no se aplica al propio repo; se diseña de forma que pueda activarse también sobre él en el futuro. Se incluye en Sesión 21 junto con #15 y #33.
 - **#15 y #33:** sesión propia (Sesión 21), no absorbidos en Sesión 13.
+
+---
+
+### 46. Telemetría automática para usuarios de chat sin commit (pendiente Sesión 17)
+
+**Detectado durante Sesión 17 como gap no resoluble en el alcance de la sesión.**
+
+Los usuarios funcionales que solo interactúan por chat (Claude.ai, GitHub Copilot chat) y nunca hacen commit no están cubiertos por ninguno de los tres mecanismos de telemetría construidos en Sesión 17:
+- Mecanismo 1 (Claude Code automático): solo aplica si el runtime es Claude Code.
+- Mecanismo 2 (script manual): requiere terminal, inaplicable para usuarios funcionales.
+- Mecanismo 3 (GitHub Actions / JSONL): requiere que alguien commitee al repo.
+
+**La cobertura automática para este perfil requiere instrumentar la plataforma de chat**, lo cual está fuera del alcance del framework de Markdown.
+
+**Opciones a evaluar en sesión futura:**
+- Proxy de invocación (Azure API Management delante del endpoint de Claude/Copilot) que capture la llamada y emita telemetría antes de pasarla al LLM.
+- Wrapper de interfaz que envuelva la sesión de chat y registre eventos de uso.
+- Aceptar cobertura parcial y documentarlo en el informe ejecutivo de KPIs.
+
+**Sesión a determinar.** No bloquea ninguna sesión del plan actual — la telemetría de desarrolladores con Claude Code ya es funcional y cubre el caso de uso principal.

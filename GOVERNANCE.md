@@ -94,8 +94,12 @@ El estado de todo componente (capability, provider, wrapper, skill, subagent, ag
 1. El autor crea el componente en estado `draft`.
 2. Completa metadatos: ID único, nombre, descripción, versión, propietario, inputs/outputs (skills), responsabilidades (agentes).
 3. **Aplica los Principios Fundamentales #11 (disciplina de codificación agéntica) y #12 (normalización a Markdown)** del `README.md` — obligatorio para todo componente nuevo, generado tanto por humanos como por `apb-agent-meta-builder-v1.0` (Sesión 10).
-4. Ejecuta `python scripts/validate_repo.py`.
-5. Abre PR con checklist de `CONTRIBUTING.md`.
+4. **Incluye telemetría de invocación (Principio #13 — Sesión 17):** todo componente nuevo (skill, agente, subagente, workflow) debe:
+   - Declarar `apb-ops-telemetry-emit-v1.0` en su campo `depends_on` (skills) o `skills` (agentes).
+   - Producir un bloque `TELEMETRY_BLOCK` al final de su output siguiendo el esquema de `apb-ops-telemetry-emit-v1.0`.
+   - Los ~226 componentes anteriores a la Sesión 17 recibirán este requisito retroactivamente en la Fase #43 (última fase del plan).
+5. Ejecuta `python scripts/validate_repo.py`.
+6. Abre PR con checklist de `CONTRIBUTING.md`.
 
 ### 3.2 Modificación
 
