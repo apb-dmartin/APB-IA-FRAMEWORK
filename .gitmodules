@@ -1,3 +1,6 @@
 [submodule "domain-catalog"]
 	path = domain-catalog
 	url = https://github.com/apb-dmartin/APB-DOMAIN-CATALOG
+[submodule "design-system"]
+	path = design-system
+	url = https://github.com/apb-dmartin/APB-DESIGN-SYSTEM
