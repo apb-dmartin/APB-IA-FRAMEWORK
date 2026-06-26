@@ -1,5 +1,5 @@
 ---
-id: "apb-skill-frontend-design-system-v1.0"
+id: "apb-design-frontend-design-system-v1.0"
 name: "Design System Frontend APB"
 description: "Skill de referencia del sistema de diseño frontend APB: tokens CSS, componentes React, configuraciones DevExtreme JS y UI kits completos (DevExtreme Generic Light + overrides corporativos APB). Tipografía vigente: Cabin (confirmado jun-2026). Consumido por agentes de mockups y generación de código frontend para producir pantallas conformes al estándar visual APB."
 version: "1.1.0"
