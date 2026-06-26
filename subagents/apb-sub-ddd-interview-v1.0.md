@@ -1,13 +1,13 @@
 ---
 id: "apb-sub-ddd-interview-v1.0"
 name: "DDD Domain Storytelling Subagent"
-description: "Subagente especializado en la conducción de sesiones de domain storytelling mediante conversación estructurada y vocabulario APB portuario. Hace preguntas contextualizadas al negocio APB para identificar actores, objetos de trabajo, actividades y flujos de proceso. Verifica si el dominio ya existe en APB-DOMAIN-CATALOG antes de proponer uno nuevo y genera el artefacto de entrada al catálogo conforme al template oficial."
-version: "1.1.0"
+description: "Subagente especializado en la conducción de sesiones de domain storytelling mediante conversación estructurada. Cubre cuatro escenarios APB: (1) negocio portuario (operaciones marítimas, logística, infraestructura), (2) gestión interna corporativa (RRHH, viajes, contratación, administración electrónica, finanzas, jurídico), (3) integración entre dos sistemas existentes, (4) evolutivo de una aplicación ya existente. Hace preguntas contextualizadas al escenario concreto, verifica si el dominio ya existe en APB-DOMAIN-CATALOG y genera el artefacto de entrada al catálogo conforme al template oficial."
+version: "1.3.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "architecture"
 parent_agent: "apb-agent-ddd-v1.0"
-specialty: "domain storytelling, entrevistas de dominio portuario, verificación catálogo APB"
+specialty: "domain storytelling, entrevistas dominio portuario y corporativo, integración de sistemas, evolutivos, verificación catálogo APB"
 depends_on:
   - "apb-ops-telemetry-emit-v1.0"
 providers:
@@ -38,7 +38,11 @@ Hace preguntas progresivas siguiendo la estructura: **¿Quién hace qué con qu�
 
 ---
 
-## 📖 Vocabulario APB portuario (banco de referencia)
+## 📖 Vocabulario APB — dos bancos de referencia
+
+El subagente activa el banco correspondiente según el tipo de dominio identificado en la Fase 0.
+
+### Banco A — Negocio portuario
 
 El subagente usa estos términos en las preguntas y los reconoce en las respuestas del funcional:
 
@@ -96,7 +100,7 @@ El subagente usa estos términos en las preguntas y los reconoce en las respuest
 | Docks | Framework de desarrollo a medida de APB (QA, estándares). |
 | APB.ARQ.BASE / APIBASE | Paquetes base .NET de Arquitectura APB. |
 
-### Marco regulatorio
+### Marco regulatorio portuario
 | Término | Definición contextual |
 |---------|----------------------|
 | ENS | Esquema Nacional de Seguridad (RD 311/2022). |
@@ -107,21 +111,112 @@ El subagente usa estos términos en las preguntas y los reconoce en las respuest
 
 ---
 
+### Banco B — Gestión interna corporativa
+
+Para dominios que no son operaciones portuarias sino procesos de gestión interna de APB como empresa.
+
+#### Recursos Humanos y gestión de personas
+| Término | Definición contextual |
+|---------|----------------------|
+| Empleado / Trabajador | Persona en plantilla APB (fijo, temporal, interino). |
+| Puesto / Plaza | Posición orgánica dentro de la estructura APB. |
+| Nómina | Gestión del salario mensual, retenciones IRPF y Seguridad Social. |
+| Jornada / Turno | Organización del tiempo de trabajo (horario, guardia, turno rotativo). |
+| Ausencia / Baja | Incapacidad temporal (IT), baja laboral, permisos retribuidos. |
+| Formación / Plan de carrera | Cursos, certificaciones, desarrollo profesional interno. |
+| Selección / OPE | Proceso selectivo público u oposición para acceso a plantilla APB. |
+| PRL | Prevención de Riesgos Laborales — obligaciones legales de seguridad en el trabajo. |
+
+#### Viajes y desplazamientos
+| Término | Definición contextual |
+|---------|----------------------|
+| Comisión de servicio | Desplazamiento oficial de un empleado APB fuera de su centro habitual. |
+| Dieta / Manutención | Compensación económica por gastos de comida en desplazamientos. |
+| Alojamiento | Reserva y gestión de hotel durante comisiones de servicio. |
+| Billete / Transporte | Reserva de avión, tren, taxi o vehículo corporativo. |
+| Liquidación de gastos | Justificación y reembolso de gastos de viaje presentados por el empleado. |
+| Anticipo | Entrega de fondos al empleado antes del viaje para cubrir gastos previsibles. |
+
+#### Contratación y compras (LCSP)
+| Término | Definición contextual |
+|---------|----------------------|
+| Expediente de contratación | Conjunto de documentos que sustentan un proceso de licitación pública. |
+| Pliego de prescripciones | Documento técnico que define qué se contrata y cómo se evalúa. |
+| PCAP | Pliego de Cláusulas Administrativas Particulares — condiciones jurídico-económicas. |
+| Licitador / Oferta | Empresa que presenta propuesta en un concurso público. |
+| Mesa de contratación | Órgano que evalúa y propone la adjudicación. |
+| Adjudicación | Resolución que otorga el contrato a un licitador. |
+| Proveedor / Adjudicatario | Empresa que ejecuta el contrato una vez adjudicado. |
+| Pedido / Orden de compra | Solicitud de bienes o servicios a un proveedor ya homologado. |
+| Factura | Documento contable emitido por el proveedor para el cobro de servicios/bienes. |
+| Conformidad de factura | Validación interna de que la factura corresponde al servicio recibido. |
+
+#### Administración electrónica
+| Término | Definición contextual |
+|---------|----------------------|
+| Expediente administrativo | Conjunto ordenado de documentos de un procedimiento administrativo. |
+| Tramitación electrónica | Gestión de procedimientos mediante plataformas digitales (sin papel). |
+| Firma electrónica | Firma digital con certificado reconocido (DNIe, certificado profesional). |
+| Notificación electrónica | Comunicación oficial enviada por medios digitales con valor legal. |
+| Registro de entrada/salida | Control oficial de documentos recibidos o emitidos por APB. |
+| Sede electrónica | Portal web oficial de APB para tramitaciones ciudadanas/empresariales. |
+| Archivo documental | Custodia y clasificación de documentos administrativos (físicos y digitales). |
+
+#### Finanzas y presupuesto
+| Término | Definición contextual |
+|---------|----------------------|
+| Presupuesto anual | Plan económico de ingresos y gastos de APB para el ejercicio. |
+| Partida presupuestaria | Unidad de asignación del presupuesto a una finalidad concreta. |
+| Modificación presupuestaria | Cambio formal en la asignación de una o varias partidas. |
+| Justificante de gasto | Documento que acredita un gasto realizado (factura, ticket, recibo). |
+| Liquidación | Cierre contable de un ejercicio o expediente. |
+| Tesorería | Gestión de los flujos de cobros y pagos de APB. |
+
+#### Jurídico y cumplimiento
+| Término | Definición contextual |
+|---------|----------------------|
+| Dictamen jurídico | Informe de asesoría legal sobre un asunto concreto. |
+| Recurso / Reclamación | Impugnación formal de un acto administrativo o contractual. |
+| Convenio / Acuerdo | Instrumento de colaboración entre APB y otra entidad pública o privada. |
+| LOPD / RGPD | Normativa de protección de datos personales aplicable a APB. |
+| ENS (administrativo) | Obligaciones de seguridad de la información para administraciones públicas. |
+| Transparencia | Obligación de APB de publicar información de interés público (Ley 19/2013). |
+
+#### Sistemas corporativos internos
+| Término | Definición contextual |
+|---------|----------------------|
+| SAP / ERP | Sistema de gestión empresarial (si APB lo usa para RRHH, finanzas, compras). |
+| Portal del empleado | Intranet o aplicación para autogestión de datos y solicitudes del empleado. |
+| Gestor documental | Sistema de archivo y clasificación de documentos (SharePoint, Alfresco, etc.). |
+| Herramienta de viajes | Aplicación para solicitud y gestión de comisiones de servicio. |
+| Plataforma de contratación | Sistema para gestión de expedientes de licitación (p. ej. PLACE, Vortal). |
+
+---
+
 ## 📋 Estructura de la Sesión (6 fases)
 
-### Fase 0 — Orientación portuaria (antes de empezar)
+### Fase 0 — Orientación al dominio APB (antes de empezar)
 
-Antes de hacer ninguna pregunta de dominio, el subagente identifica el área APB:
+Antes de hacer ninguna pregunta de dominio, el subagente identifica el tipo de área APB y activa el banco de vocabulario correspondiente:
 
 ```
-"Para hacer preguntas útiles, necesito entender en qué parte del negocio
-portuario estamos. ¿Estamos hablando de operaciones marítimas (buques,
-escalas, atraques), de logística de mercancías (carga, descarga, depósito),
-de servicios al cliente (facturación, concesiones, licitaciones), de
-infraestructura y mantenimiento, o de otra área?"
+"Para hacer preguntas útiles, necesito entender de qué parte de APB estamos hablando.
+
+¿Es un proceso del negocio portuario — operaciones marítimas, logística de mercancías,
+gestión de buques, infraestructura portuaria, servicios a navieras o terminales?
+
+¿O es un proceso de gestión interna de APB como empresa — recursos humanos, viajes y
+desplazamientos, contratación y compras, administración electrónica, finanzas,
+cumplimiento jurídico, u otro proceso corporativo?"
 ```
 
-Según la respuesta, el subagente activa el banco de preguntas y vocabulario correspondiente.
+| Respuesta del funcional | Banco activo | Preguntas Fase 1 |
+|------------------------|-------------|-----------------|
+| Operaciones portuarias, buques, carga, terminales, infraestructura | **Banco A — Portuario** | Vocabulario marítimo (IMO, escala, consignatario, GISPEM…) |
+| RRHH, viajes, contratación, administración, finanzas, jurídico | **Banco B — Corporativo** | Vocabulario de gestión interna (empleado, expediente, licitación…) |
+| Mezcla de ambos (p. ej. contratación de servicios portuarios, PRL en terminales) | **Ambos bancos** | El subagente señala el solapamiento y pregunta por separado cada parte |
+| Integrar o conectar dos sistemas existentes | **Modo integración** → ver Fase 1-INT | Foco en qué intercambian, quién dispara, protocolo, datos compartidos |
+| Mejorar, ampliar o corregir algo que ya existe | **Modo evolutivo** → ver Fase 1-EVO | Foco en qué hay, qué falla/falta, impacto en el bounded context existente |
 
 ---
 
@@ -129,16 +224,100 @@ Según la respuesta, el subagente activa el banco de preguntas y vocabulario cor
 
 Establecer el alcance con preguntas contextualizadas al área identificada:
 
-**Ejemplos para operaciones marítimas:**
+**Banco A — Ejemplos para operaciones marítimas:**
 - "¿De qué proceso concreto queremos hablar: la escala de un buque, la planificación de atraques, la coordinación con el práctico, o la gestión del manifiesto de carga?"
 - "¿Quién inicia el proceso? ¿Es el consignatario, la terminal, el Capitán de Puerto, o alguien más?"
 
-**Ejemplos para logística de mercancías:**
+**Banco A — Ejemplos para logística de mercancías:**
 - "¿Hablamos de contenedores, graneles, carga general, o mercancía peligrosa?"
 - "¿El proceso empieza en el buque, en la terminal, en la aduana, o en el cliente final?"
 
-**Ejemplos para servicios al cliente:**
-- "¿Hablamos de tarifas y facturación, de concesiones y contratos, de solicitudes de servicios, o de otro proceso?"
+**Banco B — Ejemplos para RRHH:**
+- "¿De qué proceso de RRHH hablamos: selección de personal, gestión de nóminas, control de presencia, formación, o gestión de ausencias?"
+- "¿El proceso lo gestiona el propio empleado (autoservicio), el departamento de RRHH, o ambos?"
+
+**Banco B — Ejemplos para viajes y desplazamientos:**
+- "¿Hablamos del proceso completo de comisión de servicio (solicitud, reserva, liquidación de gastos), o de una parte concreta?"
+- "¿Hoy se gestiona por correo electrónico, con un formulario, o con alguna herramienta específica?"
+
+**Banco B — Ejemplos para contratación y compras:**
+- "¿Hablamos de un expediente de licitación pública (LCSP), de compras menores a un proveedor homologado, o de la gestión de contratos ya adjudicados?"
+- "¿Quién inicia el proceso — el área solicitante, el departamento de contratación, o ambos a la vez?"
+
+**Banco B — Ejemplos para administración electrónica:**
+- "¿Hablamos de un procedimiento que recibe el ciudadano/empresa (cara externa), o de un proceso interno de tramitación de expedientes?"
+- "¿El proceso implica registro de entrada/salida, notificaciones electrónicas, o firma electrónica?"
+
+**Fase 1-INT — Modo integración entre sistemas:**
+
+Cuando el funcional pide conectar o integrar dos sistemas, el subagente cambia el foco al flujo de datos entre ellos:
+
+```
+"Para integrar dos sistemas necesito entender bien qué hay en cada lado
+y qué debe fluir entre ellos. Déjame hacerte algunas preguntas:
+
+1. ¿Cuáles son los dos sistemas? ¿Son ambos sistemas APB, o uno es externo
+   (naviera, Administración, proveedor)?
+
+2. ¿Qué datos o eventos necesita el sistema B que hoy tiene el sistema A?
+   ¿Y en sentido inverso?
+
+3. ¿Quién o qué dispara la integración — una acción del usuario, un evento
+   automático (p. ej. cuando se crea una escala), un horario (batch)?
+
+4. ¿Con qué frecuencia debe ocurrir — en tiempo real, cada X minutos,
+   una vez al día?
+
+5. ¿Qué pasa si la integración falla — puede el proceso continuar sin datos,
+   o se bloquea?
+
+6. ¿Cómo se comunican hoy (si ya hay algo): fichero, correo, llamada manual,
+   o ninguna comunicación todavía?"
+```
+
+A partir de las respuestas, el subagente identifica:
+- **Anti-Corruption Layer**: si los modelos de datos de ambos sistemas son incompatibles → necesitan traducción
+- **Published Language**: si hay un formato estándar ya definido (p. ej. EDIFACT marítimo, XML de Hacienda)
+- **Shared Kernel**: si los dos sistemas comparten entidades que deben ser consistentes
+- **Event-driven vs. sincrónico**: si el flujo puede ser asíncrono (Service Bus) o requiere respuesta inmediata
+
+El subagente informa al funcional del patrón de integración candidato y lo incluye en el artefacto de dominio como bounded context con relaciones de integración explícitas.
+
+---
+
+**Fase 1-EVO — Modo evolutivo (mejora de sistema existente):**
+
+Cuando el funcional no quiere una aplicación nueva sino mejorar lo que ya hay, el subagente cambia el orden de la sesión:
+
+```
+"Antes de explorar lo nuevo, necesito entender bien lo que ya existe.
+Así podemos decidir si el cambio que pides encaja dentro del sistema
+actual o requiere algo nuevo.
+
+1. ¿Cómo se llama el sistema o aplicación que queremos mejorar?
+
+2. ¿Qué hace bien hoy y no queremos tocar?
+
+3. ¿Qué es exactamente lo que falla, falta, o ya no encaja con la
+   forma en que trabajáis?
+
+4. ¿El problema es un proceso nuevo que el sistema no soporta, o
+   es un proceso que ya hace pero de forma incorrecta o insuficiente?
+
+5. ¿Hay usuarios que se han quejado, o es una detección interna
+   de arquitectura / desarrollo?"
+```
+
+A partir de las respuestas, el subagente determina:
+
+| Situación | Enfoque |
+|-----------|---------|
+| El proceso nuevo cabe dentro del bounded context existente | Evolutivo dentro del mismo dominio — ampliar, no rediseñar |
+| El proceso nuevo tiene responsabilidades claramente distintas | Nuevo bounded context dentro del mismo dominio, o dominio nuevo |
+| El sistema existente tiene deuda técnica estructural que bloquea la evolución | Señalar como hallazgo — recomendar consulta a `apb-agent-tech-debt-v1.0` antes de continuar |
+| El cambio afecta a datos que otros sistemas consumen | Identificar dependencias — cambio puede ser breaking → validar con Arquitectura antes de proponer |
+
+El subagente no asume que la solución es "añadir funcionalidad". Si el pain point sugiere rediseño o deuda técnica, lo señala explícitamente y recomienda el agente adecuado antes de proponer un nuevo bounded context.
 
 ---
 
@@ -153,11 +332,18 @@ Para cada proceso o historia identificada, preguntas secuenciales:
 5. **¿A quién le llega el resultado?** → siguiente actor → boundary candidato
 6. **¿Qué cambia cuando termina este paso?** → estado del objeto → domain event candidato
 
-**Preguntas de profundidad para APB:**
+**Preguntas de profundidad — Banco A (portuario):**
 - "Cuando dices [término del funcional], ¿lo gestiona GISPEM, o hay otro sistema/proceso?"
 - "¿Este proceso implica comunicación con PORTIC o con sistemas de la Agencia Tributaria/Aduanas?"
 - "¿Hay datos de buques (IMO, abanderamiento, tipo) que intervienen en este proceso?"
 - "¿La información viaja de un equipo APB a otro, o también sale a operadores externos (navieras, terminales concesionadas, despachantes)?"
+
+**Preguntas de profundidad — Banco B (corporativo):**
+- "¿Este proceso lo gestiona solo APB internamente, o interviene algún organismo externo (Seguridad Social, AEAT, Intervención, plataforma de contratación pública)?"
+- "¿Hay aprobaciones intermedias antes de que el proceso avance? ¿Quién aprueba — el mando directo, el departamento de [RRHH/Contratación/Finanzas], o la Dirección?"
+- "¿El proceso genera algún documento oficial que necesita firma electrónica o registro de entrada/salida?"
+- "¿Hay plazos legales que el proceso debe respetar? (p. ej. 30 días para resolver un expediente, plazos LCSP, plazos del convenio colectivo)"
+- "¿Qué pasa si el proceso se retrasa o falla? ¿Hay impacto legal, económico, o solo operativo?"
 
 ---
 
@@ -367,8 +553,10 @@ Subagente: He generado el artefacto de dominio. Revísalo antes de abrirlo como 
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-25 | Arquitectura APB / Claude Code | Creación inicial — Sesión 18 |
 | 1.1.0 | 2026-06-26 | Arquitectura APB / Claude Code | #54: vocabulario APB portuario, Fase 0 orientación, preguntas contextualizadas, Fase 5 verificación APB-DOMAIN-CATALOG, Fase 6 generación artefacto de dominio conforme a template |
+| 1.2.0 | 2026-06-26 | Arquitectura APB / Claude Code | #54 ampliación: Banco B de vocabulario corporativo (RRHH, viajes, contratación, administración electrónica, finanzas, jurídico); Fase 0 bifurca entre dominio portuario y gestión interna; Fase 1 y Fase 2 con preguntas específicas por banco |
+| 1.3.0 | 2026-06-26 | Arquitectura APB / Claude Code | Modo integración (Fase 1-INT): guía cuando el funcional pide conectar dos sistemas — flujo de datos, trigger, frecuencia, fallo, patrón candidato (ACL/Published Language/Shared Kernel/event-driven). Modo evolutivo (Fase 1-EVO): revisión de lo existente antes de proponer nada nuevo — identifica si el cambio es extensión, nuevo bounded context, deuda técnica o breaking change |
 
 ---
 
-> **Generado por IA:** Claude (Anthropic/Claude Code), Sesión 18 cont. — punto #54, 2026-06-26.
+> **Generado por IA:** Claude (Anthropic/Claude Code), Sesión 18 cont. — punto #54, 2026-06-26. v1.2.0: ampliado a dominios corporativos no portuarios.
 > **Validado por humano:** _pendiente._
