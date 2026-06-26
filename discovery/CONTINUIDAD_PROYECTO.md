@@ -66,6 +66,7 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ⚠️ **Parcial** (2026-06-26, 7/10) — bloqueados: #6 (ejemplos Word/Excel de Débora), #8 (horas COSMIC históricas de Débora), #52 (mail Jira de Arquitectura) |
 | 22/#47bis | Taxonomía de capacidades en agentes y skills | ✅ **Completa** (2026-06-26) — taxonomía APB normalizada en frontmatter |
 | 18/#54 | Subagente entrevista DDD → análisis funcional completo | ✅ **Completa** (2026-06-26) — `apb-sub-ddd-interview-v1.0` v1.3.0: vocabulario portuario (Banco A) + corporativo (Banco B: RRHH, viajes, contratación, adm. electrónica, finanzas, jurídico), Fase 1-INT (integración entre sistemas), Fase 1-EVO (evolutivo de app existente), Fase 5 verificación APB-DOMAIN-CATALOG, Fase 6 generación artefacto |
+| 23/#43 | Marcado IA obligatorio — retroactivo + mecanismos preventivos | ✅ **Completa** (2026-06-26) — 129/129 skills `apb-owned` marcadas con sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`. Estándar: `context/apb/standards/AI_MARKING_STANDARD.md` (9 tipos de artefacto: código, SQL, OpenAPI, PR, Jira, Markdown, Word/PPT, email/Teams, IaC). Mecanismos preventivos duraderos: check #13 en `validate_repo.py` (ERROR si falta), sección en templates `SKILL_APB.md` y `AGENT.md`. Mecanismo IA: `CLAUDE.md` en raíz del repo. |
 | 14 | Documentación por audiencias (Word) | ❌ Pendiente |
 
 ## 2. Decisiones de Debora que deben respetarse (no reabrir sin pedirlo)

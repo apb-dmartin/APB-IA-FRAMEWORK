@@ -38,7 +38,7 @@
 | 38 Fase 0 (catálogo de dominios) | ✅ **Incluye #11** (decisión Debora post-Sesión 9) — sesión propia o ampliación de 13, pendiente de listado de APIs |
 | 33 (skills/agentes de SQL) | **Sesión 21** |
 | 34 (validación QA en flujos de despliegue) | **Sesión 21** — aplica a framework y aplicaciones APB; durante construcción del framework no se activa sobre el propio repo, pero se diseña para poder hacerlo. |
-| 43 (aplicación retroactiva de política "Generado por IA" + "Validado por humano" a TODO el catálogo) | ✅ **Confirmado: ÚLTIMA FASE del plan, posterior a Sesión 14** (decisión Debora, post-Sesión 11) — ver detalle en punto #43 abajo |
+| 43 (aplicación retroactiva de política "Generado por IA" + "Validado por humano" a TODO el catálogo) | ✅ **CERRADA (Sesión 23, 2026-06-26)** — ver detalle en punto #43 abajo |
 
 **Nota Sesión 8 (3ª corrección, mismo día):** Debora pidió separar la
 Sesión QA (testing: Playwright, `apb-ai-skills`, solape con el framework)
@@ -925,7 +925,7 @@ punto.
 | **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | Items de #27 sin URL requieren que Debora las aporte |
 | **20** | Agentes de licitación (LCSP) | #36 | **Pendiente de briefing de Debora** |
 | **14** | Documentación Word por audiencias (arquitectos, devs/analistas, dirección) + mecanismo de actualización de documentación funcional | #23, #32 | — |
-| **#43** | Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo | #43 | **ÚLTIMA FASE — ejecutar después de que todas las sesiones de construcción hayan cerrado** |
+| ~~**#43**~~ | ~~Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo~~ | ~~#43~~ | ✅ CERRADA (Sesión 23, 2026-06-26) — 129/129 skills apb-owned marcadas con `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`. Estándar canónico: `context/apb/standards/AI_MARKING_STANDARD.md`. Mecanismos preventivos: check #13 en `validate_repo.py` (ERROR si falta la sección), sección en templates `SKILL_APB.md` y `AGENT.md`, `CLAUDE.md` en raíz del repo. |
 
 | **21** | SQL + soporte de primera línea de incidencias técnicas + QA del propio framework | #15, #33, #34, #50 | — |
 | ~~**22 (#47bis)**~~ | ~~Refactorización de taxonomía de carpetas skills/ — consolidar 13 carpetas de un solo archivo en dominios correctos~~ | ~~#47bis~~ | ✅ CERRADA (2026-06-26) — 13 carpetas consolidadas, archivos movidos a dominios correctos, nomenclatura auditada (259 componentes verificados), 1 violación corregida (`apb-skill-` → `apb-design-`), 12 terceros reorganizados en subcarpetas por autor. |

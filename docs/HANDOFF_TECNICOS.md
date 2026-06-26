@@ -149,13 +149,18 @@ El skill está listo. Requiere que el equipo lo use en el proceso de validación
 | #47bis | Revisar taxonomía de carpetas `skills/` y `agents/` tras el crecimiento del framework | Ninguno — ejecutable | ✅ Completado — 13 carpetas consolidadas, 12 third_party a `_uncategorized/`, nueva carpeta `orchestration/` |
 | #49 | Decisión sobre el mecanismo de distribución del Design System | **Débora decide: npm privado, Git submodule, o CDN** | ⬜ Bloqueado |
 
-### Fase #43 — Etiquetado retroactivo (última fase del plan)
+### Fase #43 — Marcado IA obligatorio ✅ COMPLETADO (2026-06-26)
 
-Ejecutar **solo** cuando todas las sesiones de construcción (8–22) estén completas.
+Las 129 skills `apb-owned` ya tienen la sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`.
+El estándar completo está en `context/apb/standards/AI_MARKING_STANDARD.md`.
 
-| Tarea | Descripción | Estado |
-|-------|-------------|--------|
-| #43 | Añadir `Generado por APB AI Framework · Validado por: <nombre>` en todos los componentes del catálogo | ⬜ Última fase |
+**Acción pendiente del equipo humano (Arquitectura APB):**
+
+| Tarea | Descripción | Responsable | Estado |
+|-------|-------------|-------------|--------|
+| Validar marcado | Revisar que el tipo de artefacto asignado a cada skill es correcto (código, SQL, Jira, doc, IaC, email…). Corregir si alguna skill tiene el tipo equivocado. | Arquitectura APB | ⬜ Pendiente revisión |
+| Aprobar `AI_MARKING_STANDARD.md` | El estándar está en `draft`. Arquitectura APB debe formalizarlo (`status: active`). | Arquitectura APB | ⬜ Pendiente aprobación |
+| Campo `human_validated_by` | Cuando se valide formalmente cada skill, rellenar el campo de validador humano según el criterio que decida Débora (nombre retroactivo / revisión formal por componente). | Arquitectura APB | ⬜ Criterio pendiente de Débora |
 
 ---
 
