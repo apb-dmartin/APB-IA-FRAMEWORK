@@ -3,7 +3,7 @@
 > **ID:** `apb-index-v1.0`
 > **Versión:** 1.0.0
 > **Estado:** draft
-> **Fecha de actualización:** 2026-06-25
+> **Fecha de actualización:** 2026-06-26
 > **Framework:** APB AI v1.0.0-draft
 
 ---

@@ -1,14 +1,14 @@
 ---
 id: "apb-skill-frontend-design-system-v1.0"
 name: "Design System Frontend APB"
-description: "Skill de referencia del sistema de diseño frontend APB: tokens de color, tipografía y espaciado (DevExtreme Generic Light + overrides corporativos APB), reglas de uso narrativas y mapeo de componentes DevExtreme jQuery. Consumido por agentes de mockups y generación de código frontend para producir pantallas conformes al estándar visual APB."
-version: "1.0.0"
+description: "Skill de referencia del sistema de diseño frontend APB: tokens CSS, componentes React, configuraciones DevExtreme JS y UI kits completos (DevExtreme Generic Light + overrides corporativos APB). Tipografía vigente: Cabin (confirmado jun-2026). Consumido por agentes de mockups y generación de código frontend para producir pantallas conformes al estándar visual APB."
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "design"
 autonomy_level: 1
 created_date: "2026-06-25"
-review_date: "2026-06-25"
+review_date: "2026-06-26"
 source_commit: "unverified"
 verified_date: "unverified"
 inputs:
@@ -27,14 +27,22 @@ consumed_by:
 design_system_repo: "https://github.com/apb-dmartin/APB-DESIGN-SYSTEM"
 design_system_submodule: "design-system/"
 artifacts:
-  tokens: "design-system/tokens/design-tokens.json"
+  tokens_json: "design-system/tokens/design-tokens.json"
+  tokens_css_entry: "design-system/styles.css"
+  tokens_colors: "design-system/tokens/colors.css"
+  tokens_typography: "design-system/tokens/typography.css"
+  tokens_spacing: "design-system/tokens/spacing.css"
   style_guide: "design-system/style-guide/style-guide.md"
-  components: "design-system/components/component-reference.md"
+  components_reference: "design-system/components/component-reference.md"
+  components_react: "design-system/components/"
+  components_dx: "design-system/components-dx/apb-dx-config.js"
+  components_dx_css: "design-system/components-dx/apb-dx-overrides.css"
+  ui_kit: "design-system/ui_kits/aplicaciones-apb/"
   visual_reference: "design-system/visual-reference/visual-reference.html"
+  assets: "design-system/assets/"
 limitations:
   - "Los valores base del tema generic.light de DevExtreme están marcados PENDIENTE_VERIFICACION_ARQUITECTURA en design-tokens.json — no usar como ciertos hasta verificación con CLI DevExtreme."
-  - "Existe discrepancia tipográfica sin resolver (Cabin vs Helvetica Neue/Source Sans Pro) — preguntar siempre cuál sistema aplicar si la tarea no lo especifica."
-  - "El catálogo de componentes es parcial — cubre los documentados en los PDF de origen APB 2022."
+  - "El catálogo de componentes React es parcial — cubre los componentes documentados en PDFs de origen APB 2022. Ver 'Pendiente de completar' en component-reference.md."
 telemetry:
   emit_on: ["invocation", "output_generated", "human_review_requested"]
 ---
@@ -56,16 +64,16 @@ Los artefactos de contenido viven en el repo independiente [APB-DESIGN-SYSTEM](h
 3. Leer `design-system/components/component-reference.md` → qué componente DevExtreme instanciar
 
 **Nunca:**
-- Inventar valores de color, tipografía o espaciado no presentes en `design-tokens.json`
+- Inventar valores de color, tipografía o espaciado no presentes en `tokens/design-tokens.json` o `tokens/colors.css`
 - Usar negro puro (`#000000`) en ningún componente de UI
 - Construir un componente a medida que `component-reference.md` ya resuelve con DevExtreme
-- Resolver unilateralmente la discrepancia tipográfica — preguntar siempre
+- Usar fuentes distintas a Cabin (sistema vigente confirmado jun-2026)
 
 ## Human review points
 
-1. **Sistema tipográfico:** confirmar con el usuario si la tarea no especifica Cabin (A) o Helvetica Neue/Source Sans Pro (B)
-2. **Conformidad visual:** toda pantalla generada debe validarse contra `visual-reference/visual-reference.html` antes de entregarse como definitiva
-3. **Nuevos componentes:** si la necesidad funcional requiere un componente no documentado en `component-reference.md`, escalar a Arquitectura APB antes de inventarlo
+1. **Conformidad visual:** toda pantalla generada debe validarse contra `visual-reference/visual-reference.html` antes de entregarse como definitiva
+2. **Nuevos componentes:** si la necesidad funcional requiere un componente no documentado en `component-reference.md`, escalar a Arquitectura APB antes de inventarlo
+3. **Valores DevExtreme base:** los campos `PENDIENTE_VERIFICACION_ARQUITECTURA` en `design-tokens.json` no son fiables — usar los tokens CSS de `tokens/colors.css` como fuente de verdad
 
 ## Estado de aprobación
 
@@ -83,6 +91,7 @@ No usar en generación de producción hasta que:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-25 | Arquitectura APB / Claude Code | Creación inicial — sistema de diseño APB v1.0 |
+| 1.1.0 | 2026-06-26 | Arquitectura APB / Claude Code | Design System v1.3: +5 cards (accordion, buttons, charts, spinner, brand-footer); ConfirmPopup mejorado (confirmText/Type, cancelar a la izquierda); Danger button 3 modos CSS; token `--apb-sidebar-bg` corregido a `#ffffff` |
 
 ---
 
