@@ -2,9 +2,9 @@
 
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Administración)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-26  
+> **Última actualización:** 2026-06-26 (Sesión 21)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** Framework construido (226 componentes, 15 sesiones), integraciones especificadas, pendiente despliegue y fases 13–22.
+> **Estado global:** Framework construido (237 componentes, 21 sesiones ejecutadas), integraciones especificadas, pendiente despliegue y fases 13, 14, 16, 19, 20, 22.
 
 ---
 
@@ -118,14 +118,24 @@ Ejecutable mayoritariamente por Arquitectura APB. Algunos puntos requieren insum
 |-------|-------------|-----------------|--------|
 | #36 | Agentes especializados en procedimientos LCSP (Ley de Contratos del Sector Público) | **Débora aporta briefing de contratación (tipos de procedimiento, plantillas, umbrales)** | ⬜ Bloqueado |
 
-### Sesión 21 — SQL, soporte a incidencias y QA
+### Sesión 21 — SQL, soporte a incidencias y QA ✅ CERRADA (2026-06-26)
 
 | Punto | Descripción | Estado |
 |-------|-------------|--------|
-| #15 | Agente de soporte técnico de primera línea (incidencias) | ⬜ Pendiente |
-| #33 | Skills SQL (generación, revisión, optimización) | ⬜ Pendiente |
-| #34 | Validación QA en pipelines de despliegue | ⬜ Pendiente |
-| #50 | QA del propio framework (testing automatizado de los agentes) | ⬜ Pendiente |
+| #15 | Agente de soporte técnico de primera línea (incidencias) | ✅ `agents/apb-agent-incident-support-v1.0.md` |
+| #33 | Skills SQL (generación, revisión, optimización) | ✅ `skills/.../apb-dev-sql-gen-v1.0.md` + `apb-dev-sql-review-v1.0.md` |
+| #34 | Validación QA en pipelines de despliegue | ✅ `skills/.../apb-qa-pipeline-v1.0.md` |
+| #50 | QA del propio framework | ✅ `skills/.../apb-qa-framework-v1.0.md` |
+
+**Componentes adicionales generados en Sesión 21:**
+- `skills/apb-owned/operation/apb-ops-incident-triage-v1.0.md`
+- `skills/apb-owned/operation/apb-ops-incident-diagnose-v1.0.md`
+- `skills/apb-owned/operation/apb-ops-incident-escalate-v1.0.md`
+- `subagents/apb-sub-ops-oracle-v1.0.md`
+- `subagents/apb-sub-ops-iis-apache-v1.0.md`
+- `subagents/apb-sub-ops-network-v1.0.md`
+- `subagents/apb-sub-ops-azure-v1.0.md`
+- `workflows/apb-wf-incident-l1-v1.0.md`
 
 ### Sesión 22 — Refactor de taxonomía de carpetas
 

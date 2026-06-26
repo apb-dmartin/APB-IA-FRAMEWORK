@@ -1,0 +1,118 @@
+---
+id: "apb-ops-incident-escalate-v1.0"
+name: "Escalado de Incidencias L2/L3"
+description: "Genera el resumen técnico estructurado para el escalado de una incidencia APB de L1 a L2, L3 o Major Incident. Actualiza el ticket JSM con toda la información recopilada, asigna el grupo resolutor correcto y notifica al técnico receptor con el contexto completo."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "operation"
+autonomy_level: 1
+created_date: "2026-06-26"
+review_date: "2026-06-26"
+---
+
+# Escalado de Incidencias L2/L3
+
+---
+
+## 🎯 Propósito
+
+Formalizar el escalado de una incidencia cuando L1 no puede resolverla. Genera un resumen técnico completo para el receptor (L2/L3), actualiza el ticket JSM con el histórico de diagnóstico y acciones realizadas, y asigna el ticket al grupo especialista correcto. Minimiza el tiempo perdido por el técnico receptor en recopilar contexto.
+
+---
+
+## ⚡ Trigger
+
+Cuando `apb-ops-incident-diagnose-v1.0` determina que la causa raíz supera la capacidad de L1, o cuando la prioridad es P1 (Major Incident automático).
+
+---
+
+## 📥 Input
+
+- Ticket JSM con triaje y diagnóstico completos
+- Razón del escalado (no resoluble en L1 / P1 / tiempo SLA L1 superado)
+- Acciones ya realizadas en L1 (si las hay)
+- Logs y evidencias recopiladas
+
+---
+
+## 📤 Output
+
+- **Resumen de escalado:** documento técnico estructurado para el técnico receptor
+- **Ticket JSM actualizado:** campos de escalado cumplimentados, grupo asignado, SLA reiniciado
+- **Notificación al receptor:** Teams + correo con el resumen y enlace al ticket
+- **Comunicación al solicitante:** actualización de estado (sin detalles técnicos)
+- **Apertura de Major Incident bridge** (solo P1): instrucciones para convocar el puente de crisis
+
+---
+
+## 🔄 Proceso
+
+1. **Validación del escalado:** verificar que se han agotado las opciones L1 antes de escalar
+2. **Selección del grupo resolutor:**
+
+| Componente | Grupo L2 | Grupo L3 |
+|------------|----------|----------|
+| Oracle DB | DBA APB | Soporte Oracle (proveedor) |
+| IIS / aplicaciones web | Desarrollo APB | Proveedor de la aplicación |
+| Apache / Tomcat | Plataforma APB | Proveedor / comunidad |
+| DNS | Infraestructura APB | Operador de red / ISP |
+| Firewall | Seguridad APB | Proveedor (Fortinet/Cisco) |
+| Azure | Plataforma Cloud APB | Microsoft Support |
+| On-Premise Linux/Windows | Sistemas APB | Proveedor hardware |
+| Aplicaciones de negocio | Proveedor de la aplicación | — |
+
+3. **Generación del resumen de escalado** con la siguiente estructura:
+   - Descripción del síntoma (original)
+   - Clasificación: prioridad, categoría, SLA restante
+   - Componente afectado y entorno (producción/preproducción)
+   - Timeline: hora de inicio, hora de detección, hora de apertura de ticket
+   - Diagnóstico L1: causa probable, confianza, árbol de causas descartadas
+   - Acciones realizadas en L1 y resultado
+   - Logs y evidencias adjuntas
+   - Próximos pasos sugeridos
+4. **Actualización del ticket JSM:** campo "Escalado a", grupo asignado, nota de escalado
+5. **Notificaciones:** Teams al técnico L2/L3 asignado + correo al solicitante
+
+---
+
+## 📋 Reglas y Constraints
+
+- Autonomía nivel 1: el escalado debe ser confirmado por el técnico L1 responsable antes de ejecutarse
+- P1 activa el proceso de Major Incident: notificar al Major Incident Manager APB y convocar el puente de crisis
+- El ticket JSM no puede cerrarse durante el escalado — solo puede cerrarlo el grupo resolutor
+- La comunicación al solicitante nunca incluye detalles técnicos internos (logs, nombres de servidor, IPs internas)
+- El SLA del nivel receptor comienza en el momento de la asignación del ticket al nuevo grupo
+
+---
+
+## 🛠 Stack Tecnológico Relevante
+
+- Jira Service Management (JSM) — gestión de tickets ITSM
+- Microsoft Teams — notificaciones de escalado
+- Outlook / Exchange — correo al solicitante
+- Directorio de grupos resolutores APB (referencia interna)
+
+---
+
+## 💡 Ejemplos de Uso
+
+**Ejemplo — Escalado a DBA:**
+> Incidencia: Oracle ORA-00060 recurrente, no resuelta con kill session en L1.
+> → Escalado a grupo "DBA APB", resumen incluye: sesiones involucradas, transacción bloqueante, queries ejecutadas, historial de los últimos 3 deadlocks en 24h.
+
+**Ejemplo — Major Incident P1:**
+> Incidencia: pasarela de pagos caída, 0 transacciones procesándose.
+> → P1 automático: notificación al Major Incident Manager, apertura de bridge Teams, ticket asignado a Plataforma APB + Proveedor pasarela, comunicación al solicitante en ≤15 min.
+
+---
+
+## 🔗 Dependencias
+
+- `apb-ops-incident-triage-v1.0` — clasificación previa
+- `apb-ops-incident-diagnose-v1.0` — diagnóstico previo
+- `apb-plat-ms-notify-v1.0` — notificaciones Teams/correo
+
+---
+
+*Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
