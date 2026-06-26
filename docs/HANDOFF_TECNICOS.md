@@ -153,14 +153,7 @@ El skill está listo. Requiere que el equipo lo use en el proceso de validación
 
 Las 129 skills `apb-owned` ya tienen la sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`.
 El estándar completo está en `context/apb/standards/AI_MARKING_STANDARD.md`.
-
-**Acción pendiente del equipo humano (Arquitectura APB):**
-
-| Tarea | Descripción | Responsable | Estado |
-|-------|-------------|-------------|--------|
-| Validar marcado | Revisar que el tipo de artefacto asignado a cada skill es correcto (código, SQL, Jira, doc, IaC, email…). Corregir si alguna skill tiene el tipo equivocado. | Arquitectura APB | ⬜ Pendiente revisión |
-| Aprobar `AI_MARKING_STANDARD.md` | El estándar está en `draft`. Arquitectura APB debe formalizarlo (`status: active`). | Arquitectura APB | ⬜ Pendiente aprobación |
-| Campo `human_validated_by` | Cuando se valide formalmente cada skill, rellenar el campo de validador humano según el criterio que decida Débora (nombre retroactivo / revisión formal por componente). | Arquitectura APB | ⬜ Criterio pendiente de Débora |
+No quedan acciones pendientes para el equipo en esta fase.
 
 ---
 
