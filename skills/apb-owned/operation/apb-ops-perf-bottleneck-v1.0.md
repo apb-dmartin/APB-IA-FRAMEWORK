@@ -125,3 +125,13 @@ servicios críticos.
 
 > **Generado por IA:** Claude (Anthropic), Sesión 11 del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Documentos Markdown** - callout inmediatamente tras el titulo H1:
+  > **Borrador generado por IA** (APB AI Framework - apb-ops-perf-bottleneck-v1.0) - pendiente validacion humana. No distribuir sin revision.

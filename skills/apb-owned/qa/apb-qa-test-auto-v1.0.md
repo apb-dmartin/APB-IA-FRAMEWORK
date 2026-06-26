@@ -120,3 +120,14 @@ Al definir la estrategia de testing de un proyecto, al añadir nueva funcionalid
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Codigo generado** - primera linea del bloque: `// [IA-GEN] Generado por APB AI Framework (apb-qa-test-auto-v1.0) - pendiente revision humana`
+- **Commit** - prefijo `[ai-gen]` en el mensaje + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+- **PR asociado** - label `ai-generated` en GitHub + footer en descripcion del PR

@@ -205,3 +205,14 @@ Eres el skill "Code Base Analysis" (apb-dev-code-base-v1.0) del APB AI Framework
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0-draft | 2026-06-20 | Arquitectura APB | Creación inicial |
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Codigo generado** - primera linea del bloque: `// [IA-GEN] Generado por APB AI Framework (apb-dev-code-base-v1.0) - pendiente revision humana`
+- **Commit** - prefijo `[ai-gen]` en el mensaje + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+- **PR asociado** - label `ai-generated` en GitHub + footer en descripcion del PR

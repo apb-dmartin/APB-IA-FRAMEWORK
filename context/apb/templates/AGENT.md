@@ -121,4 +121,12 @@ Input: {ejemplo de input}
 
 ---
 
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../standards/AI_MARKING_STANDARD.md), todo artefacto entregado por este agente debe incluir marca de origen IA. El agente debe instruir a sus skills a aplicar el marcado correspondiente al tipo de cada artefacto que produzcan.
+
+> Este agente no entrega artefactos directamente; delega la responsabilidad de marcado en las skills que invoca. Verificar que todas las skills referenciadas tengan su sección `## Marcado IA obligatorio` completa.
+
+---
+
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

@@ -143,3 +143,13 @@ convertirlos en trabajo planificado y trazable.
 
 > **Generado por IA:** Claude (Anthropic), Sesión 11 del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Label Jira**: `ia-generado` - campo Labels del ticket
+- **Footer en descripcion del ticket**: `Generado por IA (APB AI Framework - apb-ops-debt-remediation-plan-v1.0). Requiere validacion humana antes de ejecutar.`

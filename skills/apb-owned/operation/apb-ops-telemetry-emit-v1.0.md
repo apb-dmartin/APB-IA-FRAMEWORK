@@ -155,3 +155,14 @@ Para enviar: python3 scripts/emit_telemetry.py --stdin
 
 > **Generado por IA:** Claude (Anthropic/Claude Code), Sesión 17 — Observabilidad, 2026-06-25.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Codigo generado** - primera linea del bloque: `// [IA-GEN] Generado por APB AI Framework (apb-ops-telemetry-emit-v1.0) - pendiente revision humana`
+- **Commit** - prefijo `[ai-gen]` en el mensaje + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+- **PR asociado** - label `ai-generated` en GitHub + footer en descripcion del PR

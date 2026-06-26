@@ -339,6 +339,18 @@ def validate_component_file(
                 "ERROR", rel_path, f"Resto de marca/contacto antiguo detectado: '{pattern.pattern}'"
             ))
 
+    # 13. Marcado IA obligatorio (POLICY_AI_USAGE §6)
+    #     Todas las skills apb-owned deben incluir la sección de marcado de artefactos.
+    #     Los agentes también, ya que orquestan y entregan artefactos.
+    #     Ver: context/apb/standards/AI_MARKING_STANDARD.md
+    if component_type in ("skill", "agent") and "skills/apb-owned" in rel_path.replace("\\", "/"):
+        if "## Marcado IA obligatorio" not in content:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                "Falta la sección '## Marcado IA obligatorio (POLICY_AI_USAGE §6)'. "
+                "Añadir según context/apb/standards/AI_MARKING_STANDARD.md."
+            ))
+
     result.add(ValidationIssue("INFO", rel_path, f"Componente validado: {comp_id or '(sin id)'}"))
 
 

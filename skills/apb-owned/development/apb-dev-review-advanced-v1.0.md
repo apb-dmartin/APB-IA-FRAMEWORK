@@ -155,3 +155,13 @@ MIT. Referencias adicionales: OWASP Code Review Guide, SonarQube Quality Gates.
 - `apb-dev-review-tl-v1.0` — la revisión de Tech Lead se apoya en el output
   de esta skill para la decisión final de aprobación; el sentido de la
   relación es Review TL → Review Advanced, no a la inversa.
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Documentos Markdown** - callout inmediatamente tras el titulo H1:
+  > **Borrador generado por IA** (APB AI Framework - apb-dev-review-advanced-v1.0) - pendiente validacion humana. No distribuir sin revision.

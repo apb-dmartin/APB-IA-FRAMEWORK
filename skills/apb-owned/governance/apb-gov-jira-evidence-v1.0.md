@@ -105,3 +105,13 @@ Registra en Jira la evidencia de revisión de código del PR #342:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-20 | Arquitectura APB | Creación inicial |
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Label Jira**: `ia-generado` - campo Labels del ticket
+- **Footer en descripcion del ticket**: `Generado por IA (APB AI Framework - apb-gov-jira-evidence-v1.0). Requiere validacion humana antes de ejecutar.`

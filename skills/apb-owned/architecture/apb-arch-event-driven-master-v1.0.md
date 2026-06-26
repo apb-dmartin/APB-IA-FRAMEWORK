@@ -401,3 +401,13 @@ class OrderQueryHandler {
 | **DLQ ignorada** | Mensajes fallan silenciosamente | Monitorear DLQ, alertar, reintentar |
 | **Sessions para todo** | Throughput severamente limitado | Usar sessions SOLO donde se requiere orden |
 | **Outbox omitido** | Evento publicado pero DB falló | Siempre usar outbox pattern |
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Documentos Markdown** - callout inmediatamente tras el titulo H1:
+  > **Borrador generado por IA** (APB AI Framework - apb-arch-event-driven-master-v1.0) - pendiente validacion humana. No distribuir sin revision.

@@ -187,3 +187,13 @@ CUANDO recibes feedback de revisión:
 | "DLQ no configurada" | Configurar dead letter con retry policy |
 | "Falta test de ordenamiento" | Añadir test con session keys |
 | "Evento no tiene versión" | Añadir versionado al type (v1, v2) |
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Documentos Markdown** - callout inmediatamente tras el titulo H1:
+  > **Borrador generado por IA** (APB AI Framework - apb-dev-code-review-gate-v1.0) - pendiente validacion humana. No distribuir sin revision.

@@ -122,3 +122,14 @@ Al crear una nueva API, modificar una existente, o definir contratos de integrac
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **YAML/spec generado** - primera linea: `# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana`
+- **Campo OpenAPI si aplica**: `info.x-ai-generated: true` + `info.x-ai-skill: "apb-arch-api-contract-v1.0"`
+- **Commit** - prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`

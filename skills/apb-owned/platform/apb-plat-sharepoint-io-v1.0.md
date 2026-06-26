@@ -177,3 +177,15 @@ los agentes generan para que los equipos puedan acceder a ellos.
 
 > **Generado por IA:** Claude (Anthropic/Claude Code), Sesión 15 del plan APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Primera linea del fichero generado**: `# [IA-GEN] Generado por APB AI Framework (apb-plat-sharepoint-io-v1.0) - revisar ANTES de aplicar en produccion`
+- **Commit** - prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+
+NOTA: Para IaC, ningun fichero generado por IA debe aplicarse en produccion sin revision humana explicita.

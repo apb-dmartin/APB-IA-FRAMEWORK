@@ -152,3 +152,14 @@ Las secciones 1–6 están adaptadas del plugin `reflexion` de
 - `apb-dev-implement-v1.0`
 - `apb-qa-test-auto-v1.0`
 - `apb-dev-sonar-clean-v1.0`
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Codigo generado** - primera linea del bloque: `// [IA-GEN] Generado por APB AI Framework (apb-dev-autocorrect-v1.0) - pendiente revision humana`
+- **Commit** - prefijo `[ai-gen]` en el mensaje + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+- **PR asociado** - label `ai-generated` en GitHub + footer en descripcion del PR

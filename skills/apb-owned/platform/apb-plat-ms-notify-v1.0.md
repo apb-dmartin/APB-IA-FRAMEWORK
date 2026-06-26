@@ -177,3 +177,13 @@ Los UPNs y IDs de canal concretos se configuran en `context/apb/config/ms365-rou
 
 > **Generado por IA:** Claude (Anthropic/Claude Code), Sesión 15 del plan APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo mensaje generado por esta skill debe incluir marca de origen IA:
+
+- **Footer en cuerpo del mensaje** (ultima linea):
+  `Generado por IA (APB AI Framework - apb-plat-ms-notify-v1.0) - revisado y enviado por [nombre].`

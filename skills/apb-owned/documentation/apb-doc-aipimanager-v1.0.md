@@ -105,3 +105,14 @@ Genera documentación Tagg para el sistema de gestión de expedientes:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-20 | Arquitectura APB | Creación inicial |
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **YAML/spec generado** - primera linea: `# [IA-GEN] Generado por APB AI Framework (apb-doc-aipimanager-v1.0) - pendiente revision humana`
+- **Campo OpenAPI si aplica**: `info.x-ai-generated: true` + `info.x-ai-skill: "apb-doc-aipimanager-v1.0"`
+- **Commit** - prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`

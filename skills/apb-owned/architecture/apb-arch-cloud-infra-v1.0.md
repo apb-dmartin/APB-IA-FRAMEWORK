@@ -129,3 +129,15 @@ Al desplegar un nuevo sistema en Azure, migrar un sistema on-premise, o rediseñ
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Primera linea del fichero generado**: `# [IA-GEN] Generado por APB AI Framework (apb-arch-cloud-infra-v1.0) - revisar ANTES de aplicar en produccion`
+- **Commit** - prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+
+NOTA: Para IaC, ningun fichero generado por IA debe aplicarse en produccion sin revision humana explicita.

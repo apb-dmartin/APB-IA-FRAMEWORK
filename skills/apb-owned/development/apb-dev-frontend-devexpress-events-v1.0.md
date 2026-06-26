@@ -406,3 +406,14 @@ class DLQManager {
 ```
 [operador necesita dashboard] → apb:frontend-integration → [DevExpress UI] → [monitoreo en tiempo real]
 ```
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Codigo generado** - primera linea del bloque: `// [IA-GEN] Generado por APB AI Framework (apb-dev-frontend-devexpress-events-v1.0) - pendiente revision humana`
+- **Commit** - prefijo `[ai-gen]` en el mensaje + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+- **PR asociado** - label `ai-generated` en GitHub + footer en descripcion del PR

@@ -343,3 +343,10 @@ En Confluence: en el bloque de aviso de la página.
 
 > **Generado por IA:** Claude (Anthropic/Claude Code), Sesión 16 del plan APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), esta skill es la responsable de la entrega de artefactos del framework. Aplica marcado completo segun el tipo de cada artefacto entregado: comentario `[IA-GEN]` en codigo/IaC, callout en documentos Markdown, label `ai-generated` en PRs, label `ia-generado` en Jira, footer en emails. Ver estandar completo en AI_MARKING_STANDARD.md.

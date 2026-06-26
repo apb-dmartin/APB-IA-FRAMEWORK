@@ -115,6 +115,22 @@ Output: ...
 
 ---
 
+## 11. Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA.
+
+<!-- INSTRUCCIÓN: sustituir {tipo} y {sid} por los valores de esta skill -->
+<!-- Tipos disponibles: code | sql | openapi | pr | jira | doc | doc_word | email | iac -->
+
+**Tipo de artefacto principal:** {tipo}
+
+- **{Formato de marcado}** — {descripción según AI_MARKING_STANDARD para el tipo elegido}
+- **Commit** — prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>` _(si aplica)_
+
+> Ver ejemplos completos en `context/apb/standards/AI_MARKING_STANDARD.md`.
+
+---
+
 ## Checklist de Creación
 
 - [ ] Metadatos completos en frontmatter.
@@ -126,4 +142,5 @@ Output: ...
 - [ ] Nivel de autonomía declarado.
 - [ ] Sin secretos ni información sensible.
 - [ ] Discovery de alternativas documentado (si es skill APB nueva).
+- [ ] **Sección `## Marcado IA obligatorio` completada** (POLICY_AI_USAGE §6).
 - [ ] Script `validate_repo.py` ejecutado sin errores.
