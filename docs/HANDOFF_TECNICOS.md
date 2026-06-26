@@ -2,9 +2,9 @@
 
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Administración)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-26 (Sesión 21)  
+> **Última actualización:** 2026-06-26 (Sesión 22)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** Framework construido (237 componentes, 21 sesiones ejecutadas), integraciones especificadas, pendiente despliegue y fases 13, 14, 16, 19, 20, 22.
+> **Estado global:** Framework construido (259 componentes, 22 sesiones ejecutadas), integraciones especificadas, pendiente despliegue y fases 13, 14, 16, 19, 20. Sesión 22 parcialmente cerrada (#49 bloqueado).
 
 ---
 
@@ -137,11 +137,11 @@ Ejecutable mayoritariamente por Arquitectura APB. Algunos puntos requieren insum
 - `subagents/apb-sub-ops-azure-v1.0.md`
 - `workflows/apb-wf-incident-l1-v1.0.md`
 
-### Sesión 22 — Refactor de taxonomía de carpetas
+### Sesión 22 — Refactor de taxonomía de carpetas ✅ PARCIAL (2026-06-26)
 
 | Punto | Descripción | Insumo requerido | Estado |
 |-------|-------------|-----------------|--------|
-| #47bis | Revisar taxonomía de carpetas `skills/` y `agents/` tras el crecimiento del framework | Ninguno — ejecutable | ⬜ Pendiente |
+| #47bis | Revisar taxonomía de carpetas `skills/` y `agents/` tras el crecimiento del framework | Ninguno — ejecutable | ✅ Completado — 13 carpetas consolidadas, 12 third_party a `_uncategorized/`, nueva carpeta `orchestration/` |
 | #49 | Decisión sobre el mecanismo de distribución del Design System | **Débora decide: npm privado, Git submodule, o CDN** | ⬜ Bloqueado |
 
 ### Fase #43 — Etiquetado retroactivo (última fase del plan)
