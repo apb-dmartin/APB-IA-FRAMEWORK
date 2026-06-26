@@ -1,65 +1,124 @@
-# {name}
+---
+id: "apb-agent-{nombre}-v{major}.{minor}"
+name: "{Nombre legible del agente}"
+description: "{1–3 frases: qué hace el agente y cuándo usarlo.}"
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "orchestration"
+autonomy_level: 2
+skills:
+  - "apb-{dom}-{skill}-v1.0"
+subagents:
+  - "apb-sub-{dom}-{especialidad}-v1.0"
+workflows:
+  - "apb-wf-{nombre}-v1.0"
+runtime:
+  - "claude"
+  - "copilot"
+human_review_points:
+  - "{Punto 1 donde el agente debe detenerse y pedir confirmación humana}"
+  - "{Punto 2 — acciones de alto riesgo o irreversibles}"
+created_date: "YYYY-MM-DD"
+review_date: "YYYY-MM-DD"
+---
 
-> **ID:** `{id}`
-> **Versión:** {version}
-> **Estado:** {status}
-> **Autonomía:** {autonomy}
-> **Owner:** {owner}
-> **Runtime:** {runtime}
+# {Nombre legible del agente}
 
 ---
 
 ## 🎯 Propósito
 
-{purpose}
+{Descripción extendida del propósito. Qué problema resuelve, en qué contexto APB opera y qué valor aporta al equipo.}
+
+---
 
 ## 🧠 Capacidades
 
-{capabilities}
+- {Capacidad 1}
+- {Capacidad 2}
+- {Capacidad 3}
 
-## 📋 Skills Asignadas
+---
+
+## 📋 Skills asignadas
 
 | ID | Nombre | Dominio | Autonomía |
 |----|--------|---------|-----------|
-{skills_table}
+| `apb-{dom}-{skill}-v1.0` | {Nombre} | {dominio} | {nivel} |
 
-## 🔀 Workflows en los que Participa
+---
 
-{workflows}
+## 🧩 Subagentes delegados
 
-## 🧩 Subagentes Delegados
+| ID | Especialidad | Cuándo se delega |
+|----|-------------|-----------------|
+| `apb-sub-{dom}-{especialidad}-v1.0` | {Especialidad} | {Condición de delegación} |
 
-{subagents}
+---
 
-## 📥 Input Esperado
+## 🔀 Workflows en los que participa
 
-{input_expected}
+| ID | Nombre | Rol del agente |
+|----|--------|---------------|
+| `apb-wf-{nombre}-v1.0` | {Nombre workflow} | {Orquestador / Participante} |
 
-## 📤 Output Generado
+---
 
-{output_generated}
+## 📥 Input esperado
 
-## 🚫 Límites y Restricciones
+- {Input 1 — tipo y descripción}
+- {Input 2}
 
-{constraints}
+---
 
-## 🔒 Seguridad y Cumplimiento
+## 📤 Output generado
 
-{security}
+- {Output 1 — artefacto, ticket, documento, etc.}
+- {Output 2}
 
-## 📝 Ejemplo de Invocación
+---
 
-```yaml
-agent: {id}
-inputs:
-{invocation_example}
+## ⚠️ Gates de validación humana
+
+{Descripción de los puntos donde el agente se detiene obligatoriamente antes de continuar. Referenciar `human_review_points` del frontmatter.}
+
+| Gate | Condición | Acción requerida |
+|------|-----------|-----------------|
+| {Gate 1} | {Cuándo se activa} | {Qué debe hacer el técnico} |
+
+---
+
+## 🚫 Límites y restricciones
+
+- {Límite 1 — qué NO hace este agente}
+- {Límite 2}
+
+---
+
+## 🔒 Seguridad y cumplimiento
+
+- {Control de seguridad 1}
+- `human_review_required: true` para acciones de riesgo Alto
+
+---
+
+## 📝 Ejemplo de invocación
+
+```
+Agente: {id}
+Contexto: {descripción del caso de uso}
+Input: {ejemplo de input}
 ```
 
-## 🔄 Historial de Cambios
+---
+
+## 🔄 Historial de cambios
 
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
-| {version} | {date} | Arquitectura APB | Creación inicial |
+| 1.0.0 | YYYY-MM-DD | Arquitectura APB | Versión inicial |
 
 ---
+
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

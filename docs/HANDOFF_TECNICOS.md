@@ -2,9 +2,9 @@
 
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Administración)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-26 (Sesión 22)  
+> **Última actualización:** 2026-06-26 (Sesión 13)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** Framework construido (259 componentes, 22 sesiones ejecutadas), integraciones especificadas, pendiente despliegue y fases 13, 14, 16, 19, 20. Sesión 22 parcialmente cerrada (#49 bloqueado).
+> **Estado global:** Framework construido (260 componentes, 22 sesiones ejecutadas), integraciones especificadas, pendiente despliegue. Sesión 13 parcialmente cerrada (3 puntos bloqueados). Sesión 22 parcialmente cerrada (#49 bloqueado).
 
 ---
 
@@ -37,6 +37,8 @@ Sin estas acciones, ni M365 Copilot ni Rovo pueden invocar el framework.
 | P5 | Registrar app Azure AD `apb-m365-copilot-plugin` (Authorization Code + Client Credentials) | `docs/HANDOFF_SESION15_INTEGRACIONES.md §Acción 4` | ⬜ Pendiente |
 | P6 | Publicar `ai-plugin.json` en `https://apim.portdebarcelona.cat/.well-known/ai-plugin.json` | `openapi/ai-plugin.json` | ⬜ Pendiente |
 | P7 | Guardar todas las credenciales en Azure Key Vault APB (nunca en texto plano ni en el repo) | — | ⬜ Pendiente |
+
+| P8 | Configurar acceso del APB AI Framework a repos privados `portdebarcelona/ArqBase` y `portdebarcelona/ArqApiBase` en la organización GitHub | `providers/prov-arqbase-v1.0.md`, `providers/prov-arqapibase-v1.0.md` | ⬜ Pendiente |
 
 **Verificación de hito P:** `GET https://apim.portdebarcelona.cat/ai-framework/v1/health` devuelve `200 OK`.
 
@@ -74,21 +76,21 @@ Sin estas acciones, ni M365 Copilot ni Rovo pueden invocar el framework.
 > Repositorio: `APB-IA-FRAMEWORK`  
 > Referencia: `discovery/PLAN_FASES_FUTURAS.md` y `discovery/CONTINUIDAD_PROYECTO.md`
 
-### Sesión 13 — Cierre de pendientes históricos
+### Sesión 13 — Cierre de pendientes históricos ✅ PARCIAL (2026-06-26)
 
 Ejecutable mayoritariamente por Arquitectura APB. Algunos puntos requieren insumos de Débora (ver §5).
 
 | Punto | Descripción | Insumo requerido | Estado |
 |-------|-------------|-----------------|--------|
-| #2 | Guía de uso de agentes (`docs/AGENT_USAGE_GUIDE.md`) | Ninguno — ejecutable | ⬜ Pendiente |
+| #2 | Guía de uso de agentes (`docs/AGENT_USAGE_GUIDE.md`) | Ninguno — ejecutable | ✅ `docs/AGENT_USAGE_GUIDE.md` |
 | #6 | Validación de cobertura de plantillas (comparación contra plantillas ofimáticas reales APB) | **Débora aporta ejemplos de plantillas Word/Excel en uso** | ⬜ Bloqueado |
-| #7 | Mapa agente ↔ tipo de ticket Jira (qué genera qué, campos mínimos) | Ninguno — ejecutable | ⬜ Pendiente |
+| #7 | Mapa agente ↔ tipo de ticket Jira (qué genera qué, campos mínimos) | Ninguno — ejecutable | ✅ `docs/JIRA_AGENT_MAP.md` |
 | #8 | COSMIC con histórico real de horas APB (calibrar estimaciones) | **Débora aporta histórico de proyectos (horas reales vs. estimadas)** | ⬜ Bloqueado |
-| #12 | Formalizar bucles de iteración (loops de revisión/refinamiento entre agentes) | Ninguno — ejecutable | ⬜ Pendiente |
-| #29 | Análisis de aplicabilidad de loop engineering en el framework | Ninguno — ejecutable | ⬜ Pendiente |
-| #41 | Análisis de niveles de autonomía + orquestación real de agentes (más allá de links declarativos) | Ninguno — ejecutable | ⬜ Pendiente |
-| #44 | Actualizar `context/apb/templates/AGENT.md` (usa blockquotes obsoletos, debe usar YAML frontmatter igual que `SCHEMA.md`) | Ninguno — ejecutable | ⬜ Pendiente |
-| #48 | Plantillas de arquitectura + referencia DevExpress | Ninguno — ejecutable | ⬜ Pendiente |
+| #12 | Formalizar bucles de iteración (loops de revisión/refinamiento entre agentes) | Ninguno — ejecutable | ✅ `docs/ITERATION_LOOPS.md` |
+| #29 | Análisis de aplicabilidad de loop engineering en el framework | Ninguno — ejecutable | ✅ `docs/LOOP_ENGINEERING.md` |
+| #41 | Análisis de niveles de autonomía + orquestación real de agentes (más allá de links declarativos) | Ninguno — ejecutable | ✅ `docs/AUTONOMY_LEVELS.md` |
+| #44 | Actualizar `context/apb/templates/AGENT.md` (usa blockquotes obsoletos, debe usar YAML frontmatter igual que `SCHEMA.md`) | Ninguno — ejecutable | ✅ Template actualizado a YAML frontmatter |
+| #48 | Estándares base .NET APB (APB.ARQ.BASE + APB.ARQ.APIBASE) — skill para agentes de implementación | Repos ArqBase + ArqApiBase revisados por Arquitectura APB | ✅ `skills/apb-owned/architecture/apb-arch-dotnet-base-v1.0.md` |
 | #52 | Actualizar contacto de Arquitectura en todo el framework | **Débora confirma el mail oficial a usar** | ⬜ Bloqueado |
 
 ### Sesión 14 — Documentación por audiencias (Word)
@@ -237,6 +239,9 @@ AHORA — en paralelo:
 CUANDO P3+P4 listos:
   └── Desarrollo APB: D1 → D2 → D3 → D4
 
+CUANDO P8 listo (acceso GitHub repos privados):
+  └── Agentes de implementación pueden leer ArqBase/ArqApiBase en tiempo real
+
 CUANDO D4 listo:
   ├── Admin Atlassian: A1 → A2 → A3
   └── Admin M365: M1 → M2 → M3
@@ -251,6 +256,11 @@ CUANDO insumos de Débora disponibles:
 
 CUANDO sesiones 13-22 completas:
   └── Fase #43 — etiquetado retroactivo (última fase del plan)
+
+CUANDO integraciones P1-P7 desplegadas (fase posterior):
+  └── Migrar actualización prov-arqbase/prov-arqapibase a CI automático
+      (GitHub Action en ArqBase/ArqApiBase → PR automático en APB-IA-FRAMEWORK)
+      Referencia: context/apb/policies/POLICY_ARCHITECTURE_BASE.md §5
 ```
 
 ---

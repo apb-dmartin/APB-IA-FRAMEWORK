@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 259
+- **Total Components**: 262
 
 ## Component Breakdown
 
-### Skills APB-Owned (128 total)
+### Skills APB-Owned (129 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -19,6 +19,7 @@
 | `apb-arch-decompose-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-decompose-v1.0.md` |
 | `apb-arch-design-events-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-design-events-v1.0.md` |
 | `apb-arch-design-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-design-v1.0.md` |
+| `apb-arch-dotnet-base-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-dotnet-base-v1.0.md` |
 | `apb-arch-event-driven-master-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-event-driven-master-v1.0.md` |
 | `apb-arch-event-driven-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-event-driven-v1.0.md` |
 | `apb-arch-event-storming-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-event-storming-v1.0.md` |
@@ -270,12 +271,14 @@
 | `apb-wf-sdd-full-v1.0` | Spec Driven Development | draft | `workflows/apb-wf-sdd-full-v1.0.md` |
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 
-### Providers (12 total)
+### Providers (14 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `prov-akv-v1.0` | Provider: Azure Key Vault | draft | `providers/prov-akv-v1.0.md` |
 | `prov-apb-knowledge-v1.0` | Provider: Knowledge APB | draft | `providers/prov-apb-knowledge-v1.0.md` |
+| `prov-arqapibase-v1.0` | Provider: APB.ARQ.APIBASE | draft | `providers/prov-arqapibase-v1.0.md` |
+| `prov-arqbase-v1.0` | Provider: APB.ARQ.BASE | draft | `providers/prov-arqbase-v1.0.md` |
 | `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-v1.0` | Provider: Azure MCP | draft | `providers/prov-azure-v1.0.md` |

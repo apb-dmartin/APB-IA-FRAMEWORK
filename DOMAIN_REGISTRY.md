@@ -12,7 +12,7 @@
 |----|--------|--------|-------|
 | `dev` | Development | 27 | 🔵 |
 | `qa` | Quality Assurance | 14 | 🟢 |
-| `arch` | Architecture | 12 | 🟣 |
+| `arch` | Architecture | 13 | 🟣 |
 | `disc` | Discovery | 12 | 🟡 |
 | `plat` | Platform | 12 | 🟠 |
 | `sec` | Security | 8 | 🔴 |
