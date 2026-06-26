@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 247
+- **Total Components**: 259
 
 ## Component Breakdown
 
-### Skills APB-Owned (121 total)
+### Skills APB-Owned (128 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -50,6 +50,8 @@
 | `apb-dev-simplicity-first-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-simplicity-first-v1.0.md` |
 | `apb-dev-sonar-clean-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sonar-clean-v1.0.md` |
 | `apb-dev-sql-fix-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-fix-v1.0.md` |
+| `apb-dev-sql-gen-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-gen-v1.0.md` |
+| `apb-dev-sql-review-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-review-v1.0.md` |
 | `apb-dev-surgical-changes-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-surgical-changes-v1.0.md` |
 | `apb-dev-template-update-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-template-update-v1.0.md` |
 | `apb-disc-adversarial-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-adversarial-v1.0.md` |
@@ -85,6 +87,9 @@
 | `apb-gov-standards-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-standards-v1.0.md` |
 | `apb-ops-debt-remediation-plan-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-debt-remediation-plan-v1.0.md` |
 | `apb-ops-dependency-audit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-dependency-audit-v1.0.md` |
+| `apb-ops-incident-diagnose-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-diagnose-v1.0.md` |
+| `apb-ops-incident-escalate-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-escalate-v1.0.md` |
+| `apb-ops-incident-triage-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-triage-v1.0.md` |
 | `apb-ops-observability-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-observability-v1.0.md` |
 | `apb-ops-operability-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-operability-v1.0.md` |
 | `apb-ops-perf-bottleneck-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-perf-bottleneck-v1.0.md` |
@@ -115,6 +120,8 @@
 | `apb-pm-sprint-planning-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-sprint-planning-v1.0.md` |
 | `apb-pm-task-breakdown-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-task-breakdown-v1.0.md` |
 | `apb-qa-anonymize-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-anonymize-v1.0.md` |
+| `apb-qa-framework-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-framework-v1.0.md` |
+| `apb-qa-pipeline-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-pipeline-v1.0.md` |
 | `apb-qa-post-migration-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-post-migration-v1.0.md` |
 | `apb-qa-readiness-check-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-readiness-check-v1.0.md` |
 | `apb-qa-release-ready-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-release-ready-v1.0.md` |
@@ -191,7 +198,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (25 total)
+### Agentes (26 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -206,6 +213,7 @@
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents/apb-agent-finops-v1.0.md` |
 | `apb-agent-governance-v1.0` | Governance Agent | draft | `agents/apb-agent-governance-v1.0.md` |
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
+| `apb-agent-incident-support-v1.0` | Incident Support | draft | `agents/apb-agent-incident-support-v1.0.md` |
 | `apb-agent-meta-builder-v1.0` | Meta Builder Agent | draft | `agents/apb-agent-meta-builder-v1.0.md` |
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
@@ -221,7 +229,7 @@
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
 
-### Subagentes (20 total)
+### Subagentes (23 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -239,6 +247,9 @@
 | `apb-sub-obs-grafana-v1.0` | Grafana + Prometheus Dashboard Subagent | draft | `subagents/apb-sub-obs-grafana-v1.0.md` |
 | `apb-sub-obs-powerbi-v1.0` | Power BI Dashboard Subagent | draft | `subagents/apb-sub-obs-powerbi-v1.0.md` |
 | `apb-sub-ops-azure-v1.0` | Azure Monitor Subagent | draft | `subagents/apb-sub-ops-azure-v1.0.md` |
+| `apb-sub-ops-iis-apache-v1.0` | Diagnóstico IIS / Apache / Tomcat | draft | `subagents/apb-sub-ops-iis-apache-v1.0.md` |
+| `apb-sub-ops-network-v1.0` | Diagnóstico Red / DNS / Firewall | draft | `subagents/apb-sub-ops-network-v1.0.md` |
+| `apb-sub-ops-oracle-v1.0` | Diagnóstico Oracle DB | draft | `subagents/apb-sub-ops-oracle-v1.0.md` |
 | `apb-sub-plat-ghactions-v1.0` | GitHub Actions Subagent | draft | `subagents/apb-sub-plat-ghactions-v1.0.md` |
 | `apb-sub-plat-jenkins-v1.0` | Jenkins Specialist Subagent | draft | `subagents/apb-sub-plat-jenkins-v1.0.md` |
 | `apb-sub-qa-e2e-v1.0` | E2E Testing Subagent | draft | `subagents/apb-sub-qa-e2e-v1.0.md` |
@@ -246,12 +257,13 @@
 | `apb-sub-qa-unit-v1.0` | Unit Testing Subagent | draft | `subagents/apb-sub-qa-unit-v1.0.md` |
 | `apb-sub-sec-ens-v1.0` | ENS Compliance Subagent | draft | `subagents/apb-sub-sec-ens-v1.0.md` |
 
-### Workflows (7 total)
+### Workflows (8 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `apb-wf-cloud-migration-v1.0` | Cloud Migration | draft | `workflows/apb-wf-cloud-migration-v1.0.md` |
 | `apb-wf-code-review-v1.0` | Code Review Asistido | draft | `workflows/apb-wf-code-review-v1.0.md` |
+| `apb-wf-incident-l1-v1.0` | Gestión de Incidencia L1 | draft | `workflows/apb-wf-incident-l1-v1.0.md` |
 | `apb-wf-legacy-onboarding-v1.0` | Legacy Onboarding | draft | `workflows/apb-wf-legacy-onboarding-v1.0.md` |
 | `apb-wf-qa-evidence-v1.0` | QA & Evidence | draft | `workflows/apb-wf-qa-evidence-v1.0.md` |
 | `apb-wf-risk-exception-v1.0` | Risk & Exception | draft | `workflows/apb-wf-risk-exception-v1.0.md` |

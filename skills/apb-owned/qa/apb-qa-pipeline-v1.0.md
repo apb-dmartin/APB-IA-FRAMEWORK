@@ -111,7 +111,7 @@ Cuando un equipo APB solicita revisión del pipeline antes de un despliegue a pr
 
 Semáforo: 🔴 No apto  
 Hallazgos:
-- **Crítico:** API key en texto plano en línea 47 (`API_KEY: "sk-..."`) — mover a GitHub Secrets
+- **Crítico:** Credencial en texto plano en línea 47 (variable `API_KEY` con valor literal) — mover a GitHub Secrets
 - **Crítico:** Ausencia de gate de aprobación humana antes del step `deploy-production`
 
 Pipeline corregido: incluye `environment: production` con required reviewers y `${{ secrets.API_KEY }}`.

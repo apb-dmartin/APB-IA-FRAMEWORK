@@ -7,6 +7,8 @@ status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "operation"
 autonomy_level: 2
+parent_agent: "apb-agent-incident-support-v1.0"
+specialty: "network-dns-firewall"
 created_date: "2026-06-26"
 review_date: "2026-06-26"
 ---
