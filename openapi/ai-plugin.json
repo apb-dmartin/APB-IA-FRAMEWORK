@@ -1,0 +1,137 @@
+{
+  "$schema": "https://aka.ms/json-schemas/copilot-extensions/v2.1/plugin.schema.json",
+  "schema_version": "v2.1",
+  "name_for_human": "APB AI Framework",
+  "name_for_model": "apb_ai_framework",
+  "description_for_human": "Invoca los agentes de IA del Port de Barcelona: genera specs, mockups, documentación, análisis de riesgo y más desde el chat de M365 Copilot.",
+  "description_for_model": "Invoca agentes especializados del APB AI Framework del Port de Barcelona. Disponibles: apb-agent-spec-engineer-v1.0 (genera especificaciones funcionales desde Jira o documentos), apb-agent-ux-mockup-v1.0 (genera mockups de pantalla y prototipos HTML), apb-agent-documentation-v1.0 (genera documentación técnica y ADRs), apb-agent-tech-discovery-v1.0 (análisis técnico y de deuda), apb-agent-risk-exception-v1.0 (evaluación de riesgos de IA), apb-agent-business-analyst-v1.0 (análisis funcional), apb-gov-ai-risk-gate-v1.0 (evaluación de cumplimiento de política de IA APB). IMPORTANTE: todo output tiene ai_generated=true y puede requerir revisión humana (human_review_required). Siempre informar al usuario si human_review_required=true antes de que use el artefacto. Nunca aprobar artefactos en nombre del usuario.",
+  "auth": {
+    "type": "OAuthPluginVault",
+    "reference_id": "apb-framework-oauth-registration"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://apim.portdebarcelona.cat/ai-framework/v1/openapi.yaml"
+  },
+  "logo_url": "https://apim.portdebarcelona.cat/ai-framework/static/logo-apb-192.png",
+  "contact_email": "arquitectura@portdebarcelona.cat",
+  "legal_info_url": "https://intranet.portdebarcelona.cat/politica-ia",
+  "privacy_policy_url": "https://intranet.portdebarcelona.cat/politica-privacidad",
+  "functions": [
+    {
+      "name": "invokeAgent",
+      "description": "Invoca un agente del APB AI Framework con una solicitud en lenguaje natural. Usar cuando el usuario pide generar una spec, mockup, documentación, análisis técnico o evaluación de riesgo.",
+      "parameters": {
+        "type": "object",
+        "required": ["agentId", "user_request"],
+        "properties": {
+          "agentId": {
+            "type": "string",
+            "description": "ID del agente a invocar. Elegir según el tipo de tarea: 'apb-agent-spec-engineer-v1.0' para specs, 'apb-agent-ux-mockup-v1.0' para mockups, 'apb-agent-documentation-v1.0' para documentación, 'apb-agent-tech-discovery-v1.0' para análisis técnico, 'apb-agent-risk-exception-v1.0' para gestión de riesgos.",
+            "enum": [
+              "apb-agent-spec-engineer-v1.0",
+              "apb-agent-ux-mockup-v1.0",
+              "apb-agent-documentation-v1.0",
+              "apb-agent-tech-discovery-v1.0",
+              "apb-agent-risk-exception-v1.0",
+              "apb-agent-business-analyst-v1.0",
+              "apb-agent-compliance-audit-v1.0",
+              "apb-agent-tech-debt-v1.0"
+            ]
+          },
+          "user_request": {
+            "type": "string",
+            "description": "Solicitud del usuario en lenguaje natural tal como la escribió."
+          },
+          "context": {
+            "type": "object",
+            "description": "Contexto adicional opcional.",
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": ["jira", "sharepoint", "description", "file"],
+                "description": "Tipo de fuente de entrada. Usar 'jira' si el usuario menciona tickets o proyectos Jira; 'sharepoint' si menciona documentos o ficheros; 'description' si solo da texto libre."
+              },
+              "project_key": {
+                "type": "string",
+                "description": "Clave del proyecto Jira si source=jira (p. ej. GISPEM, PORTALDOCKS)."
+              },
+              "sharepoint_url": {
+                "type": "string",
+                "description": "URL del documento SharePoint si source=sharepoint."
+              }
+            }
+          },
+          "delivery": {
+            "type": "object",
+            "description": "Cómo entregar el artefacto. Por defecto: inline en el chat.",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "enum": ["inline", "sharepoint", "teams", "teams_and_sharepoint"],
+                "default": "inline",
+                "description": "Usar 'sharepoint' para artefactos grandes (specs, HTML). Usar 'inline' para respuestas cortas (evaluaciones de riesgo)."
+              },
+              "sharepoint_path": {
+                "type": "string",
+                "description": "Ruta SharePoint destino. Si no se especifica, usar '/sites/Arquitectura/Artefactos-IA/'."
+              }
+            }
+          }
+        }
+      },
+      "returns": {
+        "type": "object",
+        "description": "job_id para hacer polling, status_url, y human_review_required que SIEMPRE debe comunicarse al usuario."
+      }
+    },
+    {
+      "name": "getJobStatus",
+      "description": "Consulta el estado de una invocación de agente en curso. Usar cuando el usuario pregunta '¿está listo?' o tras recibir un job_id de invokeAgent.",
+      "parameters": {
+        "type": "object",
+        "required": ["agentId", "jobId"],
+        "properties": {
+          "agentId": {
+            "type": "string",
+            "description": "ID del agente que generó el job."
+          },
+          "jobId": {
+            "type": "string",
+            "description": "UUID del job devuelto por invokeAgent."
+          }
+        }
+      }
+    },
+    {
+      "name": "listAgents",
+      "description": "Lista los agentes disponibles del framework. Usar cuando el usuario pregunta qué puede hacer el framework o qué agentes hay disponibles.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Filtrar por dominio: development, architecture, governance, qa, security, platform."
+          }
+        }
+      }
+    }
+  ],
+  "capabilities": {
+    "localization": {},
+    "conversation_starters": [
+      {
+        "text": "Genera una spec funcional de la pantalla de gestión de buques a partir de los tickets del proyecto GISPEM en Jira"
+      },
+      {
+        "text": "Diseña un mockup del dashboard de operaciones portuarias con KPIs de atraques"
+      },
+      {
+        "text": "Evalúa el riesgo de IA de este artefacto antes de enviarlo al equipo"
+      },
+      {
+        "text": "¿Qué agentes del framework APB puedo usar desde aquí?"
+      }
+    ]
+  }
+}

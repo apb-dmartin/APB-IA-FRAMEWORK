@@ -1,0 +1,23 @@
+{
+  "name": "apb-rovo-agents",
+  "version": "1.0.0",
+  "description": "Forge App — APB AI Framework Rovo Agents",
+  "main": "src/functions/invokeFramework.js",
+  "scripts": {
+    "build": "forge build",
+    "deploy": "forge deploy",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "@forge/api": "^4.0.0",
+    "@forge/resolver": "^1.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "UNLICENSED",
+  "private": true
+}

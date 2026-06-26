@@ -1,0 +1,163 @@
+manifest_version: 2
+name: APB AI Framework — Rovo Agents
+id: apb-rovo-agents
+version: 1.0.0
+description: >
+  Expone los agentes del APB AI Framework como Rovo Agents personalizados en el
+  tenant Atlassian APB. Los usuarios de Jira y Confluence pueden invocar los agentes
+  APB directamente desde el chat de Rovo sin salir de su entorno Atlassian.
+
+contact:
+  email: arquitectura@portdebarcelona.cat
+
+app:
+  id: apb-rovo-agents
+  name: APB AI Framework
+
+permissions:
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:jira-user
+    - read:confluence-content.all
+    - write:confluence-content
+    - read:confluence-space.summary
+    - read:rovo:user
+  external:
+    fetch:
+      client:
+        # Endpoint del APB AI Framework en Azure APIM
+        # Arquitectura APB debe confirmar este dominio antes de publicar la app
+        - https://apim.portdebarcelona.cat
+
+modules:
+
+  rovo:agents:
+
+    - key: apb-spec-from-jira
+      name: APB — Spec desde historial Jira
+      description: >
+        Analiza los tickets de un proyecto Jira y genera la especificación
+        funcional actualizada. El resultado se publica en Confluence y se
+        crea un ticket de revisión asignado al Product Owner.
+      prompt: |
+        Eres el agente APB Spec Engineer del Port de Barcelona.
+        Cuando el usuario te pida generar o actualizar una especificación funcional:
+        1. Identifica el proyecto Jira relevante del contexto.
+        2. Llama al APB AI Framework API (POST /agents/apb-agent-spec-engineer-v1.0/invoke)
+           con la solicitud del usuario y el project_key detectado.
+        3. Haz polling del estado del job hasta que esté completado (GET /agents/{id}/jobs/{jobId}).
+        4. Presenta el resultado al usuario. Si human_review_required=true, informa
+           explícitamente: "Este artefacto ha sido generado por IA y debe ser
+           revisado por un humano antes de su uso en producción."
+        5. Si se solicitó entregar el resultado en Confluence, confirma la URL de la
+           página creada o actualizada.
+        Nunca apruebes ni valides el artefacto tú mismo — la validación siempre
+        requiere acción humana explícita.
+      conversationStarters:
+        - Genera la spec de la pantalla de gestión de buques a partir de los tickets de GISPEM
+        - Extrae los requisitos del último sprint del proyecto Portal Docks
+        - Actualiza la spec del módulo de atraques con los cambios de los últimos 3 meses
+        - ¿Cuál es el comportamiento esperado del módulo de gestión de expedientes según Jira?
+      externalAuth:
+        - key: apb-framework-auth
+          displayName: APB AI Framework
+          apiDefinition:
+            type: openapi
+            url: https://apim.portdebarcelona.cat/ai-framework/v1/openapi.yaml
+
+    - key: apb-tech-discovery
+      name: APB — Discovery Técnico
+      description: >
+        Analiza la arquitectura y el estado técnico de un proyecto APB y genera
+        un informe de discovery: deuda técnica, dependencias, vulnerabilidades,
+        estado de cumplimiento Sonar.
+      prompt: |
+        Eres el agente APB Tech Discovery del Port de Barcelona.
+        Cuando el usuario pida un análisis técnico o de deuda:
+        1. Identifica el proyecto del contexto (Jira, Confluence, o descripción del usuario).
+        2. Llama al APB AI Framework API (POST /agents/apb-agent-tech-discovery-v1.0/invoke).
+        3. Presenta el resultado. Si human_review_required=true, indica que el informe
+           debe ser validado por el equipo de Arquitectura APB antes de actuar sobre él.
+        Nunca tomes decisiones técnicas ni crees tickets de remediación sin validación humana previa.
+      conversationStarters:
+        - Analiza el estado técnico del proyecto GISPEM
+        - ¿Qué deuda técnica tiene detectada el proyecto Portal Docks?
+        - Genera el informe de discovery para el sistema de gestión de atraques
+      externalAuth:
+        - key: apb-framework-auth
+          displayName: APB AI Framework
+          apiDefinition:
+            type: openapi
+            url: https://apim.portdebarcelona.cat/ai-framework/v1/openapi.yaml
+
+    - key: apb-documentation
+      name: APB — Generador de Documentación
+      description: >
+        Genera o actualiza documentación técnica y funcional en Confluence: manuales
+        de usuario, ADRs, documentación de arquitectura, OpenAPI specs.
+      prompt: |
+        Eres el agente APB Documentation del Port de Barcelona.
+        Cuando el usuario pida generar o actualizar documentación:
+        1. Determina el tipo de documentación (manual, ADR, arquitectura, API).
+        2. Llama al APB AI Framework API (POST /agents/apb-agent-documentation-v1.0/invoke)
+           con delivery.channel = "sharepoint" para artefactos largos.
+        3. Confirma al usuario la URL de Confluence donde se ha publicado la documentación.
+        4. Si human_review_required=true, informa que debe ser revisada antes de distribuirse.
+      conversationStarters:
+        - Genera el manual de usuario del módulo de gestión de atraques
+        - Crea el ADR de la decisión de usar DevExtreme en el nuevo portal
+        - Actualiza la documentación de arquitectura del proyecto Portal Docks
+      externalAuth:
+        - key: apb-framework-auth
+          displayName: APB AI Framework
+          apiDefinition:
+            type: openapi
+            url: https://apim.portdebarcelona.cat/ai-framework/v1/openapi.yaml
+
+    - key: apb-risk-gate
+      name: APB — Evaluación de Riesgos IA
+      description: >
+        Evalúa si un artefacto generado por IA cumple las políticas APB (ENS, RGPD,
+        política de uso de IA) antes de aprobarlo. Devuelve un semáforo de riesgo
+        y las acciones de mitigación requeridas.
+      prompt: |
+        Eres el agente APB Risk Gate del Port de Barcelona.
+        Cuando el usuario te pida evaluar el riesgo de un artefacto generado por IA:
+        1. Solicita el artefacto si no está adjunto (puede ser texto, URL de Confluence, o descripción).
+        2. Llama al APB AI Framework API (POST /skills/apb-gov-ai-risk-gate-v1.0/invoke).
+        3. Presenta el resultado de forma clara: semáforo (VERDE/AMARILLO/ROJO),
+           riesgos detectados, y acciones de mitigación requeridas.
+        4. Recuerda siempre que la aprobación final es humana — tú presentas el análisis,
+           el humano decide.
+      conversationStarters:
+        - Evalúa el riesgo de este mockup antes de enviarlo al equipo de desarrollo
+        - ¿Cumple este código generado con las políticas de seguridad APB?
+        - Revisa si este documento de spec cumple la política de IA del Port
+      externalAuth:
+        - key: apb-framework-auth
+          displayName: APB AI Framework
+          apiDefinition:
+            type: openapi
+            url: https://apim.portdebarcelona.cat/ai-framework/v1/openapi.yaml
+
+  function:
+    - key: apb-framework-invoker
+      handler: src/functions/invokeFramework.js
+
+resources:
+  images:
+    logo: static/logo-apb-192.png
+
+environments:
+  - key: APB_FRAMEWORK_API_URL
+    description: URL base del APB AI Framework en Azure APIM
+    defaultValue: https://apim.portdebarcelona.cat/ai-framework/v1
+  - key: APB_FRAMEWORK_CLIENT_ID
+    description: Client ID de la app Azure AD registrada para la Forge App
+    defaultValue: ""
+    secret: false
+  - key: APB_FRAMEWORK_CLIENT_SECRET
+    description: Client Secret (gestionar via Forge secrets, nunca en texto plano)
+    defaultValue: ""
+    secret: true

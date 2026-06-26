@@ -1,0 +1,520 @@
+openapi: "3.0.3"
+
+info:
+  title: APB AI Framework API
+  description: >
+    API REST del APB AI Framework. Expone los agentes y skills del framework
+    para su consumo desde Microsoft 365 Copilot (API Plugin), Rovo (Forge App)
+    y cualquier sistema interno APB via Azure API Management.
+
+    Todos los endpoints requieren autenticación OAuth 2.0 (Client Credentials
+    para llamadas de sistema; Authorization Code para llamadas en nombre de usuario).
+    Las credenciales se gestionan en Azure Key Vault APB — nunca se pasan directamente
+    al framework.
+
+    Aviso: todo output generado lleva el flag `ai_generated: true`. El consumidor
+    (M365 Copilot, Rovo, etc.) es responsable de mostrar el aviso al usuario final.
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  license:
+    name: Uso interno APB
+    url: https://intranet.portdebarcelona.cat/politica-ia
+
+servers:
+  - url: https://apim.portdebarcelona.cat/ai-framework/v1
+    description: Azure API Management APB — producción
+  - url: https://apim-dev.portdebarcelona.cat/ai-framework/v1
+    description: Azure API Management APB — desarrollo/pruebas
+
+security:
+  - oauth2_client_credentials: []
+  - oauth2_authorization_code: []
+
+tags:
+  - name: agents
+    description: Invocación de agentes del framework
+  - name: skills
+    description: Invocación directa de skills
+  - name: catalog
+    description: Consulta del catálogo de componentes disponibles
+  - name: status
+    description: Estado y salud del framework
+
+# ---------------------------------------------------------------------------
+paths:
+# ---------------------------------------------------------------------------
+
+  /agents:
+    get:
+      tags: [catalog]
+      operationId: listAgents
+      summary: Lista todos los agentes disponibles
+      description: >
+        Devuelve el catálogo de agentes del framework con sus metadatos
+        (id, nombre, descripción, dominio, estado, skills disponibles).
+        Útil para que M365 Copilot o Rovo presenten al usuario qué agentes puede invocar.
+      parameters:
+        - name: domain
+          in: query
+          description: Filtrar por dominio funcional (p. ej. `development`, `architecture`, `governance`)
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filtrar por estado (`approved`, `candidate`, `draft`)
+          schema:
+            type: string
+            enum: [approved, candidate, draft]
+      responses:
+        "200":
+          description: Lista de agentes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  agents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AgentSummary"
+                  total:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /agents/{agentId}/invoke:
+    post:
+      tags: [agents]
+      operationId: invokeAgent
+      summary: Invoca un agente del framework
+      description: >
+        Envía una solicitud a un agente APB. El agente ejecuta su flujo completo
+        (análisis → skills → checkpoints humanos si aplica) y devuelve el artefacto
+        generado junto con los puntos de revisión humana pendientes.
+
+        El campo `human_review_required` indica si el output debe pasar por validación
+        antes de usarse — nunca omitir este check.
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          description: >
+            ID del agente. Ejemplos: `apb-agent-spec-engineer-v1.0`,
+            `apb-agent-ux-mockup-v1.0`, `apb-agent-documentation-v1.0`,
+            `apb-agent-tech-discovery-v1.0`, `apb-agent-risk-exception-v1.0`
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgentInvokeRequest"
+            examples:
+              spec_desde_jira:
+                summary: Generar spec desde tickets Jira
+                value:
+                  user_request: "Genera la spec de la pantalla de gestión de buques a partir de los tickets del proyecto GISPEM"
+                  context:
+                    project_key: "GISPEM"
+                    source: "jira"
+                    sprint_filter: "Sprint 14"
+                  delivery:
+                    channel: "sharepoint"
+                    sharepoint_path: "/sites/Arquitectura/Artefactos-IA/specs/"
+              mockup_desde_descripcion:
+                summary: Generar mockup de pantalla
+                value:
+                  user_request: "Diseña la pantalla de dashboard de operaciones portuarias con KPIs de buques, atraques y mercancías"
+                  context:
+                    source: "description"
+                  delivery:
+                    channel: "teams_and_sharepoint"
+                    teams_channel_id: "19:abc123@thread.tacv2"
+                    sharepoint_path: "/sites/Arquitectura/Artefactos-IA/mockups/"
+      responses:
+        "202":
+          description: Solicitud aceptada — procesamiento asíncrono
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentInvokeResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /agents/{agentId}/jobs/{jobId}:
+    get:
+      tags: [agents]
+      operationId: getJobStatus
+      summary: Consulta el estado de una invocación en curso
+      description: >
+        Las invocaciones de agentes son asíncronas. Usa este endpoint para
+        hacer polling del estado (pending → running → completed | failed).
+        Cuando `status = completed`, el campo `result` contiene el artefacto.
+      parameters:
+        - name: agentId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Estado del job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobStatus"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /skills:
+    get:
+      tags: [catalog]
+      operationId: listSkills
+      summary: Lista las skills disponibles
+      parameters:
+        - name: domain
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: "`apb-owned` o `third_party`"
+          schema:
+            type: string
+            enum: [apb-owned, third_party]
+      responses:
+        "200":
+          description: Lista de skills
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  skills:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SkillSummary"
+                  total:
+                    type: integer
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /skills/{skillId}/invoke:
+    post:
+      tags: [skills]
+      operationId: invokeSkill
+      summary: Invoca una skill directamente
+      description: >
+        Invocación directa de una skill sin pasar por un agente orquestador.
+        Útil cuando el consumidor ya sabe exactamente qué skill necesita.
+        Para flujos complejos, preferir la invocación via agente (`/agents/{id}/invoke`).
+      parameters:
+        - name: skillId
+          in: path
+          required: true
+          description: >
+            ID de la skill. Ejemplos: `apb-gov-ai-risk-gate-v1.0`,
+            `apb-dev-code-review-v1.0`, `apb-arch-design-events-v1.0`
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkillInvokeRequest"
+      responses:
+        "200":
+          description: Resultado de la skill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillInvokeResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /health:
+    get:
+      tags: [status]
+      operationId: healthCheck
+      summary: Estado de salud del framework
+      security: []
+      responses:
+        "200":
+          description: Framework operativo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  catalog_components:
+                    type: integer
+                    example: 208
+
+# ---------------------------------------------------------------------------
+components:
+# ---------------------------------------------------------------------------
+
+  securitySchemes:
+    oauth2_client_credentials:
+      type: oauth2
+      description: Para llamadas de sistema (Forge App, APIM interno)
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token
+          scopes:
+            framework.read: Consultar catálogo y estado
+            framework.execute: Invocar agentes y skills
+    oauth2_authorization_code:
+      type: oauth2
+      description: Para llamadas en nombre del usuario (M365 Copilot plugin)
+      flows:
+        authorizationCode:
+          authorizationUrl: https://apim.portdebarcelona.cat/ai-framework/oauth/authorize
+          tokenUrl: https://apim.portdebarcelona.cat/ai-framework/oauth/token
+          scopes:
+            framework.read: Consultar catálogo y estado
+            framework.execute: Invocar agentes y skills
+
+  schemas:
+
+    AgentSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "apb-agent-spec-engineer-v1.0"
+        name:
+          type: string
+          example: "Spec Engineer"
+        description:
+          type: string
+        domain:
+          type: string
+          example: "development"
+        status:
+          type: string
+          enum: [draft, candidate, approved]
+        skills:
+          type: array
+          items:
+            type: string
+          example: ["apb-dev-api-design-v1.0", "apb-dev-code-review-v1.0"]
+        human_review_points:
+          type: array
+          items:
+            type: string
+
+    SkillSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        domain:
+          type: string
+        autonomy_level:
+          type: integer
+          minimum: 0
+          maximum: 4
+        status:
+          type: string
+
+    AgentInvokeRequest:
+      type: object
+      required: [user_request]
+      properties:
+        user_request:
+          type: string
+          description: Solicitud en lenguaje natural del usuario
+          maxLength: 4000
+        context:
+          type: object
+          description: Contexto adicional para el agente
+          properties:
+            source:
+              type: string
+              description: Tipo de fuente de entrada
+              enum: [jira, sharepoint, description, file]
+            project_key:
+              type: string
+              description: Clave del proyecto Jira (si source = jira)
+            sprint_filter:
+              type: string
+            sharepoint_url:
+              type: string
+              description: URL del documento SharePoint (si source = sharepoint)
+            file_content_base64:
+              type: string
+              description: Contenido del fichero en base64 (si source = file, máx 10MB)
+        delivery:
+          type: object
+          description: Cómo y dónde entregar el artefacto generado
+          properties:
+            channel:
+              type: string
+              enum: [inline, sharepoint, teams, teams_and_sharepoint]
+              default: inline
+            sharepoint_path:
+              type: string
+              description: Ruta relativa en SharePoint APB donde depositar el artefacto
+              example: "/sites/Arquitectura/Artefactos-IA/specs/"
+            teams_channel_id:
+              type: string
+              description: ID del canal de Teams donde notificar
+        user_id:
+          type: string
+          description: UPN del usuario que invoca (para auditoría y notificaciones)
+          example: "dmartin@portdebarcelona.cat"
+
+    AgentInvokeResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        agent_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        status_url:
+          type: string
+          format: uri
+          description: URL para hacer polling del estado
+        estimated_duration_seconds:
+          type: integer
+        ai_generated:
+          type: boolean
+          example: true
+        human_review_required:
+          type: boolean
+          description: >
+            Si true, el artefacto generado DEBE pasar por revisión humana antes
+            de usarse en producción. El consumidor debe informar al usuario de este requisito.
+
+    JobStatus:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        progress_message:
+          type: string
+          example: "Analizando tickets Jira del proyecto GISPEM..."
+        result:
+          type: object
+          description: Presente solo cuando status = completed
+          properties:
+            artifact_type:
+              type: string
+              enum: [markdown, html, yaml, pdf_link, sharepoint_link]
+            content:
+              type: string
+              description: Contenido inline (si artifact_type != *_link)
+            url:
+              type: string
+              format: uri
+              description: URL de acceso al artefacto (si entregado en SharePoint/Teams)
+            human_review_required:
+              type: boolean
+            review_checklist:
+              type: array
+              items:
+                type: string
+              description: Puntos de revisión humana específicos para este artefacto
+        error:
+          type: object
+          description: Presente solo cuando status = failed
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+
+    SkillInvokeRequest:
+      type: object
+      required: [input]
+      properties:
+        input:
+          type: object
+          description: >
+            Inputs específicos de cada skill. Consultar la documentación de la skill
+            en el catálogo para los campos exactos.
+          additionalProperties: true
+        user_id:
+          type: string
+          example: "dmartin@portdebarcelona.cat"
+
+    SkillInvokeResponse:
+      type: object
+      properties:
+        skill_id:
+          type: string
+        output:
+          type: object
+          additionalProperties: true
+        ai_generated:
+          type: boolean
+          example: true
+        human_review_required:
+          type: boolean
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: string
+
+  responses:
+    Unauthorized:
+      description: Token ausente, expirado o sin los scopes necesarios
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: Solicitud malformada o parámetros inválidos
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Agente o skill no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

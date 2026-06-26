@@ -59,7 +59,9 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | 11 | Sonar + incidencias técnicas (+ posible deuda técnica/Jira, punto #25) | ✅ **Completa** — ver sección 11 |
 | 12 | Análisis de riesgos para validación Ciber/Arq/QA | ✅ **Completa** — ver sección 12 |
 | QA | Testing — auditoría `apb-ai-skills`, resolver solape | ✅ **Completa** — ver sección 13 |
-| Frontend | Mockups, generación frontend, catálogo de componentes | ❌ Pendiente |
+| Frontend | Mockups, generación frontend, catálogo de componentes | ✅ **Completa** |
+| Design System | Sistema de diseño APB sobre DevExtreme — repo propio `APB-DESIGN-SYSTEM` | ✅ **Completa** (v1.3.0, 2026-06-26) |
+| 15 | Integraciones Microsoft + gaps Rovo / M365 Copilot | ✅ **Completa** (2026-06-26) — artefactos en `openapi/`, `forge/`, `docs/`. Pendiente de equipo APB: ver `docs/HANDOFF_SESION15_INTEGRACIONES.md` |
 | 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ❌ Pendiente |
 | 14 | Documentación por audiencias (Word) | ❌ Pendiente |
 
