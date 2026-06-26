@@ -116,3 +116,13 @@ Cuando `apb-ops-incident-diagnose-v1.0` determina que la causa raíz supera la c
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Footer obligatorio** (última línea del cuerpo del mensaje/correo):
+  `⚠️ Generado por IA (APB AI Framework — apb-ops-incident-escalate-v1.0) — revisado y enviado por [nombre].`

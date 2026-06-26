@@ -105,3 +105,15 @@ Cuando un desarrollador finaliza una tarea y necesita crear una PR para mergear 
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Label GitHub**: `ai-generated` — añadir al crear el PR
+- **Footer en descripción** (antes de cerrar el texto):
+  > ⚠️ **Generado por IA** (APB AI Framework — apb-dev-pr-doc-v1.0) — revisado y validado por [nombre] antes de publicar este PR.
+- **Commit origen** — prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`

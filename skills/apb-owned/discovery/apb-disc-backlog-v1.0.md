@@ -110,3 +110,14 @@ Tras aprobarse la especificación técnica, o cuando se necesita planificar un n
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Label Jira**: `ia-generado` — campo _Labels_ del ticket
+- **Footer en descripción del ticket**:
+  `_Generado por IA (APB AI Framework — apb-disc-backlog-v1.0). Requiere validación humana antes de ejecutar._`

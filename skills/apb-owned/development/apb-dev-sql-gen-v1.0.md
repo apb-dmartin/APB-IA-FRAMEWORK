@@ -162,3 +162,14 @@ ORDER BY
 ---
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **SQL generado** — primera línea: `-- [IA-GEN] Generado por APB AI Framework (apb-dev-sql-gen-v1.0) — pendiente revisión humana`
+- **Commit** — prefijo `[ai-gen]` en el mensaje + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`
+- **PR asociado** — label `ai-generated` en GitHub + footer en descripción del PR

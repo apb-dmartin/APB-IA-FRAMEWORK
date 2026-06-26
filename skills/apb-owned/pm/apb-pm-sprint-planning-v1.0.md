@@ -215,3 +215,14 @@ Sprint Board: Flujo de Eventos
 ```
 [epics definidos] → apb:sprint-planning → [sprint-status.yaml] → apb:subagent-dev
 ```
+
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Label Jira**: `ia-generado` — campo _Labels_ del ticket
+- **Footer en descripción del ticket**:
+  `_Generado por IA (APB AI Framework — apb-pm-sprint-planning-v1.0). Requiere validación humana antes de ejecutar._`
