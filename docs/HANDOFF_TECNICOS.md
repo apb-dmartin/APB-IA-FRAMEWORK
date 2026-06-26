@@ -2,9 +2,9 @@
 
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Administración)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-26 (Sesión 13)  
+> **Última actualización:** 2026-06-26  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** Framework construido (260 componentes, 22 sesiones ejecutadas), integraciones especificadas, pendiente despliegue. Sesión 13 parcialmente cerrada (3 puntos bloqueados). Sesión 22 parcialmente cerrada (#49 bloqueado).
+> **Estado global:** Framework construido (262 componentes), integraciones especificadas, pendiente despliegue. Ver estado detallado de construcción en `discovery/CONTINUIDAD_PROYECTO.md`.
 
 ---
 
@@ -101,11 +101,14 @@ Ejecutable mayoritariamente por Arquitectura APB. Algunos puntos requieren insum
 | Documento Word: Guía de uso para analistas y desarrolladores | Equipos técnicos APB | ⬜ Pendiente |
 | Documento Word: Manual de administración del framework | Plataforma / Operaciones | ⬜ Pendiente |
 
-### Sesión 16 — Análisis de riesgo completo
+### Sesión 16 — Análisis de riesgo completo ✅ CONSTRUIDO
 
-| Punto | Descripción | Insumo requerido | Estado |
-|-------|-------------|-----------------|--------|
-| #16 | Informe de riesgo organizacional completo (todos los agentes, clasificación, controles) | **Débora aporta plantilla de informe de riesgo APB y procedimiento corporativo de excepción** | ⬜ Bloqueado |
+El skill está listo. Requiere que el equipo lo use en el proceso de validación antes de producción:
+
+| Acción para el equipo | Responsable | Estado |
+|----------------------|------------|--------|
+| Ejecutar `apb-gov-org-risk-report-v1.0` sobre cada agente y skill antes del despliegue en producción | Arquitectura APB | ⬜ Pendiente |
+| Obtener firma de aprobación de Ciber / Arq / QA en los informes generados | Dirección / Comité TIC | ⬜ Pendiente |
 
 ### Sesión 19 — Evaluaciones de terceros pendientes
 
@@ -194,18 +197,20 @@ import { APBButton } from './components/core/APBButton';
 
 | # | Tarea | Insumo requerido | Estado |
 |---|-------|-----------------|--------|
-| DC1 | Proponer el primer dominio de negocio APB usando la plantilla `scaffolding/templates/` | **Débora aporta lista de APIs/servicios por dominio (Fase 0)** | ⬜ Bloqueado |
-| DC2 | Ejecutar `scaffolding/scripts/new-domain.sh` para crear el primer bounded context | Requiere DC1 | ⬜ Bloqueado |
-| DC3 | Aprobar el primer dominio siguiendo el proceso de `GOVERNANCE.md` (estado `proposed` → `under_review` → `approved`) | Arquitectura APB | ⬜ Bloqueado |
+| DC1 | Ejecutar una sesión de análisis funcional con el subagente `apb-sub-ddd-interview-v1.0` para identificar el primer dominio APB a catalogar | Ninguno — ejecutable con cualquier área funcional APB | ⬜ Pendiente |
+| DC2 | Revisar el artefacto `domain.md` generado por el subagente y abrirlo como PR en `APB-DOMAIN-CATALOG/domains/<nombre>/` | Requiere DC1 | ⬜ Pendiente |
+| DC3 | Aprobar el dominio siguiendo el proceso de `GOVERNANCE.md` (estado `proposed` → `under_review` → `approved`) | Arquitectura APB | ⬜ Bloqueado hasta DC2 |
+
+**Nota:** El subagente ya verifica automáticamente si el dominio existe en el catálogo antes de proponer uno nuevo. El equipo solo necesita revisar el `domain.md` generado y abrir el PR — no hay que rellenar el template a mano.
 
 ### Proceso de ingesta de dominios
 
 ```
-1. Ejecutar new-domain.sh → genera carpeta en domains/<nombre>/
-2. Rellenar domain.yaml y bounded-contexts/*.yaml
-3. Abrir PR en GitHub → revisor Arquitectura APB
-4. Aprobación → estado pasa a "approved"
-5. Script de catálogo regenera catalog/DOMAINS.md automáticamente
+1. El funcional habla con apb-sub-ddd-interview-v1.0 (entrevista guiada)
+2. El subagente verifica APB-DOMAIN-CATALOG — si el dominio no existe, genera domain.md
+3. El equipo revisa el domain.md y abre PR en APB-DOMAIN-CATALOG/domains/<nombre>/
+4. Arquitectura APB revisa y aprueba el PR → estado pasa a "proposed" → "under_review" → "approved"
+5. El catálogo DOMAINS.md se actualiza
 ```
 
 ---
@@ -222,7 +227,6 @@ import { APBButton } from './components/core/APBButton';
 | 🟡 Media | Ejemplos de plantillas Word/Excel ofimáticas en uso actualmente en APB | Sesión 13 punto #6 | Ficheros Word/Excel reales |
 | 🟡 Media | Histórico de proyectos: horas reales vs. horas COSMIC estimadas | Sesión 13 punto #8 | Excel o tabla |
 | 🟡 Media | Decisión sobre distribución del Design System (npm / submodule / CDN) | DS3 + Sesión 22 punto #49 | Decisión verbal o escrita |
-| 🟠 Baja | Plantilla corporativa de informe de riesgo APB + procedimiento de excepción | Sesión 16 punto #16 | Word o PDF |
 | 🟠 Baja | URLs de repositorios externos pendientes de evaluación | Sesión 19 punto #27 | Lista de URLs |
 | 🟠 Baja | Briefing de contratación LCSP (procedimientos, plantillas, umbrales) | Sesión 20 punto #36 | Word o PDF |
 

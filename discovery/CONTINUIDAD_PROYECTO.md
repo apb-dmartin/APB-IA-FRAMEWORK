@@ -62,7 +62,10 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | Frontend | Mockups, generación frontend, catálogo de componentes | ✅ **Completa** |
 | Design System | Sistema de diseño APB sobre DevExtreme — repo propio `APB-DESIGN-SYSTEM` | ✅ **Completa** (v1.3.0, 2026-06-26) |
 | 15 | Integraciones Microsoft + gaps Rovo / M365 Copilot | ✅ **Completa** (2026-06-26) — artefactos en `openapi/`, `forge/`, `docs/`. Pendiente de equipo APB: ver `docs/HANDOFF_SESION15_INTEGRACIONES.md` |
-| 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ❌ Pendiente |
+| 16 | Skill de análisis de riesgos con procedimientos APB | ✅ **Completa** (2026-06-24) — `apb-gov-org-risk-report-v1.0` v1.2.0. Multi-framework (ENS, ISO 27001, NIST CSF 2.0, OWASP, RGPD, LCSP, WCAG 2.1 AA), recomendación APROBAR/DENEGAR/ESCALAR, plan de mitigación, alineado con `PROCEDURE_RISK_EVALUATION` + `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` |
+| 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ⚠️ **Parcial** (2026-06-26, 7/10) — bloqueados: #6 (ejemplos Word/Excel de Débora), #8 (horas COSMIC históricas de Débora), #52 (mail Jira de Arquitectura) |
+| 22/#47bis | Taxonomía de capacidades en agentes y skills | ✅ **Completa** (2026-06-26) — taxonomía APB normalizada en frontmatter |
+| 18/#54 | Subagente entrevista DDD → análisis funcional completo | ✅ **Completa** (2026-06-26) — `apb-sub-ddd-interview-v1.0` v1.3.0: vocabulario portuario (Banco A) + corporativo (Banco B: RRHH, viajes, contratación, adm. electrónica, finanzas, jurídico), Fase 1-INT (integración entre sistemas), Fase 1-EVO (evolutivo de app existente), Fase 5 verificación APB-DOMAIN-CATALOG, Fase 6 generación artefacto |
 | 14 | Documentación por audiencias (Word) | ❌ Pendiente |
 
 ## 2. Decisiones de Debora que deben respetarse (no reabrir sin pedirlo)
