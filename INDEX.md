@@ -99,8 +99,8 @@ APB-IA-FRAMEWORK/
 | operation | 13 | `apb-ops-*` |
 | architecture | 12 | `apb-arch-*` |
 | discovery | 12 | `apb-disc-*` |
-| platform | 12 | `apb-plat-*` |
 | governance | 12 | `apb-gov-*` |
+| platform | 12 | `apb-plat-*` |
 | pm | 8 | `apb-pm-*` |
 | security | 8 | `apb-sec-*` |
 | documentation | 7 | `apb-doc-*` |

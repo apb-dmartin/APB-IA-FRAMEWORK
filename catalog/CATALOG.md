@@ -17,9 +17,9 @@
 | `apb-arch-cloud-infra-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-cloud-infra-v1.0.md` |
 | `apb-arch-ddd-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-ddd-v1.0.md` |
 | `apb-arch-decompose-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-decompose-v1.0.md` |
-| `apb-arch-design-events-v1.0` | architecture | draft | `skills/apb-owned/architecture-design/apb-arch-design-events-v1.0.md` |
+| `apb-arch-design-events-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-design-events-v1.0.md` |
 | `apb-arch-design-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-design-v1.0.md` |
-| `apb-arch-event-driven-master-v1.0` | architecture | draft | `skills/apb-owned/event-driven/apb-arch-event-driven-master-v1.0.md` |
+| `apb-arch-event-driven-master-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-event-driven-master-v1.0.md` |
 | `apb-arch-event-driven-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-event-driven-v1.0.md` |
 | `apb-arch-event-storming-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-event-storming-v1.0.md` |
 | `apb-arch-security-design-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-security-design-v1.0.md` |
@@ -27,20 +27,20 @@
 | `apb-arch-validate-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-validate-v1.0.md` |
 | `apb-dev-devexpress-selector-v1.0` | design | draft | `skills/apb-owned/design/apb-dev-devexpress-selector-v1.0.md` |
 | `apb-skill-frontend-design-system-v1.0` | design | draft | `skills/apb-owned/design/apb-skill-frontend-design-system-v1.0.md` |
-| `apb-dev-api-design-v1.0` | development | draft | `skills/apb-owned/api-design/apb-dev-api-design-v1.0.md` |
+| `apb-dev-api-design-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-design-v1.0.md` |
 | `apb-dev-api-standard-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-standard-v1.0.md` |
 | `apb-dev-atomic-plan-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-atomic-plan-v1.0.md` |
 | `apb-dev-autocorrect-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-autocorrect-v1.0.md` |
 | `apb-dev-code-base-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-code-base-v1.0.md` |
-| `apb-dev-code-review-gate-v1.0` | development | draft | `skills/apb-owned/code-review/apb-dev-code-review-gate-v1.0.md` |
+| `apb-dev-code-review-gate-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-code-review-gate-v1.0.md` |
 | `apb-dev-code-review-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-code-review-v1.0.md` |
 | `apb-dev-devexpress-front-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-devexpress-front-v1.0.md` |
-| `apb-dev-frontend-devexpress-events-v1.0` | development | draft | `skills/apb-owned/frontend-integration/apb-dev-frontend-devexpress-events-v1.0.md` |
+| `apb-dev-frontend-devexpress-events-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-frontend-devexpress-events-v1.0.md` |
 | `apb-dev-gis-django-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-gis-django-v1.0.md` |
 | `apb-dev-grill-before-code-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-grill-before-code-v1.0.md` |
 | `apb-dev-impact-analysis-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-impact-analysis-v1.0.md` |
 | `apb-dev-implement-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-implement-v1.0.md` |
-| `apb-dev-implementation-patterns-v1.0` | development | draft | `skills/apb-owned/implementation-patterns/apb-dev-implementation-patterns-v1.0.md` |
+| `apb-dev-implementation-patterns-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-implementation-patterns-v1.0.md` |
 | `apb-dev-legacy-mapper-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-legacy-mapper-v1.0.md` |
 | `apb-dev-micro-base-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-micro-base-v1.0.md` |
 | `apb-dev-openspec-review-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-openspec-review-v1.0.md` |
@@ -56,11 +56,11 @@
 | `apb-dev-template-update-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-template-update-v1.0.md` |
 | `apb-disc-adversarial-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-adversarial-v1.0.md` |
 | `apb-disc-backlog-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-backlog-v1.0.md` |
-| `apb-disc-brainstorming-v1.0` | discovery | draft | `skills/apb-owned/brainstorming/apb-disc-brainstorming-v1.0.md` |
+| `apb-disc-brainstorming-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-brainstorming-v1.0.md` |
 | `apb-disc-business-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-business-v1.0.md` |
 | `apb-disc-cosmic-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-cosmic-v1.0.md` |
 | `apb-disc-ddd-legacy-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-ddd-legacy-v1.0.md` |
-| `apb-disc-design-approval-v1.0` | discovery | draft | `skills/apb-owned/design-approval/apb-disc-design-approval-v1.0.md` |
+| `apb-disc-design-approval-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-design-approval-v1.0.md` |
 | `apb-disc-enrich-req-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-enrich-req-v1.0.md` |
 | `apb-disc-epic-mono-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-epic-mono-v1.0.md` |
 | `apb-disc-reverse-code-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-reverse-code-v1.0.md` |
@@ -68,7 +68,7 @@
 | `apb-disc-spec-gen-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-spec-gen-v1.0.md` |
 | `apb-doc-adr-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-adr-v1.0.md` |
 | `apb-doc-aipimanager-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-aipimanager-v1.0.md` |
-| `apb-doc-event-specs-v1.0` | documentation | draft | `skills/apb-owned/document-processing/apb-doc-event-specs-v1.0.md` |
+| `apb-doc-event-specs-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-event-specs-v1.0.md` |
 | `apb-doc-generate-ppt-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-generate-ppt-v1.0.md` |
 | `apb-doc-generate-word-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-generate-word-v1.0.md` |
 | `apb-doc-manual-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-manual-v1.0.md` |
@@ -98,16 +98,16 @@
 | `apb-ops-runbook-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-runbook-v1.0.md` |
 | `apb-ops-slo-design-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-slo-design-v1.0.md` |
 | `apb-ops-telemetry-emit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-telemetry-emit-v1.0.md` |
-| `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/multi-agent-orchestration/apb-orch-multi-agent-v1.0.md` |
+| `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-multi-agent-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
 | `apb-plat-db-migration-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-db-migration-v1.0.md` |
 | `apb-plat-deliver-artifact-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deliver-artifact-v1.0.md` |
-| `apb-plat-deployment-finish-v1.0` | platform | draft | `skills/apb-owned/deployment/apb-plat-deployment-finish-v1.0.md` |
+| `apb-plat-deployment-finish-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deployment-finish-v1.0.md` |
 | `apb-plat-doc-to-markdown-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-doc-to-markdown-v1.0.md` |
 | `apb-plat-docker-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-docker-v1.0.md` |
 | `apb-plat-finops-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-finops-v1.0.md` |
-| `apb-plat-mcp-building-v1.0` | platform | draft | `skills/apb-owned/mcp-building/apb-plat-mcp-building-v1.0.md` |
+| `apb-plat-mcp-building-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-mcp-building-v1.0.md` |
 | `apb-plat-ms-notify-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-ms-notify-v1.0.md` |
 | `apb-plat-sharepoint-io-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-sharepoint-io-v1.0.md` |
 | `apb-plat-terraform-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-terraform-v1.0.md` |
@@ -151,9 +151,9 @@
 | `third-anthropic-mcp-builder-v1.0` | https://github.com/anthropics/skills/tree/main/mcp-builder | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-mcp-builder-v1.0.md` |
 | `third-anthropic-playwright-v1.0` | https://github.com/anthropics/skills/tree/main/webapp-testing | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-playwright-v1.0.md` |
 | `third-apollographql-api-design-v1.0` | https://github.com/apollographql/skills | MIT | approved | `skills/third_party/apollographql/third-apollographql-api-design-v1.0.md` |
-| `third-ccusage-analytics-v1.0` | https://github.com/ccusage | MIT | approved | `skills/third_party/third-ccusage-analytics-v1.0.md` |
+| `third-ccusage-analytics-v1.0` | https://github.com/ccusage | MIT | approved | `skills/third_party/_uncategorized/third-ccusage-analytics-v1.0.md` |
 | `third-clear-solutions-unit-test-gen-v1.0` | https://github.com/clear-solutions/unit-tests-skills | MIT | approved | `skills/third_party/clear-solutions/third-clear-solutions-unit-test-gen-v1.0.md` |
-| `third-composio-sonar-v1.0` | https://github.com/ComposioHQ | MIT | approved | `skills/third_party/third-composio-sonar-v1.0.md` |
+| `third-composio-sonar-v1.0` | https://github.com/ComposioHQ | MIT | approved | `skills/third_party/_uncategorized/third-composio-sonar-v1.0.md` |
 | `third-davila7-csharp-pro-v1.0` | https://github.com/davila7/claude-code-templates | MIT | draft | `skills/third_party/davila7/third-davila7-csharp-pro-v1.0.md` |
 | `third-davila7-dotnet-backend-v1.0` | https://github.com/davila7/claude-code-templates | MIT | draft | `skills/third_party/davila7/third-davila7-dotnet-backend-v1.0.md` |
 | `third-expo-cicd-multiplatform-v1.0` | https://github.com/expo/skills | MIT | approved | `skills/third_party/expo/third-expo-cicd-multiplatform-v1.0.md` |
@@ -163,14 +163,14 @@
 | `third-garrytan-release-engineer-v1.0` | https://github.com/garrytan/gstack | MIT | approved | `skills/third_party/garrytan/third-garrytan-release-engineer-v1.0.md` |
 | `third-google-finops-multicloud-v1.0` | https://github.com/google/skills | MIT | approved | `skills/third_party/google/third-google-finops-multicloud-v1.0.md` |
 | `third-google-labs-code-react-patterns-v1.0` | https://github.com/google-labs-code/stitch-skills | MIT | approved | `skills/third_party/google-labs-code/third-google-labs-code-react-patterns-v1.0.md` |
-| `third-graphify-visual-v1.0` | https://graphify.net/ | Propietaria (evaluación) | approved | `skills/third_party/third-graphify-visual-v1.0.md` |
+| `third-graphify-visual-v1.0` | https://graphify.net/ | Propietaria (evaluación) | approved | `skills/third_party/_uncategorized/third-graphify-visual-v1.0.md` |
 | `third-hashicorp-cloud-patterns-v1.0` | https://github.com/hashicorp/terraform-search-import | MPL-2.0 | approved | `skills/third_party/hashicorp/third-hashicorp-cloud-patterns-v1.0.md` |
 | `third-hashicorp-terraform-governance-v1.0` | https://github.com/hashicorp/agent-skills | MIT | approved | `skills/third_party/hashicorp/third-hashicorp-terraform-governance-v1.0.md` |
 | `third-lambdatest-test-automation-v1.0` | https://github.com/LambdaTest/agent-skills | MIT | approved | `skills/third_party/lambdatest/third-lambdatest-test-automation-v1.0.md` |
-| `third-lidr-agent-demo-v1.0` | https://github.com/LIDR-academy/lidr-agent-demo | MIT | approved | `skills/third_party/third-lidr-agent-demo-v1.0.md` |
-| `third-lightrag-knowledge-v1.0` | https://github.com/hkuds/lightrag | MIT | approved | `skills/third_party/third-lightrag-knowledge-v1.0.md` |
-| `third-mattpocock-codebase-architecture-analysis-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/third-mattpocock-codebase-architecture-analysis-v1.0.md` |
-| `third-mattpocock-grill-prd-issues-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/third-mattpocock-grill-prd-issues-v1.0.md` |
+| `third-lidr-agent-demo-v1.0` | https://github.com/LIDR-academy/lidr-agent-demo | MIT | approved | `skills/third_party/_uncategorized/third-lidr-agent-demo-v1.0.md` |
+| `third-lightrag-knowledge-v1.0` | https://github.com/hkuds/lightrag | MIT | approved | `skills/third_party/_uncategorized/third-lightrag-knowledge-v1.0.md` |
+| `third-mattpocock-codebase-architecture-analysis-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/_uncategorized/third-mattpocock-codebase-architecture-analysis-v1.0.md` |
+| `third-mattpocock-grill-prd-issues-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/_uncategorized/third-mattpocock-grill-prd-issues-v1.0.md` |
 | `third-mukul-cloud-security-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | MIT | approved | `skills/third_party/mukul975/third-mukul-cloud-security-v1.0.md` |
 | `third-mukul-cyber-arsenal-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | Apache 2.0 | draft | `skills/third_party/mukul975/third-mukul-cyber-arsenal-v1.0.md` |
 | `third-mukul-cyber-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | MIT | approved | `skills/third_party/mukul975/third-mukul-cyber-v1.0.md` |
@@ -179,12 +179,12 @@
 | `third-neolabhq-ddd-clean-architecture-v1.0` | https://github.com/NeoLabHQ/context-engineering-kit | MIT | approved | `skills/third_party/neolabhq/third-neolabhq-ddd-clean-architecture-v1.0.md` |
 | `third-neolabhq-sdd-implement-v1.0` | https://github.com/NeoLabHQ/context-engineering-kit | MIT | approved | `skills/third_party/neolabhq/third-neolabhq-sdd-implement-v1.0.md` |
 | `third-neondatabase-db-migration-v1.0` | https://github.com/neondatabase/neon-postgres | MIT | approved | `skills/third_party/neondatabase/third-neondatabase-db-migration-v1.0.md` |
-| `third-nextlevel-ux-v1.0` | https://github.com/nextlevelbuilder/ui-ux-pro-max-skill | MIT | approved | `skills/third_party/third-nextlevel-ux-v1.0.md` |
+| `third-nextlevel-ux-v1.0` | https://github.com/nextlevelbuilder/ui-ux-pro-max-skill | MIT | approved | `skills/third_party/_uncategorized/third-nextlevel-ux-v1.0.md` |
 | `third-obra-superpowers-method-v1.0` | https://github.com/obra/superpowers | MIT | draft | `skills/third_party/obra/third-obra-superpowers-method-v1.0.md` |
 | `third-obra-test-driven-development-v1.0` | https://github.com/obra/superpowers | MIT | approved | `skills/third_party/obra/third-obra-test-driven-development-v1.0.md` |
 | `third-openai-threat-model-v1.0` | https://github.com/openai/security-threat-model | MIT | approved | `skills/third_party/openai/third-openai-threat-model-v1.0.md` |
-| `third-openspec-spec-gen-v1.0` | https://github.com/Fission-AI/OpenSpec | MIT | approved | `skills/third_party/third-openspec-spec-gen-v1.0.md` |
-| `third-rowboat-orchestrator-v1.0` | https://github.com/rowboatlabs/rowboat | Apache 2.0 | approved | `skills/third_party/third-rowboat-orchestrator-v1.0.md` |
+| `third-openspec-spec-gen-v1.0` | https://github.com/Fission-AI/OpenSpec | MIT | approved | `skills/third_party/_uncategorized/third-openspec-spec-gen-v1.0.md` |
+| `third-rowboat-orchestrator-v1.0` | https://github.com/rowboatlabs/rowboat | Apache 2.0 | approved | `skills/third_party/_uncategorized/third-rowboat-orchestrator-v1.0.md` |
 | `third-sickn33-auth-implementation-patterns-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-auth-implementation-patterns-v1.0.md` |
 | `third-sickn33-ddd-context-mapping-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-ddd-context-mapping-v1.0.md` |
 | `third-sickn33-django-access-review-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-django-access-review-v1.0.md` |
@@ -193,9 +193,9 @@
 | `third-sickn33-saga-orchestration-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-saga-orchestration-v1.0.md` |
 | `third-sickn33-screen-reader-testing-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-screen-reader-testing-v1.0.md` |
 | `third-sigridjineth-ansible-enterprise-v1.0` | https://github.com/sigridjineth/hello-ansible-skills | MIT | approved | `skills/third_party/sigridjineth/third-sigridjineth-ansible-enterprise-v1.0.md` |
-| `third-skills-sh-frontend-v1.0` | https://www.skills.sh/anthropics/skills/frontend-design | Propietaria (uso interno autorizado) | approved | `skills/third_party/third-skills-sh-frontend-v1.0.md` |
+| `third-skills-sh-frontend-v1.0` | https://www.skills.sh/anthropics/skills/frontend-design | Propietaria (uso interno autorizado) | approved | `skills/third_party/_uncategorized/third-skills-sh-frontend-v1.0.md` |
 | `third-softaworks-test-planner-v1.0` | https://github.com/softaworks/agent-toolkit | MIT | approved | `skills/third_party/softaworks/third-softaworks-test-planner-v1.0.md` |
-| `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/third-superclaude-framework-v1.0.md` |
+| `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/_uncategorized/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
 ### Agentes (26 total)
