@@ -15,6 +15,7 @@ skills:
   - "apb-gov-catalog-v1.0"
   - "apb-gov-knowledge-v1.0"
   - "apb-gov-evidence-v1.0"
+  - "apb-gov-spec-sync-v1.0"
 subagents:
   - "apb-sub-gov-standards-v1.0"
 runtime:

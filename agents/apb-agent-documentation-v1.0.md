@@ -15,6 +15,9 @@ skills:
   - "apb-gov-evidence-v1.0"
   - "apb-gov-jira-evidence-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-doc-event-specs-v1.0"
+  - "apb-doc-generate-ppt-v1.0"
+  - "apb-doc-generate-word-v1.0"
 runtime:
   - "copilot"
   - "claude"

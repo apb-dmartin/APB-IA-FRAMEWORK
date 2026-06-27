@@ -12,9 +12,11 @@ skills:
   - "apb-ops-telemetry-emit-v1.0"
   - "apb-gov-ai-risk-gate-v1.0"
   - "apb-plat-doc-to-markdown-v1.0"
+  - "apb-ops-slo-design-v1.0"
 subagents:
   - "apb-sub-obs-powerbi-v1.0"
   - "apb-sub-obs-grafana-v1.0"
+  - "apb-sub-ops-azure-v1.0"
 runtime:
   - "copilot"
   - "claude"

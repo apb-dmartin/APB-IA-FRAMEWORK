@@ -17,6 +17,9 @@ skills:
   - "apb-arch-security-design-v1.0"
   - "apb-arch-cloud-infra-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-arch-event-driven-master-v1.0"
+  - "apb-arch-dotnet-base-v1.0"
+  - "apb-arch-design-events-v1.0"
 runtime:
   - "copilot"
   - "claude"

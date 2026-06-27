@@ -15,6 +15,8 @@ skills:
   - "apb-disc-epic-mono-v1.0"
   - "apb-qa-post-migration-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-plat-db-migration-v1.0"
+  - "apb-disc-reverse-doc-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -16,6 +16,7 @@ skills:
   - "apb-dev-surgical-changes-v1.0"
   - "apb-dev-verify-before-done-v1.0"
   - "apb-plat-doc-to-markdown-v1.0"
+  - "apb-qa-framework-v1.0"
 subagents: []
 runtime:
   - "copilot"

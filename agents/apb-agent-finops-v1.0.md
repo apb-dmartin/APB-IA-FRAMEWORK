@@ -10,6 +10,8 @@ autonomy_level: 1
 skills:
   - "apb-plat-finops-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "third-google-finops-multicloud-v1.0"
+  - "apb-ops-dependency-audit-v1.0"
 runtime:
   - "copilot"
   - "claude"

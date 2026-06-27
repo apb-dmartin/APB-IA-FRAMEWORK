@@ -13,6 +13,7 @@ skills:
   - "apb-disc-ddd-legacy-v1.0"
   - "apb-disc-reverse-code-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-disc-brainstorming-v1.0"
 runtime:
   - "copilot"
   - "claude"

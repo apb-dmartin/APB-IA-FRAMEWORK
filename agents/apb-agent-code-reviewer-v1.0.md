@@ -13,6 +13,10 @@ skills:
   - "apb-dev-review-advanced-v1.0"
   - "apb-dev-openspec-review-v1.0"
   - "apb-dev-api-standard-v1.0"
+  - "apb-dev-review-tl-v1.0"
+  - "apb-dev-impact-analysis-v1.0"
+  - "apb-dev-surgical-changes-v1.0"
+  - "apb-dev-gis-django-v1.0"
 subagents: []
 runtime:
   - "copilot"

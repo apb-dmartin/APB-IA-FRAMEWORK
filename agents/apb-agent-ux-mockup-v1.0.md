@@ -13,6 +13,7 @@ skills:
   - "apb-dev-grill-before-code-v1.0"
   - "apb-gov-ai-risk-gate-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "third-nextlevel-ux-v1.0"
 subagents: []
 runtime:
   - "copilot"

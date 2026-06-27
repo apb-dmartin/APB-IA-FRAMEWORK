@@ -12,6 +12,9 @@ skills:
   - "apb-disc-reverse-doc-v1.0"
   - "apb-disc-enrich-req-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-disc-brainstorming-v1.0"
+  - "apb-disc-adversarial-v1.0"
+  - "apb-pm-product-analysis-v1.0"
 runtime:
   - "copilot"
   - "claude"

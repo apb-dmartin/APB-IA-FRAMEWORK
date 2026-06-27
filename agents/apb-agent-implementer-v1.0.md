@@ -23,11 +23,15 @@ skills:
   - "apb-dev-devexpress-front-v1.0"
   - "apb-dev-gis-django-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-dev-frontend-devexpress-events-v1.0"
+  - "apb-dev-implementation-patterns-v1.0"
+  - "apb-dev-sql-gen-v1.0"
 subagents:
   - "apb-sub-dev-net-v1.0"
   - "apb-sub-dev-devexpress-v1.0"
   - "apb-sub-dev-django-v1.0"
   - "apb-sub-dev-sql-v1.0"
+  - "apb-sub-dev-parallel-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -16,6 +16,10 @@ skills:
   - "apb-qa-post-migration-v1.0"
   - "apb-qa-release-ready-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-qa-tdd-v1.0"
+  - "apb-qa-readiness-check-v1.0"
+  - "apb-qa-testing-strategy-v1.0"
+  - "apb-qa-pipeline-v1.0"
 subagents:
   - "apb-sub-qa-unit-v1.0"
   - "apb-sub-qa-e2e-v1.0"

@@ -12,6 +12,8 @@ skills:
   - "apb-gov-evidence-v1.0"
   - "apb-gov-jira-evidence-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-plat-deployment-finish-v1.0"
+  - "apb-plat-ms-notify-v1.0"
 runtime:
   - "copilot"
   - "claude"
