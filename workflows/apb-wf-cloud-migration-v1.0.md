@@ -129,6 +129,23 @@ graph TD
 - **DP5:** ¿Pasa PRR de SRE? Si no, corregir findings.
 - **DP6:** ¿Decisión de go/no-go? Requiere aprobación humana.
 
+## 📡 Contratos de Output Inter-Agente
+
+Cada agente produce un output estructurado que el siguiente agente consume como input. Los handoffs críticos de la cadena de 9 agentes son:
+
+| Handoff | De | A | Artefacto de entrega | Campos obligatorios |
+|---------|----|----|---------------------|---------------------|
+| H1 | Cloud Architect | Technical Architect | `cloud-readiness-report.md` | `readiness_score`, `blockers[]`, `migration_strategy` (lift-and-shift/re-platform/re-architect), `target_azure_services[]` |
+| H2 | Technical Architect | Security Architect | `architecture-design.md` | `components[]`, `data_flows[]`, `external_integrations[]`, `network_topology` |
+| H3 | Security Architect | Platform Engineer | `security-requirements.md` | `threat_model_ref`, `ens_level` (Básico/Medio/Alto), `iam_requirements[]`, `network_segmentation_rules[]`, `approved_for_infra: bool` |
+| H4 | Platform Engineer | QA Automation | `infrastructure-ready.md` | `terraform_modules[]`, `ci_cd_pipeline_url`, `db_migration_status` (success/partial/failed), `environments_available[]` |
+| H5 | QA Automation | SRE | `qa-validation-report.md` | `test_results_summary`, `performance_baseline`, `blocking_issues[]`, `approved_for_sre: bool` |
+| H6 | SRE | FinOps | `operability-report.md` | `observability_setup`, `slo_definitions[]`, `prr_status` (pass/fail), `monthly_log_volume_gb` |
+| H7 | FinOps | Governance | `cost-estimate.md` | `monthly_cost_estimate_eur`, `budget_compliance: bool`, `cost_optimizations[]`, `approved_for_governance: bool` |
+| H8 | Governance | Release Manager | `governance-validation.md` | `compliance_status` (PASS/FAIL), `open_findings[]`, `go_no_go_recommendation` |
+
+> **Regla de bloqueo:** Si cualquier campo `approved_for_*: bool` viene en `false`, el workflow detiene la progresión al agente siguiente y espera gate de validación humana. No se puede avanzar a la fase siguiente con un handoff en estado `FAIL`.
+
 ## 🚫 Límites y Escapes
 
 - NO puede ejecutar migración en producción sin aprobación

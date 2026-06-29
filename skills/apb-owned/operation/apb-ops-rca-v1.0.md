@@ -16,6 +16,10 @@ review_date: "2026-06-22"
 ## Propósito
 Realizar análisis de causa raíz (RCA) de incidencias y problemas operacionales utilizando metodologías estructuradas (5 Whys, Ishikawa/Fishbone, Fault Tree Analysis). Genera un informe de RCA con causas contribuyentes, acciones correctivas y preventivas.
 
+> **Diferencia clave con `apb-ops-incident-diagnose-v1.0`:**
+> Esta skill es un análisis **post-incidente profundo** — se ejecuta **después** de que el servicio está restaurado. Su objetivo es identificar la causa raíz sistémica para evitar recurrencia (mejora continua, post-mortem, cambios arquitectónicos).
+> `apb-ops-incident-diagnose-v1.0` es diagnóstico **táctico inmediato** que se realiza durante el incidente activo para proporcionar un runbook de resolución al técnico L1 en minutos.
+
 ## Contexto de Uso
 - Post-incidente: análisis de causas tras resolución de incidencias críticas.
 - Problemas recurrentes: identificación de causas raíz de fallos repetidos.

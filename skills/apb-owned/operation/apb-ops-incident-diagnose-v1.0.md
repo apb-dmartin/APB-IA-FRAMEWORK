@@ -17,7 +17,11 @@ review_date: "2026-06-26"
 
 ## 🎯 Propósito
 
-Analizar la evidencia técnica de una incidencia (logs, mensajes de error, métricas, descripción del síntoma) y producir un diagnóstico estructurado con causa raíz probable y runbook de resolución. El diagnóstico incluye porcentaje de confianza y alternativas si existen múltiples causas posibles. El runbook es accionable por el técnico resolutor sin necesidad de interpretación adicional.
+Analizar la evidencia técnica de una incidencia (logs, mensajes de error, métricas, descripción del síntoma) y producir un diagnóstico estructurado con causa raíz probable y runbook de resolución.
+
+> **Diferencia clave con `apb-ops-rca-v1.0`:**
+> Esta skill es **táctica e inmediata** — se ejecuta **durante** el incidente activo (minutos, no horas). Su objetivo es proporcionar al técnico L1 un runbook accionable lo antes posible para restaurar el servicio.
+> `apb-ops-rca-v1.0` es un análisis **post-incidente profundo** (5-Whys, Ishikawa, timeline completo) que se realiza después de que el servicio está restaurado, con el objetivo de eliminar la causa raíz y evitar recurrencia. El diagnóstico incluye porcentaje de confianza y alternativas si existen múltiples causas posibles. El runbook es accionable por el técnico resolutor sin necesidad de interpretación adicional.
 
 ---
 

@@ -26,6 +26,12 @@ review_date: "2026-06-26"
 
 Workflow que orquesta el ciclo completo de gestión de una incidencia técnica APB de primera línea, desde la recepción del reporte hasta el cierre o escalado formal. Garantiza consistencia en la clasificación, documentación y comunicación, y establece los gates de validación humana obligatorios en los puntos de mayor riesgo.
 
+## 🤖 Agente Orquestador
+
+Este workflow es ejecutado y coordinado por **`apb-agent-incident-support-v1.0`** (Incident Support Agent). El agente recibe el reporte de incidencia, invoca las skills del workflow en secuencia, gestiona los gates de validación humana y asegura que el técnico L1 esté informado en cada paso crítico.
+
+Las skills (`apb-ops-incident-triage-v1.0`, `apb-ops-incident-diagnose-v1.0`, `apb-ops-incident-escalate-v1.0`, `apb-plat-ms-notify-v1.0`) son invocadas **por el agente**, no directamente por el workflow. El workflow define la secuencia y las condiciones de salto; el agente es responsable de la ejecución.
+
 ---
 
 ## 🗺 Diagrama del flujo

@@ -60,6 +60,9 @@ Ninguno. Este agente no delega en subagentes especializados.
 - Presupuesto asignado al proyecto
 - Catálogo de precios Azure actualizado
 
+> **Gap conocido — Catálogo de precios Azure:**
+> El input "catálogo de precios Azure actualizado" requiere el provider Azure Cost Management (ID planificado: prov-azure-cost-v1.0), que está en el backlog de la Sesión Enriquecimiento C2, punto #73. Hasta que esté disponible, el equipo debe proporcionar manualmente una exportación CSV del portal Azure Cost Management (`Billing > Cost analysis > Export`) como input a este agente. La exportación debe incluir los últimos 90 días con granularidad diaria y filtro por suscripción APB.
+
 ## 📤 Output Generado
 
 - Informe de estimación de costes cloud (`cloud-cost-estimate.md`)
