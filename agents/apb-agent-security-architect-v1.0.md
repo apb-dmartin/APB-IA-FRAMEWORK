@@ -17,6 +17,9 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "apb-sec-mitre-mapping-v1.0"
   - "apb-sec-cloud-hardening-v1.0"
+  - "apb-sec-sast-v1.0"
+  - "apb-sec-dast-v1.0"
+  - "apb-sec-supply-chain-v1.0"
 subagents:
   - "apb-sub-sec-ens-v1.0"
 runtime:
@@ -164,3 +167,15 @@ inputs:
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por este agente debe incluir marca de origen IA:
+
+- **Documentos Markdown** (informes, análisis, entregables):
+  > **Borrador generado por IA** (APB AI Framework - apb-agent-security-architect-v1.0) — pendiente validación humana. No distribuir sin revisión.
+- **Tickets Jira**: label `ia-generado` + footer en descripción del ticket.
+- **Código generado** (.cs, .py, .sql, etc.): comentario `// [IA-GEN] Generado por APB AI Framework (apb-agent-security-architect-v1.0) — pendiente revisión humana` en cabecera.
+- **Commits**: prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`.

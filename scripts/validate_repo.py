@@ -343,7 +343,10 @@ def validate_component_file(
     #     Todas las skills apb-owned deben incluir la sección de marcado de artefactos.
     #     Los agentes también, ya que orquestan y entregan artefactos.
     #     Ver: context/apb/standards/AI_MARKING_STANDARD.md
-    if component_type in ("skill", "agent") and "skills/apb-owned" in rel_path.replace("\\", "/"):
+    _rp = rel_path.replace("\\", "/")
+    _is_apb_skill = component_type == "skill" and "skills/apb-owned" in _rp
+    _is_agent = component_type == "agent" and "agents/" in _rp
+    if _is_apb_skill or _is_agent:
         if "## Marcado IA obligatorio" not in content:
             result.add(ValidationIssue(
                 "ERROR", rel_path,
