@@ -124,6 +124,18 @@ En la fase de diseño de cualquier sistema, arquitectura o cambio significativo.
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos de seguridad y compliance` | Pregunta: "¿Puedes proporcionar requisitos de seguridad y compliance?" | Sí |
+| `Clasificación de datos` | Pregunta: "¿Puedes proporcionar clasificación de datos?" | Sí |
+| `Arquitectura de referencia del sistema` | Pregunta: "¿Puedes proporcionar arquitectura de referencia del sistema?" | Sí |
+| `Threat model preliminar` | Pregunta: "¿Puedes proporcionar threat model preliminar?" | Sí |
+| `Políticas de seguridad APB vigentes` | Pregunta: "¿Puedes proporcionar políticas de seguridad apb vigentes?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

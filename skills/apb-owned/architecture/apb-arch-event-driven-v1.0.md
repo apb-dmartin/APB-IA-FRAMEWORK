@@ -122,6 +122,19 @@ Cuando un sistema requiere comunicación asíncrona entre componentes, procesami
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Diagrama de contexto del sistema` | Pregunta: "¿Puedes proporcionar diagrama de contexto del sistema?" | Sí |
+| `Lista de eventos de negocio identificados` | Pregunta: "¿Puedes proporcionar lista de eventos de negocio identificados?" | Sí |
+| `Requisitos de latencia y throughput` | Pregunta: "¿Puedes proporcionar requisitos de latencia y throughput?" | Sí |
+| `Requisitos de consistencia` | Pregunta: "¿Puedes proporcionar requisitos de consistencia?" | Sí |
+| `Topología de red y restricciones de seguridad` | Pregunta: "¿Puedes proporcionar topología de red y restricciones de seguridad?" | Sí |
+| `Stack tecnológico actual` | Pregunta: "¿Puedes proporcionar stack tecnológico actual?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

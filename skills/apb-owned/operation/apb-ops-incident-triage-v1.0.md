@@ -114,6 +114,18 @@ Cuando se recibe un nuevo reporte de incidencia, ya sea por ticket JSM, por Team
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Descripción del síntoma` | Pregunta: "¿Puedes proporcionar descripción del síntoma?" | Sí |
+| `Componente o sistema afectado` | Continúa con la información disponible — indica qué asumió | No |
+| `Número de usuarios/servicios afectados` | Pregunta: "¿Puedes proporcionar número de usuarios/servicios afectados?" | Sí |
+| `Hora de inicio del problema` | Pregunta: "¿Puedes proporcionar hora de inicio del problema?" | Sí |
+| `Impacto en procesos de negocio críticos` | Continúa con la información disponible — indica qué asumió | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

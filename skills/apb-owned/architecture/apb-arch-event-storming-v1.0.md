@@ -113,6 +113,18 @@ Antes de diseñar un nuevo sistema, al iniciar un proyecto de modernización, o 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Objetivo del workshop y alcance` | Pregunta: "¿Puedes proporcionar objetivo del workshop y alcance?" | Sí |
+| `Participantes` | Pregunta: "¿Puedes proporcionar participantes?" | Sí |
+| `Documentación de procesos de negocio previa` | Pregunta: "¿Puedes proporcionar documentación de procesos de negocio previa?" | Sí |
+| `Preguntas guía o hipótesis a validar` | Pregunta: "¿Puedes proporcionar preguntas guía o hipótesis a validar?" | Sí |
+| `Restricciones de tiempo` | Pregunta: "¿Puedes proporcionar restricciones de tiempo?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

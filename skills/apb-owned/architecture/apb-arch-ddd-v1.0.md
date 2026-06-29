@@ -121,6 +121,18 @@ Al inicio de un nuevo proyecto, durante la modernización de legacy, o cuando su
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Documentación de negocio` | Pregunta: "¿Puedes proporcionar documentación de negocio?" | Sí |
+| `Entrevistas con domain experts` | Pregunta: "¿Puedes proporcionar entrevistas con domain experts?" | Sí |
+| `Eventos de negocio identificados` | Pregunta: "¿Puedes proporcionar eventos de negocio identificados?" | Sí |
+| `Sistema actual` | Continúa con la información disponible — indica qué asumió | No |
+| `Objetivos estratégicos del negocio` | Pregunta: "¿Puedes proporcionar objetivos estratégicos del negocio?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

@@ -164,6 +164,19 @@ ORDER BY
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Descripción de la necesidad en lenguaje natural` | Pregunta: "¿Puedes proporcionar descripción de la necesidad en lenguaje natural?" | Sí |
+| `Motor de base de datos` | Pregunta: "¿Puedes proporcionar motor de base de datos?" | Sí |
+| `Esquema o tablas relevantes` | Pregunta: "¿Puedes proporcionar esquema o tablas relevantes?" | Sí |
+| `Condiciones de filtrado o agrupación requeridas` | Pregunta: "¿Puedes proporcionar condiciones de filtrado o agrupación requeridas?" | Sí |
+| `Formato de salida esperado` | Pregunta: "¿Puedes proporcionar formato de salida esperado?" | Sí |
+| `Contexto de uso` | Pregunta: "¿Puedes proporcionar contexto de uso?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

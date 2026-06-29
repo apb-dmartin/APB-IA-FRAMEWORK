@@ -115,6 +115,17 @@ Cuando un proyecto requiere funcionalidades geoespaciales: mapas, rutas, zonas, 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos de funcionalidad geoespacial` | Pregunta: "¿Puedes proporcionar requisitos de funcionalidad geoespacial?" | Sí |
+| `Datos geográficos de origen` | Pregunta: "¿Puedes proporcionar datos geográficos de origen?" | Sí |
+| `Especificación de modelos de datos` | Pregunta: "¿Puedes proporcionar especificación de modelos de datos?" | Sí |
+| `Requisitos de performance` | Pregunta: "¿Puedes proporcionar requisitos de performance?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

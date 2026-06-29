@@ -122,6 +122,14 @@ Cuando Arquitectura APB publique una nueva versión de `APB.ARQ.BASE` o `APB.ARQ
 *Skill generada por el APB AI Framework. Requiere revisión humana antes de aprobación.*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| *(Sin inputs declarados)* | No aplica | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

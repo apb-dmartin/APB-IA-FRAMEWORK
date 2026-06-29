@@ -86,6 +86,11 @@ Cuando se añade un componente nuevo al framework, cuando se modifica uno existe
 - Los `human_review_points` son específicos (no genéricos como "revisión antes de usar")
 - Los ejemplos de uso incluyen inputs y outputs concretos, no genéricos
 - Los límites y restricciones son precisos y accionables
+- **[Q1]** Skills apb-owned tienen sección `## ⚠️ Comportamiento ante inputs incompletos` con tabla por input → advertencia si falta, ERROR bloqueante si es nueva
+- **[Q2]** Workflows tienen sección `## 🚨 Manejo de Fallos` con tabla por fase → advertencia si falta, ERROR bloqueante si es nuevo
+- **[Q2]** Workflows con ≥3 agentes tienen sección `## 📡 Contratos de Output Inter-Agente` → advertencia si falta
+- **[C1]** Subagentes tienen sección `## 🧠 Prompt de Sistema` con contenido no vacío → ERROR bloqueante si falta
+- **[Q1/Q2]** Los ejemplos de uso incluyen al menos un caso de error o input incompleto, no solo el camino feliz → advertencia si todos los ejemplos son de éxito
 
 ---
 
@@ -136,6 +141,16 @@ Resultado:
 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
+
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Componente o lista de componentes a validar` | Pregunta: "¿Puedes proporcionar componente o lista de componentes a validar?" | Sí |
+| `Tipo de validación` | Pregunta: "¿Puedes proporcionar tipo de validación?" | Sí |
+| `Contexto` | Pregunta: "¿Puedes proporcionar contexto?" | Sí |
 
 ---
 

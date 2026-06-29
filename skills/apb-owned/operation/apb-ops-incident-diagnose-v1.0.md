@@ -160,6 +160,19 @@ Cuando `apb-ops-incident-triage-v1.0` ha clasificado la incidencia y determinado
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Clasificación de triaje` | Pregunta: "¿Puedes proporcionar clasificación de triaje?" | Sí |
+| `Descripción del síntoma en lenguaje natural` | Pregunta: "¿Puedes proporcionar descripción del síntoma en lenguaje natural?" | Sí |
+| `Logs o mensajes de error` | Pregunta: "¿Puedes proporcionar logs o mensajes de error?" | Sí |
+| `Métricas de rendimiento si están disponibles` | Pregunta: "¿Puedes proporcionar métricas de rendimiento si están disponibles?" | Sí |
+| `Historial de cambios recientes en el sistema afectado` | Continúa con la información disponible — indica qué asumió | No |
+| `Incidencias similares previas` | Pregunta: "¿Puedes proporcionar incidencias similares previas?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

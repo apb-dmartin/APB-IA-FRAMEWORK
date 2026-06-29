@@ -213,6 +213,17 @@ var user = fixture.Build<User>()
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Código fuente del SUT` | Pregunta: "¿Puedes proporcionar código fuente del sut?" | Sí |
+| `Especificación funcional` | Continúa con la información disponible — indica qué asumió | No |
+| `Contratos de entrada/salida` | Pregunta: "¿Puedes proporcionar contratos de entrada/salida?" | Sí |
+| `Dependencias del SUT` | Pregunta: "¿Puedes proporcionar dependencias del sut?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

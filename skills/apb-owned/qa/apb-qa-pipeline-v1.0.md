@@ -128,6 +128,18 @@ Pipeline corregido: incluye `environment: production` con required reviewers y `
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Fichero de definición del pipeline` | Pregunta: "¿Puedes proporcionar fichero de definición del pipeline?" | Sí |
+| `Resultados de la última ejecución` | Pregunta: "¿Puedes proporcionar resultados de la última ejecución?" | Sí |
+| `Informe de análisis de seguridad  si existe` | Pregunta: "¿Puedes proporcionar informe de análisis de seguridad  si existe?" | Sí |
+| `Entorno destino` | Pregunta: "¿Puedes proporcionar entorno destino?" | Sí |
+| `Tipo de artefacto` | Pregunta: "¿Puedes proporcionar tipo de artefacto?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

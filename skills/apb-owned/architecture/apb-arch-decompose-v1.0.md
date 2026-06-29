@@ -125,6 +125,19 @@ Cuando se decide modernizar una aplicación monolítica legacy, o cuando el mono
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Código fuente del monolito y su estructura` | Pregunta: "¿Puedes proporcionar código fuente del monolito y su estructura?" | Sí |
+| `Documentación existente` | Continúa con la información disponible — indica qué asumió | No |
+| `Métricas de uso y dependencias entre módulos` | Pregunta: "¿Puedes proporcionar métricas de uso y dependencias entre módulos?" | Sí |
+| `Mapa de dominio de negocio` | Pregunta: "¿Puedes proporcionar mapa de dominio de negocio?" | Sí |
+| `Restricciones de tiempo` | Pregunta: "¿Puedes proporcionar restricciones de tiempo?" | Sí |
+| `Requisitos no funcionales objetivo` | Pregunta: "¿Puedes proporcionar requisitos no funcionales objetivo?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

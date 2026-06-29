@@ -202,6 +202,14 @@ Eres el skill "API Design Standard" (apb-dev-api-standard-v1.0) del APB AI Frame
 | 1.0.0-draft | 2026-06-20 | Arquitectura APB | Creación inicial |
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| *(Sin inputs declarados)* | No aplica | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

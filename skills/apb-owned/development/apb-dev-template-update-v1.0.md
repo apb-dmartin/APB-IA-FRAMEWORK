@@ -105,6 +105,17 @@ Cuando se actualiza la plantilla corporativa, o cuando un proyecto legacy necesi
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Proyecto existente a actualizar` | Pregunta: "¿Puedes proporcionar proyecto existente a actualizar?" | Sí |
+| `Nueva plantilla corporativa` | Pregunta: "¿Puedes proporcionar nueva plantilla corporativa?" | Sí |
+| `Lista de cambios entre versiones de plantilla` | Pregunta: "¿Puedes proporcionar lista de cambios entre versiones de plantilla?" | Sí |
+| `Reglas de migración` | Pregunta: "¿Puedes proporcionar reglas de migración?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

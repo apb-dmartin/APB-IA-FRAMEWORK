@@ -124,6 +124,19 @@ Al crear una nueva API, modificar una existente, o definir contratos de integrac
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos funcionales del dominio` | Pregunta: "¿Puedes proporcionar requisitos funcionales del dominio?" | Sí |
+| `Modelo de dominio` | Pregunta: "¿Puedes proporcionar modelo de dominio?" | Sí |
+| `Consumidores conocidos de la API` | Pregunta: "¿Puedes proporcionar consumidores conocidos de la api?" | Sí |
+| `Requisitos de seguridad` | Pregunta: "¿Puedes proporcionar requisitos de seguridad?" | Sí |
+| `Requisitos de rendimiento` | Pregunta: "¿Puedes proporcionar requisitos de rendimiento?" | Sí |
+| `Estándares corporativos de API vigentes` | Pregunta: "¿Puedes proporcionar estándares corporativos de api vigentes?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

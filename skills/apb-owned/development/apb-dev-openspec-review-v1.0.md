@@ -109,6 +109,17 @@ Al generar o modificar una especificación OpenAPI, contrato de evento, o docume
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Especificación OpenAPI 3.0+ o AsyncAPI` | Pregunta: "¿Puedes proporcionar especificación openapi 3.0+ o asyncapi?" | Sí |
+| `Esquemas de eventos` | Pregunta: "¿Puedes proporcionar esquemas de eventos?" | Sí |
+| `Estándares corporativos de API y eventos` | Pregunta: "¿Puedes proporcionar estándares corporativos de api y eventos?" | Sí |
+| `Reglas de validación personalizadas APB` | Pregunta: "¿Puedes proporcionar reglas de validación personalizadas apb?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

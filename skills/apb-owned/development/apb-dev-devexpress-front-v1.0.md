@@ -116,6 +116,18 @@ Cuando se requiere implementar o modificar una interfaz de usuario en aplicacion
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Mockup estructurado de `apb-agent-ux-mockup-v1.0`` | Pregunta: "¿Puedes proporcionar mockup estructurado de `apb-agent-ux-mockup-v1.0`?" | Sí |
+| `O especificación de UI equivalente` | Pregunta: "¿Puedes proporcionar o especificación de ui equivalente?" | Sí |
+| `Datos y esquemas de API asociados` | Pregunta: "¿Puedes proporcionar datos y esquemas de api asociados?" | Sí |
+| `Estándares de diseño corporativos` | Pregunta: "¿Puedes proporcionar estándares de diseño corporativos?" | Sí |
+| `Plantillas de proyecto DevExpress disponibles` | Pregunta: "¿Puedes proporcionar plantillas de proyecto devexpress disponibles?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

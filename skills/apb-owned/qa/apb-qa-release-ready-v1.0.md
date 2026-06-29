@@ -118,6 +118,19 @@ Antes de cada release a producción, o cuando se solicita explicitamente un asse
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Scope del release` | Pregunta: "¿Puedes proporcionar scope del release?" | Sí |
+| `Resultados de testing` | Pregunta: "¿Puedes proporcionar resultados de testing?" | Sí |
+| `Métricas de calidad` | Pregunta: "¿Puedes proporcionar métricas de calidad?" | Sí |
+| `Informes de seguridad` | Pregunta: "¿Puedes proporcionar informes de seguridad?" | Sí |
+| `Documentación técnica y de usuario actualizada` | Pregunta: "¿Puedes proporcionar documentación técnica y de usuario actualizada?" | Sí |
+| `Plan de rollback` | Pregunta: "¿Puedes proporcionar plan de rollback?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

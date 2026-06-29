@@ -109,6 +109,18 @@ Tras generarse una especificación técnica, antes de su aprobación formal. Tam
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Especificación técnica a validar` | Pregunta: "¿Puedes proporcionar especificación técnica a validar?" | Sí |
+| `Requisitos de negocio originales` | Pregunta: "¿Puedes proporcionar requisitos de negocio originales?" | Sí |
+| `ADRs asociados` | Pregunta: "¿Puedes proporcionar adrs asociados?" | Sí |
+| `Estándares corporativos` | Pregunta: "¿Puedes proporcionar estándares corporativos?" | Sí |
+| `Experiencia de proyectos similares` | Pregunta: "¿Puedes proporcionar experiencia de proyectos similares?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

@@ -121,6 +121,19 @@ Cuando se completa una propuesta de arquitectura y se requiere revisión formal 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Documento de arquitectura a validar` | Pregunta: "¿Puedes proporcionar documento de arquitectura a validar?" | Sí |
+| `ADRs asociados` | Pregunta: "¿Puedes proporcionar adrs asociados?" | Sí |
+| `Requisitos no funcionales del proyecto` | Pregunta: "¿Puedes proporcionar requisitos no funcionales del proyecto?" | Sí |
+| `Estándares corporativos APB vigentes` | Pregunta: "¿Puedes proporcionar estándares corporativos apb vigentes?" | Sí |
+| `Arquitecturas de referencia aplicables` | Pregunta: "¿Puedes proporcionar arquitecturas de referencia aplicables?" | Sí |
+| `Resultados de análisis de riesgos` | Pregunta: "¿Puedes proporcionar resultados de análisis de riesgos?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

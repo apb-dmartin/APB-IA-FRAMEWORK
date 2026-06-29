@@ -116,6 +116,19 @@ Tras aprobarse la arquitectura de un proyecto, o cuando se necesita planificar l
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Documento de arquitectura aprobado` | Pregunta: "¿Puedes proporcionar documento de arquitectura aprobado?" | Sí |
+| `ADRs generados` | Pregunta: "¿Puedes proporcionar adrs generados?" | Sí |
+| `Presupuesto y recursos disponibles` | Pregunta: "¿Puedes proporcionar presupuesto y recursos disponibles?" | Sí |
+| `Calendario de negocio` | Pregunta: "¿Puedes proporcionar calendario de negocio?" | Sí |
+| `Dependencias con otros equipos/sistemas` | Pregunta: "¿Puedes proporcionar dependencias con otros equipos/sistemas?" | Sí |
+| `Riesgos técnicos identificados` | Pregunta: "¿Puedes proporcionar riesgos técnicos identificados?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

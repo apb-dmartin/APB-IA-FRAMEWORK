@@ -118,6 +118,16 @@ técnica o como parte de auditoría previa a una licitación/entrega.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Ruta al repositorio o lista de repositorios a auditar` | Pregunta: "¿Puedes proporcionar ruta al repositorio o lista de repositorios a auditar?" | Sí |
+| `Manifiestos de dependencias` | Pregunta: "¿Puedes proporcionar manifiestos de dependencias?" | Sí |
+| `Estándar de versiones vigente` | Pregunta: "¿Puedes proporcionar estándar de versiones vigente?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

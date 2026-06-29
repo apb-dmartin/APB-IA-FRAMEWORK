@@ -154,6 +154,14 @@ Las secciones 1–6 están adaptadas del plugin `reflexion` de
 - `apb-dev-sonar-clean-v1.0`
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| *(Sin inputs declarados)* | No aplica | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

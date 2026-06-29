@@ -105,6 +105,17 @@ Cuando SonarQube reporta incumplimiento de quality gate, o en revisión periódi
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Reporte de SonarQube` | Pregunta: "¿Puedes proporcionar reporte de sonarqube?" | Sí |
+| `Código fuente del proyecto` | Pregunta: "¿Puedes proporcionar código fuente del proyecto?" | Sí |
+| `Quality gate definido` | Pregunta: "¿Puedes proporcionar quality gate definido?" | Sí |
+| `Historial de deuda técnica` | Pregunta: "¿Puedes proporcionar historial de deuda técnica?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

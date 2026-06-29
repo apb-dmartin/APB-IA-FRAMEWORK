@@ -56,7 +56,16 @@ Mantener la coherencia y calidad del APB AI Framework a medida que crece. Sin au
    - Versiones duplicadas del mismo componente activas simultáneamente (ej. `v1.0` y `v2.0` ambas en status `active`).
 
 5. **Validación de estándar de marcado IA**:
-   - Verificar que cada skill/agente/subagent contiene la sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`.
+   - Verificar que cada skill/agente/subagent contiene la sección `## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| *(Sin inputs declarados)* | No aplica | No |
+
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)`.
    - Comprobar que el frontmatter incluye `autonomy_level` con valor válido (1-5).
    - Detectar skills sin `owner` o con owner en formato incorrecto (debe ser email @portdebarcelona.cat).
 

@@ -114,6 +114,19 @@ Cuando se inicia un proyecto de modernización de monolito y se necesita estruct
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Análisis de arquitectura actual` | Pregunta: "¿Puedes proporcionar análisis de arquitectura actual?" | Sí |
+| `Mapa de bounded contexts identificados` | Pregunta: "¿Puedes proporcionar mapa de bounded contexts identificados?" | Sí |
+| `Análisis de dependencias entre módulos` | Pregunta: "¿Puedes proporcionar análisis de dependencias entre módulos?" | Sí |
+| `Roadmap de modernización` | Pregunta: "¿Puedes proporcionar roadmap de modernización?" | Sí |
+| `Capacidad del equipo` | Pregunta: "¿Puedes proporcionar capacidad del equipo?" | Sí |
+| `Objetivos de negocio de la transformación` | Pregunta: "¿Puedes proporcionar objetivos de negocio de la transformación?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

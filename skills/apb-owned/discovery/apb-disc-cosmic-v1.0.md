@@ -114,6 +114,17 @@ Al inicio de un proyecto para estimar esfuerzo, al comparar productividad entre 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Especificación funcional detallada` | Pregunta: "¿Puedes proporcionar especificación funcional detallada?" | Sí |
+| `Modelo de datos identificado` | Pregunta: "¿Puedes proporcionar modelo de datos identificado?" | Sí |
+| `Flujos de datos funcionales` | Pregunta: "¿Puedes proporcionar flujos de datos funcionales?" | Sí |
+| `Alcance del software a medir` | Pregunta: "¿Puedes proporcionar alcance del software a medir?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

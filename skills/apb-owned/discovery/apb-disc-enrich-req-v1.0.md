@@ -116,6 +116,18 @@ Tras la fase de discovery de negocio, cuando se tienen requisitos iniciales que 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos de negocio` | Pregunta: "¿Puedes proporcionar requisitos de negocio?" | Sí |
+| `Modelo de dominio preliminar` | Pregunta: "¿Puedes proporcionar modelo de dominio preliminar?" | Sí |
+| `Arquitectura de referencia` | Pregunta: "¿Puedes proporcionar arquitectura de referencia?" | Sí |
+| `Estándares de especificación APB` | Pregunta: "¿Puedes proporcionar estándares de especificación apb?" | Sí |
+| `Stakeholders disponibles para clarificación` | Pregunta: "¿Puedes proporcionar stakeholders disponibles para clarificación?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

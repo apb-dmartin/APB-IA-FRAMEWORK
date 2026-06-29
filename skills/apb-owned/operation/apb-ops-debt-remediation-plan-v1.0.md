@@ -145,6 +145,17 @@ convertirlos en trabajo planificado y trazable.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Hallazgos de `apb-ops-dependency-audit-v1.0`` | Pregunta: "¿Puedes proporcionar hallazgos de `apb-ops-dependency-audit-v1.0`?" | Sí |
+| `Hallazgos de `apb-ops-perf-bottleneck-v1.0`` | Pregunta: "¿Puedes proporcionar hallazgos de `apb-ops-perf-bottleneck-v1.0`?" | Sí |
+| `Hallazgos de incumplimiento de políticas APB` | Continúa con la información disponible — indica qué asumió | No |
+| `Proyecto Jira destino y convenciones de issue type del eq...` | Pregunta: "¿Puedes proporcionar proyecto jira destino y convenciones de issue type del eq...?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

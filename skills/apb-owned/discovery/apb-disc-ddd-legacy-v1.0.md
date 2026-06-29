@@ -113,6 +113,18 @@ Al inicio de un proyecto de modernización de legacy, o cuando se necesita reest
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Código fuente del legacy` | Pregunta: "¿Puedes proporcionar código fuente del legacy?" | Sí |
+| `Documentación de negocio` | Continúa con la información disponible — indica qué asumió | No |
+| `Entrevistas con domain experts` | Pregunta: "¿Puedes proporcionar entrevistas con domain experts?" | Sí |
+| `Eventos de negocio identificados` | Pregunta: "¿Puedes proporcionar eventos de negocio identificados?" | Sí |
+| `Mapa de procesos actual` | Pregunta: "¿Puedes proporcionar mapa de procesos actual?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

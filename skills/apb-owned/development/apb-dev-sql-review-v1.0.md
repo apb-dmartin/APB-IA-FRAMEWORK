@@ -135,6 +135,18 @@ WHERE estado = 'ACTIVA'  -- Columna almacenada en mayúsculas según DDICT; índ
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Query SQL a revisar` | Pregunta: "¿Puedes proporcionar query sql a revisar?" | Sí |
+| `Motor de base de datos` | Pregunta: "¿Puedes proporcionar motor de base de datos?" | Sí |
+| `Contexto de uso` | Pregunta: "¿Puedes proporcionar contexto de uso?" | Sí |
+| `Plan de ejecución  si está disponible` | Pregunta: "¿Puedes proporcionar plan de ejecución  si está disponible?" | Sí |
+| `Tablas involucradas y volumen aproximado de filas` | Continúa con la información disponible — indica qué asumió | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

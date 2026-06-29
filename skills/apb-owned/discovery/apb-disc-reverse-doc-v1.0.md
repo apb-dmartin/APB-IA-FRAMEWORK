@@ -109,6 +109,18 @@ Cuando se necesita comprender un sistema legacy que tiene documentación pero ca
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Documentación existente` | Pregunta: "¿Puedes proporcionar documentación existente?" | Sí |
+| `Registros de procesos de negocio` | Pregunta: "¿Puedes proporcionar registros de procesos de negocio?" | Sí |
+| `Documentación de usuario` | Pregunta: "¿Puedes proporcionar documentación de usuario?" | Sí |
+| `Notas técnicas y runbooks` | Pregunta: "¿Puedes proporcionar notas técnicas y runbooks?" | Sí |
+| `Entrevistas con usuarios clave` | Pregunta: "¿Puedes proporcionar entrevistas con usuarios clave?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

@@ -123,6 +123,19 @@ Cuando se requiere implementar una nueva feature, corregir un bug, o refactoriza
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Especificación técnica o historia de usuario` | Pregunta: "¿Puedes proporcionar especificación técnica o historia de usuario?" | Sí |
+| `Arquitectura de referencia del componente` | Pregunta: "¿Puedes proporcionar arquitectura de referencia del componente?" | Sí |
+| `Contrato API o evento asociado` | Pregunta: "¿Puedes proporcionar contrato api o evento asociado?" | Sí |
+| `Código base existente` | Pregunta: "¿Puedes proporcionar código base existente?" | Sí |
+| `Estándares de codificación APB` | Pregunta: "¿Puedes proporcionar estándares de codificación apb?" | Sí |
+| `Plantilla de proyecto` | Continúa con la información disponible — indica qué asumió | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

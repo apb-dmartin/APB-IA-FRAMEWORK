@@ -131,6 +131,19 @@ Al desplegar un nuevo sistema en Azure, migrar un sistema on-premise, o rediseñ
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos no funcionales` | Pregunta: "¿Puedes proporcionar requisitos no funcionales?" | Sí |
+| `Requisitos de seguridad y compliance` | Pregunta: "¿Puedes proporcionar requisitos de seguridad y compliance?" | Sí |
+| `Estimación de carga y patrones de tráfico` | Pregunta: "¿Puedes proporcionar estimación de carga y patrones de tráfico?" | Sí |
+| `Presupuesto aproximado` | Pregunta: "¿Puedes proporcionar presupuesto aproximado?" | Sí |
+| `Topología de red actual` | Continúa con la información disponible — indica qué asumió | No |
+| `Decisiones arquitectónicas previas` | Pregunta: "¿Puedes proporcionar decisiones arquitectónicas previas?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

@@ -127,6 +127,16 @@ servicios críticos.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Código fuente del servicio` | Pregunta: "¿Puedes proporcionar código fuente del servicio?" | Sí |
+| `Queries SQL/PostGIS relevantes` | Pregunta: "¿Puedes proporcionar queries sql/postgis relevantes?" | Sí |
+| `Métricas de Application Insights / Azure Monitor si están...` | Pregunta: "¿Puedes proporcionar métricas de application insights / azure monitor si están...?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

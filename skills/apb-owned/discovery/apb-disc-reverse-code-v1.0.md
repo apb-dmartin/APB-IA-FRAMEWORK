@@ -113,6 +113,18 @@ Cuando no existe documentación actualizada de un sistema legacy, o cuando la do
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Código fuente completo del sistema` | Pregunta: "¿Puedes proporcionar código fuente completo del sistema?" | Sí |
+| `Base de datos` | Pregunta: "¿Puedes proporcionar base de datos?" | Sí |
+| `Configuración de despliegue` | Pregunta: "¿Puedes proporcionar configuración de despliegue?" | Sí |
+| `Logs de ejecución` | Continúa con la información disponible — indica qué asumió | No |
+| `Tests existentes` | Continúa con la información disponible — indica qué asumió | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

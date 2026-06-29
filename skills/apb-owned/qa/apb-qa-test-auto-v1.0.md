@@ -122,6 +122,18 @@ Al definir la estrategia de testing de un proyecto, al añadir nueva funcionalid
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Especificaciones funcionales y técnicas` | Pregunta: "¿Puedes proporcionar especificaciones funcionales y técnicas?" | Sí |
+| `Arquitectura del sistema y contratos API/eventos` | Pregunta: "¿Puedes proporcionar arquitectura del sistema y contratos api/eventos?" | Sí |
+| `Código fuente del SUT` | Pregunta: "¿Puedes proporcionar código fuente del sut?" | Sí |
+| `Estrategia de testing definida` | Pregunta: "¿Puedes proporcionar estrategia de testing definida?" | Sí |
+| `Entornos de ejecución disponibles` | Pregunta: "¿Puedes proporcionar entornos de ejecución disponibles?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

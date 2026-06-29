@@ -117,6 +117,19 @@ Cuando los requisitos están enriquecidos y se necesita un documento de especifi
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos funcionales enriquecidos` | Pregunta: "¿Puedes proporcionar requisitos funcionales enriquecidos?" | Sí |
+| `Requisitos no funcionales` | Pregunta: "¿Puedes proporcionar requisitos no funcionales?" | Sí |
+| `Decisiones arquitectónicas` | Pregunta: "¿Puedes proporcionar decisiones arquitectónicas?" | Sí |
+| `Contratos API/eventos preliminares` | Pregunta: "¿Puedes proporcionar contratos api/eventos preliminares?" | Sí |
+| `Estándares de especificación APB` | Pregunta: "¿Puedes proporcionar estándares de especificación apb?" | Sí |
+| `Mockups o prototipos de UI` | Pregunta: "¿Puedes proporcionar mockups o prototipos de ui?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

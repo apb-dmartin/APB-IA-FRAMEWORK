@@ -120,6 +120,18 @@ Cuando se requiere definir o revisar la arquitectura de un sistema, módulo o mi
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Requisitos funcionales y no funcionales documentados` | Pregunta: "¿Puedes proporcionar requisitos funcionales y no funcionales documentados?" | Sí |
+| `Contexto de negocio y dominio` | Pregunta: "¿Puedes proporcionar contexto de negocio y dominio?" | Sí |
+| `Restricciones tecnológicas y presupuestarias` | Pregunta: "¿Puedes proporcionar restricciones tecnológicas y presupuestarias?" | Sí |
+| `Arquitectura actual` | Continúa con la información disponible — indica qué asumió | No |
+| `Estándares corporativos APB vigentes` | Pregunta: "¿Puedes proporcionar estándares corporativos apb vigentes?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

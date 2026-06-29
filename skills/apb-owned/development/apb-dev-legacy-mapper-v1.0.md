@@ -107,6 +107,18 @@ Durante la modernización de un sistema legacy que debe coexistir con el nuevo s
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Modelo de datos legacy` | Pregunta: "¿Puedes proporcionar modelo de datos legacy?" | Sí |
+| `Modelo de datos moderno` | Pregunta: "¿Puedes proporcionar modelo de datos moderno?" | Sí |
+| `Reglas de negocio legacy` | Pregunta: "¿Puedes proporcionar reglas de negocio legacy?" | Sí |
+| `Puntos de integración identificados` | Pregunta: "¿Puedes proporcionar puntos de integración identificados?" | Sí |
+| `Estrategia de migración` | Pregunta: "¿Puedes proporcionar estrategia de migración?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

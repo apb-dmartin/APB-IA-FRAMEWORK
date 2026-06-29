@@ -107,6 +107,18 @@ Cuando un desarrollador finaliza una tarea y necesita crear una PR para mergear 
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Código implementado` | Pregunta: "¿Puedes proporcionar código implementado?" | Sí |
+| `Ticket/Jira asociado` | Pregunta: "¿Puedes proporcionar ticket/jira asociado?" | Sí |
+| `Especificación técnica` | Pregunta: "¿Puedes proporcionar especificación técnica?" | Sí |
+| `Tests ejecutados` | Pregunta: "¿Puedes proporcionar tests ejecutados?" | Sí |
+| `Notas de implementación del desarrollador` | Pregunta: "¿Puedes proporcionar notas de implementación del desarrollador?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

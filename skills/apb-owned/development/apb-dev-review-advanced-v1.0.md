@@ -157,6 +157,14 @@ MIT. Referencias adicionales: OWASP Code Review Guide, SonarQube Quality Gates.
   relación es Review TL → Review Advanced, no a la inversa.
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| *(Sin inputs declarados)* | No aplica | No |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

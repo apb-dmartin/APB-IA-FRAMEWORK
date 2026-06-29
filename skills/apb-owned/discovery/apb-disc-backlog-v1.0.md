@@ -112,6 +112,18 @@ Tras aprobarse la especificación técnica, o cuando se necesita planificar un n
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Especificación técnica aprobada` | Pregunta: "¿Puedes proporcionar especificación técnica aprobada?" | Sí |
+| `Requisitos priorizados` | Pregunta: "¿Puedes proporcionar requisitos priorizados?" | Sí |
+| `Estimaciones de esfuerzo` | Continúa con la información disponible — indica qué asumió | No |
+| `Capacidad del equipo` | Pregunta: "¿Puedes proporcionar capacidad del equipo?" | Sí |
+| `Dependencias técnicas identificadas` | Pregunta: "¿Puedes proporcionar dependencias técnicas identificadas?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)

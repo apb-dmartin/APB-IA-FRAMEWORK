@@ -110,6 +110,18 @@ Tras completarse una fase de migración (datos, aplicación, infraestructura), a
 *Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
 
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> El agente **nunca** debe continuar con inputs obligatorios vacíos o contradictorios sin comunicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `Plan de migración ejecutado` | Pregunta: "¿Puedes proporcionar plan de migración ejecutado?" | Sí |
+| `Datos origen y destino` | Pregunta: "¿Puedes proporcionar datos origen y destino?" | Sí |
+| `Especificación de equivalencia funcional` | Pregunta: "¿Puedes proporcionar especificación de equivalencia funcional?" | Sí |
+| `Métricas de rendimiento baseline` | Pregunta: "¿Puedes proporcionar métricas de rendimiento baseline?" | Sí |
+| `Checklist de validación predefinida` | Pregunta: "¿Puedes proporcionar checklist de validación predefinida?" | Sí |
+
 ---
 
 ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
