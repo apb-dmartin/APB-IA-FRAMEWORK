@@ -49,6 +49,15 @@ graph TD
 | 4 | QA Automation Agent | Validación post-análisis | `apb-qa-test-strategy`, `apb-qa-anonymize` |
 | 5 | Documentation Agent | Documentación del onboarding | `apb-doc-adr`, `apb-gov-evidence` |
 
+## 📡 Contratos de Output Inter-Agente
+
+| Agente Origen | Agente Destino | Artefacto entregado | Formato |
+|---------------|----------------|---------------------|---------|
+| `apb-agent-modernization-v1.0` | `apb-agent-domain-architect-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-domain-architect-v1.0` | `apb-agent-spec-engineer-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-spec-engineer-v1.0` | `apb-agent-qa-auto-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-qa-auto-v1.0` | `apb-agent-documentation-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+
 ## 📋 Fases del Workflow
 
 ### Fase 1: Análisis de Código Legacy (Modernization Architect)
@@ -112,6 +121,20 @@ graph TD
 - No exposición de vulnerabilidades legacy públicamente
 - Uso de Azure Key Vault para credenciales de repositorios
 - Cumplimiento con políticas de retención de datos
+
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1: Análisis de Código Legacy (Modernization Architect) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2: Modelado de Dominio (Domain Architect Agent) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3: Generación de Especificaciones (Spec Engineer) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4: Validación QA (QA Automation Agent) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5: Documentación y Gobierno (Documentation Agent) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
 
 ## 📝 Ejemplo de Ejecución
 

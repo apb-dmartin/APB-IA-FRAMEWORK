@@ -147,6 +147,23 @@ graph TD
 - Los datos de los licitadores (ofertas, precios) son confidenciales — no incluir en artefactos del repositorio
 - El expediente completo se custodia en los sistemas oficiales de APB (no en este repositorio)
 
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1 — Definición de la Necesidad | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2 — Aprobación de Necesidad ⚠️ GATE HUMANO | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3 — Memoria Justificativa | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4 — Pliego de Prescripciones Técnicas (PPT) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5 — Publicación y Licitación | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 6 — Evaluación Técnica de Ofertas | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 7 — Decisión de Adjudicación ⚠️ GATE HUMANO (exclusivo) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 8 — Notificaciones y Formalización | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
+
 ## 📝 Ejemplo de Ejecución
 
 ```yaml

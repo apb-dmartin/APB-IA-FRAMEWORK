@@ -138,6 +138,22 @@ graph TD
 - Los logs de producción manejados durante el diagnóstico se tratan con confidencialidad y no se almacenan en el repositorio
 - Las acciones de alto riesgo quedan registradas en el ticket JSM con timestamp y confirmación del técnico responsable
 
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1 — Recepción del Handoff L1 | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2 — Diagnóstico Avanzado | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3 — Aprobación de Acciones de Alto Riesgo ⚠️ GATE HUMANO | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4 — Resolución (ejecución humana) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5 — Verificación Post-Resolución | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 6 — Cierre y Gestión de Recurrencia | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 7 — Escalado L3 *(si aplica)* | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
+
 ## 📝 Ejemplo de Ejecución
 
 ```yaml

@@ -63,6 +63,20 @@ graph TD
 | 9 | Release Manager Agent | Coordinación de release | `apb-qa-release-ready` |
 | 10 | Documentation Agent | Documentación final | `apb-doc-adr`, `apb-doc-swagger`, `apb-doc-manual` |
 
+## 📡 Contratos de Output Inter-Agente
+
+| Agente Origen | Agente Destino | Artefacto entregado | Formato |
+|---------------|----------------|---------------------|---------|
+| `apb-agent-business-analyst-v1.0` | `apb-agent-spec-engineer-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-spec-engineer-v1.0` | `apb-agent-domain-architect-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-domain-architect-v1.0` | `apb-agent-technical-architect-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-technical-architect-v1.0` | `apb-agent-security-architect-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-security-architect-v1.0` | `apb-agent-implementer-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-implementer-v1.0` | `apb-agent-qa-auto-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-qa-auto-v1.0` | `apb-agent-governance-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-governance-v1.0` | `apb-agent-release-manager-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-release-manager-v1.0` | `apb-agent-documentation-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+
 ## 📋 Fases del Workflow
 
 ### Fase 1: Descubrimiento de Negocio
@@ -150,6 +164,23 @@ graph TD
 - Anonimización de datos de prueba
 - Uso de Azure Key Vault para todos los secretos
 - Auditoría de todos los cambios
+
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1: Descubrimiento de Negocio | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2: Ingeniería de Especificaciones | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3: Diseño de Arquitectura | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4: Seguridad por Diseño | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5: Implementación | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 6: Testing y QA | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 7: Gobierno y Release | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 8: Documentación | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
 
 ## 📝 Ejemplo de Ejecución
 

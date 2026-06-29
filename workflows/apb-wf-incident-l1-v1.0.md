@@ -161,6 +161,23 @@ El técnico verifica los criterios de resolución definidos en el diagnóstico:
 
 ---
 
+## 🚨 Manejo de Fallos
+
+> Ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Paso 1 — Triaje | Datos insuficientes para clasificar prioridad | Sí | Solicitar información mínima al reportador; no crear ticket sin clasificación | Técnico L1 |
+| Paso 2 — Diagnóstico | Herramientas de diagnóstico sin respuesta | Según severidad | Documentar herramientas fallidas; escalar a L2 si el diagnóstico es bloqueante para P1/P2 | Técnico L1 |
+| Paso 3 — Gate humano | Técnico no responde en SLA | Sí | Escalar automáticamente al responsable de guardia tras timeout de SLA | Major Incident Manager |
+| Paso 4 — Escalado | L2 no disponible | Sí (P1/P2) | Activar cadena de escalado de guardia APB; notificar a dirección si P1 | Major Incident Manager |
+| Paso 6 — Verificación | Sistema parece resuelto pero síntoma persiste | Sí | No cerrar el ticket; reabrir diagnóstico y documentar síntoma residual | Técnico L1 |
+| Paso 8 — Notificación | Fallo en canal Teams/correo | No | Registrar intento fallido; notificar por canal alternativo disponible | Técnico L1 |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
+
+---
+
 ## 📊 Métricas del workflow
 
 | Métrica | Objetivo APB |

@@ -49,6 +49,13 @@ graph TD
 | 3 | Security Testing Subagent | Análisis de seguridad | `apb-dev-openspec-review`, `apb-sec-owasp` |
 | 4 | QA Automation Agent | Validación de calidad | `apb-qa-unit-test-gen`, `apb-qa-test-auto` |
 
+## 📡 Contratos de Output Inter-Agente
+
+| Agente Origen | Agente Destino | Artefacto entregado | Formato |
+|---------------|----------------|---------------------|---------|
+| `apb-agent-implementer-v1.0` | `apb-agent-governance-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-governance-v1.0` | `apb-agent-qa-auto-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+
 ## 📋 Fases del Workflow
 
 ### Fase 1: Preparación de PR
@@ -111,6 +118,20 @@ graph TD
 - Análisis estático de seguridad automatizado
 - Auditoría de decisiones de code review
 - Trazabilidad de cambios
+
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1: Preparación de PR | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2: Code Review Automática | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3: Validación de Seguridad | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4: Validación de Calidad | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5: Decisión | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
 
 ## 📝 Ejemplo de Ejecución
 

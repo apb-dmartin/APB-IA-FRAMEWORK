@@ -51,6 +51,13 @@ graph TD
 | 2 | Technical Architect | Plan de corrección | Análisis de componentes DevExtreme / React afectados |
 | 3 | Documentation | Informe de conformidad | Plantilla MPTFP para declaración de accesibilidad |
 
+## 📡 Contratos de Output Inter-Agente
+
+| Agente Origen | Agente Destino | Artefacto entregado | Formato |
+|---------------|----------------|---------------------|---------|
+| `apb-agent-qa-auto-v1.0` | `apb-agent-technical-architect-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-technical-architect-v1.0` | `apb-agent-documentation-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+
 ## 📋 Fases del Workflow
 
 ### Fase 1 — Auditoría Automática WCAG 2.1 AA
@@ -146,6 +153,23 @@ graph TD
 - WCAG 2.1 nivel AA — estándar de referencia exigido legalmente
 - La declaración de accesibilidad es un documento público — no incluir información sensible
 - Las auditorías en entornos de producción deben realizarse en horario de baja carga para evitar impacto
+
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1 — Auditoría Automática WCAG 2.1 AA | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2 — Priorización de Hallazgos | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3 — Revisión Manual ⚠️ GATE HUMANO | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4 — Plan de Corrección | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5 — Corrección (ejecución por el equipo de desarrollo) | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 6 — Verificación Post-Corrección | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 7 — Informe de Conformidad | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 8 — Publicación y Notificación | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
 
 ## 📝 Ejemplo de Ejecución
 

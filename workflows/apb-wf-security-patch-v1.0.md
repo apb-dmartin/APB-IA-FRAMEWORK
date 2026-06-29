@@ -60,6 +60,14 @@ graph TD
 | 3 | Platform Engineer | Aplicación del patch | `apb-plat-cicd`, `apb-plat-docker` |
 | 4 | QA Automation | Verificación post-patch | apb-qa-unit-v1.0 (planificado), apb-qa-security-v1.0 (planificado) |
 
+## 📡 Contratos de Output Inter-Agente
+
+| Agente Origen | Agente Destino | Artefacto entregado | Formato |
+|---------------|----------------|---------------------|---------|
+| `apb-agent-security-architect-v1.0` | `apb-agent-tech-debt-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-tech-debt-v1.0` | `apb-agent-platform-engineer-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+| `apb-agent-platform-engineer-v1.0` | `apb-agent-qa-auto-v1.0` | Informe de fase con hallazgos y recomendaciones | Markdown |
+
 ## 📋 Fases del Workflow
 
 ### Fase 1 — Ingesta y Clasificación
@@ -151,6 +159,23 @@ graph TD
 - CVSS v3.1 — sistema de puntuación estándar para priorización
 - Los CVEs con CVSS ≥7.0 bloquean el pipeline hasta resolución o autorización explícita del CISO
 - Trazabilidad completa: finding → remediación → patch → verificación → cierre
+
+## 🚨 Manejo de Fallos
+
+> Documentar para cada fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1 — Ingesta y Clasificación | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 2 — Priorización y SLA | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 3 — Plan de Remediación + Gate CISO ⚠️ GATE HUMANO *(Critical/High)* | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4 — Registro en Backlog | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 5 — Aplicación del Patch | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 6 — Verificación Post-Patch | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 7 — Despliegue en Producción | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 8 — Cierre del Finding | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+
+> **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
 
 ## 📝 Ejemplo de Ejecución
 
