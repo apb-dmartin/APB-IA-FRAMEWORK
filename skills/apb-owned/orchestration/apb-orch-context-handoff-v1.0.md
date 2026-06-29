@@ -1,0 +1,133 @@
+---
+id: "apb-orch-context-handoff-v1.0"
+name: "Context Handoff entre Agentes"
+description: "Protocolo de transferencia estructurada de contexto entre agentes secuenciales (uno termina, otro empieza). Garantiza que el agente receptor tiene toda la información necesaria sin depender de que el agente emisor siga disponible. Distinto de apb-orch-multi-agent-v1.0, que cubre coordinación paralela."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "orchestration"
+autonomy_level: 1
+consumed_by:
+  - "apb-agent-governance-v1.0"
+created_date: "2026-06-29"
+review_date: "2026-12-29"
+---
+
+# Context Handoff entre Agentes
+
+---
+
+## 🎯 Propósito
+
+Definir el artefacto y el protocolo de transferencia de contexto cuando un agente finaliza su trabajo y otro debe continuar desde ese punto. El handoff evita que el agente receptor empiece desde cero o tenga que recuperar contexto de forma ad hoc, y garantiza que la cadena de agentes en un workflow produce resultados coherentes y trazables.
+
+> **Diferencia con `apb-orch-multi-agent-v1.0`:** Esa skill gestiona **coordinación paralela** (varios agentes trabajando simultáneamente con mecanismo de resolución de conflictos). Esta skill gestiona **transferencia secuencial** (un agente termina su fase, el siguiente la recibe y continúa).
+
+---
+
+## ⚡ Trigger
+
+Usar esta skill cuando:
+- Un workflow tiene más de una fase y agentes distintos cubren cada fase
+- El output de un agente es el input del siguiente (encadenamiento secuencial)
+- Se cambia de dominio funcional entre fases (ej: Discovery → Architecture → Implementation)
+- Un agente escala a otro y quiere que el receptor tenga contexto completo sin leer todo el historial
+
+---
+
+## 📋 Estructura del Artefacto de Handoff
+
+El artefacto de handoff es un bloque Markdown con frontmatter YAML que el agente emisor produce al final de su fase y el agente receptor consume al inicio de la suya.
+
+```yaml
+# [IA-GEN] Generado por APB AI Framework — pendiente revisión humana
+handoff:
+  from_agent: "<id-agente-emisor>"
+  to_agent: "<id-agente-receptor>"
+  workflow: "<id-workflow>"          # ej: apb-wf-sdd-full-v1.0
+  phase_completed: "<nombre-fase>"   # ej: "Discovery"
+  phase_next: "<nombre-fase>"        # ej: "Architecture"
+  timestamp: "YYYY-MM-DD HH:MM"
+  human_approved: false              # el humano cambia a true tras validación
+```
+
+Seguido de las secciones Markdown obligatorias:
+
+### Secciones obligatorias del handoff
+
+| Sección | Contenido |
+|---------|-----------|
+| `## Resumen de la Fase Completada` | Qué se hizo, decisiones tomadas, rationale clave |
+| `## Artefactos Producidos` | Lista de ficheros, documentos o tickets generados, con ruta o ID |
+| `## Decisiones Pendientes` | Preguntas abiertas que el agente receptor debe resolver antes de continuar |
+| `## Restricciones Heredadas` | Constraints, requisitos no funcionales o límites que el receptor debe respetar |
+| `## Checklist de Arranque` | Lista de verificación para que el receptor confirme que tiene todo lo necesario |
+
+### Secciones opcionales
+
+| Sección | Cuándo usarla |
+|---------|---------------|
+| `## Contexto de Negocio` | Si el receptor es de un dominio distinto y necesita vocabulario específico |
+| `## Riesgos Detectados` | Si el agente emisor identificó riesgos que el receptor debe tener en cuenta |
+| `## Dependencias Externas` | Si hay inputs de sistemas externos (Jira, Azure, etc.) que el receptor necesita consultar |
+
+---
+
+## ⚠️ Comportamiento ante inputs incompletos
+
+| Input | Obligatorio | Si falta |
+|-------|------------|----------|
+| `from_agent` | ✅ | Bloquea: el emisor debe identificarse |
+| `to_agent` | ✅ | Bloquea: el receptor debe especificarse antes de generar el handoff |
+| `workflow` | ✅ | Bloquea: sin workflow no hay trazabilidad de la cadena |
+| `phase_completed` | ✅ | Bloquea: sin esto el receptor no sabe qué está recibiendo |
+| `Artefactos Producidos` | ✅ | Bloquea: el receptor no puede continuar sin saber qué existe |
+| `Decisiones Pendientes` | ❌ | Asume vacío; informa: "No se identificaron decisiones pendientes" |
+| `Riesgos Detectados` | ❌ | Asume vacío; omite la sección |
+
+---
+
+## 🔄 Protocolo de Uso
+
+**Agente emisor (al finalizar su fase):**
+1. Genera el bloque YAML de handoff con todos los campos obligatorios.
+2. Completa las secciones Markdown obligatorias.
+3. Presenta el artefacto para **revisión humana** antes de pasarlo al receptor.
+4. El humano cambia `human_approved: false` → `true` tras validar.
+
+**Agente receptor (al iniciar su fase):**
+1. Lee el artefacto de handoff.
+2. Verifica el checklist de arranque: si falta algún ítem, solicita al emisor o al humano que lo complete antes de continuar.
+3. No asume nada que no esté en el handoff — si hay ambigüedad, pregunta.
+
+---
+
+## 📤 Salida Esperada
+
+Artefacto de handoff (fichero Markdown con frontmatter YAML) listo para revisión humana y consumo por el agente receptor.
+
+**Ejemplo de uso:**
+```
+[apb-agent-domain-architect-v1.0 → apb-agent-technical-architect-v1.0]
+workflow: apb-wf-sdd-full-v1.0
+fase completada: Architecture → fase siguiente: Detailed Design
+```
+
+---
+
+## 🔗 Dependencias
+
+- `apb-orch-multi-agent-v1.0` — para coordinación paralela en vez de secuencial
+- `apb-orch-human-checkpoint-v1.0` — si el handoff incluye un gate de aprobación humana explícito
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../../context/apb/standards/AI_MARKING_STANDARD.md):
+
+- **Artefacto de handoff** (YAML + Markdown):
+  `# [IA-GEN] Generado por APB AI Framework (apb-orch-context-handoff-v1.0) — pendiente revisión humana`
+
+> **Generado por IA:** Claude (Anthropic/Claude Code), sesión 2026-06-29.
+> **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._

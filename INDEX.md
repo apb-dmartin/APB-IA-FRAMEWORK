@@ -18,15 +18,15 @@
 
 | Métrica | Valor |
 |---------|-------|
-| Skills APB | 140 / 140 |
+| Skills APB | 143 / 143 |
 | Skills terceros | 51 / 51 |
-| Agentes | 29 / 29 |
+| Agentes | 31 / 31 |
 | Subagentes | 28 / 28 |
 | Workflows | 17 / 17 |
 | Providers | 19 / 19 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **295** |
+| **Total** | **300** |
 
 ---
 
@@ -52,11 +52,11 @@ APB-IA-FRAMEWORK/
 ├── README.md, SYSTEM.md, GOVERNANCE.md, CONTRIBUTING.md, LICENSE.md
 ├── INDEX.md
 ├── DOMAIN_REGISTRY.md
-├── agents/                     # 29 agentes
+├── agents/                     # 31 agentes
 ├── subagents/                  # 28 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
-│   ├── apb-owned/             # 140 skills
+│   ├── apb-owned/             # 143 skills
 │   └── third-party/           # 51 skills
 ├── providers/                  # 19 providers
 ├── wrappers/                   # 7 wrappers
@@ -90,7 +90,7 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Skills APB por Dominio (140)
+## ✅ Skills APB por Dominio (143)
 
 | Dominio | Cantidad | Patrón ID |
 |---------|----------|-----------|
@@ -104,14 +104,14 @@ APB-IA-FRAMEWORK/
 | security | 12 | `apb-sec-*` |
 | pm | 8 | `apb-pm-*` |
 | documentation | 7 | `apb-doc-*` |
-| design | 2 | `apb-design-*` |
-| orchestration | 1 | `apb-orch-*` |
+| design | 3 | `apb-design-*` |
+| orchestration | 3 | `apb-orch-*` |
 
 ---
 
-## ✅ Agentes (29)
+## ✅ Agentes (31)
 
-`apb-agent-business-analyst`, `apb-agent-catalog-manager`, `apb-agent-change-manager`, `apb-agent-cloud-architect`, `apb-agent-code-reviewer`, `apb-agent-compliance-audit`, `apb-agent-data-governance`, `apb-agent-ddd`, `apb-agent-documentation`, `apb-agent-domain-architect`, `apb-agent-finops`, `apb-agent-governance`, `apb-agent-implementer`, `apb-agent-incident-support`, `apb-agent-meta-builder`, `apb-agent-modernization`, `apb-agent-observability`, `apb-agent-platform-engineer`, `apb-agent-problem-manager`, `apb-agent-qa-auto`, `apb-agent-release-manager`, `apb-agent-risk-exception`, `apb-agent-security-architect`, `apb-agent-spec-engineer`, `apb-agent-sre`, `apb-agent-tech-debt`, `apb-agent-tech-discovery`, `apb-agent-technical-architect`, `apb-agent-ux-mockup`
+`apb-agent-business-analyst`, `apb-agent-catalog-manager`, `apb-agent-change-manager`, `apb-agent-cloud-architect`, `apb-agent-code-reviewer`, `apb-agent-compliance-audit`, `apb-agent-data-governance`, `apb-agent-db`, `apb-agent-ddd`, `apb-agent-documentation`, `apb-agent-domain-architect`, `apb-agent-finops`, `apb-agent-governance`, `apb-agent-implementer`, `apb-agent-incident-support`, `apb-agent-meta-builder`, `apb-agent-modernization`, `apb-agent-observability`, `apb-agent-platform-engineer`, `apb-agent-pm`, `apb-agent-problem-manager`, `apb-agent-qa-auto`, `apb-agent-release-manager`, `apb-agent-risk-exception`, `apb-agent-security-architect`, `apb-agent-spec-engineer`, `apb-agent-sre`, `apb-agent-tech-debt`, `apb-agent-tech-discovery`, `apb-agent-technical-architect`, `apb-agent-ux-mockup`
 
 ---
 

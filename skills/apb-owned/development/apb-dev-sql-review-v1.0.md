@@ -7,6 +7,9 @@ status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "development"
 autonomy_level: 2
+consumed_by:
+  - "apb-agent-db-v1.0"
+  - "apb-agent-implementer-v1.0"
 created_date: "2026-06-26"
 review_date: "2026-06-26"
 ---

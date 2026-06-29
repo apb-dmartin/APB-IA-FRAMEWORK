@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 295
+- **Total Components**: 300
 
 ## Component Breakdown
 
-### Skills APB-Owned (140 total)
+### Skills APB-Owned (143 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -27,6 +27,7 @@
 | `apb-arch-tech-plan-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-tech-plan-v1.0.md` |
 | `apb-arch-validate-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-validate-v1.0.md` |
 | `apb-design-frontend-design-system-v1.0` | design | draft | `skills/apb-owned/design/apb-design-frontend-design-system-v1.0.md` |
+| `apb-design-wcag-v1.0` | design | draft | `skills/apb-owned/design/apb-design-wcag-v1.0.md` |
 | `apb-dev-devexpress-selector-v1.0` | design | draft | `skills/apb-owned/design/apb-dev-devexpress-selector-v1.0.md` |
 | `apb-dev-api-design-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-design-v1.0.md` |
 | `apb-dev-api-standard-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-standard-v1.0.md` |
@@ -106,6 +107,8 @@
 | `apb-ops-service-continuity-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-service-continuity-v1.0.md` |
 | `apb-ops-slo-design-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-slo-design-v1.0.md` |
 | `apb-ops-telemetry-emit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-telemetry-emit-v1.0.md` |
+| `apb-orch-context-handoff-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-context-handoff-v1.0.md` |
+| `apb-orch-human-checkpoint-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-human-checkpoint-v1.0.md` |
 | `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-multi-agent-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
@@ -210,7 +213,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (29 total)
+### Agentes (31 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -221,6 +224,7 @@
 | `apb-agent-code-reviewer-v1.0` | Code Reviewer Agent | draft | `agents/apb-agent-code-reviewer-v1.0.md` |
 | `apb-agent-compliance-audit-v1.0` | Compliance Audit Agent | draft | `agents/apb-agent-compliance-audit-v1.0.md` |
 | `apb-agent-data-governance-v1.0` | Data Governance | draft | `agents/apb-agent-data-governance-v1.0.md` |
+| `apb-agent-db-v1.0` | Database Agent | draft | `agents/apb-agent-db-v1.0.md` |
 | `apb-agent-ddd-v1.0` | DDD Domain Discovery Agent | draft | `agents/apb-agent-ddd-v1.0.md` |
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
@@ -232,6 +236,7 @@
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
 | `apb-agent-platform-engineer-v1.0` | Platform Engineer Agent | draft | `agents/apb-agent-platform-engineer-v1.0.md` |
+| `apb-agent-pm-v1.0` | Project Management Agent | draft | `agents/apb-agent-pm-v1.0.md` |
 | `apb-agent-problem-manager-v1.0` | Problem Manager | draft | `agents/apb-agent-problem-manager-v1.0.md` |
 | `apb-agent-qa-auto-v1.0` | QA Automation Agent | draft | `agents/apb-agent-qa-auto-v1.0.md` |
 | `apb-agent-release-manager-v1.0` | Release Manager Agent | draft | `agents/apb-agent-release-manager-v1.0.md` |

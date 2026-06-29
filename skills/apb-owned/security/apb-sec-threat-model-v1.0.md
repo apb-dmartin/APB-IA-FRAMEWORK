@@ -16,6 +16,8 @@ review_date: "2026-06-22"
 ## Propósito
 Generar un modelo de amenazas estructurado basado en la metodología STRIDE para identificar, clasificar y priorizar riesgos de seguridad en aplicaciones, arquitecturas y flujos de datos. La skill produce un informe actionable con controles mitigadores y trazabilidad hacia requisitos ENS y OWASP.
 
+> **Diferencia con `apb-sec-risk-analysis-v1.0`:** Esta skill analiza **amenazas técnicas por componente arquitectónico** (STRIDE: Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation). Úsala en **diseño de sistemas** para identificar vectores de ataque concretos. `apb-sec-risk-analysis-v1.0` analiza **riesgos por activo de negocio** (ISO 27005/MAGERIT): probabilidad × impacto a nivel organizativo. Úsala en **auditorías de cumplimiento** y evaluaciones periódicas.
+
 ## Contexto de Uso
 - Diseño de nuevas aplicaciones o microservicios antes del despliegue.
 - Revisiones de arquitectura existente durante auditorías de seguridad.
