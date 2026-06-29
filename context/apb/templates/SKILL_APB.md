@@ -115,6 +115,20 @@ Output: ...
 
 ---
 
+## ⚠️ Comportamiento ante inputs incompletos
+
+> Documentar el comportamiento para CADA input declarado en la sección 3.
+> El agente NUNCA debe continuar con inputs obligatorios vacíos o contradictorios sin indicarlo explícitamente.
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `{input_obligatorio_1}` | Pregunta: "{pregunta concreta al usuario}" | Sí |
+| `{input_obligatorio_2}` | Pregunta: "{pregunta concreta al usuario}" | Sí |
+| `{input_opcional_1}` | Asume valor por defecto `{valor}` — lo indica explícitamente | No |
+| `{input_ambiguo}` | Presenta las interpretaciones posibles y solicita confirmación | Según caso |
+
+---
+
 ## 11. Marcado IA obligatorio (POLICY_AI_USAGE §6)
 
 Conforme al [`AI_MARKING_STANDARD`](../standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA.
@@ -143,4 +157,5 @@ Conforme al [`AI_MARKING_STANDARD`](../standards/AI_MARKING_STANDARD.md), todo a
 - [ ] Sin secretos ni información sensible.
 - [ ] Discovery de alternativas documentado (si es skill APB nueva).
 - [ ] **Sección `## Marcado IA obligatorio` completada** (POLICY_AI_USAGE §6).
+- [ ] **Sección `## ⚠️ Comportamiento ante inputs incompletos` completada** con tabla para CADA input obligatorio.
 - [ ] Script `validate_repo.py` ejecutado sin errores.

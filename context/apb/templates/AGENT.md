@@ -96,6 +96,15 @@ review_date: "YYYY-MM-DD"
 
 ---
 
+## 🔗 Dependencias pendientes de crear
+
+> Si este agente requiere providers, skills o workflows que aún no existen en el repo, listarlos aquí con backticks y la anotación `(pendiente)`. El validador los capturará como INFO y aparecerán en el informe de componentes pendientes.
+
+- `prov-{nombre}-v1.0` (pendiente) — {descripción de para qué se necesita}
+- `apb-wf-{nombre}-v1.0` (pendiente) — {descripción de para qué se necesita}
+
+---
+
 ## 🔒 Seguridad y cumplimiento
 
 - {Control de seguridad 1}

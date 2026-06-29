@@ -354,6 +354,54 @@ def validate_component_file(
                 "Añadir según context/apb/standards/AI_MARKING_STANDARD.md."
             ))
 
+    # 14. Comportamiento ante inputs incompletos (Sesión Calidad de Pruebas)
+    #     Todas las skills apb-owned deben documentar qué hace el agente si un input es
+    #     nulo, ambiguo o incompleto. Previene que el agente continúe sin datos suficientes.
+    if _is_apb_skill:
+        if "## ⚠️ Comportamiento ante inputs incompletos" not in content:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                "Falta la sección '## ⚠️ Comportamiento ante inputs incompletos'. "
+                "Añadir tabla con comportamiento para cada input obligatorio."
+            ))
+
+    # 15. Manejo de fallos en workflows (Sesión Calidad de Pruebas)
+    #     Todos los workflows deben documentar qué ocurre si cada fase falla,
+    #     si el fallo es bloqueante y quién decide la acción de recuperación.
+    _is_workflow = component_type == "workflow" and "workflows/" in _rp
+    if _is_workflow:
+        if "## \U0001f6a8 Manejo de Fallos" not in content:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                "Falta la sección '## 🚨 Manejo de Fallos'. "
+                "Añadir tabla con fallo posible, si es bloqueante y acción para cada fase."
+            ))
+
+    # 16. System prompt en subagentes (gap detectado en Sesión Enriquecimiento C1)
+    #     Todos los subagentes deben tener un prompt de sistema explícito con stack,
+    #     principios de actuación y límites. Sin él el subagente no puede operar.
+    _is_subagent = component_type == "subagent" and "subagents/" in _rp
+    if _is_subagent:
+        if "## \U0001f9e0 Prompt de Sistema" not in content:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                "Falta la sección '## 🧠 Prompt de Sistema'. "
+                "Añadir según context/apb/templates/SUBAGENT.md."
+            ))
+
+    # 17. Contratos de output inter-agente en workflows complejos (gap C1)
+    #     Los workflows con ≥3 agentes deben definir qué entrega cada agente al siguiente.
+    if _is_workflow:
+        agents_list = metadata.get("agents") or []
+        if len(agents_list) >= 3:
+            if "## \U0001f4e1 Contratos de Output Inter-Agente" not in content:
+                result.add(ValidationIssue(
+                    "WARNING", rel_path,
+                    f"Workflow con {len(agents_list)} agentes sin sección "
+                    "'## 📡 Contratos de Output Inter-Agente'. "
+                    "Añadir tabla de contratos entre agentes consecutivos."
+                ))
+
     result.add(ValidationIssue("INFO", rel_path, f"Componente validado: {comp_id or '(sin id)'}"))
 
 
@@ -413,12 +461,24 @@ def validate_references(repo_path: Path, result: ValidationResult, all_ids: Dict
                     continue  # auto-referencia (p.ej. el propio ID en un ejemplo)
                 if ref_id not in all_ids and ref_id not in seen_in_body:
                     seen_in_body.add(ref_id)
-                    result.add(ValidationIssue(
-                        "WARNING", rel_path,
-                        f"Posible referencia rota en el cuerpo del documento: '{ref_id}' "
-                        f"no existe en el repo. Verificar manualmente (puede ser un gap de "
-                        f"catálogo real, no solo un error de escritura)."
-                    ))
+                    # 18. Si la referencia incluye "(pendiente)" o "(planificado)" en el contexto
+                    #     cercano, es un gap documentado intencionalmente — INFO, no WARNING.
+                    #     El contexto cercano se busca en los 80 caracteres siguientes al match.
+                    match_end = m.end()
+                    nearby = body[match_end:match_end + 80]
+                    is_documented_gap = "(pendiente)" in nearby or "(planificado)" in nearby
+                    if is_documented_gap:
+                        result.add(ValidationIssue(
+                            "INFO", rel_path,
+                            f"Gap documentado: '{ref_id}' marcado como pendiente de crear."
+                        ))
+                    else:
+                        result.add(ValidationIssue(
+                            "WARNING", rel_path,
+                            f"Posible referencia rota en el cuerpo del documento: '{ref_id}' "
+                            f"no existe en el repo. Verificar manualmente (puede ser un gap de "
+                            f"catálogo real, no solo un error de escritura)."
+                        ))
 
 
 def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
@@ -586,6 +646,20 @@ def main():
     if exempt_count and args.strict:
         print(f"\nℹ️  {exempt_count} warning(s) de 'source_commit: unverified' excluidos "
               f"del modo estricto (política deliberada, GOVERNANCE.md §4.2).")
+
+    # 19. Lista consolidada de gaps documentados (pendientes de crear)
+    pending_gaps = [i for i in result.infos if i.message.startswith("Gap documentado:")]
+    if pending_gaps:
+        print()
+        print("-" * 70)
+        print(f"  📋 PENDIENTES DETECTADOS ({len(pending_gaps)} gaps documentados con '(pendiente)'/'(planificado)'):")
+        seen_gaps = set()
+        for issue in pending_gaps:
+            gap_id = issue.message.replace("Gap documentado: ", "").replace(" marcado como pendiente de crear.", "").strip("'")
+            if gap_id not in seen_gaps:
+                seen_gaps.add(gap_id)
+                print(f"   • {gap_id}  ← referenciado en [{issue.file}]")
+        print("  (Crear estos componentes cuando estén disponibles para eliminar los gaps)")
 
     if result.has_errors or (args.strict and blocking_warnings):
         print("\n❌ VALIDACIÓN FALLIDA.")

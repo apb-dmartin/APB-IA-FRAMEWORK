@@ -24,6 +24,15 @@
 |-------|--------|-----|-------------------|
 {agents_table}
 
+## 📡 Contratos de Output Inter-Agente
+
+> Obligatorio para workflows con ≥3 agentes. Documenta qué entrega exactamente cada agente al siguiente.
+
+| Agente Origen | Agente Destino | Artefacto entregado | Formato |
+|---------------|----------------|---------------------|---------|
+| `{agente_1}` | `{agente_2}` | {descripción del output} | {markdown / json / yaml} |
+| `{agente_2}` | `{agente_3}` | {descripción del output} | {markdown / json / yaml} |
+
 ## 📋 Fases del Workflow
 
 {phases}
@@ -48,6 +57,15 @@
 
 {security}
 
+## 🚨 Manejo de Fallos
+
+> Documentar para CADA fase qué ocurre si falla, si es bloqueante y quién decide la acción de recuperación.
+
+| Fase | Fallo posible | ¿Bloqueante? | Acción del agente | Decisor |
+|------|---------------|-------------|-------------------|---------|
+| Fase 1 — {nombre} | {descripción del fallo posible} | Sí / No | {acción automática o solicitar intervención} | Automático / Humano |
+| Fase N — {nombre} | {descripción del fallo posible} | Sí / No | {acción automática o solicitar intervención} | Automático / Humano |
+
 ## 📝 Ejemplo de Ejecución
 
 ```yaml
@@ -61,6 +79,28 @@ inputs:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | {version} | {date} | Arquitectura APB | Creación inicial |
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../standards/AI_MARKING_STANDARD.md), todo artefacto generado por este workflow debe incluir marca de origen IA:
+
+- **Documentos Markdown** (informes, entregables del workflow):
+  > ⚠️ **Borrador generado por IA** (APB AI Framework — `{id}`) — pendiente validación humana. No distribuir sin revisión.
+- **Commits**: prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`.
+
+---
+
+## Checklist de Creación
+
+- [ ] Frontmatter completo (id, agents, human_checkpoints, autonomy_level).
+- [ ] Diagrama Mermaid refleja el flujo real de fases y decisiones.
+- [ ] Todos los agentes en `agents:` existen en el repo.
+- [ ] **Sección `## 📡 Contratos de Output Inter-Agente` completada** (si ≥3 agentes).
+- [ ] **Sección `## 🚨 Manejo de Fallos` completada** para cada fase.
+- [ ] **Sección `## Marcado IA obligatorio` completada** (POLICY_AI_USAGE §6).
+- [ ] Script `validate_repo.py` ejecutado sin errores.
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
