@@ -1642,4 +1642,113 @@ Los siguientes agentes tienen gaps de calidad o contenido que requieren actualiz
 **Bloqueantes para Debora antes de ejecutar:**
 - Confirmar mecanismo de distribución del Design System (punto #49) — no es bloqueante para este bloque pero puede afectar a skills de plataforma.
 - Facilitar URL exactas de repositorios de terceros pendientes del punto #27 si se quieren incorporar en paralelo.
+
+---
+
+## Revisión integral del framework — 2026-06-29
+
+> Revisión ejecutada post-Sesión Enriquecimiento B. Cuatro dimensiones: estructura/consistencia, funcional, seguridad/implementación, cobertura de pruebas. Fuente: validate_repo.py + 3 agentes de análisis paralelo.
+
+### Resultados por dimensión
+
+#### Dimensión 1 — Estructura y consistencia
+
+| Hallazgo | Severidad | Estado |
+|---|---|---|
+| 26 de 29 agentes sin `## Marcado IA obligatorio (POLICY_AI_USAGE §6)` | 🔴 Crítico | Pendiente |
+| 19 subagentes sin System Prompt (esqueletos sin instrucciones al LLM) | 🔴 Crítico | Pendiente |
+| validate_repo.py no comprueba Marcado IA en `agents/` (condición `skills/apb-owned` excluye la carpeta agents) | 🔴 Crítico (bug validador) | Pendiente |
+| 4 skills nuevas (sec×3 + gov×1) no referenciadas en ningún agente | 🟡 Medio | Pendiente |
+| Dominio `orchestration`: solo 1 skill (`apb-orch-multi-agent-v1.0`), sin agente dedicado | 🟡 Medio | Pendiente |
+| Dominio `design`: solo 2 skills, sin agente dedicado de diseño | 🟡 Bajo | Pendiente |
+| 59 warnings de `source_commit: unverified` en skills de terceros | ⚪ Info | Deliberado (política GOVERNANCE.md §4.2) |
+
+#### Dimensión 2 — Funcional
+
+| Hallazgo | Severidad | Descripción |
+|---|---|---|
+| `apb-wf-incident-l1-v1.0` orquesta skills directamente, NO usa `apb-agent-incident-support-v1.0` como agente padre | 🟡 Medio | El workflow y el agente están desacoplados — debería referenciar al agente |
+| Workflow `apb-wf-cloud-migration-v1.0`: 9 agentes en cadena sin formato de output inter-agente definido | 🟡 Medio | Platform Engineer → SRE: no hay contrato de datos entre pasos |
+| Solapamiento funcional: `apb-ops-incident-diagnose-v1.0` vs `apb-ops-rca-v1.0` | 🟡 Medio | Ambas producen "causa raíz"; diagnose es táctico/inmediato, rca es post-incidente. Diferencia no documentada claramente |
+| Solapamiento parcial: `apb-sec-threat-model-v1.0` (STRIDE) vs `apb-sec-risk-analysis-v1.0` (ISO 27005) | 🟢 Bajo | Diferencia real (táctico vs. estratégico) pero no explicada en los propios documentos |
+| `apb-agent-finops-v1.0` requiere "catálogo de precios Azure" sin que ninguna skill tenga ese output | 🟡 Medio | Gap de input no cubierto en la cadena |
+| Todos los agentes críticos tienen autonomy_level 1 | ✅ Correcto | |
+| `apb-agent-compliance-audit-v1.0` respeta gates humanos correctamente | ✅ Correcto | |
+
+#### Dimensión 3 — Seguridad e implementación
+
+| Hallazgo | Severidad | Descripción |
+|---|---|---|
+| Sin credenciales hardcodeadas detectadas en ningún fichero | ✅ Seguro | Patrones detectados por validate_repo.py línea 102-108 |
+| Máximo autonomy_level en producción: 2. Nivel 4 no usado (declarado en AUTONOMY_LEVELS.md) | ✅ Correcto | |
+| Skills de seguridad con instrucciones defensivas, sin instrucciones de ataque | ✅ Correcto | |
+| `apb-ops-incident-diagnose-v1.0` (nivel 2) propone `ALTER SYSTEM KILL SESSION` Oracle | 🟡 Bajo | Requiere "confirmación humana" en texto pero el framework no lo bloquea mecánicamente |
+| SCHEMA.md y validate_repo.py están sincronizados en campos obligatorios | ✅ Correcto | |
+| CI/CD `.github/workflows/validate.yml` usa `--strict`, no auto-commitea catálogo | ✅ Correcto | |
+| validate_repo.py línea 346: condición `"skills/apb-owned" in rel_path` excluye comprobación Marcado IA en agentes | 🔴 Bug | Requiere corrección |
+
+#### Dimensión 4 — Cobertura de pruebas
+
+| Hallazgo | Severidad | Descripción |
+|---|---|---|
+| `tests/test_validate_repo.py`: 19 tests unitarios sobre validate_repo.py | ✅ Existe | Cubre YAML, secretos, refs rotas, circularidades |
+| ~85% de skills tienen sección "Ejemplo de Uso" con casos concretos | ✅ Bueno | |
+| ~90% de criterios de calidad son verificables objetivamente (checkboxes, porcentajes) | ✅ Bueno | |
+| Solo ~40% de skills documentan casos de error / edge cases en los ejemplos | 🟡 Medio | La mayoría asume inputs válidos |
+| ~30% de skills no documentan qué hace el agente si el input está incompleto | 🟡 Medio | Comportamiento ante entrada nula no especificado |
+| Workflows documentan happy path y gates, pero NO fallos en cascada ni iteraciones | 🟡 Medio | ¿Qué ocurre si falla el paso 3 de 8? No documentado |
+| Tests de comportamiento de agentes: AUSENTES | 🔴 Gap crítico | No existe suite que valide "dado prompt X → output Y esperado" |
+| Self-testing: `apb-qa-framework-v1.0` solo valida estructura, no comportamiento | 🟡 Medio | Pendiente extensión semántica |
+
+---
+
+### Sesiones propuestas resultado de la revisión
+
+#### Sesión Correcciones Urgentes (estimado: 2-3h)
+
+**Objetivo:** Corregir los 3 hallazgos críticos de estructura antes de continuar añadiendo componentes.
+
+| Tarea | Detalle |
+|---|---|
+| C1 — Corregir validate_repo.py línea 346 | Extender condición para incluir directorio `agents/` en comprobación de Marcado IA |
+| C2 — Marcado IA en 26 agentes | Añadir sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)` a los 26 agentes sin ella. Patrón: los 3 creados en Sesión Enriquecimiento B son la referencia |
+| C3 — Rewiring 4 skills huérfanas | `apb-sec-sast`, `apb-sec-dast`, `apb-sec-supply-chain` → `apb-agent-security-architect-v1.0`; `apb-gov-framework-audit` → `apb-agent-governance-v1.0` |
+
+#### Sesión Enriquecimiento C — Subagentes + Funcional (estimado: 4-6h)
+
+**Objetivo:** System prompts en 19 subagentes prioritarios + correcciones funcionales detectadas.
+
+| Bloque | Tareas |
+|---|---|
+| C-Bloque 1 — System prompts prioritarios (9 subagentes) | `apb-sub-dev-net`, `apb-sub-dev-devexpress`, `apb-sub-dev-django`, `apb-sub-dev-sql`, `apb-sub-obs-grafana`, `apb-sub-obs-powerbi`, `apb-sub-sec-ens`, `apb-sub-gov-standards`, `apb-sub-ops-azure` |
+| C-Bloque 2 — System prompts secundarios (10 subagentes) | `apb-sub-ddd-*` (×5), `apb-sub-dev-parallel`, `apb-sub-plat-ghactions`, `apb-sub-plat-jenkins`, `apb-sub-qa-unit`, `apb-sub-qa-security` |
+| C-Bloque 3 — Correcciones funcionales | (1) Añadir `apb-agent-incident-support-v1.0` como orquestador en `apb-wf-incident-l1-v1.0`. (2) Documentar diferencia diagnose vs RCA en ambas skills. (3) Definir formato de output inter-agente en `apb-wf-cloud-migration-v1.0` (contrato Platform Engineer → SRE). (4) Identificar cómo cubre el framework el input "catálogo de precios Azure" para FinOps |
+
+#### Sesión Calidad de Pruebas (estimado: 3-4h)
+
+**Objetivo:** Mejorar cobertura de casos de error y crear base de tests de comportamiento.
+
+| Tarea | Detalle |
+|---|---|
+| Q1 — Edge cases en skills críticas | Añadir sección "Comportamiento ante inputs incompletos" en las 20 skills más usadas (operation, security, governance). Documenta: qué pregunta el agente, qué devuelve si falta input obligatorio |
+| Q2 — Fallos en cascada en workflows | Añadir sección `## Manejo de fallos` en los 3 workflows más complejos (cloud-migration, sdd-full, incident-l1): qué ocurre si falla cada paso y cómo se recupera |
+| Q3 — Extender apb-qa-framework-v1.0 | Añadir validaciones semánticas: presencia de ejemplos de error, criterios cuantificables, sección de comportamiento ante inputs nulos |
+| Q4 — Primer test de comportamiento (piloto) | Crear `tests/test_agent_behavior.md`: 3-5 casos de prueba documentados para `apb-agent-incident-support-v1.0` con prompt de entrada, output esperado y criterios de evaluación. Base para futura automatización |
+
+#### Sesión Power BI / Framework Metrics (sesión separada, bloqueante: datos reales)
+
+> Ya planificada anteriormente. Pipeline: GitHub Action → Azure Storage → Power BI dinámico. No iniciar hasta tener al menos 30 días de uso real del framework con datos registrados.
+
+---
+
+### Backlog de mejoras detectadas (no urgentes)
+
+| ID | Mejora | Prioridad | Sesión candidata |
+|---|---|---|---|
+| M1 | Dominio `orchestration`: añadir 2-3 skills de coordinación multi-agente | Baja | Enriquecimiento D |
+| M2 | Dominio `design`: añadir agente UX/IA design y 2-3 skills de design system | Baja | Enriquecimiento D |
+| M3 | Documentar diferencia STRIDE vs ISO 27005 en las propias skills (cuándo usar cada una) | Baja | Correcciones Urgentes o inline |
+| M4 | `apb-ops-incident-diagnose-v1.0`: añadir nota sobre relación con `apb-ops-rca-v1.0` (diagnose = táctico inmediato; RCA = análisis post-incidente profundo) | Baja | Correcciones Urgentes |
+| M5 | Agente PM dedicado para las 7 skills de gestión de proyecto huérfanas | Media | Enriquecimiento D |
+| M6 | Encoding workflows: verificar que todos los .md están guardados UTF-8 sin BOM | Baja | Correcciones Urgentes |
 - Confirmar prioridad entre Sesión Enriquecimiento A y la Sesión 21 (SQL + incidencias), ya que ambas tocan el dominio `operation`.
