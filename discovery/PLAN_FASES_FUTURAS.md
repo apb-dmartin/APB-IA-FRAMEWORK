@@ -1141,10 +1141,10 @@ Ampliación del agente `apb-agent-ddd-v1.0` (creado en Sesión 18) o posible age
 | Bloque | Descripción | Estado |
 |---|---|---|
 | Bloque 1 — Rewirings (punto #55) | 44 conexiones aplicadas en 19 agentes. Corrección: ID real es `third-google-finops-multicloud-v1.0` (p, no b). validate_repo.py --strict → 0 errores. INDEX.md regenerado. | ✅ COMPLETADO |
-| Bloque 2 — 12 skills nuevas (ops×6, sec×4, gov×2) | — | ⏳ Pendiente |
-| Bloque 3 — 3 agentes nuevos (Change Manager, Problem Manager, Data Governance) | — | ⏳ Pendiente |
-| Bloque 4 — 5 subagentes nuevos (k8s, ACA, Rancher, ServiceBus, FinOps Azure) | — | ⏳ Pendiente |
-| Bloque 5 — Prompts de sistema en iis-apache, network, oracle | — | ⏳ Pendiente |
+| Bloque 2 — skills nuevas (ops×1 alerting-design + sec×4 + gov×1 audit) | sec: sast, dast, supply-chain, patch-management. gov: framework-audit. ops: alerting-design (sesión anterior). validate_repo.py 0 errores. | ✅ COMPLETADO |
+| Bloque 3 — 3 agentes nuevos (Change Manager, Problem Manager, Data Governance) | change-manager, problem-manager, data-governance. ITIL + RGPD/ENS/NIS2. validate_repo.py 0 errores. | ✅ COMPLETADO |
+| Bloque 4 — 5 subagentes nuevos (k8s, ACA, Rancher, ServiceBus, FinOps Azure) | k8s, aca, rancher, servicebus, finops-azure. System prompts incluidos. validate_repo.py 0 errores. | ✅ COMPLETADO |
+| Bloque 5 — Prompts de sistema en iis-apache, network, oracle + qa-e2e | System prompts añadidos en 4 subagentes existentes. Stack APB detallado en cada uno. | ✅ COMPLETADO |
 
 ---
 

@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 262
+- **Total Components**: 281
 
 ## Component Breakdown
 
-### Skills APB-Owned (129 total)
+### Skills APB-Owned (140 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -80,12 +80,16 @@
 | `apb-gov-catalog-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-catalog-v1.0.md` |
 | `apb-gov-compliance-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-compliance-v1.0.md` |
 | `apb-gov-evidence-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-evidence-v1.0.md` |
+| `apb-gov-framework-audit-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-framework-audit-v1.0.md` |
 | `apb-gov-jira-evidence-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-jira-evidence-v1.0.md` |
 | `apb-gov-knowledge-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-knowledge-v1.0.md` |
 | `apb-gov-org-risk-report-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-org-risk-report-v1.0.md` |
 | `apb-gov-policy-check-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-policy-check-v1.0.md` |
 | `apb-gov-spec-sync-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-spec-sync-v1.0.md` |
 | `apb-gov-standards-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-standards-v1.0.md` |
+| `apb-ops-alerting-design-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-alerting-design-v1.0.md` |
+| `apb-ops-capacity-planning-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-capacity-planning-v1.0.md` |
+| `apb-ops-change-management-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-change-management-v1.0.md` |
 | `apb-ops-debt-remediation-plan-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-debt-remediation-plan-v1.0.md` |
 | `apb-ops-dependency-audit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-dependency-audit-v1.0.md` |
 | `apb-ops-incident-diagnose-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-diagnose-v1.0.md` |
@@ -94,9 +98,12 @@
 | `apb-ops-observability-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-observability-v1.0.md` |
 | `apb-ops-operability-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-operability-v1.0.md` |
 | `apb-ops-perf-bottleneck-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-perf-bottleneck-v1.0.md` |
+| `apb-ops-post-incident-review-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-post-incident-review-v1.0.md` |
+| `apb-ops-problem-management-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-problem-management-v1.0.md` |
 | `apb-ops-prr-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-prr-v1.0.md` |
 | `apb-ops-rca-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-rca-v1.0.md` |
 | `apb-ops-runbook-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-runbook-v1.0.md` |
+| `apb-ops-service-continuity-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-service-continuity-v1.0.md` |
 | `apb-ops-slo-design-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-slo-design-v1.0.md` |
 | `apb-ops-telemetry-emit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-telemetry-emit-v1.0.md` |
 | `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-multi-agent-v1.0.md` |
@@ -135,12 +142,16 @@
 | `apb-qa-validation-e2e-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-validation-e2e-v1.0.md` |
 | `apb-qa-verification-before-completion-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-verification-before-completion-v1.0.md` |
 | `apb-sec-cloud-hardening-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-cloud-hardening-v1.0.md` |
+| `apb-sec-dast-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-dast-v1.0.md` |
 | `apb-sec-ens-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-ens-v1.0.md` |
 | `apb-sec-forensic-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-forensic-v1.0.md` |
 | `apb-sec-mitre-mapping-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-mitre-mapping-v1.0.md` |
 | `apb-sec-owasp-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-owasp-v1.0.md` |
+| `apb-sec-patch-management-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-patch-management-v1.0.md` |
 | `apb-sec-risk-analysis-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-risk-analysis-v1.0.md` |
 | `apb-sec-risk-policies-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-risk-policies-v1.0.md` |
+| `apb-sec-sast-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-sast-v1.0.md` |
+| `apb-sec-supply-chain-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-supply-chain-v1.0.md` |
 | `apb-sec-threat-model-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-threat-model-v1.0.md` |
 
 ### Skills de Terceros (51 total)
@@ -199,15 +210,17 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (26 total)
+### Agentes (29 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `apb-agent-business-analyst-v1.0` | Business Analyst Agent | draft | `agents/apb-agent-business-analyst-v1.0.md` |
 | `apb-agent-catalog-manager-v1.0` | AI Catalog Manager Agent | draft | `agents/apb-agent-catalog-manager-v1.0.md` |
+| `apb-agent-change-manager-v1.0` | Change Manager | draft | `agents/apb-agent-change-manager-v1.0.md` |
 | `apb-agent-cloud-architect-v1.0` | Cloud Architect Agent | draft | `agents/apb-agent-cloud-architect-v1.0.md` |
 | `apb-agent-code-reviewer-v1.0` | Code Reviewer Agent | draft | `agents/apb-agent-code-reviewer-v1.0.md` |
 | `apb-agent-compliance-audit-v1.0` | Compliance Audit Agent | draft | `agents/apb-agent-compliance-audit-v1.0.md` |
+| `apb-agent-data-governance-v1.0` | Data Governance | draft | `agents/apb-agent-data-governance-v1.0.md` |
 | `apb-agent-ddd-v1.0` | DDD Domain Discovery Agent | draft | `agents/apb-agent-ddd-v1.0.md` |
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
@@ -219,6 +232,7 @@
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
 | `apb-agent-platform-engineer-v1.0` | Platform Engineer Agent | draft | `agents/apb-agent-platform-engineer-v1.0.md` |
+| `apb-agent-problem-manager-v1.0` | Problem Manager | draft | `agents/apb-agent-problem-manager-v1.0.md` |
 | `apb-agent-qa-auto-v1.0` | QA Automation Agent | draft | `agents/apb-agent-qa-auto-v1.0.md` |
 | `apb-agent-release-manager-v1.0` | Release Manager Agent | draft | `agents/apb-agent-release-manager-v1.0.md` |
 | `apb-agent-risk-exception-v1.0` | Risk & Exception Agent | draft | `agents/apb-agent-risk-exception-v1.0.md` |
@@ -230,7 +244,7 @@
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
 
-### Subagentes (23 total)
+### Subagentes (28 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -244,13 +258,18 @@
 | `apb-sub-dev-net-v1.0` | .NET Implementer Subagent | draft | `subagents/apb-sub-dev-net-v1.0.md` |
 | `apb-sub-dev-parallel-v1.0` | Subagent: Implementador con Despacho Paralelo | draft | `subagents/apb-sub-dev-parallel-v1.0.md` |
 | `apb-sub-dev-sql-v1.0` | SQL Specialist Subagent | draft | `subagents/apb-sub-dev-sql-v1.0.md` |
+| `apb-sub-finops-azure-v1.0` | FinOps Azure — Análisis de Costes | draft | `subagents/apb-sub-finops-azure-v1.0.md` |
 | `apb-sub-gov-standards-v1.0` | Standards Validator Subagent | draft | `subagents/apb-sub-gov-standards-v1.0.md` |
 | `apb-sub-obs-grafana-v1.0` | Grafana + Prometheus Dashboard Subagent | draft | `subagents/apb-sub-obs-grafana-v1.0.md` |
 | `apb-sub-obs-powerbi-v1.0` | Power BI Dashboard Subagent | draft | `subagents/apb-sub-obs-powerbi-v1.0.md` |
+| `apb-sub-ops-aca-v1.0` | Diagnóstico Azure Container Apps | draft | `subagents/apb-sub-ops-aca-v1.0.md` |
 | `apb-sub-ops-azure-v1.0` | Azure Monitor Subagent | draft | `subagents/apb-sub-ops-azure-v1.0.md` |
 | `apb-sub-ops-iis-apache-v1.0` | Diagnóstico IIS / Apache / Tomcat | draft | `subagents/apb-sub-ops-iis-apache-v1.0.md` |
+| `apb-sub-ops-k8s-v1.0` | Diagnóstico AKS / Kubernetes | draft | `subagents/apb-sub-ops-k8s-v1.0.md` |
 | `apb-sub-ops-network-v1.0` | Diagnóstico Red / DNS / Firewall | draft | `subagents/apb-sub-ops-network-v1.0.md` |
 | `apb-sub-ops-oracle-v1.0` | Diagnóstico Oracle DB | draft | `subagents/apb-sub-ops-oracle-v1.0.md` |
+| `apb-sub-ops-rancher-v1.0` | Diagnóstico Rancher | draft | `subagents/apb-sub-ops-rancher-v1.0.md` |
+| `apb-sub-ops-servicebus-v1.0` | Diagnóstico Azure Service Bus | draft | `subagents/apb-sub-ops-servicebus-v1.0.md` |
 | `apb-sub-plat-ghactions-v1.0` | GitHub Actions Subagent | draft | `subagents/apb-sub-plat-ghactions-v1.0.md` |
 | `apb-sub-plat-jenkins-v1.0` | Jenkins Specialist Subagent | draft | `subagents/apb-sub-plat-jenkins-v1.0.md` |
 | `apb-sub-qa-e2e-v1.0` | E2E Testing Subagent | draft | `subagents/apb-sub-qa-e2e-v1.0.md` |

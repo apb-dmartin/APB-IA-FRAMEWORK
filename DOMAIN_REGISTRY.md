@@ -15,9 +15,9 @@
 | `arch` | Architecture | 13 | 🟣 |
 | `disc` | Discovery | 12 | 🟡 |
 | `plat` | Platform | 12 | 🟠 |
-| `sec` | Security | 8 | 🔴 |
-| `gov` | Governance | 12 | ⚫ |
-| `ops` | Operation | 13 | 🔵 |
+| `sec` | Security | 12 | 🔴 |
+| `gov` | Governance | 13 | ⚫ |
+| `ops` | Operation | 19 | 🔵 |
 | `doc` | Documentation | 7 | ⚪ |
 | `orch` | Orchestration | 1 | 🟤 |
 | `pm` | Project Management | 8 | 🟢 |
