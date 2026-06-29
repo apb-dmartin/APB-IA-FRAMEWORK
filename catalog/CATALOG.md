@@ -5,16 +5,19 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 300
+- **Total Components**: 341
 
 ## Component Breakdown
 
-### Skills APB-Owned (143 total)
+### Skills APB-Owned (175 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
 | `apb-arch-api-contract-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-api-contract-v1.0.md` |
+| `apb-arch-api-lifecycle-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-api-lifecycle-v1.0.md` |
+| `apb-arch-c4-model-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-c4-model-v1.0.md` |
 | `apb-arch-cloud-infra-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-cloud-infra-v1.0.md` |
+| `apb-arch-context-mapping-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-context-mapping-v1.0.md` |
 | `apb-arch-ddd-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-ddd-v1.0.md` |
 | `apb-arch-decompose-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-decompose-v1.0.md` |
 | `apb-arch-design-events-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-design-events-v1.0.md` |
@@ -27,6 +30,7 @@
 | `apb-arch-tech-plan-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-tech-plan-v1.0.md` |
 | `apb-arch-validate-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-validate-v1.0.md` |
 | `apb-design-frontend-design-system-v1.0` | design | draft | `skills/apb-owned/design/apb-design-frontend-design-system-v1.0.md` |
+| `apb-design-wcag-patterns-v1.0` | design | draft | `skills/apb-owned/design/apb-design-wcag-patterns-v1.0.md` |
 | `apb-design-wcag-v1.0` | design | draft | `skills/apb-owned/design/apb-design-wcag-v1.0.md` |
 | `apb-dev-devexpress-selector-v1.0` | design | draft | `skills/apb-owned/design/apb-dev-devexpress-selector-v1.0.md` |
 | `apb-dev-api-design-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-design-v1.0.md` |
@@ -65,29 +69,44 @@
 | `apb-disc-design-approval-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-design-approval-v1.0.md` |
 | `apb-disc-enrich-req-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-enrich-req-v1.0.md` |
 | `apb-disc-epic-mono-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-epic-mono-v1.0.md` |
+| `apb-disc-poc-guide-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-poc-guide-v1.0.md` |
 | `apb-disc-reverse-code-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-reverse-code-v1.0.md` |
 | `apb-disc-reverse-doc-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-reverse-doc-v1.0.md` |
 | `apb-disc-spec-gen-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-spec-gen-v1.0.md` |
+| `apb-disc-tech-eval-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-tech-eval-v1.0.md` |
+| `apb-disc-user-journey-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-user-journey-v1.0.md` |
+| `apb-disc-value-stream-v1.0` | discovery | draft | `skills/apb-owned/discovery/apb-disc-value-stream-v1.0.md` |
 | `apb-doc-adr-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-adr-v1.0.md` |
 | `apb-doc-aipimanager-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-aipimanager-v1.0.md` |
+| `apb-doc-changelog-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-changelog-v1.0.md` |
 | `apb-doc-event-specs-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-event-specs-v1.0.md` |
 | `apb-doc-generate-ppt-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-generate-ppt-v1.0.md` |
 | `apb-doc-generate-word-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-generate-word-v1.0.md` |
 | `apb-doc-manual-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-manual-v1.0.md` |
+| `apb-doc-onboarding-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-onboarding-v1.0.md` |
+| `apb-doc-post-mortem-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-post-mortem-v1.0.md` |
+| `apb-doc-release-notes-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-release-notes-v1.0.md` |
 | `apb-doc-swagger-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-swagger-v1.0.md` |
 | `apb-dev-verify-before-done-v1.0` | governance | draft | `skills/apb-owned/governance/apb-dev-verify-before-done-v1.0.md` |
+| `apb-gov-ai-model-lifecycle-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-ai-model-lifecycle-v1.0.md` |
 | `apb-gov-ai-risk-gate-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-ai-risk-gate-v1.0.md` |
 | `apb-gov-arch-ref-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-arch-ref-v1.0.md` |
 | `apb-gov-catalog-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-catalog-v1.0.md` |
 | `apb-gov-compliance-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-compliance-v1.0.md` |
+| `apb-gov-data-classification-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-data-classification-v1.0.md` |
+| `apb-gov-dpia-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-dpia-v1.0.md` |
 | `apb-gov-evidence-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-evidence-v1.0.md` |
 | `apb-gov-framework-audit-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-framework-audit-v1.0.md` |
+| `apb-gov-framework-metrics-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-framework-metrics-v1.0.md` |
 | `apb-gov-jira-evidence-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-jira-evidence-v1.0.md` |
 | `apb-gov-knowledge-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-knowledge-v1.0.md` |
+| `apb-gov-lcsp-check-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-lcsp-check-v1.0.md` |
 | `apb-gov-org-risk-report-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-org-risk-report-v1.0.md` |
 | `apb-gov-policy-check-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-policy-check-v1.0.md` |
 | `apb-gov-spec-sync-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-spec-sync-v1.0.md` |
 | `apb-gov-standards-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-standards-v1.0.md` |
+| `apb-gov-tech-radar-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-tech-radar-v1.0.md` |
+| `apb-gov-vendor-eval-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-vendor-eval-v1.0.md` |
 | `apb-ops-alerting-design-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-alerting-design-v1.0.md` |
 | `apb-ops-capacity-planning-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-capacity-planning-v1.0.md` |
 | `apb-ops-change-management-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-change-management-v1.0.md` |
@@ -110,6 +129,7 @@
 | `apb-orch-context-handoff-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-context-handoff-v1.0.md` |
 | `apb-orch-human-checkpoint-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-human-checkpoint-v1.0.md` |
 | `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-multi-agent-v1.0.md` |
+| `apb-plat-azure-servicebus-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-azure-servicebus-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
 | `apb-plat-db-migration-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-db-migration-v1.0.md` |
@@ -117,9 +137,15 @@
 | `apb-plat-deployment-finish-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deployment-finish-v1.0.md` |
 | `apb-plat-doc-to-markdown-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-doc-to-markdown-v1.0.md` |
 | `apb-plat-docker-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-docker-v1.0.md` |
+| `apb-plat-environment-promotion-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-environment-promotion-v1.0.md` |
+| `apb-plat-finops-alerting-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-finops-alerting-v1.0.md` |
+| `apb-plat-finops-chargeback-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-finops-chargeback-v1.0.md` |
+| `apb-plat-finops-reservations-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-finops-reservations-v1.0.md` |
 | `apb-plat-finops-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-finops-v1.0.md` |
+| `apb-plat-k8s-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-k8s-v1.0.md` |
 | `apb-plat-mcp-building-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-mcp-building-v1.0.md` |
 | `apb-plat-ms-notify-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-ms-notify-v1.0.md` |
+| `apb-plat-secret-rotation-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-secret-rotation-v1.0.md` |
 | `apb-plat-sharepoint-io-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-sharepoint-io-v1.0.md` |
 | `apb-plat-terraform-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-terraform-v1.0.md` |
 | `apb-pm-implementation-planning-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-implementation-planning-v1.0.md` |
@@ -127,11 +153,17 @@
 | `apb-pm-product-analysis-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-product-analysis-v1.0.md` |
 | `apb-pm-refactoring-patterns-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-refactoring-patterns-v1.0.md` |
 | `apb-pm-retrospective-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-retrospective-v1.0.md` |
+| `apb-pm-risk-register-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-risk-register-v1.0.md` |
 | `apb-pm-slash-commands-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-slash-commands-v1.0.md` |
 | `apb-pm-sprint-planning-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-sprint-planning-v1.0.md` |
+| `apb-pm-stakeholder-map-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-stakeholder-map-v1.0.md` |
+| `apb-pm-status-report-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-status-report-v1.0.md` |
 | `apb-pm-task-breakdown-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-task-breakdown-v1.0.md` |
+| `apb-qa-accessibility-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-accessibility-v1.0.md` |
 | `apb-qa-anonymize-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-anonymize-v1.0.md` |
+| `apb-qa-contract-testing-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-contract-testing-v1.0.md` |
 | `apb-qa-framework-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-framework-v1.0.md` |
+| `apb-qa-performance-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-performance-v1.0.md` |
 | `apb-qa-pipeline-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-pipeline-v1.0.md` |
 | `apb-qa-post-migration-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-post-migration-v1.0.md` |
 | `apb-qa-readiness-check-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-readiness-check-v1.0.md` |
@@ -213,10 +245,12 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (31 total)
+### Agentes (35 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
+| `apb-agent-accessibility-auditor-v1.0` | Accessibility Auditor | draft | `agents/apb-agent-accessibility-auditor-v1.0.md` |
+| `apb-agent-api-product-manager-v1.0` | API Product Manager | draft | `agents/apb-agent-api-product-manager-v1.0.md` |
 | `apb-agent-business-analyst-v1.0` | Business Analyst Agent | draft | `agents/apb-agent-business-analyst-v1.0.md` |
 | `apb-agent-catalog-manager-v1.0` | AI Catalog Manager Agent | draft | `agents/apb-agent-catalog-manager-v1.0.md` |
 | `apb-agent-change-manager-v1.0` | Change Manager | draft | `agents/apb-agent-change-manager-v1.0.md` |
@@ -232,6 +266,7 @@
 | `apb-agent-governance-v1.0` | Governance Agent | draft | `agents/apb-agent-governance-v1.0.md` |
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
 | `apb-agent-incident-support-v1.0` | Incident Support | draft | `agents/apb-agent-incident-support-v1.0.md` |
+| `apb-agent-knowledge-manager-v1.0` | Knowledge Manager | draft | `agents/apb-agent-knowledge-manager-v1.0.md` |
 | `apb-agent-meta-builder-v1.0` | Meta Builder Agent | draft | `agents/apb-agent-meta-builder-v1.0.md` |
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
@@ -248,8 +283,9 @@
 | `apb-agent-tech-discovery-v1.0` | Technology Discovery Agent | draft | `agents/apb-agent-tech-discovery-v1.0.md` |
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
+| `apb-agent-vendor-manager-v1.0` | Vendor Manager | draft | `agents/apb-agent-vendor-manager-v1.0.md` |
 
-### Subagentes (28 total)
+### Subagentes (33 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -263,12 +299,15 @@
 | `apb-sub-dev-net-v1.0` | .NET Implementer Subagent | draft | `subagents/apb-sub-dev-net-v1.0.md` |
 | `apb-sub-dev-parallel-v1.0` | Subagent: Implementador con Despacho Paralelo | draft | `subagents/apb-sub-dev-parallel-v1.0.md` |
 | `apb-sub-dev-sql-v1.0` | SQL Specialist Subagent | draft | `subagents/apb-sub-dev-sql-v1.0.md` |
+| `apb-sub-doc-confluence-v1.0` | Confluence Documentation Subagent | draft | `subagents/apb-sub-doc-confluence-v1.0.md` |
 | `apb-sub-finops-azure-v1.0` | FinOps Azure — Análisis de Costes | draft | `subagents/apb-sub-finops-azure-v1.0.md` |
+| `apb-sub-gov-data-v1.0` | Data Governance Subagent | draft | `subagents/apb-sub-gov-data-v1.0.md` |
 | `apb-sub-gov-standards-v1.0` | Standards Validator Subagent | draft | `subagents/apb-sub-gov-standards-v1.0.md` |
 | `apb-sub-obs-grafana-v1.0` | Grafana + Prometheus Dashboard Subagent | draft | `subagents/apb-sub-obs-grafana-v1.0.md` |
 | `apb-sub-obs-powerbi-v1.0` | Power BI Dashboard Subagent | draft | `subagents/apb-sub-obs-powerbi-v1.0.md` |
 | `apb-sub-ops-aca-v1.0` | Diagnóstico Azure Container Apps | draft | `subagents/apb-sub-ops-aca-v1.0.md` |
 | `apb-sub-ops-azure-v1.0` | Azure Monitor Subagent | draft | `subagents/apb-sub-ops-azure-v1.0.md` |
+| `apb-sub-ops-entra-v1.0` | Microsoft Entra ID Operations Subagent | draft | `subagents/apb-sub-ops-entra-v1.0.md` |
 | `apb-sub-ops-iis-apache-v1.0` | Diagnóstico IIS / Apache / Tomcat | draft | `subagents/apb-sub-ops-iis-apache-v1.0.md` |
 | `apb-sub-ops-k8s-v1.0` | Diagnóstico AKS / Kubernetes | draft | `subagents/apb-sub-ops-k8s-v1.0.md` |
 | `apb-sub-ops-network-v1.0` | Diagnóstico Red / DNS / Firewall | draft | `subagents/apb-sub-ops-network-v1.0.md` |
@@ -278,9 +317,11 @@
 | `apb-sub-plat-ghactions-v1.0` | GitHub Actions Subagent | draft | `subagents/apb-sub-plat-ghactions-v1.0.md` |
 | `apb-sub-plat-jenkins-v1.0` | Jenkins Specialist Subagent | draft | `subagents/apb-sub-plat-jenkins-v1.0.md` |
 | `apb-sub-qa-e2e-v1.0` | E2E Testing Subagent | draft | `subagents/apb-sub-qa-e2e-v1.0.md` |
+| `apb-sub-qa-performance-v1.0` | Performance Testing Subagent | draft | `subagents/apb-sub-qa-performance-v1.0.md` |
 | `apb-sub-qa-security-v1.0` | Security Testing Subagent | draft | `subagents/apb-sub-qa-security-v1.0.md` |
 | `apb-sub-qa-unit-v1.0` | Unit Testing Subagent | draft | `subagents/apb-sub-qa-unit-v1.0.md` |
 | `apb-sub-sec-ens-v1.0` | ENS Compliance Subagent | draft | `subagents/apb-sub-sec-ens-v1.0.md` |
+| `apb-sub-sec-sast-v1.0` | SAST Security Subagent | draft | `subagents/apb-sub-sec-sast-v1.0.md` |
 
 ### Workflows (17 total)
 

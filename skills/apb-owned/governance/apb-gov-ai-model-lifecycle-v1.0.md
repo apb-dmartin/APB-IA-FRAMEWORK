@@ -1,0 +1,164 @@
+---
+id: "apb-gov-ai-model-lifecycle-v1.0"
+name: "Gobernanza del Ciclo de Vida de Modelos IA"
+description: "Gestiona el ciclo de vida completo de modelos de IA en APB: registro en inventario, versionado semántico, revisiones periódicas de rendimiento y sesgo, proceso de deprecación y sustitución, y trazabilidad de decisiones de diseño según POLICY_AI_USAGE."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "governance"
+autonomy_level: 1
+created_date: "2026-06-29"
+review_date: "2026-12-29"
+---
+
+# Gobernanza del Ciclo de Vida de Modelos IA
+
+## Propósito
+Proporcionar un marco de control para los modelos de IA desplegados o en uso en APB. Cubre desde el registro inicial del modelo hasta su deprecación: inventario de modelos activos, versionado semántico, revisiones periódicas de rendimiento y detección de sesgo, proceso formal de deprecación y plan de continuidad. Alineado con POLICY_AI_USAGE y con los requisitos del Reglamento de IA de la UE (RIA) para sistemas de IA de riesgo limitado y alto.
+
+## Contexto de Uso
+- Alta de un nuevo modelo de IA o LLM en el catálogo APB.
+- Revisión periódica (semestral) del rendimiento de modelos en producción.
+- Detección de degradación del modelo o cambio de proveedor del modelo base.
+- Proceso de retirada de un modelo obsoleto o con problemas de sesgo identificados.
+- Auditoría de cumplimiento con el Reglamento de IA de la UE.
+
+## Entradas Requeridas
+
+| Entrada | Tipo | Descripción | Obligatorio |
+|---|---|---|---|
+| `model_id` | Texto | Identificador del modelo (ej. `claude-sonnet-4-6`, `gpt-4o`) | ✅ |
+| `use_case` | Texto | Descripción del caso de uso en APB donde se aplica el modelo | ✅ |
+| `lifecycle_phase` | Enum | Fase: `registro` / `revision` / `deprecacion` / `sustitucion` | ✅ |
+| `model_metrics` | JSON | Métricas de rendimiento actuales: precisión, latencia, coste/token, tasa de error | ❌ |
+| `bias_assessment` | Documento | Informe de evaluación de sesgo del modelo | ❌ |
+| `replacement_model` | Texto | Modelo sustituto propuesto (solo para fase `deprecacion`) | ❌ |
+
+## Flujo de Trabajo
+
+### Fase: Registro de nuevo modelo
+
+1. **Ficha de inventario del modelo**:
+   - ID único del modelo y versión del proveedor.
+   - Proveedor/origen (Anthropic, OpenAI, Microsoft, modelo propio).
+   - Caso de uso en APB y sistemas que lo utilizan.
+   - Nivel de riesgo según Reglamento de IA UE: `minimal` / `limited` / `high` / `unacceptable`.
+   - Categoría ENS del sistema donde se despliega.
+   - Datos usados para entrenamiento/fine-tuning (si aplica).
+
+2. **Nivel de autonomía asignado** (según POLICY_AI_USAGE §4):
+   - Nivel 0-4 asignado. Si el nivel es ≥3, requiere aprobación de Dirección.
+   - Operador responsable nombrado.
+
+3. **Línea base de rendimiento** (baseline):
+   - Métricas de referencia al momento del despliegue.
+   - Criterios de alerta: umbrales que dispararán revisión extraordinaria.
+
+### Fase: Revisión periódica (semestral)
+
+1. **Comparación de métricas actuales vs. baseline**:
+   - Degradación de precisión: si cae >10% respecto al baseline → revisión urgente.
+   - Cambio de coste/token: si sube >25% → análisis de alternativas.
+   - Incidentes de seguridad o outputs inapropiados desde la última revisión.
+
+2. **Evaluación de sesgo**:
+   - Test de equidad sobre grupos protegidos relevantes al caso de uso.
+   - Revisión de outputs adversariales conocidos.
+   - ¿El modelo base del proveedor ha sido actualizado sin notificación? (riesgo de drift silencioso)
+
+3. **Estado de cumplimiento**:
+   - ¿El proveedor sigue teniendo las certificaciones requeridas?
+   - ¿Han cambiado los términos de uso del modelo que afecten a APB?
+
+4. **Decisión de revisión**: continuar sin cambios / monitorizar más frecuentemente / iniciar deprecación.
+
+### Fase: Deprecación y sustitución
+
+1. **Notificación a usuarios y sistemas dependientes**: mínimo 90 días de antelación.
+2. **Plan de migración**: timeline, responsable, sistema de destino, modelo sustituto.
+3. **Periodo de transición**: ejecución paralela (modelo antiguo + nuevo) para validación.
+4. **Cierre de la ficha**: fecha de retirada, motivo, referencia al modelo sustituto.
+
+### ⚠️ CHECKPOINT HUMANO
+La decisión de deprecar o mantener en producción un modelo de IA requiere aprobación del responsable del sistema + Arquitectura APB.
+
+## Salida Esperada
+
+```markdown
+# Ficha de Gobernanza — Modelo [ID] — [Fecha]
+> ⚠️ Borrador generado por IA (APB AI Framework - apb-gov-ai-model-lifecycle-v1.0) — pendiente validación humana.
+
+## Inventario del Modelo
+| Atributo | Valor |
+|---|---|
+| ID del modelo | |
+| Proveedor | |
+| Versión actual | |
+| Caso de uso APB | |
+| Sistemas dependientes | |
+| Nivel de riesgo (RIA UE) | |
+| Nivel de autonomía (POLICY_AI_USAGE) | |
+| Operador responsable | |
+| Fecha de alta | |
+| Próxima revisión | |
+
+## Estado de Rendimiento
+| Métrica | Baseline | Actual | Variación | Alerta |
+|---|---|---|---|---|
+
+## Evaluación de Sesgo
+| Test | Resultado | Acción requerida |
+|---|---|---|
+
+## Decisión de Ciclo de Vida
+| Decisión | Fecha | Responsable | Motivo |
+|---|---|---|---|
+```
+
+## Criterios de Calidad
+- [ ] Todos los modelos de IA activos en producción están registrados en el inventario.
+- [ ] Cada modelo tiene operador responsable nombrado.
+- [ ] La clasificación de riesgo del RIA UE está asignada y documentada.
+- [ ] Las revisiones periódicas se documentan aunque el resultado sea "sin cambios".
+
+## Dependencias
+- `apb-gov-data-classification-v1.0` — los datos usados para fine-tuning o evaluación requieren clasificación
+- `apb-sec-risk-analysis-v1.0` — los modelos de riesgo alto requieren análisis de riesgos formal
+
+## Ejemplo de Uso
+
+```
+Registra el modelo claude-sonnet-4-6 de Anthropic que usa el APB AI Framework.
+Caso de uso: asistencia a arquitectos de software (generación de código, documentación, análisis).
+Nivel de autonomía: 1 (generación con revisión humana).
+```
+
+## Notas y Advertencias
+- El Reglamento de IA de la UE (2026) clasifica algunos sistemas de toma de decisiones en infraestructura crítica como riesgo alto — verificar si aplica a casos de uso portuarios.
+- Los modelos de proveedores externos (Anthropic, OpenAI) pueden cambiar su versión base sin previo aviso — monitorizar changelogs del proveedor.
+
+## Historial de Cambios
+
+| Versión | Fecha | Autor | Cambio |
+|---|---|---|---|
+| 1.0.0 | 2026-06-29 | Arquitectura APB / Claude Code | Creación inicial — Sesión Enriquecimiento B |
+
+## ⚠️ Comportamiento ante inputs incompletos
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `model_id` | Pregunta: "¿Cuál es el identificador del modelo (ej. claude-sonnet-4-6)?" | Sí |
+| `use_case` | Pregunta: "¿Para qué se usa este modelo en APB?" | Sí |
+| `lifecycle_phase` | Pregunta: "¿Qué quieres hacer: registrar, revisar, deprecar o migrar el modelo?" | Sí |
+| `model_metrics` | Genera la ficha sin sección de métricas, indicando que deben completarse | No |
+| `bias_assessment` | Indica que la evaluación de sesgo está pendiente, genera plantilla vacía | No |
+| `replacement_model` | Solo relevante en fase deprecación; si falta, indica que debe definirse antes de continuar | No (pero alerta) |
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Documentos Markdown** — callout inmediatamente tras el título H1:
+  > ⚠️ Borrador generado por IA (APB AI Framework - apb-gov-ai-model-lifecycle-v1.0) — pendiente validación humana.

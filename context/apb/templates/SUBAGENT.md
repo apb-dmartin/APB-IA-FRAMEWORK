@@ -1,11 +1,18 @@
-# {name}
+---
+id: "apb-sub-{dom}-{especialidad}-v1.0"
+name: "{Nombre del subagente}"
+description: "{1-2 frases: qué hace y cuándo usarlo.}"
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "{architecture | development | qa | platform | pm | security | governance | operation | documentation}"
+parent_agent: "apb-agent-{nombre}-v1.0"
+specialty: "{especialidad técnica}"
+created_date: "YYYY-MM-DD"
+review_date: "YYYY-MM-DD"
+---
 
-> **ID:** `{id}`
-> **Versión:** {version}
-> **Estado:** {status}
-> **Agente Padre:** {parent_agent}
-> **Especialización:** {specialization}
-> **Runtime:** {runtime}
+# {name}
 
 ---
 

@@ -11,17 +11,17 @@
 | ID | Nombre | Skills | Color |
 |----|--------|--------|-------|
 | `dev` | Development | 27 | 🔵 |
-| `qa` | Quality Assurance | 14 | 🟢 |
-| `arch` | Architecture | 13 | 🟣 |
-| `disc` | Discovery | 12 | 🟡 |
-| `plat` | Platform | 12 | 🟠 |
+| `qa` | Quality Assurance | 17 | 🟢 |
+| `arch` | Architecture | 16 | 🟣 |
+| `disc` | Discovery | 16 | 🟡 |
+| `plat` | Platform | 19 | 🟠 |
 | `sec` | Security | 12 | 🔴 |
-| `gov` | Governance | 13 | ⚫ |
+| `gov` | Governance | 20 | ⚫ |
 | `ops` | Operation | 19 | 🔵 |
-| `doc` | Documentation | 7 | ⚪ |
+| `doc` | Documentation | 11 | ⚪ |
 | `orch` | Orchestration | 3 | 🟤 |
-| `pm` | Project Management | 8 | 🟢 |
-| `design` | Design & UX | 3 | 🎨 |
+| `pm` | Project Management | 11 | 🟢 |
+| `design` | Design & UX | 4 | 🎨 |
 
 ---
 

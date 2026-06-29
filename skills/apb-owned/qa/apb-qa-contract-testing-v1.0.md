@@ -1,0 +1,182 @@
+---
+id: "apb-qa-contract-testing-v1.0"
+name: "Contract Testing con Pact (Consumer-Driven)"
+description: "Implementa Consumer-Driven Contract Testing (CDCT) con Pact para las integraciones entre microservicios y sistemas APB. Genera los contratos del consumidor, el stub del proveedor para tests aislados y el pipeline de verificación Pact en CI/CD para detectar roturas de integración antes del despliegue."
+version: "1.0.0"
+status: "draft"
+owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
+domain: "qa"
+autonomy_level: 1
+created_date: "2026-06-29"
+review_date: "2026-12-29"
+---
+
+# Contract Testing con Pact (Consumer-Driven)
+
+## Propósito
+Garantizar que las integraciones entre sistemas APB (APIs REST entre microservicios, integraciones con sistemas externos) no se rompen cuando el proveedor cambia su API. Pact permite que el equipo consumidor defina el contrato (qué espera de la API), y el equipo proveedor verifica que lo cumple, todo ello sin necesidad de un entorno de integración completo.
+
+## Contexto de Uso
+- Integración entre dos sistemas APB donde el proveedor puede cambiar su API.
+- Sustitución de tests de integración end-to-end frágiles y lentos por tests de contrato rápidos.
+- Verificación de compatibilidad antes de desplegar una nueva versión del proveedor.
+- Documentación viva de las integraciones existentes entre sistemas APB.
+
+## Entradas Requeridas
+
+| Entrada | Tipo | Descripción | Obligatorio |
+|---|---|---|---|
+| `consumer_system` | Texto | Sistema consumidor (el que llama a la API) | ✅ |
+| `provider_system` | Texto | Sistema proveedor (el que expone la API) | ✅ |
+| `interaction` | JSON/Texto | Descripción de la interacción: endpoint, método, request/response esperado | ✅ |
+| `tech_stack` | Enum | `dotnet` / `python` / `typescript` | ✅ |
+| `pact_broker_url` | URL | URL del Pact Broker APB (si existe) | ❌ |
+
+## Conceptos Clave de Pact
+
+| Término | Descripción |
+|---|---|
+| **Consumer** | Sistema que llama a la API y define qué necesita de ella |
+| **Provider** | Sistema que expone la API y debe verificar que cumple el contrato |
+| **Pact file** | Archivo JSON con el contrato (interacciones esperadas) |
+| **Pact Broker** | Servidor centralizado donde se publican y verifican contratos |
+| **Provider verification** | El proveedor ejecuta los tests de Pact contra su propio servidor real |
+
+## Flujo de Trabajo
+
+### 1. Test del consumidor (genera el contrato)
+
+**C# (.NET) con PactNet:**
+```csharp
+// ⚠️ Generado por APB AI Framework (apb-qa-contract-testing-v1.0) — revisar con el equipo del proveedor.
+[Fact]
+public async Task GetEscala_ShouldReturnEscalaDetails()
+{
+    // Arrange — define qué espera el consumidor
+    pact
+        .UponReceiving("A request for escala details")
+        .WithRequest(method: HttpMethod.Get, path: "/api/escalas/123")
+        .WithHeader("Authorization", Match.Type("Bearer token"))
+        .WillRespond()
+        .WithStatus(200)
+        .WithHeader("Content-Type", "application/json")
+        .WithJsonBody(new
+        {
+            id = Match.Type(123),
+            buque = Match.Type("Ever Given"),
+            estado = Match.Regex("activa|cerrada", "activa"),
+            fechaAtraque = Match.Type("2026-06-01T08:00:00Z")
+        });
+
+    // Act — el consumidor llama al mock del proveedor
+    var client = new EscalaApiClient(pact.MockServerUri);
+    var escala = await client.GetEscala(123);
+
+    // Assert — el consumidor obtiene lo que necesita
+    Assert.NotNull(escala);
+    Assert.Equal("Ever Given", escala.Buque);
+    
+    // El contrato se guarda en /pacts/{consumer}-{provider}.json
+}
+```
+
+### 2. Publicación del contrato al Pact Broker
+
+```bash
+pact-broker publish ./pacts \
+  --broker-base-url $PACT_BROKER_URL \
+  --consumer-app-version $GIT_COMMIT \
+  --branch $BRANCH_NAME
+```
+
+### 3. Verificación del proveedor
+
+**C# (.NET) con PactNet:**
+```csharp
+[Fact]
+public void VerifyPactsFromBroker()
+{
+    var config = new PactVerifierConfig
+    {
+        ProviderName = "gispem-api",
+        ProviderBaseUri = new Uri("http://localhost:5000"),
+    };
+    
+    new PactVerifier(config)
+        .ServiceProvider("gispem-api", config.ProviderBaseUri)
+        .HonoursPactsFrom(new PactBrokerConfig
+        {
+            BrokerBaseUri = Environment.GetEnvironmentVariable("PACT_BROKER_URL"),
+            ConsumerVersionSelectors = new List<ConsumerVersionSelector>
+            {
+                new ConsumerVersionSelector { MainBranch = true },
+                new ConsumerVersionSelector { Deployed = true }
+            }
+        })
+        .Verify();
+}
+```
+
+### 4. Gate "can-i-deploy" en el pipeline
+
+```bash
+# Antes de desplegar el proveedor, verificar que no rompe ningún contrato
+pact-broker can-i-deploy \
+  --pacticipant gispem-api \
+  --version $GIT_COMMIT \
+  --to-environment production
+```
+
+## Cuándo usar Pact vs. otros enfoques
+
+| Situación | Enfoque recomendado |
+|---|---|
+| API REST entre 2 sistemas APB controlados | ✅ Pact CDCT |
+| API de proveedor externo (ej. AIS data, puertos vecinos) | OpenAPI schema validation (no Pact — no controlamos el proveedor) |
+| Mensajería async (Service Bus) | Pact message contracts (extensión de Pact para eventos) |
+| Base de datos compartida | No usar contrato — refactorizar para exponer API |
+
+## Criterios de Calidad
+- [ ] Cada sistema consumidor tiene tests Pact para sus integraciones críticas.
+- [ ] Los contratos están publicados en el Pact Broker APB.
+- [ ] El step `can-i-deploy` está en el pipeline del proveedor antes de despliegue a prod.
+- [ ] Los contratos usan Matchers (Match.Type, Match.Regex) en lugar de valores exactos — evita tests frágiles.
+
+## Dependencias
+- `apb-plat-environment-promotion-v1.0` — el gate `can-i-deploy` es parte del pipeline de promoción
+- `apb-arch-api-lifecycle-v1.0` — el versionado de API es prerequisito para contratos estables
+
+## Ejemplo de Uso
+
+```
+Implementa contract testing entre el sistema de facturación (consumidor) y GISPEM API (proveedor).
+El sistema de facturación llama a GET /api/escalas/{id} para obtener los datos de una escala cerrada.
+Tech stack: .NET 8 en ambos lados.
+```
+
+## Historial de Cambios
+
+| Versión | Fecha | Autor | Cambio |
+|---|---|---|---|
+| 1.0.0 | 2026-06-29 | Arquitectura APB / Claude Code | Creación inicial — Sesión Enriquecimiento B |
+
+## ⚠️ Comportamiento ante inputs incompletos
+
+| Input | Si falta o es ambiguo | Bloquea ejecución |
+|-------|-----------------------|-------------------|
+| `consumer_system` | Pregunta: "¿Qué sistema llama a la API (consumidor)?" | Sí |
+| `provider_system` | Pregunta: "¿Qué sistema expone la API (proveedor)?" | Sí |
+| `interaction` | Pregunta: "¿Qué endpoint llama el consumidor y qué respuesta espera?" | Sí |
+| `tech_stack` | Pregunta: "¿Con qué lenguaje están implementados consumidor y proveedor?" | Sí |
+| `pact_broker_url` | Genera tests sin publicación al broker; añade comentario para configurarlo | No |
+
+---
+
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+
+Conforme al [`AI_MARKING_STANDARD`](../../../context/apb/standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA:
+
+- **Código de tests** — comentario en cabecera del archivo de test:
+  ```csharp
+  // ⚠️ Generado por APB AI Framework (apb-qa-contract-testing-v1.0) — revisar con el equipo del proveedor.
+  ```
