@@ -47,7 +47,7 @@ Estandarizar el proceso de promoción de código entre los entornos de APB (desa
 ### Staging → Prod
 | Gate | Obligatorio | Herramienta |
 |---|---|---|
-| Tests de integración | ✅ | Playwright + `apb-qa-e2e-v1.0` |
+| Tests de integración | ✅ | Playwright + `apb-sub-qa-e2e-v1.0` |
 | Tests de performance (p95 < umbral) | Recomendado | k6 + `apb-qa-performance-v1.0` |
 | Review manual del tech lead | ✅ | Pull Request approval |
 | Aprobación del responsable del sistema | ✅ | Manual (cambios que impactan negocio) |
