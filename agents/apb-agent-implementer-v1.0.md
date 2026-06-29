@@ -15,6 +15,7 @@ skills:
   - "apb-dev-review-tl-v1.0"
   - "apb-dev-openspec-review-v1.0"
   - "apb-dev-sql-fix-v1.0"
+  - "apb-dev-sql-review-v1.0"
   - "apb-dev-pr-doc-v1.0"
   - "apb-dev-legacy-mapper-v1.0"
   - "apb-dev-template-update-v1.0"

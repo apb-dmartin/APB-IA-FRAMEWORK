@@ -10,6 +10,7 @@ autonomy_level: 1
 skills:
   - "apb-dev-devexpress-selector-v1.0"
   - "apb-dev-devexpress-front-v1.0"
+  - "apb-design-frontend-design-system-v1.0"
   - "apb-dev-grill-before-code-v1.0"
   - "apb-gov-ai-risk-gate-v1.0"
   - "apb-plat-deliver-artifact-v1.0"

@@ -11,6 +11,9 @@ review_date: "2026-06-22"
 autonomy_level: 2
 depends_on:
   - "apb-dev-implement-v1.0"
+consumed_by:
+  - "apb-agent-db-v1.0"
+  - "apb-agent-implementer-v1.0"
 ---
 
 # Autocorrección y Optimización SQL

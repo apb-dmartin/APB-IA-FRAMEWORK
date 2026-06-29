@@ -16,6 +16,8 @@ review_date: "2026-06-22"
 ## Propósito
 Realizar análisis de riesgos de seguridad de la información siguiendo metodologías estandarizadas (ISO 27005, NIST SP 800-30, MAGERIT). Identificar activos, amenazas, vulnerabilidades, evaluar riesgos y proponer tratamientos. Genera un informe de riesgos con matriz de impacto, plan de tratamiento y seguimiento.
 
+> **Diferencia con `apb-sec-threat-model-v1.0`:** Esta skill analiza **riesgos por activo de negocio** (ISO 27005/MAGERIT): probabilidad × impacto a nivel organizativo. Úsala en **auditorías de cumplimiento**, evaluaciones periódicas y decisiones de gobierno de seguridad. `apb-sec-threat-model-v1.0` analiza **amenazas técnicas por componente arquitectónico** (STRIDE). Úsala en **diseño de sistemas** para identificar vectores de ataque concretos antes del despliegue.
+
 ## Contexto de Uso
 - Evaluación de riesgos periódica o ante cambios significativos en sistemas o procesos.
 - Apoyo en la toma de decisiones para aceptación, mitigación, transferencia o evitación de riesgos.

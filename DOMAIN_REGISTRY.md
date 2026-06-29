@@ -19,9 +19,9 @@
 | `gov` | Governance | 13 | ⚫ |
 | `ops` | Operation | 19 | 🔵 |
 | `doc` | Documentation | 7 | ⚪ |
-| `orch` | Orchestration | 1 | 🟤 |
+| `orch` | Orchestration | 3 | 🟤 |
 | `pm` | Project Management | 8 | 🟢 |
-| `design` | Design & UX | 2 | 🎨 |
+| `design` | Design & UX | 3 | 🎨 |
 
 ---
 

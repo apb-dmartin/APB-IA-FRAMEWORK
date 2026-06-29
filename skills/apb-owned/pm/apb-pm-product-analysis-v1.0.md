@@ -11,6 +11,7 @@ domain: "pm"
 autonomy_level: 1
 consumed_by:
   - "apb-agent-spec-engineer-v1.0"
+  - "apb-agent-pm-v1.0"
 created_date: "2026-06-20"
 review_date: "2026-06-24"
 ---
