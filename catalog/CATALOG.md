@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 281
+- **Total Components**: 295
 
 ## Component Breakdown
 
@@ -277,20 +277,29 @@
 | `apb-sub-qa-unit-v1.0` | Unit Testing Subagent | draft | `subagents/apb-sub-qa-unit-v1.0.md` |
 | `apb-sub-sec-ens-v1.0` | ENS Compliance Subagent | draft | `subagents/apb-sub-sec-ens-v1.0.md` |
 
-### Workflows (8 total)
+### Workflows (17 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
+| `apb-wf-accessibility-audit-v1.0` | Accessibility Audit | draft | `workflows/apb-wf-accessibility-audit-v1.0.md` |
+| `apb-wf-api-lifecycle-v1.0` | API Lifecycle Management | draft | `workflows/apb-wf-api-lifecycle-v1.0.md` |
+| `apb-wf-change-management-v1.0` | Change Management | draft | `workflows/apb-wf-change-management-v1.0.md` |
 | `apb-wf-cloud-migration-v1.0` | Cloud Migration | draft | `workflows/apb-wf-cloud-migration-v1.0.md` |
 | `apb-wf-code-review-v1.0` | Code Review Asistido | draft | `workflows/apb-wf-code-review-v1.0.md` |
+| `apb-wf-data-governance-v1.0` | Data Governance RGPD | draft | `workflows/apb-wf-data-governance-v1.0.md` |
+| `apb-wf-finops-review-v1.0` | FinOps Review Periódico | draft | `workflows/apb-wf-finops-review-v1.0.md` |
 | `apb-wf-incident-l1-v1.0` | Gestión de Incidencia L1 | draft | `workflows/apb-wf-incident-l1-v1.0.md` |
+| `apb-wf-incident-l2-v1.0` | Gestión de Incidencia L2 | draft | `workflows/apb-wf-incident-l2-v1.0.md` |
 | `apb-wf-legacy-onboarding-v1.0` | Legacy Onboarding | draft | `workflows/apb-wf-legacy-onboarding-v1.0.md` |
+| `apb-wf-problem-management-v1.0` | Problem Management | draft | `workflows/apb-wf-problem-management-v1.0.md` |
 | `apb-wf-qa-evidence-v1.0` | QA & Evidence | draft | `workflows/apb-wf-qa-evidence-v1.0.md` |
 | `apb-wf-risk-exception-v1.0` | Risk & Exception | draft | `workflows/apb-wf-risk-exception-v1.0.md` |
 | `apb-wf-sdd-full-v1.0` | Spec Driven Development | draft | `workflows/apb-wf-sdd-full-v1.0.md` |
+| `apb-wf-security-patch-v1.0` | Security Patch Management | draft | `workflows/apb-wf-security-patch-v1.0.md` |
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
+| `apb-wf-vendor-procurement-v1.0` | Vendor Procurement LCSP | draft | `workflows/apb-wf-vendor-procurement-v1.0.md` |
 
-### Providers (14 total)
+### Providers (19 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -299,14 +308,19 @@
 | `prov-arqapibase-v1.0` | Provider: APB.ARQ.APIBASE | draft | `providers/prov-arqapibase-v1.0.md` |
 | `prov-arqbase-v1.0` | Provider: APB.ARQ.BASE | draft | `providers/prov-arqbase-v1.0.md` |
 | `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
+| `prov-azure-cost-v1.0` | Provider: Azure Cost Management API | draft | `providers/prov-azure-cost-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-v1.0` | Provider: Azure MCP | draft | `providers/prov-azure-v1.0.md` |
+| `prov-confluence-v1.0` | Provider: Atlassian Confluence REST API | draft | `providers/prov-confluence-v1.0.md` |
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
+| `prov-entra-id-v1.0` | Provider: Microsoft Entra ID (Azure Active Directory) | draft | `providers/prov-entra-id-v1.0.md` |
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers/prov-github-v1.0.md` |
+| `prov-jira-software-v1.0` | Provider: Jira Software REST API | draft | `providers/prov-jira-software-v1.0.md` |
 | `prov-k6-v1.0` | Provider: k6 MCP | draft | `providers/prov-k6-v1.0.md` |
 | `prov-ms-learn-v1.0` | Provider: Microsoft Learn MCP | draft | `providers/prov-ms-learn-v1.0.md` |
 | `prov-ms365-v1.0` | Provider: Microsoft 365 (Graph API) | draft | `providers/prov-ms365-v1.0.md` |
 | `prov-playwright-v1.0` | Provider: Playwright MCP | draft | `providers/prov-playwright-v1.0.md` |
+| `prov-sentinel-v1.0` | Provider: Microsoft Sentinel | draft | `providers/prov-sentinel-v1.0.md` |
 | `prov-sonar-v1.0` | Provider: SonarQube MCP | draft | `providers/prov-sonar-v1.0.md` |
 
 ### Wrappers (7 total)

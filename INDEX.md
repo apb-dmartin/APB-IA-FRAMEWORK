@@ -22,11 +22,11 @@
 | Skills terceros | 51 / 51 |
 | Agentes | 29 / 29 |
 | Subagentes | 28 / 28 |
-| Workflows | 8 / 8 |
-| Providers | 14 / 14 |
+| Workflows | 17 / 17 |
+| Providers | 19 / 19 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **281** |
+| **Total** | **295** |
 
 ---
 
@@ -54,11 +54,11 @@ APB-IA-FRAMEWORK/
 ├── DOMAIN_REGISTRY.md
 ├── agents/                     # 29 agentes
 ├── subagents/                  # 28 subagentes
-├── workflows/                  # 8 workflows
+├── workflows/                  # 17 workflows
 ├── skills/
 │   ├── apb-owned/             # 140 skills
 │   └── third-party/           # 51 skills
-├── providers/                  # 14 providers
+├── providers/                  # 19 providers
 ├── wrappers/                   # 7 wrappers
 ├── adapters/                   # 4 adaptadores
 │   ├── copilot/
@@ -115,9 +115,9 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Workflows (8)
+## ✅ Workflows (17)
 
-`apb-wf-cloud-migration-v1.0`, `apb-wf-code-review-v1.0`, `apb-wf-incident-l1-v1.0`, `apb-wf-legacy-onboarding-v1.0`, `apb-wf-qa-evidence-v1.0`, `apb-wf-risk-exception-v1.0`, `apb-wf-sdd-full-v1.0`, `apb-wf-spec-from-legacy-v1.0`
+`apb-wf-accessibility-audit-v1.0`, `apb-wf-api-lifecycle-v1.0`, `apb-wf-change-management-v1.0`, `apb-wf-cloud-migration-v1.0`, `apb-wf-code-review-v1.0`, `apb-wf-data-governance-v1.0`, `apb-wf-finops-review-v1.0`, `apb-wf-incident-l1-v1.0`, `apb-wf-incident-l2-v1.0`, `apb-wf-legacy-onboarding-v1.0`, `apb-wf-problem-management-v1.0`, `apb-wf-qa-evidence-v1.0`, `apb-wf-risk-exception-v1.0`, `apb-wf-sdd-full-v1.0`, `apb-wf-security-patch-v1.0`, `apb-wf-spec-from-legacy-v1.0`, `apb-wf-vendor-procurement-v1.0`
 
 ---
 
