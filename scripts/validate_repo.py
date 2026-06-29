@@ -589,6 +589,16 @@ def is_policy_exempt_warning(issue: ValidationIssue) -> bool:
 
 
 def main():
+    # En Windows la consola por defecto es cp1252 y rompe al imprimir emojis
+    # (📁, ⛔, ✅…). Forzamos UTF-8 en stdout/stderr para que el validador
+    # funcione igual en local (Windows) y en CI (Linux). Best-effort: si el
+    # stream no soporta reconfigure (p. ej. está redirigido), se ignora.
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
+
     parser = argparse.ArgumentParser(description="Validador del APB AI Framework")
     parser.add_argument("--path", type=str, default=".", help="Ruta al repositorio")
     parser.add_argument(
@@ -646,6 +656,20 @@ def main():
     if exempt_count and args.strict:
         print(f"\nℹ️  {exempt_count} warning(s) de 'source_commit: unverified' excluidos "
               f"del modo estricto (política deliberada, GOVERNANCE.md §4.2).")
+
+    # Destacar por separado los warnings que SÍ hacen fallar el modo estricto.
+    # Sin esto, el único warning bloqueante queda enterrado entre decenas de
+    # warnings exentos de 'source_commit', y "0 errores" se lee erróneamente
+    # como éxito. El criterio canónico de éxito es el exit code / este bloque,
+    # NO el conteo de 'errores'.
+    if args.strict and blocking_warnings:
+        print()
+        print("-" * 70)
+        print(f"  ⛔ WARNINGS BLOQUEANTES EN MODO ESTRICTO ({len(blocking_warnings)}):")
+        print("     (NO exentos — causan el fallo aunque 'errores' sea 0)")
+        for issue in blocking_warnings:
+            line_info = f" (línea {issue.line})" if issue.line > 0 else ""
+            print(f"   • [{issue.file}{line_info}] {issue.message}")
 
     # 19. Lista consolidada de gaps documentados (pendientes de crear)
     pending_gaps = [i for i in result.infos if i.message.startswith("Gap documentado:")]
