@@ -69,6 +69,7 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | 23/#43 | Marcado IA obligatorio — retroactivo + mecanismos preventivos | ✅ **Completa** (2026-06-26) — 129/129 skills `apb-owned` marcadas con sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`. Estándar: `context/apb/standards/AI_MARKING_STANDARD.md` (9 tipos de artefacto: código, SQL, OpenAPI, PR, Jira, Markdown, Word/PPT, email/Teams, IaC). Mecanismos preventivos duraderos: check #13 en `validate_repo.py` (ERROR si falta), sección en templates `SKILL_APB.md` y `AGENT.md`. Mecanismo IA: `CLAUDE.md` en raíz del repo. |
 | 21 | SQL + incidencias técnicas + Backlog M1-M6 (Enriquecimiento D) | ✅ **Completa** (2026-06-29) — `apb-agent-db-v1.0`, `apb-agent-pm-v1.0`, `apb-orch-context-handoff-v1.0`, `apb-orch-human-checkpoint-v1.0`, `apb-design-wcag-v1.0`. 5 nuevos componentes + 14 modificaciones. M1-M6 resueltos. |
 | 14 | Documentación por audiencias (Word) | ❌ Pendiente |
+| KB+SP | Knowledge Base corporativa + system prompts LLM-agnósticos | ✅ **Completa** (2026-06-30) — ver §21 |
 
 ## 2. Decisiones de Debora que deben respetarse (no reabrir sin pedirlo)
 
@@ -777,4 +778,28 @@ Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
 **Inventario al cierre:** 343 componentes (175 skills APB, 51 skills terceros, 35 agentes, 33 subagentes, 17 workflows, 19 providers, 7 wrappers, 4 adapters).
 
 **Próximas fases sin bloqueantes:** ver `PLAN_FASES_FUTURAS.md §H FASE 2` (sesiones 13 resto, 14 .docx). Bloqueadas externamente: sesiones 19, 20, 22, FASE 3.
+
+---
+
+## 21. Sesión KB+SP — Knowledge Base corporativa + system prompts LLM-agnósticos (2026-06-30, cerrada)
+
+**Contexto:** Tres ficheros de conocimiento corporativo APB (v1, v2, v3) entregados por Debora. Se consolidan en una única fuente de verdad y se cablea en todo el framework de forma LLM-agnóstica.
+
+**Ejecutado:**
+
+- **`context/apb/knowledge/APB_KNOWLEDGE_BASE.md`** (nuevo): Knowledge base consolidada (~1100 líneas) con 14 secciones: negocio portuario (escalas/atraques/tasas/EDI), catálogo de aplicaciones (ARGOS, SÒSTRAT legacy, APIs ARQ, AE, GIS), integraciones (PORTIC, AGE, AIS, VTS Kongsberg, Alfresco SOA), GoToCloud, seguridad, contratación, herramientas, mapa Jira/equipos/GitHub, estrategia IA, diccionario trilingüe CA/ES/EN. Guardrail explícito: el legacy es contexto, no prescripción tecnológica. Stack aprobado = STANDARD_ARCHITECTURE.md (sin cambios).
+
+- **`context/apb/knowledge/GOVERNANCE_KNOWLEDGE_BASE.md`** (nuevo): Proceso de gobernanza — owner (Debora Martin), revisores por dominio (Alberto Ponseti, Xavier Estebanell, Enrique Salinas...), triggers obligatorios/recomendados, flujo PR + hotfix, proceso para equipos funcionales sin acceso al repo, restricciones de contenido, versionado semántico, SLAs (24h errores críticos, 1 sprint nuevos sistemas), checks en validate_repo.py.
+
+- **`providers/prov-apb-knowledge-v1.0.md`** (actualizado): v1.0.0→v1.1.0, status draft→approved. Dos capas: framework standards + business context (APB_KNOWLEDGE_BASE.md).
+
+- **`scripts/inject_knowledge_context.py`** (nuevo): Script idempotente que añade `prov-apb-knowledge-v1.0` en frontmatter + sección `## Contexto Corporativo APB` en 211 skills/agents existentes. Funciona para cualquier LLM runtime (no solo Claude). Segundo run: 0 ficheros modificados.
+
+- **Templates actualizados** (`SKILL_APB.md`, `AGENT.md`): `## Prompt de Sistema` / `## 🤖 Prompt de Sistema` marcados como **OBLIGATORIOS** con estructura fija de 7 subsecciones: Identidad → Contexto APB → Misión → Inputs → Instrucciones/Capacidades → Restricciones → Formato.
+
+- **`scripts/generate_system_prompts.py`** (nuevo): Script idempotente que genera system prompts contextualizados para todos los ficheros sin prompt. Extrae contenido real de cada fichero (frontmatter + secciones funcionales), diferencia skills (Proceso) de agents (Capacidades), inserta antes del anchor correcto (Comportamiento/Historial/Marcado IA). 199 ficheros generados, 12 ya tenían prompt (skip), 0 errores.
+
+**Resultado:** 211/211 skills y agents tienen `## Prompt de Sistema` con contenido real y funcional. Cualquier LLM que cargue un fichero obtiene el prompt correcto independientemente del runtime. validate_repo.py: 0 errores, 60 warnings exentos.
+
+**Inventario al cierre:** 343 componentes (sin cambios en número — mejora de calidad interna, no nuevos componentes).
 

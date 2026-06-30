@@ -352,7 +352,7 @@
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `prov-akv-v1.0` | Provider: Azure Key Vault | draft | `providers/prov-akv-v1.0.md` |
-| `prov-apb-knowledge-v1.0` | Provider: Knowledge APB (framework + contexto corporativo) | approved | `providers/prov-apb-knowledge-v1.0.md` |
+| `prov-apb-knowledge-v1.0` | Provider: Knowledge APB | approved | `providers/prov-apb-knowledge-v1.0.md` |
 | `prov-arqapibase-v1.0` | Provider: APB.ARQ.APIBASE | draft | `providers/prov-arqapibase-v1.0.md` |
 | `prov-arqbase-v1.0` | Provider: APB.ARQ.BASE | draft | `providers/prov-arqbase-v1.0.md` |
 | `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
