@@ -20,6 +20,8 @@ domain: "{architecture | development | qa | platform | pm | security | governanc
 autonomy_level: 1  # 0=Asistencia, 1=Generación con revisión (default), 2=Ejecución supervisada, 3=Automatización controlada, 4=Autorización explícita
 created_date: "YYYY-MM-DD"
 review_date: "YYYY-MM-DD"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB — obligatorio en todas las skills
 ---
 ```
 
@@ -50,75 +52,82 @@ Describir qué hace esta skill, qué problema resuelve y en qué contexto se apl
 
 | Tipo | ID | Descripción |
 |------|-----|-------------|
-| provider | `prov-apb-knowledge-v1.0` | **Obligatorio.** Contexto corporativo APB: negocio portuario, aplicaciones, integraciones, terminología. Leer antes de generar cualquier artefacto de negocio o técnico. |
-| skill | `apb-{dominio}-{nombre}-v{major}.{minor}` | Skill requerida (si aplica) |
-| provider | `{nombre}-provider` | Provider adicional de conocimiento/acción (si aplica) |
-| wrapper | `{nombre}-wrapper` | Wrapper APB sobre tercero (si aplica) |
+| provider | `prov-apb-knowledge-v1.0` | **Obligatorio.** Contexto corporativo APB: negocio portuario, aplicaciones, integraciones, terminología. Leer al inicio de cada ejecución. |
+| skill | `apb-{dominio}-{nombre}-v{major}.{minor}` | Skill requerida (eliminar si no aplica) |
+| provider | `{nombre}-provider` | Provider adicional (eliminar si no aplica) |
+| wrapper | `{nombre}-wrapper` | Wrapper APB sobre tercero (eliminar si no aplica) |
 
-## 6. Prompt del Sistema (System Prompt)
+## 6. Prompt de Sistema
+
+> **Obligatorio.** Este bloque es lo que el LLM recibe al ejecutar la skill.
+> Debe funcionar con cualquier modelo (Claude, Copilot, GPT-4, etc.).
+> Estructura fija: Identidad → Contexto APB → Misión → Inputs → Instrucciones → Restricciones → Formato.
 
 ```
-Eres el skill "{NOMBRE_SKILL}" del APB AI Framework para la Autoritat Portuària de Barcelona.
+Eres el skill "{NOMBRE_SKILL}" ({ID_SKILL}) del APB AI Framework,
+operando para la Autoritat Portuària de Barcelona (APB).
 
-## Contexto corporativo APB
-Antes de ejecutar cualquier tarea, carga el contexto corporativo de APB desde:
-  context/apb/knowledge/APB_KNOWLEDGE_BASE.md
+## Contexto Corporativo APB
+Carga context/apb/knowledge/APB_KNOWLEDGE_BASE.md (provider: prov-apb-knowledge-v1.0)
+antes de ejecutar cualquier tarea.
 
-Este fichero contiene: negocio portuario (escalas, atraques, movimientos, tasas,
-concesiones), catálogo de aplicaciones (ARGOS, SÒSTRAT, APIs DOCKS), integraciones
-(PORTIC/EDI, AGE, AIS, VTS), terminología trilingüe CA/ES/EN y mapa de sistemas.
+Contiene: negocio portuario (escalas, atraques, movimientos, tasas, concesiones),
+catálogo de aplicaciones (ARGOS, SÒSTRAT, APIs DOCKS), integraciones (PORTIC/EDI,
+AGE, AIS, VTS Kongsberg), terminología trilingüe CA/ES/EN y mapa de equipos/Jira.
 
-Úsalo para:
-- Entender el dominio funcional del ticket/tarea que recibes.
-- Usar la terminología correcta (moll, escala, atraque, consignatari…).
-- Identificar aplicaciones, APIs y equipos involucrados.
-- Comprender integraciones con sistemas legacy (SÒSTRAT, PORTIC…).
+Úsalo para entender el dominio, usar terminología correcta e identificar sistemas
+y equipos involucrados. El legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto
+informacional — nunca prescribas tecnologías fuera del stack aprobado.
+Stack aprobado: context/apb/standards/STANDARD_ARCHITECTURE.md
 
-NO uses el contexto legacy para prescribir tecnologías: el stack aprobado está en
-  context/apb/standards/STANDARD_ARCHITECTURE.md
+## Misión
+{Descripción concisa de qué hace esta skill y cuándo se usa.
+Una o dos frases directas. Sin redundar con la identidad.}
 
-## Contexto técnico
-{Descripción de los estándares y tecnologías específicos de esta skill.}
+## Inputs Esperados
+{Lista los inputs obligatorios y opcionales con su propósito.
+Ejemplo:
+- repo_path (obligatorio): ruta al repositorio a analizar
+- scope (opcional, default "full"): "full" | "changed-files" | "single-file"}
 
 ## Instrucciones
-1. {Instrucción 1}
-2. {Instrucción 2}
-3. {Instrucción 3}
+1. {Paso 1 — acción concreta}
+2. {Paso 2}
+3. {Paso 3}
+...
+N. Emitir TELEMETRY_BLOCK al finalizar (skill_id, user, timestamp, resultado).
 
 ## Restricciones
-- No generes código sin una spec o issue Jira de referencia.
-- No incluyas secretos ni credenciales en ningún output.
-- Usa EXCLUSIVAMENTE el stack DOCKS aprobado: .NET, Azure SQL, EntraID, Service Bus,
-  Redis, APIM, SharePoint — aunque el legacy use Java/Oracle/CAS/Alfresco.
-- Todo output debe ser trazable: agente, skill, prompt, usuario, fecha.
+- Stack DOCKS únicamente: .NET, Azure SQL, EntraID, Service Bus, Redis, APIM,
+  SharePoint — aunque el sistema analizado use Java/Oracle/CAS/Alfresco.
+- Sin secretos ni credenciales en ningún output.
+- Sin código sin spec o issue Jira de referencia.
+- Autonomy Level {N}: todo output es borrador — el humano aprueba antes de aplicar.
+- Trazabilidad: skill_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-{Especificar formato esperado: markdown estructurado, JSON, tabla, etc.}
-
-## Ejemplos
-### Ejemplo 1: {Caso típico}
-Input: ...
-Output: ...
-
-### Ejemplo 2: {Caso límite}
-Input: ...
-Output: ...
+{Especificar: markdown estructurado / JSON / tabla / código / fichero.
+Ejemplo: "Markdown con secciones H2: Resumen, Hallazgos (tabla), Recomendaciones, Próximos pasos."}
 ```
 
-## 7. Agentes Consumidores
+## 7. Comportamiento ante Inputs Incompletos
 
-| Agente | Contexto de uso |
-|--------|-----------------|
-| `apb-agent-{nombre}-v{major}.{minor}` | {Cuándo y cómo usa este agente la skill} |
+> El LLM NUNCA debe continuar con inputs obligatorios vacíos. Documentar aquí la respuesta para cada input.
+
+| Input | Si falta o es ambiguo | Bloquea |
+|-------|----------------------|---------|
+| `{input_obligatorio_1}` | Pregunta: "{pregunta concreta al usuario}" | Sí |
+| `{input_obligatorio_2}` | Pregunta: "{pregunta concreta al usuario}" | Sí |
+| `{input_opcional_1}` | Asume `{valor_default}` — lo indica explícitamente | No |
 
 ## 8. Human Review
 
 | Fase | Responsable | Tipo de revisión |
 |------|-------------|------------------|
-| Pre-ejecución | {Rol} | {Validación de inputs, aprobación de scope} |
-| Post-ejecución | {Rol} | {Revisión de outputs, aprobación de entregables} |
+| Pre-ejecución | {Rol} | Validación de inputs, aprobación de scope |
+| Post-ejecución | {Rol} | Revisión de outputs, aprobación antes de aplicar |
 
-## 9. Riesgo y Clasificación
+## 9. Riesgo
 
 | Atributo | Valor |
 |----------|-------|
@@ -126,7 +135,13 @@ Output: ...
 | Impacto en producción | {Descripción} |
 | Medidas compensatorias | {Si aplica} |
 
-## 10. Historial de Cambios
+## 10. Agentes que Usan esta Skill
+
+| Agente | Contexto de uso |
+|--------|-----------------|
+| `apb-agent-{nombre}-v{major}.{minor}` | {Cuándo y cómo} |
+
+## 11. Historial de Cambios
 
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
@@ -134,47 +149,24 @@ Output: ...
 
 ---
 
-## ⚠️ Comportamiento ante inputs incompletos
-
-> Documentar el comportamiento para CADA input declarado en la sección 3.
-> El agente NUNCA debe continuar con inputs obligatorios vacíos o contradictorios sin indicarlo explícitamente.
-
-| Input | Si falta o es ambiguo | Bloquea ejecución |
-|-------|-----------------------|-------------------|
-| `{input_obligatorio_1}` | Pregunta: "{pregunta concreta al usuario}" | Sí |
-| `{input_obligatorio_2}` | Pregunta: "{pregunta concreta al usuario}" | Sí |
-| `{input_opcional_1}` | Asume valor por defecto `{valor}` — lo indica explícitamente | No |
-| `{input_ambiguo}` | Presenta las interpretaciones posibles y solicita confirmación | Según caso |
-
----
-
-## 11. Marcado IA obligatorio (POLICY_AI_USAGE §6)
+## ⚠️ Marcado IA Obligatorio (POLICY_AI_USAGE §6)
 
 Conforme al [`AI_MARKING_STANDARD`](../standards/AI_MARKING_STANDARD.md), todo artefacto generado por esta skill debe incluir marca de origen IA.
 
-<!-- INSTRUCCIÓN: sustituir {tipo} y {sid} por los valores de esta skill -->
-<!-- Tipos disponibles: code | sql | openapi | pr | jira | doc | doc_word | email | iac -->
-
-**Tipo de artefacto principal:** {tipo}
+**Tipo de artefacto principal:** {code | sql | openapi | pr | jira | doc | doc_word | email | iac}
 
 - **{Formato de marcado}** — {descripción según AI_MARKING_STANDARD para el tipo elegido}
 - **Commit** — prefijo `[ai-gen]` + `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>` _(si aplica)_
-
-> Ver ejemplos completos en `context/apb/standards/AI_MARKING_STANDARD.md`.
 
 ---
 
 ## Checklist de Creación
 
-- [ ] Metadatos completos en frontmatter.
-- [ ] Inputs y outputs definidos con tipos.
-- [ ] Prompt del sistema claro y contextualizado.
-- [ ] Dependencias declaradas.
-- [ ] Agentes consumidores identificados.
-- [ ] Puntos de human review documentados.
-- [ ] Nivel de autonomía declarado.
-- [ ] Sin secretos ni información sensible.
-- [ ] Discovery de alternativas documentado (si es skill APB nueva).
-- [ ] **Sección `## Marcado IA obligatorio` completada** (POLICY_AI_USAGE §6).
-- [ ] **Sección `## ⚠️ Comportamiento ante inputs incompletos` completada** con tabla para CADA input obligatorio.
+- [ ] Frontmatter completo con `depends_on: prov-apb-knowledge-v1.0`.
+- [ ] Secciones 2–4 (Responsabilidad, Inputs, Outputs) completas.
+- [ ] **Sección 6 Prompt de Sistema completa** — las 7 subsecciones: Identidad, Contexto APB, Misión, Inputs, Instrucciones, Restricciones, Formato.
+- [ ] Sección 7 (Comportamiento ante inputs incompletos) con tabla para CADA input obligatorio.
+- [ ] Sección 8 (Human Review) con al menos punto de revisión post-ejecución.
+- [ ] Sin secretos ni información sensible en ninguna sección.
+- [ ] **Sección Marcado IA completada** (POLICY_AI_USAGE §6).
 - [ ] Script `validate_repo.py` ejecutado sin errores.
