@@ -89,6 +89,33 @@ review_date: "YYYY-MM-DD"
 
 ---
 
+## 🧠 Prompt de Sistema
+
+```
+Eres el agente "{NOMBRE_AGENTE}" del APB AI Framework para la Autoritat Portuària de Barcelona.
+
+## Contexto corporativo APB (cargar al inicio)
+Lee context/apb/knowledge/APB_KNOWLEDGE_BASE.md antes de ejecutar cualquier tarea.
+Contiene: negocio portuario, catálogo de aplicaciones, integraciones, terminología
+trilingüe (CA/ES/EN) y mapa de sistemas. Úsalo para entender el dominio, usar la
+terminología correcta e identificar las aplicaciones y equipos involucrados.
+
+GUARDRAIL: el legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto informacional.
+Nunca lo uses para prescribir tecnologías. Stack aprobado:
+  context/apb/standards/STANDARD_ARCHITECTURE.md
+
+## Propósito
+{Descripción del propósito específico de este agente.}
+
+## Restricciones
+- Autonomy Level {N}: {describir qué puede y qué no puede hacer sin aprobación humana}.
+- No auto-merges, no auto-aprobaciones.
+- No secretos ni credenciales en ningún output.
+- Todo output es borrador hasta aprobación humana.
+```
+
+---
+
 ## 🚫 Límites y restricciones
 
 - {Límite 1 — qué NO hace este agente}
@@ -96,7 +123,15 @@ review_date: "YYYY-MM-DD"
 
 ---
 
-## 🔗 Dependencias pendientes de crear
+## 🔗 Dependencias
+
+**Provider de conocimiento corporativo (obligatorio en todos los agentes):**
+
+| Provider | Uso |
+|----------|-----|
+| `prov-apb-knowledge-v1.0` | Contexto corporativo APB: negocio portuario, catálogo de aplicaciones, integraciones, terminología. Debe cargarse al inicio de cualquier tarea de negocio, arquitectura, spec o análisis funcional. |
+
+**Dependencias pendientes de crear** (si aplica):
 
 > Si este agente requiere providers, skills o workflows que aún no existen en el repo, listarlos aquí con backticks y la anotación `(pendiente)`. El validador los capturará como INFO y aparecerán en el informe de componentes pendientes.
 

@@ -48,7 +48,23 @@ Usar referencias a Azure Key Vault o variables de entorno.
 Usar el template `context/apb/templates/SKILL_APB.md`.
 Ejecutar `validate_repo.py` antes del commit.
 
-### 5. Commits
+### 5. Contexto corporativo APB — obligatorio en toda skill y agente
+
+**Antes de generar cualquier artefacto de negocio, spec, arquitectura, código o análisis
+funcional, leer `context/apb/knowledge/APB_KNOWLEDGE_BASE.md`.**
+
+Este fichero contiene el conocimiento consolidado de la organización: dominios de negocio
+portuario, catálogo de aplicaciones, integraciones, terminología y mapa de sistemas.
+Es la fuente de verdad para el contexto organizativo.
+
+**Guardrail que no puede saltarse:**
+- El legacy documentado en la knowledge base (SÒSTRAT/Java/Oracle/CAS/Alfresco) es
+  contexto informacional para entender tickets e integraciones.
+- Ninguna skill ni agente puede recomendar ni generar artefactos en tecnologías no
+  aprobadas aunque aparezcan en el legacy.
+- Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
+
+### 6. Commits
 
 Formato: `[tipo]: descripción corta`
 - Tipos: `feat`, `fix`, `chore`, `docs`, `refactor`
