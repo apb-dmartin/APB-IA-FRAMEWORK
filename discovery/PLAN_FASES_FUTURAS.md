@@ -728,8 +728,16 @@ monolitos. Si se analizan varios monolitos sin un catálogo de dominios
 común ya estable, cada análisis corre el riesgo de proponer una
 taxonomía de dominios distinta e incompatible entre sí.
 
-**Pendiente de Debora:** aportar la lista de APIs cuando se vaya a abordar
-esta sesión — no se construye el catálogo de dominios sin ese insumo real.
+**Primer input real disponible (2026-06-30):** Azure API Manager en
+`https://apipre.portdebarcelona.cat` es la fuente de verdad de las APIs DOCKS
+publicadas. Primeras 3 APIs confirmadas: `APB.API.RESPONSIBLE`, `APB.API.ROSS`,
+`APB.API.SIG` — función y dominio TBD, pendiente de análisis DDD.
+La knowledge base (`APB_KNOWLEDGE_BASE.md §4.4`) ya documenta 42+ APIs ARQ
+adicionales — este listado combinado es el punto de partida para Fase 0.
+**Restricción explícita de Debora (2026-06-30):** los dominios actuales NO están
+bien definidos — el agente de análisis debe proponer la taxonomía correcta, no
+asumir que la agrupación actual de la knowledge base es válida. Su misión es
+detectar solapamientos, repeticiones, novedades y proponer bounded contexts.
 
 Sigue siendo, en conjunto (Fase 0 + Fase 1), un agente de alcance
 considerable que combina: análisis arquitectónico

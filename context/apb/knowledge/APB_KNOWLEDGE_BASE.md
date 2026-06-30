@@ -460,6 +460,11 @@ Ver §2.10 para detalle funcional.
 | APB.API.ORD | portdebarcelona/APB.API.ORD | Órdenes de Pago |
 | APB.API.ZONES | portdebarcelona/APB.API.ZONES | Zonas |
 | APB.API.EMP | portdebarcelona/APB.API.EMP | Empleados |
+| APB.API.RESPONSIBLE | portdebarcelona/APB.API.RESPONSIBLE | _(función pendiente de confirmar — dominio TBD)_ |
+| APB.API.ROSS | portdebarcelona/APB.API.ROSS | _(función pendiente de confirmar — dominio TBD)_ |
+| APB.API.SIG | portdebarcelona/APB.API.SIG | _(posible: Firmas/Signatures — dominio TBD)_ |
+
+> **Nota (2026-06-30):** Esta tabla documenta un subconjunto representativo. El **inventario completo** de APIs publicadas en Azure API Manager (`https://apipre.portdebarcelona.cat`) está en [`API_INVENTORY_APIM.md`](API_INVENTORY_APIM.md) — ~100 APIs estructuradas por ecosistema inferido con preguntas DDD abiertas. Los ecosistemas identificados ahí son **hipótesis de trabajo**, no dominios validados — el análisis DDD (#38 Fase 0) es quien definirá los bounded contexts correctos. **La agrupación actual puede no ser correcta.**
 
 **Mejoras en curso ARQ:** actualización apibase 10.0.2, migrar AutoMapper→Mapperly, quitar Newtonsoft.Json, migrar auth EntraID, mover JenkinsFile a /deploy, cambiar .sln→.slnx.
 
