@@ -22,6 +22,8 @@ skills:
   - "apb-sec-supply-chain-v1.0"
 subagents:
   - "apb-sub-sec-ens-v1.0"
+  - "apb-sub-ops-entra-v1.0"
+  - "apb-sub-sec-sast-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -15,6 +15,11 @@ skills:
   - "apb-disc-brainstorming-v1.0"
   - "apb-disc-adversarial-v1.0"
   - "apb-pm-product-analysis-v1.0"
+  - "apb-disc-user-journey-v1.0"
+  - "apb-disc-value-stream-v1.0"
+  - "apb-pm-risk-register-v1.0"
+  - "apb-pm-stakeholder-map-v1.0"
+  - "apb-disc-design-approval-v1.0"
 runtime:
   - "copilot"
   - "claude"

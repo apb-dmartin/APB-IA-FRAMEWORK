@@ -16,6 +16,9 @@ skills:
   - "apb-pm-refactoring-patterns-v1.0"
   - "apb-pm-parallel-execution-v1.0"
   - "apb-pm-slash-commands-v1.0"
+  - "apb-pm-risk-register-v1.0"
+  - "apb-pm-status-report-v1.0"
+  - "apb-pm-stakeholder-map-v1.0"
 subagents: []
 runtime:
   - "copilot"

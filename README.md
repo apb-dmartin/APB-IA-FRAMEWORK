@@ -196,7 +196,7 @@ apb-ai-framework/
 
 ## Catálogo de Componentes
 
-Consultar `catalog/CATALOG.md` para el listado completo de skills, agentes, subagentes y workflows con sus metadatos, estados y dependencias.
+Consultar [`catalog/CATALOG.md`](catalog/CATALOG.md) para el listado completo de skills, agentes, subagentes y workflows con sus metadatos, estados y dependencias.
 
 ## Contribución
 

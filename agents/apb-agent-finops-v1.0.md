@@ -12,6 +12,11 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "third-google-finops-multicloud-v1.0"
   - "apb-ops-dependency-audit-v1.0"
+  - "apb-plat-finops-alerting-v1.0"
+  - "apb-plat-finops-chargeback-v1.0"
+  - "apb-plat-finops-reservations-v1.0"
+subagents:
+  - "apb-sub-finops-azure-v1.0"
 runtime:
   - "copilot"
   - "claude"

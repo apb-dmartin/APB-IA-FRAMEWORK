@@ -20,6 +20,9 @@ skills:
   - "apb-arch-event-driven-master-v1.0"
   - "apb-arch-dotnet-base-v1.0"
   - "apb-arch-design-events-v1.0"
+  - "apb-arch-c4-model-v1.0"
+  - "apb-arch-context-mapping-v1.0"
+  - "apb-dev-api-design-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -14,6 +14,9 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "apb-plat-deployment-finish-v1.0"
   - "apb-plat-ms-notify-v1.0"
+  - "apb-plat-environment-promotion-v1.0"
+  - "apb-doc-changelog-v1.0"
+  - "apb-doc-release-notes-v1.0"
 runtime:
   - "copilot"
   - "claude"

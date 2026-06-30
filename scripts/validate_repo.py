@@ -526,6 +526,84 @@ def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResul
             ))
 
 
+def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
+    """Verifica el cableado bidireccional entre agentes/subagentes y entre
+    agentes/skills APB:
+    - Si un subagente declara 'parent_agent: X', el agente X debe listarlo en
+      'subagents:'. Si no → WARNING.
+    - Si una skill APB declara 'consumed_by: [Y]', el agente Y debe listarla en
+      'skills:'. Si no → WARNING.
+    Complementa a validate_agent_subagent_consistency (que verifica el sentido
+    contrario: agente lista subagente pero subagente no declara padre)."""
+
+    # Construir mapa agente → set de subagentes declarados
+    agent_subagents: Dict[str, set] = {}
+    agents_folder = repo_path / "agents"
+    if agents_folder.exists():
+        for fp in iter_component_files(agents_folder):
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if not found:
+                continue
+            aid = meta.get("id")
+            if aid:
+                agent_subagents[aid] = set(meta.get("subagents") or [])
+
+    # Construir mapa agente → set de skills declaradas
+    agent_skills: Dict[str, set] = {}
+    if agents_folder.exists():
+        for fp in iter_component_files(agents_folder):
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if not found:
+                continue
+            aid = meta.get("id")
+            if aid:
+                agent_skills[aid] = set(meta.get("skills") or [])
+
+    # Check 1: subagente declara parent_agent pero padre no lo lista
+    subagents_folder = repo_path / "subagents"
+    if subagents_folder.exists():
+        for fp in iter_component_files(subagents_folder):
+            rel = str(fp.relative_to(repo_path))
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if not found:
+                continue
+            sub_id = meta.get("id")
+            parent = str(meta.get("parent_agent", "")).strip()
+            if parent and parent in agent_subagents:
+                if sub_id not in agent_subagents[parent]:
+                    result.add(ValidationIssue(
+                        "WARNING", rel,
+                        f"Wiring unidireccional: este subagente declara "
+                        f"'parent_agent: {parent}' pero ese agente no lo lista "
+                        f"en 'subagents:'. Añadir '{sub_id}' al frontmatter de "
+                        f"agents/{parent}.md."
+                    ))
+
+    # Check 2: skill APB declara consumed_by pero agente no la lista
+    for folder in ["skills/apb-owned"]:
+        folder_path = repo_path / folder
+        if not folder_path.exists():
+            continue
+        for fp in iter_component_files(folder_path):
+            rel = str(fp.relative_to(repo_path))
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if not found:
+                continue
+            skill_id = meta.get("id")
+            consumed_by = meta.get("consumed_by") or []
+            if isinstance(consumed_by, str):
+                consumed_by = [consumed_by]
+            for agent_id in consumed_by:
+                if agent_id in agent_skills and skill_id not in agent_skills[agent_id]:
+                    result.add(ValidationIssue(
+                        "WARNING", rel,
+                        f"Wiring unidireccional: skill declara 'consumed_by: "
+                        f"{agent_id}' pero ese agente no la lista en 'skills:'. "
+                        f"Añadir '{skill_id}' al frontmatter de "
+                        f"agents/{agent_id}.md."
+                    ))
+
+
 def validate_no_circular_dependencies(repo_path: Path, result: ValidationResult):
     """Detecta dependencias circulares directas (A depende de B y B depende
     de A) en el campo 'depends_on' de las skills. 'depends_on' representa
@@ -627,6 +705,7 @@ def main():
     all_ids = validate_components(repo_path, result)
     validate_references(repo_path, result, all_ids)
     validate_agent_subagent_consistency(repo_path, result, all_ids)
+    validate_bidirectional_wiring(repo_path, result)
     validate_no_circular_dependencies(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 

@@ -18,6 +18,12 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "apb-disc-brainstorming-v1.0"
   - "apb-disc-design-approval-v1.0"
+  - "apb-pm-implementation-planning-v1.0"
+  - "apb-pm-parallel-execution-v1.0"
+  - "apb-pm-product-analysis-v1.0"
+  - "apb-pm-retrospective-v1.0"
+  - "apb-pm-sprint-planning-v1.0"
+  - "apb-pm-task-breakdown-v1.0"
 runtime:
   - "copilot"
   - "claude"

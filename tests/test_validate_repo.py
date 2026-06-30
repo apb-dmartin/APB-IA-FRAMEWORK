@@ -17,6 +17,7 @@ Uso:
 
 import sys
 import tempfile
+import textwrap
 import shutil
 import unittest
 from pathlib import Path
@@ -375,6 +376,139 @@ class TestStrictModeExemptions(unittest.TestCase):
                     "'apb-fake-v9.9' no existe en el repo.",
         )
         self.assertFalse(vr.is_policy_exempt_warning(issue))
+
+
+class TestValidateBidirectionalWiring(unittest.TestCase):
+    """Test nº 24 — validate_bidirectional_wiring detecta subagentes huérfanos."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.repo = Path(self.tmpdir)
+        # Estructura mínima de carpetas
+        (self.repo / "agents").mkdir()
+        (self.repo / "subagents").mkdir()
+        (self.repo / "skills" / "apb-owned" / "development").mkdir(parents=True)
+        (self.repo / "skills" / "third_party").mkdir(parents=True)
+        (self.repo / "workflows").mkdir()
+        (self.repo / "providers").mkdir()
+        (self.repo / "wrappers").mkdir()
+        (self.repo / "adapters").mkdir()
+        (self.repo / "catalog").mkdir()
+        (self.repo / "context").mkdir()
+        (self.repo / "scripts").mkdir()
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.tmpdir)
+
+    def _write(self, path, content):
+        full = self.repo / path
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(content, encoding="utf-8")
+
+    def test_subagent_orphan_warns(self):
+        """Subagente declara parent_agent pero padre no lo lista → WARNING."""
+        self._write("agents/apb-agent-test-v1.0.md", textwrap.dedent("""\
+            ---
+            id: "apb-agent-test-v1.0"
+            name: "Test Agent"
+            description: "Agente de prueba"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 1
+            skills: []
+            subagents: []
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Test Agent
+            ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+            Generado por APB AI Framework.
+        """))
+        self._write("subagents/apb-sub-test-v1.0.md", textwrap.dedent("""\
+            ---
+            id: "apb-sub-test-v1.0"
+            name: "Test Subagent"
+            description: "Subagente de prueba"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 2
+            parent_agent: "apb-agent-test-v1.0"
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Test Subagent
+            ## 🧠 Prompt de Sistema
+            Eres un subagente de prueba.
+            ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+            Generado por APB AI Framework.
+        """))
+        result = vr.ValidationResult()
+        vr.validate_bidirectional_wiring(self.repo, result)
+        warning_msgs = [i.message for i in result.warnings]
+        self.assertTrue(
+            any("apb-sub-test-v1.0" in m and "apb-agent-test-v1.0" in m for m in warning_msgs),
+            f"Se esperaba WARNING de wiring unidireccional, se obtuvo: {warning_msgs}"
+        )
+
+    def test_subagent_wired_no_warning(self):
+        """Subagente con parent_agent correctamente listado en agente → sin WARNING."""
+        self._write("agents/apb-agent-test-v1.0.md", textwrap.dedent("""\
+            ---
+            id: "apb-agent-test-v1.0"
+            name: "Test Agent"
+            description: "Agente de prueba"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 1
+            skills: []
+            subagents:
+              - "apb-sub-test-v1.0"
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Test Agent
+            ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+            Generado por APB AI Framework.
+        """))
+        self._write("subagents/apb-sub-test-v1.0.md", textwrap.dedent("""\
+            ---
+            id: "apb-sub-test-v1.0"
+            name: "Test Subagent"
+            description: "Subagente de prueba"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 2
+            parent_agent: "apb-agent-test-v1.0"
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Test Subagent
+            ## 🧠 Prompt de Sistema
+            Eres un subagente de prueba.
+            ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+            Generado por APB AI Framework.
+        """))
+        result = vr.ValidationResult()
+        vr.validate_bidirectional_wiring(self.repo, result)
+        self.assertEqual(result.warnings, [],
+            f"No se esperaba ningún WARNING, se obtuvo: {result.warnings}")
 
 
 if __name__ == "__main__":

@@ -17,6 +17,14 @@ skills:
   - "apb-gov-evidence-v1.0"
   - "apb-gov-spec-sync-v1.0"
   - "apb-gov-framework-audit-v1.0"
+  - "apb-gov-data-classification-v1.0"
+  - "apb-gov-ai-model-lifecycle-v1.0"
+  - "apb-gov-tech-radar-v1.0"
+  - "apb-gov-framework-metrics-v1.0"
+  - "apb-orch-context-handoff-v1.0"
+  - "apb-orch-human-checkpoint-v1.0"
+  - "apb-orch-multi-agent-v1.0"
+  - "apb-pm-slash-commands-v1.0"
 subagents:
   - "apb-sub-gov-standards-v1.0"
 runtime:

@@ -15,6 +15,11 @@ skills:
   - "apb-plat-cloud-ready-v1.0"
   - "apb-ops-observability-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-plat-k8s-v1.0"
+  - "apb-plat-azure-servicebus-v1.0"
+  - "apb-plat-secret-rotation-v1.0"
+  - "apb-plat-environment-promotion-v1.0"
+  - "apb-plat-mcp-building-v1.0"
 subagents:
   - "apb-sub-plat-jenkins-v1.0"
   - "apb-sub-plat-ghactions-v1.0"

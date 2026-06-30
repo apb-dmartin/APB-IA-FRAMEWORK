@@ -11,6 +11,10 @@ skills:
   - "apb-gov-compliance-v1.0"
   - "apb-gov-policy-check-v1.0"
   - "apb-plat-ms-notify-v1.0"
+  - "apb-gov-data-classification-v1.0"
+  - "apb-gov-dpia-v1.0"
+subagents:
+  - "apb-sub-gov-data-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -16,6 +16,8 @@ skills:
   - "apb-plat-cicd-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
   - "apb-arch-event-driven-master-v1.0"
+  - "apb-plat-k8s-v1.0"
+  - "apb-plat-azure-servicebus-v1.0"
 runtime:
   - "copilot"
   - "claude"

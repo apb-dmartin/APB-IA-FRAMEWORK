@@ -15,6 +15,7 @@ skills:
   - "apb-ops-rca-v1.0"
   - "apb-ops-runbook-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-doc-post-mortem-v1.0"
 subagents:
   - "apb-sub-ops-azure-v1.0"
 runtime:

@@ -19,6 +19,8 @@ skills:
   - "apb-plat-ms-notify-v1.0"
   - "apb-plat-sharepoint-io-v1.0"
   - "apb-plat-deliver-artifact-v1.0"
+  - "apb-gov-lcsp-check-v1.0"
+  - "apb-gov-dpia-v1.0"
 subagents: []
 runtime:
   - "claude"

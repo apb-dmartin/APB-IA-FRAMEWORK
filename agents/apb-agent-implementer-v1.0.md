@@ -27,6 +27,8 @@ skills:
   - "apb-dev-frontend-devexpress-events-v1.0"
   - "apb-dev-implementation-patterns-v1.0"
   - "apb-dev-sql-gen-v1.0"
+  - "apb-arch-dotnet-base-v1.0"
+  - "apb-pm-refactoring-patterns-v1.0"
 subagents:
   - "apb-sub-dev-net-v1.0"
   - "apb-sub-dev-devexpress-v1.0"

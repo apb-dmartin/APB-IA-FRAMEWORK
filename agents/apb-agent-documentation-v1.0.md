@@ -18,6 +18,9 @@ skills:
   - "apb-doc-event-specs-v1.0"
   - "apb-doc-generate-ppt-v1.0"
   - "apb-doc-generate-word-v1.0"
+  - "apb-doc-changelog-v1.0"
+  - "apb-doc-release-notes-v1.0"
+  - "apb-doc-onboarding-v1.0"
 runtime:
   - "copilot"
   - "claude"

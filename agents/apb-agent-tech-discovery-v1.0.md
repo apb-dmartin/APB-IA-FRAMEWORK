@@ -13,6 +13,9 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "apb-disc-brainstorming-v1.0"
   - "apb-gov-standards-v1.0"
+  - "apb-gov-tech-radar-v1.0"
+  - "apb-disc-tech-eval-v1.0"
+  - "apb-disc-poc-guide-v1.0"
 runtime:
   - "copilot"
   - "claude"

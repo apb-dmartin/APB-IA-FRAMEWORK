@@ -17,6 +17,7 @@ skills:
   - "apb-dev-impact-analysis-v1.0"
   - "apb-dev-surgical-changes-v1.0"
   - "apb-dev-gis-django-v1.0"
+  - "apb-arch-dotnet-base-v1.0"
 subagents: []
 runtime:
   - "copilot"

@@ -10,6 +10,8 @@ autonomy_level: 1
 skills:
   - "apb-gov-catalog-v1.0"
   - "apb-gov-knowledge-v1.0"
+  - "apb-gov-framework-metrics-v1.0"
+  - "apb-gov-framework-audit-v1.0"
 runtime:
   - "copilot"
   - "claude"
