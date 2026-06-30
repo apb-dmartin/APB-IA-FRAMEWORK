@@ -11,7 +11,7 @@
 | ID | Nombre | Skills | Color |
 |----|--------|--------|-------|
 | `dev` | Development | 27 | 🔵 |
-| `qa` | Quality Assurance | 17 | 🟢 |
+| `qa` | Quality Assurance | 18 | 🟢 |
 | `arch` | Architecture | 16 | 🟣 |
 | `disc` | Discovery | 16 | 🟡 |
 | `plat` | Platform | 19 | 🟠 |

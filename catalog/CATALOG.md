@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 342
+- **Total Components**: 343
 
 ## Component Breakdown
 
-### Skills APB-Owned (175 total)
+### Skills APB-Owned (176 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -30,10 +30,10 @@
 | `apb-arch-tech-plan-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-tech-plan-v1.0.md` |
 | `apb-arch-validate-v1.0` | architecture | draft | `skills/apb-owned/architecture/apb-arch-validate-v1.0.md` |
 | `apb-design-frontend-design-system-v1.0` | design | draft | `skills/apb-owned/design/apb-design-frontend-design-system-v1.0.md` |
-| `apb-design-wcag-patterns-v1.0` | design | draft | `skills/apb-owned/design/apb-design-wcag-patterns-v1.0.md` |
-| `apb-design-wcag-v1.0` | design | draft | `skills/apb-owned/design/apb-design-wcag-v1.0.md` |
+| `apb-design-wcag-patterns-v1.0` | design | deprecated | `skills/apb-owned/design/apb-design-wcag-patterns-v1.0.md` |
+| `apb-design-wcag-v1.0` | design | deprecated | `skills/apb-owned/design/apb-design-wcag-v1.0.md` |
 | `apb-dev-devexpress-selector-v1.0` | design | draft | `skills/apb-owned/design/apb-dev-devexpress-selector-v1.0.md` |
-| `apb-dev-api-design-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-design-v1.0.md` |
+| `apb-dev-api-design-v1.0` | development | deprecated | `skills/apb-owned/development/apb-dev-api-design-v1.0.md` |
 | `apb-dev-api-standard-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-api-standard-v1.0.md` |
 | `apb-dev-atomic-plan-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-atomic-plan-v1.0.md` |
 | `apb-dev-autocorrect-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-autocorrect-v1.0.md` |
@@ -162,6 +162,7 @@
 | `apb-qa-accessibility-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-accessibility-v1.0.md` |
 | `apb-qa-anonymize-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-anonymize-v1.0.md` |
 | `apb-qa-contract-testing-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-contract-testing-v1.0.md` |
+| `apb-qa-e2e-patterns-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-e2e-patterns-v1.0.md` |
 | `apb-qa-framework-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-framework-v1.0.md` |
 | `apb-qa-performance-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-performance-v1.0.md` |
 | `apb-qa-pipeline-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-pipeline-v1.0.md` |
@@ -174,7 +175,7 @@
 | `apb-qa-test-strategy-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-test-strategy-v1.0.md` |
 | `apb-qa-testing-strategy-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-testing-strategy-v1.0.md` |
 | `apb-qa-unit-test-gen-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-unit-test-gen-v1.0.md` |
-| `apb-qa-validation-e2e-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-validation-e2e-v1.0.md` |
+| `apb-qa-validation-e2e-v1.0` | qa | deprecated | `skills/apb-owned/qa/apb-qa-validation-e2e-v1.0.md` |
 | `apb-qa-verification-before-completion-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-verification-before-completion-v1.0.md` |
 | `apb-sec-cloud-hardening-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-cloud-hardening-v1.0.md` |
 | `apb-sec-dast-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-dast-v1.0.md` |
