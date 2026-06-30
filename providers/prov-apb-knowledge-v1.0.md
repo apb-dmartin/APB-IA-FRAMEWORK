@@ -1,15 +1,27 @@
 ---
 id: "prov-apb-knowledge-v1.0"
 name: "Provider: Knowledge APB"
-description: "Proveedor de conocimiento corporativo APB. Indexa y sirve estándares, políticas, plantillas, ADRs y documentación interna del framework."
-version: "1.0.0"
-status: "draft"
+description: >
+  Proveedor de conocimiento corporativo APB. Indexa y sirve dos capas de conocimiento:
+  (1) estándares, políticas, plantillas y ADRs del framework DOCKS; y
+  (2) contexto de negocio, funcional y tecnológico (incluyendo legacy) de la organización
+  APB (context/apb/knowledge/APB_KNOWLEDGE_BASE.md). Los agentes deben usar la capa (2)
+  para entender dominios y terminología, pero NUNCA para prescribir tecnologías no aprobadas.
+version: "1.1.0"
+status: "approved"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
 provider_type: "knowledge"
-access_mode: "read-write"
+access_mode: "read-only"
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-06-30"
+knowledge_sources:
+  framework:
+    - "context/apb/standards/"
+    - "context/apb/policies/"
+    - "context/apb/templates/"
+  business_context:
+    - "context/apb/knowledge/APB_KNOWLEDGE_BASE.md"
 ---
 
 # Provider: Knowledge APB
@@ -17,7 +29,15 @@ review_date: "2026-06-22"
 ---
 
 ## Descripción
-Proveedor de conocimiento corporativo APB. Indexa y sirve estándares, políticas, plantillas, ADRs y documentación interna del framework.
+
+Proveedor de conocimiento corporativo APB. Indexa y sirve **dos capas de conocimiento** diferenciadas:
+
+| Capa | Ruta | Uso |
+|------|------|-----|
+| **Framework / Estándares** | `context/apb/standards/`, `context/apb/policies/`, `context/apb/templates/` | Estándares aprobados, políticas obligatorias, plantillas — fuente de verdad para artefactos generados |
+| **Contexto Corporativo** | `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` | Negocio portuario, sistemas existentes (incluyendo legacy), terminología, equipos, integraciones — solo contexto, nunca prescripción tecnológica |
+
+> ⚠️ **Guardrail:** El contexto corporativo describe sistemas legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) para que los agentes entiendan tickets e integraciones. **Ningún agente puede usar ese contexto para recomendar o generar artefactos con tecnologías no aprobadas.**
 
 ## Capacidades
 - Indexación de documentos corporativos
