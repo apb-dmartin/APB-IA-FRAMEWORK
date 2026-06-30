@@ -2048,7 +2048,7 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 17. **Sesión 20**: agentes LCSP (bloqueado: briefing de Débora).
 18. **Sesión 21**: SQL skills + soporte incidencias generalista (✅ completada 2026-06-29).
 19. **Sesión 22**: Design System distribución (bloqueado: decisión de Débora).
-20. **#50/#51**: QA del framework + prueba real de agentes → alimenta primer `approved`.
+20. ✅ **#50/#51**: QA del framework — 20 casos de comportamiento (6 agentes), 5 Golden Output Tests, test Python de cobertura (2026-06-30).
 
 #### FASE 3 — Evolución estratégica (a 1–12 meses)
 

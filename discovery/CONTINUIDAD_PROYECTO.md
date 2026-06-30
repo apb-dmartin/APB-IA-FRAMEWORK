@@ -727,3 +727,20 @@ Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
 
 **Próxima fase disponible:** FASE 3 estratégica o sesiones bloqueadas pendientes de decisiones de Dirección (ver §I de PLAN_FASES_FUTURAS.md).
 
+---
+
+## 18. FASE #50/#51 — QA del framework: tests de comportamiento (2026-06-30, cerrada)
+
+**Contexto:** Puntos #50 (QA del framework) y #51 (prueba real de agentes). Solo 1 de 35 agentes tenía casos de comportamiento documentados.
+
+**Ejecutado:**
+- `tests/test_agent_behavior.md` v1.1.0: añadidos 5 agentes críticos × 3 casos cada uno (total 20 casos, 6 agentes cubiertos): `apb-agent-qa-auto-v1.0`, `apb-agent-technical-architect-v1.0`, `apb-agent-governance-v1.0`, `apb-agent-implementer-v1.0`, `apb-agent-release-manager-v1.0`.
+- `tests/golden_output_tests.md`: NUEVO — 5 Golden Output Tests para las skills más críticas: `apb-dev-code-review-v1.0`, `apb-arch-event-driven-master-v1.0`, `apb-gov-policy-check-v1.0`, `apb-ops-incident-triage-v1.0`, `apb-plat-deliver-artifact-v1.0`.
+- `tests/test_behavior_coverage.py`: NUEVO — test Python (5 casos) que valida que los 6 agentes críticos tienen cobertura y que el archivo GOT existe.
+
+**Resultado:** 26/26 tests OK (21 existentes + 5 nuevos de cobertura), exit 0, 0 errores.
+
+**Inventario al cierre:** 342 componentes, 0 aprobados. 6/35 agentes con tests de comportamiento documentados.
+
+**Próxima fase:** T5 (template AGENT.md), T3 (análisis duplicados), o sesiones bloqueadas cuando lleguen inputs externos.
+
