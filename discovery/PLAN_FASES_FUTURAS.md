@@ -2003,23 +2003,22 @@ licencia + análisis de seguridad + `source_commit` SHA real.
 
 ### H. Siguientes fases — orden de ejecución recomendado
 
-#### FASE 0 — Higiene de wiring + validador (próxima sesión, costo casi cero, impacto máximo)
+#### ✅ FASE 0 — Higiene de wiring + validador (COMPLETADA 2026-06-30)
 
-1. **Fix README.md**: cambiar `CATALOG.md` → `catalog/CATALOG.md`.
-2. **Wiring subagentes** (4 pendientes): añadir a `security-architect` los subagentes `entra` y `sast`;
-   a `qa-auto` el subagente `performance`; a `finops` el subagente `finops-azure`; a `data-governance`
-   el subagente `gov-data`.
-3. **Wiring skills Enriq. B** (ver tabla §C): editar frontmatter `skills:` de los agentes destino.
-4. **Check anti-huérfanos en validador** (`validate_bidirectional_wiring()`): warning si subagente
-   tiene `parent_agent` pero padre no lo lista; warning si skill APB tiene `consumed_by` pero agente
-   no la lista. Añadir test nº 24.
-5. **Verificar conformidad** de secciones en agentes/subagentes/workflows con el validador actual.
-6. Regenerar catálogo (`generate_catalog.py`), validar (`--strict`), y ejecutar tests. **Criterio
-   canónico: exit 0**, no el conteo de errores.
-7. Commit + push a GitHub.
+Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 59 warnings exentos.
 
-> **Recordatorio obligatorio al final de TODA sesión:** ejecutar siempre
-> `python scripts/generate_catalog.py` + `python scripts/validate_repo.py --strict` antes del commit.
+1. ✅ **Fix README.md**: enlace `CATALOG.md` → `catalog/CATALOG.md` corregido.
+2. ✅ **Wiring 5 subagentes huérfanos**: `entra`+`sast` → `security-architect`; `performance` →
+   `qa-auto`; `finops-azure` → `finops`; `gov-data` → `data-governance`.
+3. ✅ **Wiring skills Enriq. B**: 40 wirings corregidos en 22 agentes (tabla §C + 19 adicionales
+   detectados por el nuevo validador).
+4. ✅ **`validate_bidirectional_wiring()`** añadida a `scripts/validate_repo.py` + test
+   `TestValidateBidirectionalWiring` (2 casos) en `tests/test_validate_repo.py`.
+5. ✅ Catálogo regenerado, `--strict` verde, 21/21 tests OK.
+
+> **Regla de cierre de sesión (Débora, 2026-06-30):** al cierre de CADA sesión ejecutar siempre:
+> `generate_catalog.py` + `validate_repo.py --strict` + tests + actualizar PLAN_FASES_FUTURAS +
+> CONTINUIDAD + HANDOFF + README. Guardado en memoria del agente.
 
 #### FASE 1 — Mejoras de workflows existentes (#74)
 

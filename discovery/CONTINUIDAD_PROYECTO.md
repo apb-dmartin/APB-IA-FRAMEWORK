@@ -637,5 +637,42 @@ bitácora es exacta — esta sección queda como recordatorio de que la
 bitácora puede desincronizarse si no se actualiza al cierre de cada
 sesión, no solo al generar el zip de entrega.
 
+---
 
+## 15. FASE 0 — Higiene de wiring + validador bidireccional (2026-06-30, cerrada)
+
+**Contexto:** Sesión post-Enriquecimiento B. El análisis 360° (§H de `PLAN_FASES_FUTURAS.md`)
+identificó que ~32 skills creadas en Enriquecimiento B no estaban cableadas en el frontmatter
+`skills:` de sus agentes destino, y que 5 subagentes tampoco estaban listados en sus padres.
+Además, el validador no comprobaba estos wirings en ambas direcciones.
+
+**Qué se ejecutó:**
+
+1. **Fix README.md** — enlace roto `CATALOG.md` → `catalog/CATALOG.md` corregido.
+
+2. **Wiring de 5 subagentes huérfanos** (frontmatter `subagents:` de sus padres):
+   - `apb-sub-ops-entra-v1.0` + `apb-sub-sec-sast-v1.0` → `apb-agent-security-architect-v1.0`
+   - `apb-sub-qa-performance-v1.0` → `apb-agent-qa-auto-v1.0`
+   - `apb-sub-finops-azure-v1.0` → `apb-agent-finops-v1.0`
+   - `apb-sub-gov-data-v1.0` → `apb-agent-data-governance-v1.0`
+
+3. **Wiring skills Enriquecimiento B** en 21 agentes destino (tabla §C del plan) + 19 wirings
+   adicionales detectados por el nuevo validador. Total: 40 wirings corregidos en 22 agentes.
+
+4. **`validate_bidirectional_wiring()`** — nueva función en `scripts/validate_repo.py`. Test
+   `TestValidateBidirectionalWiring` con 2 casos añadido a `tests/test_validate_repo.py`.
+
+5. **Regla de cierre de sesión** — Débora pidió que al cierre de cada sesión se actualicen
+   siempre: catálogo, validador, PLAN_FASES_FUTURAS, CONTINUIDAD, HANDOFF, README.
+
+**Resultado:** `validate_repo.py --strict` → exit 0, 0 errores, 59 warnings exentos
+(`source_commit: unverified`), 21/21 tests OK. Commit `d62c6b1`, 24 ficheros, 284 inserciones.
+
+**Estado del inventario al cierre:** 341 componentes (sin cambio — wirings son metadatos).
+0 aprobados, todos en `draft`.
+
+**Próxima fase desbloqueada:** FASE 1 — Mejoras de workflows existentes:
+añadir Change Manager a `sdd-full` y `cloud-migration`, Security Architect a `code-review`,
+conectar `incident-l1` → `incident-l2`, Problem Manager en `incident-l1`,
+Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
 

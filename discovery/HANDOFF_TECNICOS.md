@@ -3,7 +3,7 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-30  
+> **Última actualización:** 2026-06-30 (post FASE 0 — wirings resueltos)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
 > **Estado global:** 341 componentes construidos (175 skills APB, 51 third-party, 35 agentes, 33 subagentes,
 > 17 workflows, 19 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
@@ -84,17 +84,17 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 
 ## 3. Wiring y deuda interna del catálogo
 
-Pendientes de la sesión de Enriquecimiento B. Esfuerzo bajo, sin prerrequisitos externos.
+> **Actualizado 2026-06-30 — FASE 0 completada (commit `d62c6b1`).**
 
-| # | Acción | Detalle |
-|---|--------|---------|
-| T1 | **Wiring Enriquecimiento B** | 16 skills nuevas no están en la lista `skills:` de sus agentes destino (puntos #60–72 del plan); 4 de 5 subagentes no declarados en su agente padre. Hoy son invocables solo desde los 4 agentes nuevos. |
-| T2 | **Huérfanos previos** | 9 skills + 5 subagentes de sesiones anteriores sin cablear: `orch×2`, `design-wcag`, `ops-capacity/continuity`, `finops-azure`, `ops-k8s/aca/rancher/servicebus`. |
-| T3 | **Duplicados — decidir** | 3 grupos: `apb-design-wcag` vs `apb-design-wcag-patterns`; `apb-arch-api-contract`/`api-lifecycle`/`apb-dev-api-design`; `apb-qa-validation-e2e` vs `apb-sub-qa-e2e`. |
-| T4 | **Endurecer validador** | Añadir check anti-huérfanos (warning) + fix encoding Windows (`cp1252`) → test pasa de 19/19 a 20/20. |
-| T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. *(Relacionado con BUG-01 — verificar si ya resuelto.)* |
+| # | Acción | Detalle | Estado |
+|---|--------|---------|--------|
+| T1 | **Wiring Enriquecimiento B** | 40 wirings aplicados en 22 agentes (skills + subagentes). `validate_bidirectional_wiring()` en validador garantiza consistencia futura. | ✅ RESUELTO |
+| T2 | **Huérfanos previos** | Todos los huérfanos identificados (orch×2, design-wcag, ops-capacity/continuity, finops-azure, ops-k8s/aca/rancher/servicebus) cableados en sesiones anteriores o en FASE 0. | ✅ RESUELTO |
+| T3 | **Duplicados — decidir** | 3 grupos: `apb-design-wcag` vs `apb-design-wcag-patterns`; `apb-arch-api-contract`/`api-lifecycle`/`apb-dev-api-design`; `apb-qa-validation-e2e` vs `apb-sub-qa-e2e`. | ⬜ Pendiente decisión Arquitectura |
+| T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
+| T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Criterio de éxito T1–T2:** 0 skills huérfanas de Enriquecimiento B; cada subagente declarado en su agente padre.
+**Estado actual:** `validate_repo.py --strict` → exit 0. 341 componentes, 0 huérfanos de wiring.
 
 ---
 
@@ -290,7 +290,8 @@ ESTA SEMANA (< 4h, cualquier desarrollador):
   └── DOC7: Documentar deprecación apb-ai-skills en README (30 min)
 
 ESTE MES (alta prioridad):
-  ├── T1+T2: Wiring huérfanos Enriquecimiento B
+  ├── ✅ T1+T2: Wiring huérfanos Enriquecimiento B — COMPLETADO (FASE 0, 2026-06-30)
+  ├── FASE 1: Mejoras workflows (sdd-full, cloud-migration, code-review, incident-l1, legacy-onboarding, qa-evidence)
   ├── SCHEMA.md: Añadir campos human_validator + retry_strategy (Arquitectura APB)
   ├── Ciclo de aprobación: 5 componentes candidatos (Arquitectura + Ciber)
   ├── TEL1→TEL4: Configurar telemetría Azure Monitor (Plataforma)
