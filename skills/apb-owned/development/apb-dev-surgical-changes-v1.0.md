@@ -9,6 +9,9 @@ domain: "development"
 autonomy_level: 1
 created_date: "2026-06-24"
 review_date: "2026-06-24"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 > Inspirado en: multica-ai/andrej-karpathy-skills (principio "Surgical Changes", licencia MIT).
@@ -17,6 +20,16 @@ review_date: "2026-06-24"
 > Fundamental #11 de README.md.
 
 # Surgical Changes
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Purpose
 Limita cada cambio al alcance exacto que el requerimiento pide. Prohibe que un agente o

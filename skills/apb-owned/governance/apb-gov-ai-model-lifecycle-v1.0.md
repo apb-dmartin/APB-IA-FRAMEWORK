@@ -9,9 +9,22 @@ domain: "governance"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Gobernanza del Ciclo de Vida de Modelos IA
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Proporcionar un marco de control para los modelos de IA desplegados o en uso en APB. Cubre desde el registro inicial del modelo hasta su deprecación: inventario de modelos activos, versionado semántico, revisiones periódicas de rendimiento y detección de sesgo, proceso formal de deprecación y plan de continuidad. Alineado con POLICY_AI_USAGE y con los requisitos del Reglamento de IA de la UE (RIA) para sistemas de IA de riesgo limitado y alto.

@@ -21,9 +21,22 @@ human_review_points:
   - "Convocatoria del CAB — el agente prepara el orden del día pero un humano lo convoca"
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Change Manager
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ---
 

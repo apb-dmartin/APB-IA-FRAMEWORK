@@ -9,9 +9,22 @@ domain: "governance"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Métricas y Dashboard del APB AI Framework
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Proporcionar visibilidad sobre el estado, adopción y calidad del APB AI Framework. Permite a Arquitectura APB medir el retorno de la inversión en el framework, identificar áreas de bajo uso, detectar componentes en estado draft que deberían promoverse, y planificar la siguiente fase de enriquecimiento basada en datos reales de uso.

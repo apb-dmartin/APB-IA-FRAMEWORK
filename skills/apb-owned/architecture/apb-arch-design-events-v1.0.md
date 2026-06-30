@@ -13,11 +13,24 @@ consumed_by:
   - "apb-agent-technical-architect-v1.0"
 created_date: "2026-06-20"
 review_date: "2026-06-24"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 > Procedencia: Skill APB adaptada de bmad-method (licencia MIT) en su origen; el modelo de roles BMAD fue retirado en Sesión 8 — el contenido técnico de diseño de arquitectura event-driven se mantiene y se vincula a `apb-agent-technical-architect-v1.0`.
 
 # APB Architecture Design: Diseño de Arquitectura de Eventos
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Visión General
 

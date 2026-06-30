@@ -9,6 +9,9 @@ domain: "governance"
 autonomy_level: 1
 created_date: "2026-06-20"
 review_date: "2026-06-22"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 > Nota: el ID conserva el prefijo histórico `apb-dev-` aunque el dominio funcional es `governance`; ver discovery/SESSION_2_NOTES.md.
@@ -16,6 +19,16 @@ review_date: "2026-06-22"
 > Inspirado en: skills.sh/superpowers-method (verification discipline) (licencia MIT).
 
 # Verify Before Done
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Purpose
 Establece un checklist de verificacion obligatoria antes de marcar cualquier tarea como completada, evitando el "done" falso que genera deuda tecnica.

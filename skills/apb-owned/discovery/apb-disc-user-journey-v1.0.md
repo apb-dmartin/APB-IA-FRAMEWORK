@@ -9,9 +9,22 @@ domain: "discovery"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Mapas de Viaje del Usuario
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Documentar la experiencia completa de un usuario al interactuar con un servicio digital APB, desde que tiene una necesidad hasta que la resuelve. Los User Journey Maps revelan los puntos de dolor (donde el usuario se frustra o abandona), los momentos de éxito, y las oportunidades de mejora que no son visibles analizando solo los datos de uso. Son la base del diseño centrado en el usuario (UCD) para los portales APB.

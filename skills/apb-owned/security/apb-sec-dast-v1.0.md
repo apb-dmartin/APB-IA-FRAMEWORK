@@ -9,9 +9,22 @@ domain: "security"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Análisis DAST — Interpretación de Resultados
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Interpretar y priorizar los hallazgos de un escaneo DAST (Dynamic Application Security Testing) realizado en entorno de preproducción o staging APB. El DAST prueba la aplicación en ejecución desde fuera, detectando vulnerabilidades que el análisis estático no puede encontrar: configuraciones HTTP inseguras, autenticación débil, exposición de APIs no documentadas. Este skill transforma el informe bruto en acciones concretas para el equipo de desarrollo.

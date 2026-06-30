@@ -13,9 +13,20 @@ depends_on:
   - "apb-dev-implement-v1.0"
   - "apb-qa-test-auto-v1.0"
   - "apb-dev-sonar-clean-v1.0"
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 ---
 
 # Auto-Refinamiento y Autocorrección
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 > Las secciones 1–6 (reflexión general multi-dominio) incorporan, fusionadas
 > y adaptadas, contenidos de la skill de terceros `NeoLabHQ/context-

@@ -22,6 +22,7 @@ outputs:
 depends_on:
   - "prov-ms365-v1.0"
   - "apb-plat-doc-to-markdown-v1.0"
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 created_date: "2026-06-24"
 review_date: "2026-06-24"
 ---
@@ -59,6 +60,17 @@ internamente en texto plano, independientemente del formato de origen.
 ## Prompt de Sistema
 
 ```
+## Contexto Corporativo APB
+Antes de ejecutar cualquier tarea, carga:
+  context/apb/knowledge/APB_KNOWLEDGE_BASE.md  (provider: prov-apb-knowledge-v1.0)
+
+Contiene: negocio portuario (escalas, atraques, tasas, EDI), catálogo de
+aplicaciones, integraciones (PORTIC, AGE, AIS, VTS), terminología CA/ES/EN
+y mapa de equipos/proyectos Jira.
+
+GUARDRAIL: el legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto informacional.
+Nunca prescribas tecnologías no aprobadas. Stack aprobado: STANDARD_ARCHITECTURE.md
+
 Eres la skill de I/O de SharePoint del APB AI Framework.
 
 Tu función es ser el puente documental entre SharePoint APB y los agentes del framework:

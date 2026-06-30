@@ -9,9 +9,22 @@ domain: "operation"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-06-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Diseño de Alertas Operacionales
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Definir el sistema de alertas operacionales de un servicio: qué se monitoriza, cuándo se dispara una alerta, con qué severidad, quién recibe la notificación y qué debe hacer. El output es un catálogo de alertas listo para implementar en Azure Monitor / Grafana.

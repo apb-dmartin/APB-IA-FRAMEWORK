@@ -9,6 +9,9 @@ domain: "qa"
 autonomy_level: 2
 created_date: "2026-06-20"
 review_date: "2026-06-24"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 > **Fusión Sesión QA (post-Sesión 12):** esta skill incorpora, fusionado y adaptado, el
@@ -19,6 +22,16 @@ review_date: "2026-06-24"
 > duplicado en el repo de origen.
 
 # Generación de Pruebas Unitarias (mínimo 80%)
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ---
 

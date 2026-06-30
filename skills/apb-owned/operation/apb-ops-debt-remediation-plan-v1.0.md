@@ -9,6 +9,9 @@ domain: "operation"
 autonomy_level: 2
 created_date: "2026-06-24"
 review_date: "2026-06-24"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 > Autonomy Level 2 (Ejecución supervisada): esta skill SÍ ejecuta una acción con efecto real
@@ -17,6 +20,16 @@ review_date: "2026-06-24"
 > control. Decisión de Debora (Sesión 11, post-Sesión 9).
 
 # Plan de Remediación de Deuda Técnica
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ---
 

@@ -9,9 +9,22 @@ domain: "documentation"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Generación de Changelog Semántico
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Automatizar la generación y mantenimiento del CHANGELOG.md de proyectos APB siguiendo el estándar [Keep a Changelog](https://keepachangelog.com) y [SemVer](https://semver.org). A partir del historial de commits desde la última release, clasifica los cambios por tipo, filtra los commits que no aportan información al usuario (refactors internos, fixes de CI), y propone el número de versión siguiente según si los cambios son breaking, features o fixes.

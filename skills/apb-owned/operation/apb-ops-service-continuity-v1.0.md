@@ -9,9 +9,22 @@ domain: "operation"
 autonomy_level: 1
 created_date: "2026-06-27"
 review_date: "2026-06-27"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Continuidad de Servicio (BCP/DRP)
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Definir y documentar la estrategia de continuidad de negocio (BCP) y recuperación ante desastres (DRP) para servicios APB. Establece los RTOs y RPOs por servicio, la estrategia de backup, los procedimientos de activación del DRP y los runbooks de recuperación, alineados con los requerimientos de negocio y la normativa ENS.

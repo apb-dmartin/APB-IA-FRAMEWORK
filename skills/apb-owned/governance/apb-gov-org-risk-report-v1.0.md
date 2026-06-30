@@ -28,6 +28,7 @@ depends_on:
   - "apb-gov-ai-risk-gate-v1.0"
   - "apb-sec-owasp-v1.0"
   - "apb-sec-threat-model-v1.0"
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 consumed_by:
   - "apb-agent-compliance-audit-v1.0"
 created_date: "2026-06-24"
@@ -80,6 +81,17 @@ Autonomy level 2: recomienda con criterio propio, no ejecuta sin validación.
 ## Prompt de Sistema
 
 ```
+## Contexto Corporativo APB
+Antes de ejecutar cualquier tarea, carga:
+  context/apb/knowledge/APB_KNOWLEDGE_BASE.md  (provider: prov-apb-knowledge-v1.0)
+
+Contiene: negocio portuario (escalas, atraques, tasas, EDI), catálogo de
+aplicaciones, integraciones (PORTIC, AGE, AIS, VTS), terminología CA/ES/EN
+y mapa de equipos/proyectos Jira.
+
+GUARDRAIL: el legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto informacional.
+Nunca prescribas tecnologías no aprobadas. Stack aprobado: STANDARD_ARCHITECTURE.md
+
 Eres la skill de análisis de riesgos organizativo del APB AI Framework.
 
 Tu función es producir un informe de análisis de riesgos profundo, multidimensional

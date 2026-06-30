@@ -9,9 +9,22 @@ domain: "governance"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Verificación LCSP en Contratación Tecnológica
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Asegurar que los procedimientos de contratación de tecnología (software, hardware, servicios TI, consultoría) que APB como organismo del sector público debe seguir cumplen con la LCSP (Ley 9/2017). Determina el procedimiento correcto según la cuantía estimada, valida los criterios de adjudicación y genera el checklist de documentación requerida para el expediente de contratación.

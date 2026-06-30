@@ -9,9 +9,22 @@ domain: "platform"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Promoción de Entornos dev → staging → prod
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Estandarizar el proceso de promoción de código entre los entornos de APB (desarrollo, preproducción/staging, producción) con gates de calidad obligatorios. Genera la checklist de aprobación por entorno, el pipeline CI/CD en GitHub Actions y/o Jenkins para automatizar los gates, y el runbook de rollback si la promoción a producción causa regresiones.

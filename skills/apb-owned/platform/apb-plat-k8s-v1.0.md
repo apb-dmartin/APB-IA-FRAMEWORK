@@ -9,9 +9,22 @@ domain: "platform"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Kubernetes / AKS en APB
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Asistir al equipo de plataforma e infraestructura de APB en la generación y revisión de manifiestos Kubernetes para el clúster AKS corporativo. Cubre el ciclo completo de despliegue: desde el manifiesto base hasta HPA (Horizontal Pod Autoscaler), PodDisruptionBudget, políticas de red, y charts Helm reutilizables. Garantiza el cumplimiento de las convenciones de nomenclatura, límites de recursos y políticas de seguridad del clúster APB.

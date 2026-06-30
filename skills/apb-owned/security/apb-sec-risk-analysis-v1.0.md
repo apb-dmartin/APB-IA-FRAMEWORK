@@ -9,9 +9,22 @@ domain: "security"
 autonomy_level: 1
 created_date: "2026-06-20"
 review_date: "2026-06-22"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Análisis de Riesgos + Informe
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Realizar análisis de riesgos de seguridad de la información siguiendo metodologías estandarizadas (ISO 27005, NIST SP 800-30, MAGERIT). Identificar activos, amenazas, vulnerabilidades, evaluar riesgos y proponer tratamientos. Genera un informe de riesgos con matriz de impacto, plan de tratamiento y seguimiento.

@@ -9,9 +9,22 @@ domain: "qa"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Testing de Performance con k6
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Validar que las APIs REST y portales web de APB soportan la carga esperada con tiempos de respuesta aceptables antes de cada despliegue a producción y como gate de calidad en el pipeline CI/CD. Los escenarios de carga están calibrados con el tráfico real del Puerto de Barcelona (picos en atracadas simultáneas, inicio de temporada cruceros, etc.).

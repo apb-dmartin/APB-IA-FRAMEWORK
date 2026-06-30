@@ -9,9 +9,22 @@ domain: "governance"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Auditoría de Consistencia del Framework APB
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Mantener la coherencia y calidad del APB AI Framework a medida que crece. Sin auditoría sistemática, el framework acumula skills huérfanos que nadie usa, referencias rotas entre componentes, componentes obsoletos que confunden a los agentes y gaps de dominio donde no hay cobertura. Este skill ejecuta una auditoría completa del repositorio y produce un informe accionable para el equipo de arquitectura.

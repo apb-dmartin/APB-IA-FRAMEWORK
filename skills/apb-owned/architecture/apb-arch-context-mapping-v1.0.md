@@ -9,9 +9,22 @@ domain: "architecture"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Mapas de Contexto DDD
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Documentar las fronteras y relaciones entre los dominios de negocio de APB usando el Context Map de Domain-Driven Design. Permite entender cómo se relacionan los sistemas (GISPEM, facturación, operaciones, gestión de personal, etc.) y qué patrón de integración usan (¿el sistema upstream dicta el contrato? ¿hay una capa anticorrupción?). Es el mapa de arquitectura de alto nivel más relevante para decisiones de integración y desacoplamiento.

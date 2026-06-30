@@ -9,9 +9,22 @@ domain: "operation"
 autonomy_level: 1
 created_date: "2026-06-27"
 review_date: "2026-06-27"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Post-Incident Review (PIR) Blameless
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Generar el Post-Incident Review (PIR) estructurado y blameless tras una incidencia significativa. El PIR reconstruye el timeline, mide el impacto real, identifica la causa raíz mediante 5-Why, y define action items accionables con owner y fecha límite para prevenir recurrencia.

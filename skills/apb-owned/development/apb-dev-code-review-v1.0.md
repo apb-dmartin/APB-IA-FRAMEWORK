@@ -9,6 +9,9 @@ domain: "development"
 autonomy_level: 1
 created_date: "2026-06-20"
 review_date: "2026-06-20"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # SKILL: Code Review .NET/C#
@@ -54,6 +57,17 @@ Esta skill analiza código fuente C#/.NET para:
 ## 5. Prompt del Sistema
 
 ```
+## Contexto Corporativo APB
+Antes de ejecutar cualquier tarea, carga:
+  context/apb/knowledge/APB_KNOWLEDGE_BASE.md  (provider: prov-apb-knowledge-v1.0)
+
+Contiene: negocio portuario (escalas, atraques, tasas, EDI), catálogo de
+aplicaciones, integraciones (PORTIC, AGE, AIS, VTS), terminología CA/ES/EN
+y mapa de equipos/proyectos Jira.
+
+GUARDRAIL: el legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto informacional.
+Nunca prescribas tecnologías no aprobadas. Stack aprobado: STANDARD_ARCHITECTURE.md
+
 Eres el skill "Code Review .NET/C#" (apb-dev-code-review-v1.0) del APB AI Framework.
 
 ## Contexto

@@ -9,9 +9,22 @@ domain: "documentation"
 autonomy_level: 1
 created_date: "2026-06-20"
 review_date: "2026-06-22"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Generación de Documentación Swagger/OpenAPI
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Generar documentación OpenAPI 3.0 (Swagger) a partir de especificaciones, código fuente o descripciones de API. Incluye schemas, ejemplos, códigos de respuesta, autenticación y validación contra estándares de diseño de API de APB.

@@ -9,9 +9,22 @@ domain: "security"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Seguridad de Cadena de Suministro — SBOM y Dependencias
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Garantizar que el software de terceros incorporado en los sistemas APB no introduce vulnerabilidades, restricciones legales ni dependencias de proveedores no evaluados. La cadena de suministro de software es un vector de ataque creciente (ej. Log4Shell, XZ Utils): este skill sistematiza la evaluación de dependencias directas y transitivas, la generación de SBOM y la verificación de licencias compatibles con el uso en administración pública.

@@ -9,9 +9,22 @@ domain: "governance"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Evaluación de Impacto de Protección de Datos (DPIA/EIPD)
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Automatizar la elaboración del borrador de la Evaluación de Impacto en la Protección de Datos (DPIA o EIPD en terminología española) según el artículo 35 del RGPD y las directrices del Grupo de Trabajo del artículo 29 (WP248). Obligatoria cuando el tratamiento es susceptible de entrañar un alto riesgo para los derechos y libertades de las personas físicas. Produce un informe estructurado listo para revisión del DPO y consulta previa a la AEPD si es necesario.

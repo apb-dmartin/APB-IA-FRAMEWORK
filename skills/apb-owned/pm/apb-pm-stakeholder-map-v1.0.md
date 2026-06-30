@@ -9,9 +9,22 @@ domain: "pm"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Mapa de Stakeholders (Interés × Influencia)
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Identificar y gestionar proactivamente a todos los actores que tienen interés o influencia sobre un proyecto APB. La matriz de interés × influencia permite priorizar los esfuerzos de comunicación y gestión: los stakeholders con alta influencia y alto interés son los más críticos para el éxito del proyecto. Incluye tanto stakeholders internos de APB (dirección, áreas de negocio, TI) como externos (autoridades, proveedores, usuarios finales).

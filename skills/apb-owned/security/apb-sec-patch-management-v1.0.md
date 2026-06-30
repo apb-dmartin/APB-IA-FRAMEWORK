@@ -9,9 +9,22 @@ domain: "security"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Gestión de Parches — Priorización CVE × Impacto APB
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Determinar en qué orden y con qué urgencia se aplican los parches de seguridad en los sistemas APB. La puntuación CVSS por sí sola no es suficiente: un CVE de CVSS 9.0 en un sistema interno sin exposición externa puede ser menos urgente que un CVE de CVSS 7.5 en el portal ciudadanos. Este skill cruza cuatro dimensiones — severidad, exposición, explotabilidad y criticidad del sistema — para producir un plan de parcheo realista alineado con las ventanas de cambio APB.

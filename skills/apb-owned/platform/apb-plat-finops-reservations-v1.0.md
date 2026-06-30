@@ -9,9 +9,22 @@ domain: "platform"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Análisis de Reserved Instances y Azure Hybrid Benefit
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Identificar y cuantificar las oportunidades de ahorro en el gasto Azure de APB mediante la compra de Reserved Instances (RI) para recursos con uso estable y la aplicación de Azure Hybrid Benefit (AHB) para licencias de Windows Server y SQL Server existentes. Genera un análisis coste-beneficio por recurso o familia de recursos y una recomendación de compra priorizada por ROI y periodo de amortización.

@@ -9,9 +9,22 @@ domain: "documentation"
 autonomy_level: 1
 created_date: "2026-06-20"
 review_date: "2026-06-22"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Generación de Manual del Sistema
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Generar manuales de sistema completos orientados a usuarios finales, administradores y equipos de soporte. Incluye guías de uso, procedimientos, troubleshooting, FAQ y referencia de funcionalidades, adaptado al contexto de negocio de APB.

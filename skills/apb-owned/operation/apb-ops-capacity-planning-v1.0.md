@@ -9,9 +9,22 @@ domain: "operation"
 autonomy_level: 1
 created_date: "2026-06-27"
 review_date: "2026-06-27"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Capacity Planning y Forecasting
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Analizar el consumo histórico de recursos de infraestructura y proyectar la demanda futura, considerando la estacionalidad del negocio portuario APB. Produce recomendaciones de right-sizing, alertas de capacidad y plan de escalado para los próximos 3-12 meses.

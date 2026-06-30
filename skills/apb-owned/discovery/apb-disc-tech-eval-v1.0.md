@@ -9,9 +9,22 @@ domain: "discovery"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Evaluación Técnica de Alternativas Tecnológicas
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Proporcionar una metodología estructurada para evaluar y comparar alternativas tecnológicas en decisiones de arquitectura APB (framework, base de datos, servicio cloud, herramienta de CI/CD, proveedor de IA...). Genera una matriz de decisión con criterios ponderados adaptados al contexto APB, analiza cada alternativa y produce una recomendación razonada con los trade-offs explícitos. El objetivo es que la decisión sea reproducible, documentada y revisable.

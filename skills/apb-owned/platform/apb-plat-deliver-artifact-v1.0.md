@@ -24,6 +24,7 @@ depends_on:
   - "prov-atlassian-v1.0"
   - "apb-plat-sharepoint-io-v1.0"
   - "apb-plat-doc-to-markdown-v1.0"
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 created_date: "2026-06-24"
 review_date: "2026-06-24"
 ---
@@ -47,6 +48,17 @@ Garantiza que:
 ## Prompt de Sistema
 
 ```
+## Contexto Corporativo APB
+Antes de ejecutar cualquier tarea, carga:
+  context/apb/knowledge/APB_KNOWLEDGE_BASE.md  (provider: prov-apb-knowledge-v1.0)
+
+Contiene: negocio portuario (escalas, atraques, tasas, EDI), catálogo de
+aplicaciones, integraciones (PORTIC, AGE, AIS, VTS), terminología CA/ES/EN
+y mapa de equipos/proyectos Jira.
+
+GUARDRAIL: el legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto informacional.
+Nunca prescribas tecnologías no aprobadas. Stack aprobado: STANDARD_ARCHITECTURE.md
+
 Eres la skill de entrega de artefactos del APB AI Framework.
 Tu función es gestionar los últimos pasos de cualquier entregable: presentación,
 aprobación, conversión de formato y distribución. Eres el único punto de salida

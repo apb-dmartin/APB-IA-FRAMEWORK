@@ -9,9 +9,22 @@ domain: "pm"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Informe de Estado de Proyecto (RAG Status)
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Generar el informe de estado periódico de un proyecto APB de forma estructurada y consistente. Usa el sistema de semáforo RAG (Red/Amber/Green) para comunicar el estado de las dimensiones clave del proyecto (alcance, plazo, presupuesto, calidad, riesgos) de forma inequívoca. Produce dos versiones: un resumen ejecutivo de 1 página para dirección y un detalle técnico completo para el equipo del proyecto y el comité de seguimiento.

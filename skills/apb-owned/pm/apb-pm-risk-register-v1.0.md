@@ -9,9 +9,22 @@ domain: "pm"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Registro de Riesgos del Proyecto
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Proporcionar una herramienta estructurada para identificar, evaluar y gestionar los riesgos de proyectos de tecnología en APB a lo largo de su ciclo de vida. Cubre riesgos técnicos (dependencias, tecnologías nuevas, integraciones), de negocio (alcance, recursos, prioridades), de compliance (LCSP, RGPD, ENS) y operativos. El registro de riesgos es el artefacto central de la gestión de riesgos del proyecto.

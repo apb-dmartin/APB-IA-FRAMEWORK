@@ -9,9 +9,22 @@ domain: "discovery"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 # Guía Estructurada de PoC (Prueba de Concepto)
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ## Propósito
 Estructurar el diseño y ejecución de Pruebas de Concepto (PoC) en APB de forma que sean una herramienta de aprendizaje real y no una demostración de lo que ya se quería hacer. Define el scope mínimo para validar las hipótesis críticas, los criterios de éxito cuantificados (go/no-go), el plan de trabajo acotado en tiempo, y el proceso de decisión. Una buena PoC responde preguntas concretas en el tiempo mínimo necesario.

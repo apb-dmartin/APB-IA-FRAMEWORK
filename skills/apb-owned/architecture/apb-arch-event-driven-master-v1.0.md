@@ -13,11 +13,24 @@ consumed_by:
   - "apb-agent-technical-architect-v1.0"
 created_date: "2026-06-20"
 review_date: "2026-06-24"
+depends_on:
+  - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+
 ---
 
 > Procedencia: Creado desde cero + adaptado de wshobson/agents (microservices-patterns, saga-orchestration, cqrs-implementation, event-store-design) (licencia MIT).
 
 # APB Event-Driven Architecture
+
+
+## Contexto Corporativo APB
+
+> Antes de ejecutar esta skill/agente, carga
+> `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
+> Úsalo para entender el dominio portuario, la terminología (CA/ES/EN) y los
+> sistemas implicados. El legacy documentado (SÒSTRAT/Java/Oracle/CAS/Alfresco)
+> es contexto informacional, **no prescripción tecnológica**.
+> Stack aprobado: `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 Guía maestra para diseñar, implementar y operar arquitecturas orientadas a eventos dentro del APB AI Framework.
 
