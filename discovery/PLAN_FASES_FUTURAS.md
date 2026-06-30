@@ -2043,10 +2043,10 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 #### FASE 2 — Sesiones abiertas del plan
 
 14. **Sesión 13** resto: puntos #6 (plantillas Word), #8 (COSMIC—bloqueado), #52 (email Jira).
-15. **Sesión 14**: conversión .docx (borradores MD listos) + documento Dirección.
+15. **Sesión 14**: ✅ **documento Dirección creado** (`docs/informe-direccion.md`, 2026-06-30). Pendiente: conversión .docx (requiere decisión runtime + plantilla).
 16. **Sesión 19**: terceros adicionales + decisión `_spec-driven` (bloqueado: URLs de Débora).
 17. **Sesión 20**: agentes LCSP (bloqueado: briefing de Débora).
-18. **Sesión 21**: SQL skills + soporte incidencias generalista (sin bloqueo).
+18. **Sesión 21**: SQL skills + soporte incidencias generalista (✅ completada 2026-06-29).
 19. **Sesión 22**: Design System distribución (bloqueado: decisión de Débora).
 20. **#50/#51**: QA del framework + prueba real de agentes → alimenta primer `approved`.
 

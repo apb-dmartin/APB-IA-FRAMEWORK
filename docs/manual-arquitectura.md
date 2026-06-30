@@ -1,7 +1,7 @@
 # Manual de Arquitectura — APB AI Framework
 
 > **Audiencia:** Arquitectos de sistemas, Technical Leads, responsables de gobierno TI.
-> **Versión analizada:** 1.0.0-draft (estado al 26 de junio de 2026, commit más reciente)
+> **Versión analizada:** 1.0.0-draft (estado al 30 de junio de 2026 · 342 componentes · commit 4f02f38)
 > **Repositorios analizados:**
 > - `APB-IA-FRAMEWORK` (repositorio principal)
 > - `APB-DOMAIN-CATALOG` (submódulo: `domain-catalog/`)

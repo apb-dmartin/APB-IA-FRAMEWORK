@@ -708,3 +708,22 @@ Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
 
 **Próxima fase desbloqueada:** FASE 2 — Sesiones abiertas del plan (puntos #6, #8, #52, #14, #19, #20, #21).
 
+---
+
+## 17. FASE 2 — Documento de Dirección + actualización docs audiencias (2026-06-30, cerrada)
+
+**Contexto:** Sesión 14 (punto #23 del plan) — documentación segmentada por audiencia. Los borradores de arquitectos y devs existían; faltaba el informe ejecutivo para Dirección.
+
+**Ejecutado:**
+- Creado `docs/informe-direccion.md` — informe ejecutivo para Dirección APB / CIO / CISO. Cubre: qué resuelve el framework, estado actual (342 componentes, 0 aprobados), capacidades por dominio, política de gobierno IA, inversión realizada, decisiones pendientes de Dirección, índice de documentación por audiencia.
+- Actualizada cabecera `docs/guia-funcional.md` — fecha 2026-06-30, 342 componentes.
+- Actualizada cabecera `docs/manual-arquitectura.md` — fecha 2026-06-30, 342 componentes, commit 4f02f38.
+
+**Resultado:** exit 0, 0 errores, 60 warnings exentos, 21 tests OK. Catálogo sin cambios (documentos no son componentes del catálogo).
+
+**Inventario al cierre:** 342 componentes, 0 aprobados.
+
+**Pendiente de Sesión 14:** conversión .docx de los 3 documentos Markdown (requiere decisión runtime orquestación + plantilla corporativa Word APB).
+
+**Próxima fase disponible:** FASE 3 estratégica o sesiones bloqueadas pendientes de decisiones de Dirección (ver §I de PLAN_FASES_FUTURAS.md).
+

@@ -1,7 +1,7 @@
 # Guía Funcional del APB AI Framework
 
 > **Audiencia:** Analistas funcionales, desarrolladores, jefes de proyecto, perfiles de uso del framework.
-> **Versión analizada:** 1.0.0-draft (estado al 26 de junio de 2026)
+> **Versión analizada:** 1.0.0-draft (estado al 30 de junio de 2026 · 342 componentes)
 > **Estado del framework:** Todos los componentes en `draft`. Preparado para pilotos controlados. No usar en producción sin aprobación formal de Arquitectura, QA y Ciberseguridad APB.
 
 ---
