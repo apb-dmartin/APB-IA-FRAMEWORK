@@ -23,7 +23,7 @@ skills:
   - "apb-qa-performance-v1.0"
   - "apb-qa-contract-testing-v1.0"
   - "apb-qa-accessibility-v1.0"
-  - "apb-qa-validation-e2e-v1.0"
+  - "apb-qa-e2e-patterns-v1.0"
   - "apb-qa-verification-before-completion-v1.0"
 subagents:
   - "apb-sub-qa-unit-v1.0"

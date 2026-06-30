@@ -5,12 +5,12 @@ description: "Validaci\xF3n de calidad y generaci\xF3n de tests E2E para arquite
   \ a eventos. Usar para verificar que features implementadas cumplen requisitos y\
   \ flujos de eventos funcionan end-to-end."
 version: "1.0.0"
-status: "draft"
+status: "deprecated"
+deprecated_reason: "Renombrado a apb-qa-e2e-patterns-v1.0 para claridad de rol (decision Arquitectura APB 2026-06-30)"
 owner: "QA APB <arquitectura@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 1
-consumed_by:
-  - "apb-agent-qa-auto-v1.0"
+consumed_by: []
 created_date: "2026-06-20"
 review_date: "2026-06-24"
 ---

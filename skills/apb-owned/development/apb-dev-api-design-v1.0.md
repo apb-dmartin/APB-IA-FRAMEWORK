@@ -4,12 +4,12 @@ name: "Api Design"
 description: "Dise\xF1o de APIs REST y de eventos para microservicios del APB AI Framework. Incluye\
   \ dise\xF1o de endpoints, contratos de eventos, y documentaci\xF3n OpenAPI/AsyncAPI."
 version: "1.0.0"
-status: "draft"
+status: "deprecated"
+deprecated_reason: "Reemplazado por apb-arch-api-contract-v1.0 + apb-arch-api-lifecycle-v1.0 (decision Arquitectura APB 2026-06-30)"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "development"
 autonomy_level: 1
-consumed_by:
-  - "apb-agent-technical-architect-v1.0"
+consumed_by: []
 created_date: "2026-06-20"
 review_date: "2026-06-24"
 ---

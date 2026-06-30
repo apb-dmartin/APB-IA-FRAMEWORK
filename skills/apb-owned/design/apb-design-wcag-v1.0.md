@@ -3,12 +3,12 @@ id: "apb-design-wcag-v1.0"
 name: "Validación de Accesibilidad WCAG 2.1 AA"
 description: "Auditar y validar el cumplimiento de WCAG 2.1 nivel AA en pantallas, componentes y flujos DevExtreme/DevExpress de APB. Obligatorio por RD 1112/2018 para portales y apps de cara al ciudadano. Produce checklist de conformidad, listado de no conformidades con severidad y pasos de remediación, e integración con Playwright para tests automatizados de accesibilidad."
 version: "1.0.0"
-status: "draft"
+status: "deprecated"
+deprecated_reason: "Consolidado en apb-qa-accessibility-v1.0 (decision Arquitectura APB 2026-06-30)"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "design"
 autonomy_level: 1
-consumed_by:
-  - "apb-agent-ux-mockup-v1.0"
+consumed_by: []
 depends_on:
   - "apb-design-frontend-design-system-v1.0"
 created_date: "2026-06-29"

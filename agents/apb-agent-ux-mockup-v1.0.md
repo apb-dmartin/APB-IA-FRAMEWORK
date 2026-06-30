@@ -16,8 +16,6 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "third-nextlevel-ux-v1.0"
   - "apb-qa-accessibility-v1.0"
-  - "apb-design-wcag-patterns-v1.0"
-  - "apb-design-wcag-v1.0"
 subagents: []
 runtime:
   - "copilot"

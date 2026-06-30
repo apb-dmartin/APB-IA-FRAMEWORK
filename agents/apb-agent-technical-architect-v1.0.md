@@ -12,6 +12,7 @@ skills:
   - "apb-arch-event-driven-v1.0"
   - "apb-arch-decompose-v1.0"
   - "apb-arch-api-contract-v1.0"
+  - "apb-arch-api-lifecycle-v1.0"
   - "apb-arch-tech-plan-v1.0"
   - "apb-arch-validate-v1.0"
   - "apb-arch-security-design-v1.0"
@@ -22,7 +23,6 @@ skills:
   - "apb-arch-design-events-v1.0"
   - "apb-arch-c4-model-v1.0"
   - "apb-arch-context-mapping-v1.0"
-  - "apb-dev-api-design-v1.0"
 runtime:
   - "copilot"
   - "claude"
