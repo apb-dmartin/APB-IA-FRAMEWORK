@@ -13,6 +13,7 @@ agents:
   - "apb-agent-spec-engineer-v1.0"
   - "apb-agent-qa-auto-v1.0"
   - "apb-agent-documentation-v1.0"
+  - "apb-agent-tech-debt-v1.0"
 human_checkpoints:
   - "Validación humana antes de cada fase crítica del workflow"
 created_date: "2026-06-20"

@@ -2020,14 +2020,25 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 > `generate_catalog.py` + `validate_repo.py --strict` + tests + actualizar PLAN_FASES_FUTURAS +
 > CONTINUIDAD + HANDOFF + README. Guardado en memoria del agente.
 
-#### FASE 1 — Mejoras de workflows existentes (#74)
+#### ✅ FASE 1 — Mejoras de workflows existentes (COMPLETADA 2026-06-30)
 
-8. Añadir Change Manager a `sdd-full` y `cloud-migration`.
-9. Añadir Security Architect a `code-review` (PRs con cambios en auth/datos sensibles).
-10. Conectar `incident-l1` → `incident-l2` workflow.
-11. Añadir Problem Manager a `incident-l1` para incidencias recurrentes.
-12. Añadir Tech Debt a `legacy-onboarding`.
-13. Añadir performance y accessibility a `qa-evidence`.
+8. ✅ Añadir Change Manager a `sdd-full` y `cloud-migration`.
+9. ✅ Añadir Security Architect a `code-review` (PRs con cambios en auth/datos sensibles).
+10. ✅ Conectar `incident-l1` → `incident-l2` workflow + campo `escalation:` en frontmatter.
+11. ✅ Añadir Problem Manager a `incident-l1` para incidencias recurrentes.
+12. ✅ Añadir Tech Debt a `legacy-onboarding`.
+13. ✅ Añadir performance y accessibility a `qa-evidence`.
+
+#### ✅ FASE 1B — Corrección de bugs BUG-01 a BUG-08 (COMPLETADA 2026-06-30)
+
+14. ✅ BUG-01: `context/apb/templates/WORKFLOW.md` — blockquote → YAML frontmatter canónico.
+15. ✅ BUG-02: `scripts/generate_catalog.py` — regex `\s*+` → `\s*` (8 patrones, Python 3.10).
+16. ⏸ BUG-03: `design-system/components/component-reference.md §9` — color sidebar pendiente confirmación equipo diseño.
+17. ✅ BUG-04: `adapters/claude/adapter-claude-v1.0.md` — model string `claude-sonnet-4-6`.
+18. ✅ BUG-05: `SYSTEM.md §4.2` — añadidos adapters `m365` y `rovo` (los 4 reales del repo).
+19. ✅ BUG-06: `.github/workflows/telemetry.yml` — anti-pattern git push → PR automático.
+20. ✅ BUG-07: `CONTINUIDAD_PROYECTO.md §8` — 208 → 341 componentes.
+21. ✅ BUG-08: `third-lum1104-knowledge-graph-v1.0.md` — stub creado con `status: watchlist` y aviso licencia no verificada.
 
 #### FASE 2 — Sesiones abiertas del plan
 

@@ -290,9 +290,9 @@ Todos en `discovery/`:
 
 ## 8. Inventario final verificado (al cierre de Sesión 8)
 
-- 208 componentes con frontmatter YAML válido: 107 skills APB, 44 skills
+- **341 componentes** con frontmatter YAML válido al cierre de FASE 0 (2026-06-30) — ver §15 para detalle. El desglose de Sesión 8 (208 componentes) quedó superado por las Sesiones 9-22 y los bloques de Enriquecimiento A y B. (Nota histórica original: 107 skills APB, 44 skills
   terceros, 19 agentes, 13 subagentes, 7 workflows, 10 providers, 7
-  wrappers, 2 adapters. (Sin cambio en el total respecto a Sesión 7: la
+  wrappers, 2 adapters. Sin cambio en el total respecto a Sesión 7: la
   limpieza de las 22 skills "BMAD" en Sesión 8 fue sobre contenido
   existente, no creó ni eliminó componentes. Nota Sesión 9: el conteo de
   "43" reportado originalmente en este documento era un error de cómputo
@@ -675,4 +675,36 @@ Además, el validador no comprobaba estos wirings en ambas direcciones.
 añadir Change Manager a `sdd-full` y `cloud-migration`, Security Architect a `code-review`,
 conectar `incident-l1` → `incident-l2`, Problem Manager en `incident-l1`,
 Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
+
+---
+
+## 16. FASE 1 + FASE 1B — Mejoras de workflows y corrección de bugs (2026-06-30, cerrada)
+
+**Contexto:** Sesión inmediatamente posterior a FASE 0. Dos bloques ejecutados en la misma sesión.
+
+### FASE 1 — Mejoras de 6 workflows existentes
+
+- `apb-wf-sdd-full-v1.0`: añadido `apb-agent-change-manager-v1.0`.
+- `apb-wf-cloud-migration-v1.0`: añadido `apb-agent-change-manager-v1.0`.
+- `apb-wf-code-review-v1.0`: añadido `apb-agent-security-architect-v1.0`.
+- `apb-wf-incident-l1-v1.0`: añadido `apb-agent-problem-manager-v1.0` + campo `escalation: apb-wf-incident-l2-v1.0`.
+- `apb-wf-legacy-onboarding-v1.0`: añadido `apb-agent-tech-debt-v1.0`.
+- `apb-wf-qa-evidence-v1.0`: añadidas skills `apb-qa-performance-v1.0` y `apb-qa-accessibility-v1.0`.
+
+### FASE 1B — Corrección de bugs BUG-01 a BUG-08
+
+- ✅ BUG-01: `context/apb/templates/WORKFLOW.md` — blockquote → YAML frontmatter canónico con delimitadores `---`.
+- ✅ BUG-02: `scripts/generate_catalog.py` — eliminado cuantificador posesivo `\s*+` inválido en Python 3.10 (8 patrones, líneas 251-258).
+- ⏸ BUG-03: `design-system/components/component-reference.md §9` — color sidebar omitido; pendiente confirmación del equipo de diseño APB.
+- ✅ BUG-04: `adapters/claude/adapter-claude-v1.0.md` — model string actualizado a `claude-sonnet-4-6`.
+- ✅ BUG-05: `SYSTEM.md §4.2` — tabla de adapters completada con `m365/` y `rovo/` (los 4 adapters reales del repo).
+- ✅ BUG-06: `.github/workflows/telemetry.yml` — reemplazado `git push` directo a main por `git push` a rama + `gh pr create`.
+- ✅ BUG-07: `CONTINUIDAD_PROYECTO.md §8` — número de componentes corregido de 208 a 341 (cierre FASE 0).
+- ✅ BUG-08: creado stub `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` con `status: watchlist` y aviso de licencia no verificada.
+
+**Resultado:** exit 0, 0 errores, 60 warnings exentos, 21 tests OK. **342 componentes** (341 + 1 stub nuevo).
+
+**Inventario al cierre:** 342 componentes, 0 aprobados, todos `draft` o `watchlist`.
+
+**Próxima fase desbloqueada:** FASE 2 — Sesiones abiertas del plan (puntos #6, #8, #52, #14, #19, #20, #21).
 

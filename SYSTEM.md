@@ -114,6 +114,8 @@ Para la fase inicial del framework (pilotos controlados):
 |-----------|--------|-------------|
 | `adapters/copilot/` | draft | Instrucciones y contexto para GitHub Copilot. |
 | `adapters/claude/` | draft | Prompts y contexto para Claude (Anthropic). |
+| `adapters/m365/` | draft | Integración con Microsoft 365 Copilot. |
+| `adapters/rovo/` | draft | Integración con Atlassian Rovo. |
 
 ### 4.3 Principio de Agnosticismo
 

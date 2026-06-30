@@ -11,6 +11,7 @@ agents:
   - "apb-agent-implementer-v1.0"
   - "apb-agent-governance-v1.0"
   - "apb-agent-qa-auto-v1.0"
+  - "apb-agent-security-architect-v1.0"
 human_checkpoints:
   - "Validación humana antes de cada fase crítica del workflow"
 created_date: "2026-06-20"

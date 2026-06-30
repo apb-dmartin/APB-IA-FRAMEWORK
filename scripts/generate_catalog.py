@@ -248,14 +248,14 @@ def update_index_md(repo_path: Path, components, write: bool):
 
     # Actualizar comentarios de conteo dentro del árbol ASCII de estructura
     tree_replacements = [
-        (re.compile(r"(agents/\s*+# )\d+( agentes)"), rf"\g<1>{len(components['agent'])}\g<2>"),
-        (re.compile(r"(subagents/\s*+# )\d+( subagentes)"), rf"\g<1>{len(components['subagent'])}\g<2>"),
-        (re.compile(r"(workflows/\s*+# )\d+( workflows)"), rf"\g<1>{len(components['workflow'])}\g<2>"),
-        (re.compile(r"(apb-owned/\s*+# )\d+( skills)"), rf"\g<1>{len(components['skill_apb'])}\g<2>"),
-        (re.compile(r"(third[-_]party/\s*+# )\d+( skills)"), rf"\g<1>{len(components['skill_third'])}\g<2>"),
-        (re.compile(r"(providers/\s*+# )\d+( providers)"), rf"\g<1>{len(components['provider'])}\g<2>"),
-        (re.compile(r"(wrappers/\s*+# )\d+( wrappers)"), rf"\g<1>{len(components['wrapper'])}\g<2>"),
-        (re.compile(r"(adapters/\s*+# )\d+( adaptadores)"), rf"\g<1>{len(components['adapter'])}\g<2>"),
+        (re.compile(r"(agents/\s*# )\d+( agentes)"), rf"\g<1>{len(components['agent'])}\g<2>"),
+        (re.compile(r"(subagents/\s*# )\d+( subagentes)"), rf"\g<1>{len(components['subagent'])}\g<2>"),
+        (re.compile(r"(workflows/\s*# )\d+( workflows)"), rf"\g<1>{len(components['workflow'])}\g<2>"),
+        (re.compile(r"(apb-owned/\s*# )\d+( skills)"), rf"\g<1>{len(components['skill_apb'])}\g<2>"),
+        (re.compile(r"(third[-_]party/\s*# )\d+( skills)"), rf"\g<1>{len(components['skill_third'])}\g<2>"),
+        (re.compile(r"(providers/\s*# )\d+( providers)"), rf"\g<1>{len(components['provider'])}\g<2>"),
+        (re.compile(r"(wrappers/\s*# )\d+( wrappers)"), rf"\g<1>{len(components['wrapper'])}\g<2>"),
+        (re.compile(r"(adapters/\s*# )\d+( adaptadores)"), rf"\g<1>{len(components['adapter'])}\g<2>"),
     ]
     for pattern, repl in tree_replacements:
         new_content = pattern.sub(repl, new_content)

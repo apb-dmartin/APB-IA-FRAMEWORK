@@ -9,6 +9,8 @@ domain: "operation"
 autonomy_level: 2
 agents:
   - "apb-agent-incident-support-v1.0"
+  - "apb-agent-problem-manager-v1.0"
+escalation: "apb-wf-incident-l2-v1.0"
 skills:
   - "apb-ops-incident-triage-v1.0"
   - "apb-ops-incident-diagnose-v1.0"

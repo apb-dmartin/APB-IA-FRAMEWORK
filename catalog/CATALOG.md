@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 341
+- **Total Components**: 342
 
 ## Component Breakdown
 
@@ -189,7 +189,7 @@
 | `apb-sec-supply-chain-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-supply-chain-v1.0.md` |
 | `apb-sec-threat-model-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-threat-model-v1.0.md` |
 
-### Skills de Terceros (51 total)
+### Skills de Terceros (52 total)
 
 | ID | Fuente | Licencia | Estado | Archivo |
 |---|---|---|---|---|
@@ -216,6 +216,7 @@
 | `third-lambdatest-test-automation-v1.0` | https://github.com/LambdaTest/agent-skills | MIT | approved | `skills/third_party/lambdatest/third-lambdatest-test-automation-v1.0.md` |
 | `third-lidr-agent-demo-v1.0` | https://github.com/LIDR-academy/lidr-agent-demo | MIT | approved | `skills/third_party/lidr/third-lidr-agent-demo-v1.0.md` |
 | `third-lightrag-knowledge-v1.0` | https://github.com/hkuds/lightrag | MIT | approved | `skills/third_party/hkuds-lightrag/third-lightrag-knowledge-v1.0.md` |
+| `third-lum1104-knowledge-graph-v1.0` | ? | ? | watchlist | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` |
 | `third-mattpocock-codebase-architecture-analysis-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/mattpocock/third-mattpocock-codebase-architecture-analysis-v1.0.md` |
 | `third-mattpocock-grill-prd-issues-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/mattpocock/third-mattpocock-grill-prd-issues-v1.0.md` |
 | `third-mukul-cloud-security-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | MIT | approved | `skills/third_party/mukul975/third-mukul-cloud-security-v1.0.md` |

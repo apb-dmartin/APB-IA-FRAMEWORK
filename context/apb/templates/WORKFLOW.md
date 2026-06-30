@@ -1,10 +1,19 @@
-# {name}
+---
+id: "{id}"
+name: "{name}"
+version: "{version}"
+status: "{status}"
+autonomy_level: {autonomy}
+owner: "{owner}"
+domain: "{domain}"
+agents: []
+human_checkpoints:
+  - "Validación humana antes de cada fase crítica del workflow"
+created_date: "{created_date}"
+review_date: "{review_date}"
+---
 
-> **ID:** `{id}`
-> **Versión:** {version}
-> **Estado:** {status}
-> **Autonomía:** {autonomy}
-> **Owner:** {owner}
+# {name}
 
 ---
 

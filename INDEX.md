@@ -19,14 +19,14 @@
 | Métrica | Valor |
 |---------|-------|
 | Skills APB | 175 / 175 |
-| Skills terceros | 51 / 51 |
+| Skills terceros | 52 / 52 |
 | Agentes | 35 / 35 |
 | Subagentes | 33 / 33 |
 | Workflows | 17 / 17 |
 | Providers | 19 / 19 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **341** |
+| **Total** | **342** |
 
 ---
 
@@ -57,7 +57,7 @@ APB-IA-FRAMEWORK/
 ├── workflows/                  # 17 workflows
 ├── skills/
 │   ├── apb-owned/             # 175 skills
-│   └── third-party/           # 51 skills
+│   └── third-party/           # 52 skills
 ├── providers/                  # 19 providers
 ├── wrappers/                   # 7 wrappers
 ├── adapters/                   # 4 adaptadores
