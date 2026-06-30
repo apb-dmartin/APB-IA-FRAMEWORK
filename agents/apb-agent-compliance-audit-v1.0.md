@@ -6,7 +6,7 @@ version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
-autonomy_level: 2
+autonomy_level: 1
 skills:
   - "apb-gov-org-risk-report-v1.0"
   - "apb-gov-policy-check-v1.0"

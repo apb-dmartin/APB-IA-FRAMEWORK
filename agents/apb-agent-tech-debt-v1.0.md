@@ -6,7 +6,7 @@ version: "1.0.0"
 status: "draft"
 owner: "Plataforma APB <arquitectura@portdebarcelona.cat>"
 domain: "operation"
-autonomy_level: 2
+autonomy_level: 1
 skills:
   - "apb-ops-dependency-audit-v1.0"
   - "apb-ops-perf-bottleneck-v1.0"
