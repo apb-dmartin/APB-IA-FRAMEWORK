@@ -12,6 +12,14 @@ skills:
   - "apb-ops-incident-diagnose-v1.0"
   - "apb-ops-incident-escalate-v1.0"
   - "apb-plat-ms-notify-v1.0"
+subagents:
+  - "apb-sub-ops-aca-v1.0"
+  - "apb-sub-ops-iis-apache-v1.0"
+  - "apb-sub-ops-k8s-v1.0"
+  - "apb-sub-ops-network-v1.0"
+  - "apb-sub-ops-oracle-v1.0"
+  - "apb-sub-ops-rancher-v1.0"
+  - "apb-sub-ops-servicebus-v1.0"
 runtime:
   - "copilot"
   - "claude"

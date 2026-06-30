@@ -1755,10 +1755,38 @@ Los siguientes agentes tienen gaps de calidad o contenido que requieren actualiz
 
 ---
 
-## Análisis 360° y reconciliación de estado — 2026-06-29 (post-Enriquecimiento B)
+## Análisis 360° y reconciliación de estado — 2026-06-29 (post-Enriquecimiento B, revisión exhaustiva)
 
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.
-> **Commit base:** `384f9d1`. **Método:** barrido estructural del 100% de los 341 componentes
+> **Commit base:** `bf1c72a` (local). **Método:** lectura completa del repositorio con 3 agentes
+> paralelos: plan de fases (1881 líneas íntegras), los 35 agentes, los 33 subagentes, muestra de
+> las 175 skills APB, las 51 skills de terceros, los 17 workflows, los 19 providers, scripts y
+> docs clave (SYSTEM.md, GOVERNANCE.md, manual-arquitectura.md, SCHEMA.md, templates). Auditoría
+> exhaustiva, no parcial.
+
+> **⚠️ Nota de sesión:** Durante la sesión de análisis se aplicó un fix de wiring en
+> `apb-agent-incident-support-v1.0.md` (añadidos 7 subagentes que estaban declarando este padre
+> pero no estaban listados en él). El resto del wiring y los cambios al validador se realizarán
+> en la próxima sesión.
+
+---
+
+### Conformidad estructural real por tipo de componente
+
+| Tipo | Total | Conformes | % | Observación |
+|------|-------|-----------|---|-------------|
+| Skills APB | 175 | 175 | 100% | ✅ Todas con frontmatter, "Comportamiento", "Marcado IA" |
+| Providers | 19 | 19 | 100% | ✅ |
+| Wrappers | 7 | 7 | 100% | ✅ |
+| Adapters | 4 | 4 | 100% | ✅ |
+| Skills terceros | 51 | 51* | 100%* | *`source_commit: "unverified"` en todas — política GOVERNANCE §4.2, exento en CI, pero deuda real de supply-chain |
+| Agentes | 35 | Por verificar | — | Requiere ejecutar `validate_repo.py --strict 2>&1 \| grep -i "Marcado IA"` para confirmar si el check produce ERROR o WARNING |
+| Subagentes | 33 | Por verificar | — | Ídem para "Prompt de Sistema" |
+| Workflows | 17 | Por verificar | — | Ídem para "Manejo de Fallos" |
+
+---
+
+### A. Estado real reconciliado (el plan documentado va por detrás del repo)
 > (`validate_repo.py --strict` + grep/conteo sobre frontmatter de huérfanos, estados, autonomía,
 > marcado IA, system prompts, duplicados) + lectura íntegra de los documentos meta (`SYSTEM.md`,
 > `GOVERNANCE.md`, `docs/manual-arquitectura.md`, este plan completo y
@@ -1771,110 +1799,312 @@ Los siguientes agentes tienen gaps de calidad o contenido que requieren actualiz
 |---|---|---|
 | Enriquecimiento A (rewirings #55 + sec/gov/ops + 3 agentes + 5 subagentes) | ✅ Completado | ✅ Confirmado |
 | Enriquecimiento B (32 skills + 4 agentes + 5 subagentes) | ✅ Componentes creados | ⚠️ **Creados pero NO cableados a sus "Agentes destino"** (los puntos #60–72 sí los especificaban) |
-| Enriquecimiento C (5 providers + 9 workflows) | Sin marca | ✅ **Componentes creados** (19 providers, 17 workflows coinciden con lo propuesto) — ⚠️ pero faltan las "mejoras de workflows existentes" del #74 |
-| Revisión 2026-06-29: 26 agentes sin Marcado IA / 19 subagentes sin prompt / bug validador L346 | 🔴 Pendiente | ✅ **Ya resueltos** (35/35 marcado, 33/33 prompt, validador L348-349 corregido) |
+| Enriquecimiento C (5 providers + 9 workflows) | Sin marca | ✅ **Componentes creados** (19 providers, 17 workflows) — ⚠️ faltan mejoras de workflows existentes del #74 |
+| Revisión 2026-06-29: 26 agentes sin Marcado IA / 19 subagentes sin prompt / bug validador | 🔴 Pendiente | ✅ **Ya resueltos** (35/35 marcado, 33/33 prompt, validador corregido) |
 | Backlog M1–M6 | Mezcla | ✅ Resuelto |
+| `README.md` → enlace `CATALOG.md` (raíz) | — | ❌ **Roto**: el catálogo está en `catalog/CATALOG.md`, no en raíz |
+| `domain-catalog/domains/` | — | ❌ **Solo `.gitkeep`**: catálogo vacío, prerequisito crítico para DDD |
 
 > **Conclusión de gobernanza:** falta un mecanismo que reconcilie "plan ↔ repo". Varias cosas marcadas
-> como pendientes ya están hechas, y al revés (el wiring de B figura implícito en el plan pero no se hizo).
+> como pendientes ya están hechas, y al revés (el wiring de B figura implícito en el plan pero no se ejecutó).
 
-### B. Evolución del framework por ámbito
+---
 
-- **Técnica:** de prompts sueltos → jerarquía de 7 niveles + validador extensible (checks #1–#19) +
-  catálogo autogenerado + CI bloqueante. Madurez alta en *forma*. Deuda: ejecución de workflows es
-  **manual** (sin runtime de orquestación), sin memoria compartida.
-- **Funcional:** discovery/spec → DDD con catálogo de dominios (Sesión 18, repo `APB-DOMAIN-CATALOG`) →
-  entrevista portuaria contextualizada (`apb-sub-ddd-interview` v1.3). Pendiente: **Fase 1 de
-  descomposición de monolitos (#38)** y **spec desde histórico Jira (#37)** — el catálogo de dominios
-  existe pero está **vacío** (bloquea consistencia DDD entre proyectos).
-- **QA:** skills básicas → Sesión QA (4 fusiones, deprecación de `apb-ai-skills`) → Q1–Q5 (edge cases en
-  ~140 skills, manejo de fallos en 17 workflows, "Comportamiento ante inputs incompletos" como check
-  obligatorio #14, piloto de test de comportamiento `tests/test_agent_behavior.md`). Madurez creciente.
-  Pendiente: **tests de comportamiento reales (#50/#51)** — hoy solo se valida estructura, no "prompt X
-  → output Y".
-- **Seguridad:** núcleo OWASP/ENS/STRIDE → Enriquecimiento A añadió SAST/DAST/supply-chain/patch +
-  diferenciación STRIDE vs ISO 27005 (M3). Pendiente: visto bueno de Ciber a subagentes sensibles
-  (`sec-sast`, `ops-entra`), y `prov-sentinel`/`prov-entra-id` para cerrar la cadena de identidad/SIEM.
-- **Gobernanza:** la dimensión que más ha madurado — política §7.2 (origen IA + validador humano),
-  marcado IA retroactivo a 129 skills (#43), checks preventivos en validador y plantillas. Deuda:
-  **89% en `draft` (306/343), 0 ciclos de aprobación formal**, target `<30%` incumplido; y **ningún
-  componente nuevo tiene validador humano nombrado** → ninguno puede ser `approved`.
-- **Mantenimiento:** plantilla `SUBAGENT.md` corregida esta sesión; **`AGENT.md` sigue desactualizada
-  (#44)**; falta reconciliación plan↔repo y telemetría instrumentada.
+### B. Wiring incompleto — 12 inconsistencias confirmadas (revisión agente por agente)
 
-### C. Hallazgos cuantificados (barrido del 100%)
+Subagentes que declaran `parent_agent` pero el agente padre NO los lista en `subagents:`. Verificado
+leyendo el frontmatter de los 35 agentes y los 33 subagentes:
 
-| Hallazgo | Cifra | Detalle |
-|---|---|---|
-| Skills APB huérfanas (sin agente/subagente que las liste) | **25 / 175** | 16 de Enriq. B + 9 previas: `apb-orch-context-handoff`, `apb-orch-human-checkpoint`, `apb-design-wcag`, `apb-ops-capacity-planning`, `apb-ops-service-continuity`, `apb-plat-mcp-building`, `apb-dev-api-design`, `apb-qa-validation-e2e` |
-| Subagentes huérfanos (padre no los declara) | **9 / 33** | B: gov-data, qa-performance, sec-sast, ops-entra · previos: finops-azure, ops-aca, ops-k8s, ops-rancher, ops-servicebus |
-| Componentes en `draft` | 306 / 343 | 36 `approved`, 1 `discovered` |
-| Posibles duplicados/solapamientos | 3 grupos | `apb-design-wcag` vs `apb-design-wcag-patterns`; `apb-arch-api-contract`/`api-lifecycle`/`apb-dev-api-design`; `apb-qa-validation-e2e` vs subagente `apb-sub-qa-e2e` |
-| Validador: detecta huérfanos | No | `validate_agent_subagent_consistency` es unidireccional → permite huérfanos sin fallar |
+| Subagente | Padre declarado | Estado en padre |
+|-----------|----------------|-----------------|
+| `apb-sub-ops-aca-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-iis-apache-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-k8s-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-network-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-oracle-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-rancher-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-servicebus-v1.0` | `apb-agent-incident-support-v1.0` | ✅ **FIJADO** (sesión 2026-06-29) |
+| `apb-sub-ops-entra-v1.0` | `apb-agent-security-architect-v1.0` | ⏳ Pendiente próxima sesión |
+| `apb-sub-sec-sast-v1.0` | `apb-agent-security-architect-v1.0` | ⏳ Pendiente próxima sesión |
+| `apb-sub-qa-performance-v1.0` | `apb-agent-qa-auto-v1.0` | ⏳ Pendiente próxima sesión |
+| `apb-sub-finops-azure-v1.0` | `apb-agent-finops-v1.0` | ⏳ Pendiente próxima sesión |
+| `apb-sub-gov-data-v1.0` | `apb-agent-data-governance-v1.0` | ⏳ Pendiente próxima sesión |
 
-### D. Gaps estructurales de evolución (de `manual-arquitectura.md` §2, vigentes)
+**Causa raíz:** `validate_agent_subagent_consistency` en el validador verifica solo que el `parent_agent`
+referenciado **exista**, no que el agente lo **liste** en `subagents:`. Es validación unidireccional.
+**Fix planificado:** función `validate_bidirectional_wiring()` en próxima sesión + test nº 24.
 
-| # | Gap | Criticidad | Desbloqueo |
-|---|-----|-----------|-----------|
-| 2.1 | Sin runtime de orquestación real (workflows = pasos manuales) | 🔴 | Azure AI Foundry + Semantic Kernel (puente: runbooks). Punto #41 |
-| 2.2 | Sin memoria compartida entre agentes/sesiones | 🔴 | Redis + Cosmos DB + Git |
-| 2.3 | Telemetría declarativa, no instrumentada → KPIs sin datos | 🟠 | Instrumentar en runtime; telemetría de chat sin commit (#46) |
-| 2.4 | Sin retry/manejo de fallos programático | 🟠 | Definir con el runtime |
-| 2.5 | Catálogo de dominios APB **vacío** | 🟠 | **Requiere listado de APIs de Débora** (#38 F0 hecho, F1 pendiente) |
-| 2.6 | 89% en draft, 0 aprobaciones | 🟡 | Plan de aprobación + aprobadores (#51 prueba real → valida) |
-| 2.7 | Capa Capability no implementada | 🟡 | Afecta discoverability para negocio |
-| 2.8 | Integraciones M365/Teams/SharePoint/mail sin activar | 🟡 | Handoff Sesión 15; providers Teams/SharePoint/mail |
-| 2.9 | Plantilla `AGENT.md` desactualizada | 🟢 | Corrección trivial (#44) |
+---
 
-### E. Skills / componentes de TERCEROS a evaluar (no todo debe construirse)
+### C. Mapeo de skills de Enriq. B pendientes de cablear (por agente destino)
 
-Para varios gaps conviene **incorporar** en lugar de construir. Todos requieren el proceso estándar
-(licencia + análisis de seguridad + `source_commit` real). Candidatos:
+Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero aún no están en la lista
+`skills:` de los agentes que deben usarlas. Pendiente de wiring en próxima sesión:
 
-| Gap / necesidad | Tercero candidato | Nota |
-|---|---|---|
-| Runtime de orquestación (2.1) | **Microsoft Semantic Kernel** / Azure AI Foundry Agent Service | Ya recomendado en `manual-arquitectura.md §3.1`; encaja con stack Azure/M365 |
-| Memoria de agentes (2.2) | `context7` (gestor de contexto/documentación para LLM) | Mencionado en #27, **nunca evaluado** |
-| Debugging sistemático | **`obra/superpowers` → "systematic debugging"** | Repo ya parcialmente incorporado; falta esta skill concreta (#27) |
-| Cobertura dev/arquitectura | **`mattpocock/*` resto del monorepo** (~19 de 21 sin cubrir) | Solo 2 incorporadas; revisar el resto (#27) |
-| Diagramación arquitectura | `excalidraw` (MCP/herramienta, no skill) | Mencionado en #27; complementaría `apb-arch-c4-model` |
-| Terceros §8 abiertos + `_spec-driven` | 3 skills `spec-to-*` de `apb-ai-skills` | Sesión 19 + #45 — sin decisión de fusión |
+| Agente destino | Skills a añadir |
+|----------------|-----------------|
+| `apb-agent-data-governance-v1.0` | `apb-gov-data-classification-v1.0`, `apb-gov-dpia-v1.0` |
+| `apb-agent-governance-v1.0` | `apb-gov-data-classification-v1.0`, `apb-gov-ai-model-lifecycle-v1.0`, `apb-gov-tech-radar-v1.0`, `apb-gov-framework-metrics-v1.0`, `apb-gov-framework-audit-v1.0` |
+| `apb-agent-compliance-audit-v1.0` | `apb-gov-lcsp-check-v1.0`, `apb-gov-dpia-v1.0` |
+| `apb-agent-vendor-manager-v1.0` | `apb-gov-lcsp-check-v1.0`, `apb-gov-vendor-eval-v1.0` |
+| `apb-agent-catalog-manager-v1.0` | `apb-gov-framework-metrics-v1.0`, `apb-gov-framework-audit-v1.0` |
+| `apb-agent-tech-discovery-v1.0` | `apb-gov-tech-radar-v1.0`, `apb-disc-tech-eval-v1.0`, `apb-disc-poc-guide-v1.0` |
+| `apb-agent-finops-v1.0` | `apb-plat-finops-alerting-v1.0`, `apb-plat-finops-chargeback-v1.0`, `apb-plat-finops-reservations-v1.0` |
+| `apb-agent-platform-engineer-v1.0` | `apb-plat-k8s-v1.0`, `apb-plat-azure-servicebus-v1.0`, `apb-plat-secret-rotation-v1.0`, `apb-plat-environment-promotion-v1.0` |
+| `apb-agent-cloud-architect-v1.0` | `apb-plat-k8s-v1.0`, `apb-plat-azure-servicebus-v1.0` |
+| `apb-agent-release-manager-v1.0` | `apb-plat-environment-promotion-v1.0`, `apb-doc-changelog-v1.0`, `apb-doc-release-notes-v1.0` |
+| `apb-agent-qa-auto-v1.0` | `apb-qa-performance-v1.0`, `apb-qa-contract-testing-v1.0`, `apb-qa-accessibility-v1.0` |
+| `apb-agent-accessibility-auditor-v1.0` | `apb-qa-accessibility-v1.0` |
+| `apb-agent-ux-mockup-v1.0` | `apb-qa-accessibility-v1.0`, `apb-design-wcag-patterns-v1.0` |
+| `apb-agent-documentation-v1.0` | `apb-doc-changelog-v1.0`, `apb-doc-release-notes-v1.0`, `apb-doc-onboarding-v1.0` |
+| `apb-agent-knowledge-manager-v1.0` | `apb-doc-onboarding-v1.0` |
+| `apb-agent-sre-v1.0` | `apb-doc-post-mortem-v1.0` |
+| `apb-agent-technical-architect-v1.0` | `apb-arch-c4-model-v1.0`, `apb-arch-context-mapping-v1.0` |
+| `apb-agent-domain-architect-v1.0` | `apb-arch-context-mapping-v1.0` |
+| `apb-agent-api-product-manager-v1.0` | `apb-arch-api-lifecycle-v1.0` |
+| `apb-agent-business-analyst-v1.0` | `apb-disc-user-journey-v1.0`, `apb-disc-value-stream-v1.0`, `apb-pm-risk-register-v1.0`, `apb-pm-stakeholder-map-v1.0` |
+| `apb-agent-pm-v1.0` | `apb-pm-risk-register-v1.0`, `apb-pm-status-report-v1.0`, `apb-pm-stakeholder-map-v1.0` |
 
-> Acción: tratar esto en la **Sesión 19** (terceros), aportando Débora las URLs exactas que falten.
+---
 
-### F. Temas futuros planificados — consolidado (para que no se pierdan)
+### D. Evolución del framework por ámbito (análisis 360°)
+
+#### D.1 Técnico
+- **Trayectoria:** prompts sueltos → jerarquía 7 niveles + validador 19 checks + catálogo autogenerado
+  + CI bloqueante + 23 tests de dogfooding. Madurez alta en *forma estructural*.
+- **Brechas críticas:**
+  - Sin **runtime de orquestación real**: workflows son instrucciones manuales. `invoke_agent.py`
+    es un esqueleto. Manual-arquitectura §3.1 recomienda **Azure AI Foundry + Semantic Kernel**.
+  - Sin **memoria compartida** inter-sesiones: Redis (short-term) + Cosmos DB (state) + Git (long-term).
+  - **Wiring unidireccional** en validador: no detecta subagentes/skills huérfanos.
+  - **Encoding Windows**: fix ya aplicado en `bf1c72a` (`sys.stdout.reconfigure(encoding="utf-8")`).
+  - `README.md` → enlace roto a `CATALOG.md` (raíz no existe; está en `catalog/CATALOG.md`).
+- **Mejoras a implementar (próxima sesión):**
+  1. `validate_bidirectional_wiring()` en validador con test
+  2. Fix enlace README
+  3. Verificar si checks de agentes/subagentes/workflows producen ERROR o WARNING en validador actual
+
+#### D.2 Funcional (cobertura de dominios IT)
+
+| Área | Nivel | Gap |
+|------|-------|-----|
+| SDD / Especificación | ✅ Sólida | — |
+| Desarrollo .NET/Django | ✅ Sólida | — |
+| Code Review | ✅ Buena | — |
+| QA Automatizado | ✅ Buena (caveat) | `qa-performance` no declarado en padre (fix pendiente) |
+| Arquitectura / DDD | ✅ Sólida | Domain Catalog vacío bloquea DDD real |
+| Seguridad | ✅ Buena | `entra`/`sast` no declarados; sin DAST wrapper propio |
+| Gobernanza | ✅ Muy buena | 0 aprobaciones; ningún validador humano nombrado |
+| DevOps / Plataforma | 🟡 Media | Wiring de 4 platform skills pendiente |
+| Operaciones L1 | ✅ Buena | 7 subagentes ya fijados en incident-support |
+| SRE / Observabilidad | ✅ Buena | — |
+| FinOps | 🟡 Media | 3 skills + 1 subagente pendientes de cablear |
+| Change / Problem Mgmt | 🟡 Media | Agentes existen; skills de wiring pendiente |
+| PM / Discovery | 🟡 Limitada | Skills Enriq. B no cableadas a BA/PM/TechDiscovery |
+| WCAG / Accesibilidad | 🟡 Nueva | accessibility-auditor nuevo; wiring pendiente |
+| LCSP / Licitación | ❌ Pendiente | Bloqueado: briefing de Débora |
+| Descomposición monolitos | ❌ Pendiente | Bloqueado: Domain Catalog poblado |
+| M365 / Teams / SharePoint | ❌ Pendiente | Adapters existen; integración real pendiente |
+
+#### D.3 QA del framework
+- **Validación solo estructural** (forma del componente), NO funcional (comportamiento).
+- `tests/test_agent_behavior.md` existe como piloto pero no está automatizado.
+- Sin tests de regresión de contenido: si una skill cambia instrucción, el validador no lo detecta.
+- **Madurez QA propuesta:**
+  - Tier 1 (inmediato): check anti-huérfanos automático (test nº 24)
+  - Tier 2 (próximas sesiones): Golden Output Tests para 5 skills críticas
+  - Tier 3 (mediano plazo): integration tests con LLM mock para agentes
+
+#### D.4 Seguridad
+- `apb-sub-sec-sast-v1.0` y `apb-sub-ops-entra-v1.0`: pendientes de **visto bueno de Ciberseguridad** antes de uso.
+- 51 skills terceros sin SHA fijado: **deuda de supply-chain** (política temporal deliberada).
+- `prov-sentinel-v1.0` y `prov-entra-id-v1.0`: providers presentes sin integración confirmada.
+- Gap: sin **DAST wrapper** propio (OWASP ZAP / Trivy) para seguridad ofensiva.
+
+#### D.5 Gobernanza
+- GOVERNANCE.md, SYSTEM.md §7.2, estados de componentes: marco bien definido.
+- **Brecha crítica: 341/341 en `draft`** (KPI objetivo: <30%). 0 ciclos de aprobación iniciados.
+- Ningún componente tiene `validador humano nombrado` → ninguno puede pasar a `approved`.
+- Telemetría: scripts `emit_telemetry.py` e `invoke_agent.py` presentes como esqueletos. Los 5 KPIs
+  de GOVERNANCE §6 son **imposibles de medir** sin datos reales.
+- Plan ↔ repo desincronizado: necesita proceso de reconciliación tras cada sesión.
+
+#### D.6 Mantenimiento futuro
+- Sin check anti-huérfanos → cada sesión de enriquecimiento puede añadir deuda silenciosa.
+- Sin telemetría real → componentes en desuso no detectables.
+- Ciclo revisión semestral (`review_date:` vencido) → sin automatización de avisos.
+- Templates actualizadas (29-Jun). Todos los tipos de componentes con plantilla válida.
+
+---
+
+### E. Riesgos de cara a producción
+
+| # | Riesgo | Sev. | Mitigación |
+|---|--------|------|-----------|
+| R1 | Sin runtime de orquestación: workflows manuales no escalables | 🔴 | Decisión runtime + `prov-orchestration-engine-v1.0` |
+| R2 | 5 subagentes no declarados → capacidades invisibles a sus agentes | 🔴 | Wiring en próxima sesión (4 pendientes) |
+| R3 | 100% draft: sin ningún componente aprobado formalmente | 🔴 | Primer ciclo aprobación |
+| R4 | Domain Catalog vacío → DDD/monolitos bloqueados | 🔴 | Listado de APIs (Débora) |
+| R5 | Wiring skills Enriq. B: capacidades funcionales no invocables desde agentes | 🟡 | Mapeo §C, próxima sesión |
+| R6 | Sin memoria compartida → contexto perdido inter-sesiones | 🟡 | Redis + Cosmos DB (cuando runtime listo) |
+| R7 | Telemetría no instrumentada → KPIs imposibles de medir | 🟡 | Instrumentar `invoke_agent.py` |
+| R8 | 51 skills terceros sin SHA fijado | 🟡 | Política temporal; fijar con acceso de red |
+| R9 | SAST/Entra sin validación Ciberseguridad | 🟡 | Revisión Ciber antes de uso |
+| R10 | Sin DAST wrapper → gap de seguridad ofensiva | 🟡 | OWASP ZAP o Trivy wrapper |
+| R11 | Plan ↔ repo desincronizado | 🟡 | Actualizar plan tras cada sesión |
+| R12 | README → enlace roto a CATALOG.md | 🟢 | Fix trivial en próxima sesión |
+
+---
+
+### F. Skills / componentes de TERCEROS a evaluar
+
+Para varios gaps conviene **incorporar** en lugar de construir desde cero. Proceso estándar:
+licencia + análisis de seguridad + `source_commit` SHA real.
+
+| Gap / necesidad | Tercero candidato | Prioridad | Nota |
+|---|---|---|---|
+| Runtime de orquestación | **Microsoft Semantic Kernel** / Azure AI Foundry | 🔴 | Ya recomendado en `manual-arquitectura.md §3.1` |
+| Telemetría automática | **OpenTelemetry Python** | 🔴 | Para instrumentar `invoke_agent.py` |
+| Developer Portal / discoverability | **Backstage** (Spotify) | 🟡 | Catálogo de servicios + componentes APB |
+| DAST / seguridad ofensiva | **OWASP ZAP** / Trivy | 🟡 | Gap de cobertura en seguridad |
+| Contexto enriquecido para LLM | **`context7`** | 🟡 | Mencionado en #27, **nunca evaluado** |
+| Debugging sistemático | **`obra/superpowers` → systematic debugging** | 🟡 | Repo parcialmente incorporado; falta esta skill (#27) |
+| Dev / arquitectura TypeScript | **`mattpocock/*` resto del monorepo** | 🟡 | Solo 2 de ~21 incorporadas (#27) |
+| Diagramación arquitectura | `excalidraw` (MCP) | 🟢 | Complementaría `apb-arch-c4-model` (#27) |
+| Terraform governance | Ampliar `hashicorp` existente | 🟢 | Ya 2 skills; ampliar a modules y workspaces |
+| `_spec-driven` skills + terceros abiertos §8 | 3 skills `spec-to-*` de `apb-ai-skills` | 🟢 | Sesión 19 + #45 |
+
+> Acción: **Sesión 19** (terceros), aportando Débora las URLs exactas que falten.
+
+---
+
+### G. Temas futuros planificados — consolidado
 
 | Tema | Punto | Estado / bloqueante |
 |---|---|---|
 | **Valoración COSMIC con histórico real** | #8 | `apb-disc-cosmic-v1.0` existe; **bloqueado: horas históricas de Débora** |
 | Agentes de licitación LCSP | #36/Sesión 20 | **Bloqueado: briefing de Débora** |
-| Descomposición de monolitos (Fase 1) | #38 F1 | Bloqueado: catálogo de dominios poblado (necesita APIs) |
+| Descomposición de monolitos (Fase 1) | #38 F1 | Bloqueado: catálogo de dominios poblado |
 | Spec desde histórico Jira | #37 | Sin sesión asignada |
-| Dashboards Power BI/Grafana/Prometheus + logs | #39/#40 | Parcial (Sesión 17); falta agente dedicado |
+| Runtime de orquestación real | #41 | **Bloqueado: decisión arquitectónica Débora/Plataforma** |
+| Dashboards Power BI/Grafana + logs | #39/#40 | Parcial (Sesión 17); falta agente dedicado |
 | Telemetría para usuarios de chat sin commit | #46 | Requiere proxy/wrapper de plataforma |
 | Distribución Design System (npm/submodule/CDN) | #49/Sesión 22 | **Bloqueado: decisión de Débora** |
-| QA del propio framework + prueba real de agentes | #50/#51 | Alimenta paso a `approved` |
-| Documentación Word por audiencias + doc Dirección | #23/Sesión 14 | Parcial: borradores MD; falta .docx + Dirección |
+| QA del propio framework + prueba real agentes | #50/#51 | Alimenta paso a `approved` |
+| Documentación Word por audiencias + doc Dirección | #23/Sesión 14 | Parcial: borradores MD; falta .docx |
 | Plantillas Word/Excel ofimáticas | #6 | Bloqueado: ejemplos de Débora |
 | Email Arquitectura → cola Jira | #52 | Bloqueado: dirección de Débora |
 | Mockup validación Design System | #53 | Tras #49 |
-| Capacity Planner / Portfolio IT (estratégicos) | #64 | Diferidos: necesitan ≥meses de datos reales |
+| Capacity Planner / Portfolio IT | #64 | Diferidos: ≥12 meses de datos reales en Azure |
+| Memoria compartida agentes | (nuevo) | Tras decisión runtime |
+| Primer ciclo aprobación formal | GOVERNANCE §2 | Requires: aprobadores nombrados por ámbito |
 
-### G. Siguientes fases — orden de ejecución recomendado
+---
 
-**Fase 0 — Higiene de wiring (costo casi cero, alto impacto):**
-1. Cablear las 16 skills + 4 subagentes de Enriq. B a sus "Agentes destino" (#60–72 ya los especifican).
-2. Cablear los 9 huérfanos previos (orch, design-wcag, ops-capacity/continuity, finops-azure, ops-k8s/aca/rancher/servicebus, etc.).
-3. Resolver los 3 grupos de duplicados (fusionar o diferenciar en el documento).
-4. **Endurecer el validador:** check anti-huérfanos (warning) + fix encoding Windows + la mejora de salida ya hecha. Con test (20/20).
-5. Plantilla `AGENT.md` (#44).
+### H. Siguientes fases — orden de ejecución recomendado
 
-**Fase 1 — Cerrar Enriquecimiento C (mejoras de workflows existentes, #74 nota):**
-6. Añadir Change Manager a `sdd-full`/`cloud-migration`; Security Architect a `code-review`; conectar `incident-l1`→`incident-l2`; etc.
+#### FASE 0 — Higiene de wiring + validador (próxima sesión, costo casi cero, impacto máximo)
 
-**Fase 2 — Sesiones del plan abiertas:** Sesión 13 resto (#6,#8 COSMIC,#52), Sesión 14 (.docx+Dirección), Sesión 19 (terceros), Sesión 20 (LCSP), Sesión 22 (#49 distribución DS), #38 F1, #50/#51 (QA framework).
+1. **Fix README.md**: cambiar `CATALOG.md` → `catalog/CATALOG.md`.
+2. **Wiring subagentes** (4 pendientes): añadir a `security-architect` los subagentes `entra` y `sast`;
+   a `qa-auto` el subagente `performance`; a `finops` el subagente `finops-azure`; a `data-governance`
+   el subagente `gov-data`.
+3. **Wiring skills Enriq. B** (ver tabla §C): editar frontmatter `skills:` de los agentes destino.
+4. **Check anti-huérfanos en validador** (`validate_bidirectional_wiring()`): warning si subagente
+   tiene `parent_agent` pero padre no lo lista; warning si skill APB tiene `consumed_by` pero agente
+   no la lista. Añadir test nº 24.
+5. **Verificar conformidad** de secciones en agentes/subagentes/workflows con el validador actual.
+6. Regenerar catálogo (`generate_catalog.py`), validar (`--strict`), y ejecutar tests. **Criterio
+   canónico: exit 0**, no el conteo de errores.
+7. Commit + push a GitHub.
 
-**Fase 3 — Evolución estructural (estratégico):** runtime de orquestación (2.1) + memoria (2.2) + retry (2.4); catálogo de dominios poblado (2.5); telemetría instrumentada (2.3) → Power BI; **primer ciclo de aprobación formal** (2.6).
+> **Recordatorio obligatorio al final de TODA sesión:** ejecutar siempre
+> `python scripts/generate_catalog.py` + `python scripts/validate_repo.py --strict` antes del commit.
 
-### H. Decisiones y tareas humanas
-Resumen en la tabla F (bloqueantes de Débora) y detalle por equipo en `docs/HANDOFF_ENRIQUECIMIENTO_B.md`.
+#### FASE 1 — Mejoras de workflows existentes (#74)
+
+8. Añadir Change Manager a `sdd-full` y `cloud-migration`.
+9. Añadir Security Architect a `code-review` (PRs con cambios en auth/datos sensibles).
+10. Conectar `incident-l1` → `incident-l2` workflow.
+11. Añadir Problem Manager a `incident-l1` para incidencias recurrentes.
+12. Añadir Tech Debt a `legacy-onboarding`.
+13. Añadir performance y accessibility a `qa-evidence`.
+
+#### FASE 2 — Sesiones abiertas del plan
+
+14. **Sesión 13** resto: puntos #6 (plantillas Word), #8 (COSMIC—bloqueado), #52 (email Jira).
+15. **Sesión 14**: conversión .docx (borradores MD listos) + documento Dirección.
+16. **Sesión 19**: terceros adicionales + decisión `_spec-driven` (bloqueado: URLs de Débora).
+17. **Sesión 20**: agentes LCSP (bloqueado: briefing de Débora).
+18. **Sesión 21**: SQL skills + soporte incidencias generalista (sin bloqueo).
+19. **Sesión 22**: Design System distribución (bloqueado: decisión de Débora).
+20. **#50/#51**: QA del framework + prueba real de agentes → alimenta primer `approved`.
+
+#### FASE 3 — Evolución estratégica (a 1–12 meses)
+
+21. **Domain Catalog** poblar `domain-catalog/domains/` (bloqueado: listado APIs de Débora).
+22. **Runtime de orquestación** (decisión + `prov-orchestration-engine-v1.0` + Semantic Kernel).
+23. **Memoria compartida** (`prov-agent-memory-v1.0`: Redis + Cosmos DB + Git).
+24. **Telemetría automática**: instrumentar `invoke_agent.py` con OpenTelemetry → dashboard Power BI.
+25. **Primer ciclo de aprobación formal**: seleccionar 10 componentes core, asignar aprobadores
+    (2 por componente, ámbitos distintos), llevar a `approved`. KPI: <30% en draft.
+26. **Fase 1 descomposición monolitos** (bloqueado hasta Domain Catalog poblado).
+
+---
+
+### I. Decisiones pendientes por persona/equipo
+
+#### Bloqueos de Débora / Dirección
+
+| Decisión | Desbloquea | Urgencia |
+|----------|-----------|---------|
+| Listado de APIs/sistemas APB | Domain Catalog, DDD, descomposición monolitos | 🔴 |
+| Decisión runtime orquestación (Azure AI Foundry vs. Anthropic SDK) | Fase 3 §H-22 | 🟡 Mes 1 |
+| Mecanismo distribución Design System | Sesión 22 | 🟡 Mes 1 |
+| Ejemplos Word/Excel + mapa agentes↔Jira | Sesión 14, punto #6 | 🟡 Mes 1 |
+| Horas históricas reales para COSMIC | Calibración `apb-disc-cosmic-v1.0` (#8) | 🟡 Mes 2 |
+| Briefing LCSP | Sesión 20 (agentes licitación) | 🟡 Mes 2 |
+| Qué componentes aprobar primero + aprobadores por ámbito | Primer ciclo gobernanza | 🟡 Mes 1 |
+| Esbozo informe riesgos IA organizativo | Sesión 16 | 🟢 Mes 2-3 |
+| URLs de repos de terceros adicionales | Sesión 19 | 🟢 Mes 2-3 |
+| Email/cola Jira de Arquitectura | Toda la documentación (#52) | 🟢 |
+
+#### Equipos (tareas técnicas)
+
+| Equipo | Qué validar / hacer | Entregable |
+|--------|---------------------|-----------|
+| **Arquitectura APB** | Revisar y aprobar (draft→candidate) los 4 agentes y skills arch/disc/governance nuevos; validar wiring §C; decidir destino skills PM; resolver 3 grupos de duplicados; liderar primer ciclo aprobación; decidir runtime con Plataforma | Componentes con `approved_by:` nombrado |
+| **Plataforma / Cloud** | Validar skills K8s/AKS, ServiceBus, secret-rotation, environment-promotion y FinOps contra stack Azure real (naming, tiers, subscriptions); activar M365 integrations (HANDOFF_SESION15); co-decidir runtime; implementar Redis+Cosmos cuando runtime decidido | Validación técnica + pipeline parametrizable |
+| **Operaciones / SRE** | Validar subagente Entra ID; confirmar umbrales/SLOs reales en skills observabilidad/post-mortem/capacity; preparar runbooks puente mientras no hay orquestación; integrar `emit_telemetry.py` con Azure Monitor | SLOs reales + runbooks operativos |
+| **Ciberseguridad** | Revisar y aprobar `apb-sub-sec-sast-v1.0` y `apb-sub-ops-entra-v1.0` antes de uso; validar 51 exenciones `source_commit`; proponer proceso para fijar SHAs; evaluar necesidad de DAST wrapper | Aprobación seguridad documentada |
+| **DPO / Protección de datos** | Validar `apb-gov-dpia-v1.0`, `apb-gov-data-classification-v1.0`, `apb-sub-gov-data-v1.0` contra criterio AEPD (RGPD art. 30/35, ENS) | Confirmación encaje normativo |
+| **QA** | Definir Golden Output Tests para 5 skills críticas; extender `test_agent_behavior.md` a automatizados; definir umbrales k6 reales para tests de performance | Estrategia test comportamiento |
+| **Negocio / PM** | Validar 5 skills PM nuevas (user-journey, value-stream, risk-register, status-report, stakeholder-map); confirmar agente destino (PM vs. BA); confirmar qué perfiles las usarán | Validación utilidad funcional |
+| **Gobernanza del catálogo** | Registrar validador humano por componente cuando inicie ciclo aprobación; diseñar proceso draft→candidate→approved; planificar telemetría KPIs; mantener reconciliación plan↔repo | Owner por componente + plan métricas |
+
+---
+
+### J. Verificación end-to-end (al final de CADA sesión — obligatorio)
+
+```bash
+# 1. Catálogo actualizado
+python scripts/generate_catalog.py
+
+# 2. Validación estricta — criterio canónico: exit 0 (NO el conteo de errores)
+PYTHONIOENCODING=utf-8 python scripts/validate_repo.py --strict
+
+# 3. Tests completos
+python -m unittest tests.test_validate_repo -v
+# → 23/23 actuales; 24/24 tras añadir test bidireccional
+
+# 4. Verificación de wirings aplicados (ejemplo)
+grep -A30 "^subagents:" agents/apb-agent-incident-support-v1.0.md
+grep -A5 "^subagents:" agents/apb-agent-security-architect-v1.0.md
+
+# 5. Fix README verificado
+grep "CATALOG.md" README.md
+# debe mostrar solo "catalog/CATALOG.md", nunca "CATALOG.md" sin prefijo
+```
+
+> **Referencia:** `docs/HANDOFF_ENRIQUECIMIENTO_B.md` contiene el detalle por equipo y las
+> 8 decisiones bloqueantes de Débora/Dirección.
