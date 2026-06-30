@@ -40,6 +40,8 @@
 | 34 (validación QA en flujos de despliegue) | **Sesión 21** — aplica a framework y aplicaciones APB; durante construcción del framework no se activa sobre el propio repo, pero se diseña para poder hacerlo. |
 | 43 (aplicación retroactiva de política "Generado por IA" + "Validado por humano" a TODO el catálogo) | ✅ **CERRADA (Sesión 23, 2026-06-26)** — ver detalle en punto #43 abajo |
 
+| 77 (orquestación y coreografía de agentes) | **Sesión de Análisis de Orquestación** (nueva, bloqueante: decisión runtime Debora + Plataforma) |
+
 **Nota Sesión 8 (3ª corrección, mismo día):** Debora pidió separar la
 Sesión QA (testing: Playwright, `apb-ai-skills`, solape con el framework)
 de una **Sesión Frontend** propia e independiente (mockups, generación de
@@ -2168,6 +2170,174 @@ grep "CATALOG.md" README.md
 |----|--------|-------------|-----------|--------------|
 | E-DX1 | **Guía "Primera skill / Primer agente"** | ~~`docs/getting-started-contributing.md`.~~ **✅ COMPLETADO (2026-06-30):** `docs/getting-started-contributing.md` con 8 secciones: prerrequisitos, discovery, skill paso a paso, agente paso a paso, validador, catálogo, PR checklist, cierre de sesión. | ~~Media~~ | ✅ Cerrado |
 | E-DX2 | **Storybook para APB-DESIGN-SYSTEM** | Reemplazar o complementar `visual-reference.html` con Storybook. Cada componente JSX con ejemplos interactivos, documentación de props y tests de accesibilidad automáticos (addon a11y — WCAG 2.1 AA, requisito regulatorio vía RD 1112/2018). | Baja | 2-3 días configuración |
+
+---
+
+## Bloque añadido 2026-06-30 — Orquestación y Coreografía de Agentes
+
+### 77. Orquestación y coreografía de agentes — análisis e implementación
+
+> **Propuesta recibida de Debora (2026-06-30).** Este punto requiere análisis previo antes de
+> implementar. Ningún componente se construye hasta que la decisión arquitectónica esté aprobada.
+
+#### Contexto y propuesta recibida
+
+Debora propone una arquitectura híbrida de dos capas para coordinar los agentes del framework:
+
+1. **Capa de Orquestación (macro)** — workflows de alto nivel con estado, reintentos y ramificaciones.
+   Herramientas candidatas: LangGraph, Temporal, Prefect/Dagster.
+2. **Capa de Coreografía (micro)** — comunicación inter-agente por eventos (pub/sub).
+   Herramientas candidatas: Azure Service Bus (ya en stack APB), CloudEvents + JSON.
+
+Flujo propuesto para "Implementar feature X":
+
+```
+PM → Arch → Dev (commit+push) → CI/CD (GitHub Actions vía repository_dispatch)
+   ← evento ci.completed ← Service Bus ←─────────────────────────────────────
+└─ Si éxito → PR → Review → merge
+└─ Si fallo → Dev corrige → nuevo commit (máx 3 reintentos)
+```
+
+Patrones adicionales mencionados en la propuesta: Saga Pattern, Event Sourcing, LangGraph con
+checkpoint + webhook para reanudar workflows pausados tras eventos CI.
+
+#### Análisis de adecuación al stack APB
+
+**Lo que encaja bien:**
+
+- Azure Service Bus ya está en el stack APB → la coreografía por eventos es coherente. El provider
+  `prov-servicebus-v1.0` ya existe; ampliar a orquestación de agentes es extensión natural.
+- CloudEvents + JSON ya están en el stack APB → formato de eventos sin coste adicional.
+- GitHub Actions ya gestiona CI/CD del framework → `repository_dispatch` para disparar CI desde
+  agentes es viable y sin dependencias nuevas.
+- El patrón de **autonomy_level 1 con gates humanos** del framework es compatible con Saga Pattern:
+  cada compensación puede ser un gate de aprobación humana en vez de un rollback automático.
+
+**Lo que requiere ajuste antes de adoptar:**
+
+- **LangGraph** es Python y de Anthropic/LangChain; el stack APB es .NET + Azure. Viable para el
+  framework de IA (ya es Python), pero introduce dependencia nueva. Alternativa nativa Azure:
+  **Azure Durable Functions** o **Azure AI Foundry Agents** (ya recomendado en `manual-arquitectura.md §3.1`).
+  Hay que decidir cuál antes de implementar. **No adoptar LangGraph sin evaluar las alternativas Azure.**
+- **Temporal** es excelente para workflows duraderos pero añade infraestructura separada (servidor
+  Temporal) que APB debería operar. **Azure Durable Functions** cubre el mismo caso de uso sin
+  infraestructura adicional y ya es parte de Azure. Recomendación: Temporal solo si Azure Durable
+  Functions no cubre el caso concreto de APB.
+- **Event Sourcing completo** (toda acción es evento inmutable, reconstrucción de estado) es
+  potente pero añade complejidad significativa de implementación. Antes de adoptarlo, verificar si
+  los logs de GitHub Actions + telemetría JSONL ya existente (`emit_telemetry.py`) cubren el 80%
+  del valor con el 20% del coste. El Event Sourcing puro se reserva para decisiones críticas de
+  agentes que impacten producción.
+- **Power BI (ejecutivo) + Grafana (operativo)** ya están en el plan (#39/#40, Sesión 17 parcial).
+  El dashboard de orquestación se construye sobre la misma base, no es una herramienta nueva.
+
+**Restricción no negociable:** todo lo que se construya **debe respetar el guardrail de autonomy_level 1**.
+El orquestador no puede auto-aprobar, auto-mergear ni desplegar a producción sin gate humano, aunque
+LangGraph o Temporal técnicamente lo permitan. Los `human_checkpoints` declarados en los workflows
+son obligatorios también en el motor de ejecución real.
+
+#### Decisiones arquitectónicas previas a implementar (bloqueantes)
+
+| Decisión | Opciones | Quién decide | Urgencia |
+|----------|----------|--------------|---------|
+| Motor de orquestación macro | (A) Azure Durable Functions + Azure AI Foundry; (B) LangGraph; (C) Temporal | Debora + Plataforma APB | 🔴 Mes 1 |
+| Broker de eventos inter-agente | Azure Service Bus (ya en stack, **recomendado**) vs. otra solución | Debora + Plataforma APB | 🟡 Mes 1 |
+| Formato de eventos | CloudEvents + JSON (ya en stack, **recomendado**) vs. otro | Arquitectura APB | 🟡 Mes 1 |
+| Alcance de Event Sourcing | Solo eventos de agente críticos vs. todo el pipeline vs. ninguno | Debora | 🟡 Mes 2 |
+| Almacenamiento de estado de workflow | Redis (short-term) + Cosmos DB (state) — ya en plan §D.1 | Plataforma APB | 🟡 Mes 2 |
+| Estrategia de reintentos | Máximo de reintentos + escalado humano (cuántos, quién recibe) | Debora | 🟡 Mes 2 |
+
+#### Trabajo de análisis previo a implementar (Sesión de Análisis de Orquestación)
+
+Antes de construir nada, realizar:
+
+1. **PoC comparativo** de las opciones de orquestación macro sobre un caso de uso real APB
+   (candidato: `apb-wf-sdd-full-v1.0` como primer workflow a orquestar):
+   - Opción A — GitHub Action parametrizable que lee frontmatter YAML y pausa en `human_checkpoints`
+     vía GitHub Environments. Esfuerzo estimado: 1-2 días. Recomendado como primer paso (`E-T1`).
+   - Opción B — `orchestrator.py` con log de ejecución local. Esfuerzo: 1 semana.
+   - Opción C — Azure Durable Functions (nativo Azure). Esfuerzo: 2-3 semanas.
+   - Opción D — LangGraph con checkpoints (solo si C no es viable). Esfuerzo: 2-3 semanas + infra.
+
+2. **Verificar capacidades existentes** antes de construir:
+   - `apb-orch-multi-agent-v1.0`, `apb-orch-context-handoff-v1.0`, `apb-orch-human-checkpoint-v1.0`
+     (ya creadas en Sesión 21). ¿Qué parte del problema ya resuelven?
+   - `invoke_agent.py` (esqueleto existente). ¿Hasta dónde llega?
+   - `prov-servicebus-v1.0` (provider existente). ¿Cubre el caso de eventos inter-agente?
+
+3. **Definir los contratos de eventos** antes de implementar la capa de coreografía:
+   - Esquema CloudEvent por tipo de evento: `code.generated`, `ci.trigger`, `ci.completed`,
+     `pr.review.requested`, `pr.review.completed`, `bug.classified`, etc.
+   - Qué campos son obligatorios en `data:` por tipo de evento.
+   - Quién es productor y quién es consumidor de cada evento.
+
+#### Componentes a construir (tras decisión arquitectónica)
+
+**Fase de Coreografía (bajo riesgo — Azure Service Bus ya en stack):**
+
+| Componente | Tipo | Descripción |
+|------------|------|-------------|
+| `apb-orch-event-schema-v1.0` | skill | Esquemas CloudEvents para los eventos del pipeline de desarrollo: `code.*`, `ci.*`, `pr.*`, `bug.*`, `deployment.*` |
+| `apb-orch-event-router-v1.0` | skill | Reglas de enrutamiento: qué agente reacciona a qué evento, condiciones de activación, timeout por evento |
+| `prov-orchestration-engine-v1.0` | provider | Adaptador al motor de orquestación elegido (Azure Durable Functions / LangGraph). Abstrae el runtime para que skills/agentes no dependan del motor concreto | 
+| `apb-sub-orch-ci-bridge-v1.0` | subagente | Puente CI/CD: convierte eventos del framework en `repository_dispatch` de GitHub Actions y procesa `ci.completed` de vuelta al workflow pausado |
+
+**Fase de Orquestación macro (tras PoC):**
+
+| Componente | Tipo | Descripción |
+|------------|------|-------------|
+| `apb-wf-agent-pipeline-v1.0` | workflow | Workflow de referencia orquestado: PM → Arch → Dev → CI → Review → Deploy, con gates humanos en cada transición de fase |
+| `apb-wf-bug-to-fix-v1.0` | workflow | Bug report → Triage → Dev fix → CI → Review → Deploy, con escalado a humano si reintentos fallidos |
+
+**Agente coordinador (fase avanzada — tras orquestación funcionando):**
+
+| Componente | Tipo | Descripción |
+|------------|------|-------------|
+| `apb-agent-orchestrator-v1.0` | agente | Agente que gestiona el estado global de un workflow activo: pausa en gates humanos, reanuda tras eventos CI, detecta timeouts, escala a humano si se excede el máximo de reintentos. Delega en agentes especializados, no ejecuta lógica de dominio directamente |
+
+**Dashboard de orquestación** (construir sobre base Sesión 17 #39/#40):
+
+- Pipeline de estado de workflows activos en Power BI / DevExpress.
+- Stream de eventos CloudEvent con filtros.
+- Panel de aprobaciones humanas pendientes (gates activos).
+
+#### Stack recomendado para APB (decisión pendiente de Debora)
+
+| Componente | Tecnología recomendada | Justificación |
+|------------|----------------------|---------------|
+| Motor orquestación macro | **Azure Durable Functions** (primera opción) / LangGraph (fallback) | Native Azure, sin infraestructura separada, compatible .NET + Python |
+| Broker de eventos | **Azure Service Bus** | Ya en stack APB — sin nueva dependencia |
+| Formato eventos | **CloudEvents + JSON** | Ya en stack APB |
+| Estado de workflow | **Redis** (short-term) + **Cosmos DB** (long-term state) | Ya en plan D.1 |
+| Observabilidad | **OpenTelemetry** → Azure Monitor → Power BI / Grafana | Conecta con Sesión 17 (#39/#40) |
+| UI de monitoreo | **DevExpress** (JS puro) | Stack frontend APB estándar |
+
+#### Relación con puntos existentes del plan
+
+- **E-T1** (motor de orquestación real, §K.1): este punto #77 es la implementación completa de E-T1.
+  E-T1 propone GitHub Action como primer paso; #77 amplía el análisis al ecosistema completo.
+- **#41** (orquestación real entre agentes, Sesión 13): #77 es la concreción de ese punto.
+- **#29** (loop engineering): los reintentos y loops de iteración forman parte del motor de orquestación.
+- **#12** (definición de loops): ídem.
+- **#24** (Goal-Driven Execution): el motor de orquestación es el mecanismo que ejecuta los objetivos.
+- **Recomendación consolidada de #41**: resolver #12, #24, #29 y #41 en la misma sesión — este punto
+  #77 es la sesión donde todo eso converge en decisión + implementación.
+
+#### Sesión asignada
+
+**Sesión de Análisis de Orquestación** (nueva sesión propia, tras Sesión 13).
+
+**Bloqueante:** decisión arquitectónica de Debora + Plataforma APB sobre el motor de orquestación
+(Azure Durable Functions vs. LangGraph vs. otro). Sin esa decisión el PoC no puede completarse.
+
+**Secuencia recomendada:**
+
+1. Debora + Plataforma: decidir motor de orquestación (Mes 1).
+2. Sesión de Análisis de Orquestación: PoC, contratos de eventos, verificación de capacidades existentes.
+3. Construir capa de coreografía (Service Bus + CloudEvents) — bajo riesgo, puede ir en paralelo.
+4. Construir `prov-orchestration-engine-v1.0` sobre el motor elegido.
+5. Implementar `apb-wf-agent-pipeline-v1.0` como primer workflow orquestado real.
+6. `apb-agent-orchestrator-v1.0` — solo tras validar el motor en producción.
 
 ---
 
