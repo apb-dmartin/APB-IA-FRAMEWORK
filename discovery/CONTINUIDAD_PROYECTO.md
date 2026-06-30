@@ -744,3 +744,37 @@ Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
 
 **Próxima fase:** T5 (template AGENT.md), T3 (análisis duplicados), o sesiones bloqueadas cuando lleguen inputs externos.
 
+---
+
+## 19. T3 — Resolución de skills duplicadas WCAG/API/E2E (2026-06-30, cerrada)
+
+**Contexto:** Análisis T3 identificó 3 grupos de skills duplicadas o solapadas. Decisiones de Arquitectura APB:
+- Grupo 1 (WCAG): Opción B — deprecar `apb-design-wcag-v1.0` y `apb-design-wcag-patterns-v1.0`, consolidar en `apb-qa-accessibility-v1.0`.
+- Grupo 2 (API): Opción A — deprecar `apb-dev-api-design-v1.0`, mantener `apb-arch-api-contract-v1.0` + `apb-arch-api-lifecycle-v1.0`.
+- Grupo 3 (E2E): Opción A — renombrar `apb-qa-validation-e2e-v1.0` → nuevo `apb-qa-e2e-patterns-v1.0`.
+
+**Ejecutado (commit `eb4a348`):**
+- 4 skills deprecadas: `apb-design-wcag-v1.0`, `apb-design-wcag-patterns-v1.0`, `apb-dev-api-design-v1.0`, `apb-qa-validation-e2e-v1.0`.
+- 1 skill nueva: `apb-qa-e2e-patterns-v1.0` (con 4 plantillas E2E: Happy Path, Idempotencia, Saga, DLQ).
+- 3 wirings actualizados: `apb-agent-ux-mockup-v1.0`, `apb-agent-technical-architect-v1.0`, `apb-agent-qa-auto-v1.0`.
+- Patrón canonizado: deprecar = `status: deprecated` + `deprecated_reason` + `consumed_by: []` + rewiring antes del commit.
+
+**Resultado:** 0 errores, 60 warnings exentos, 343 componentes, 26/26 tests OK.
+
+---
+
+## 20. Sesión Post-T3 — Evoluciones técnicas + gobernanza + DX (2026-06-30, cerrada)
+
+**Ejecutado:**
+- **E-T3** (`scripts/validate_repo.py`): nueva función `validate_version_drift()` — WARNING cuando un agente referencia una skill con major version inferior a la última disponible en el repo.
+- **E-T2** (`tests/test_validate_repo.py`): nueva clase `TestVersionDrift` (2 tests) + clase `TestGoldenOutputStructure` (5 tests sobre skills críticas reales).
+- **E-G2** (`scripts/check_review_dates.py` + `.github/workflows/review-reminder.yml`): GitHub Action mensual que abre issue con componentes con `review_date` > 180 días.
+- **E-G3** (`GOVERNANCE.md §7`): proceso formal de deprecación documentado — quién propone, quién aprueba, plazos, pasos técnicos, paso a `retired`.
+- **E-DX1** (`docs/getting-started-contributing.md`): guía paso a paso para crear skills y agentes nuevos desde plantilla, ejecutar el validador, y abrir PR.
+
+**Resultado:** 33/33 tests OK (26 existentes + 7 nuevos), 0 errores, 343 componentes.
+
+**Inventario al cierre:** 343 componentes (175 skills APB, 51 skills terceros, 35 agentes, 33 subagentes, 17 workflows, 19 providers, 7 wrappers, 4 adapters).
+
+**Próximas fases sin bloqueantes:** ver `PLAN_FASES_FUTURAS.md §H FASE 2` (sesiones 13 resto, 14 .docx). Bloqueadas externamente: sesiones 19, 20, 22, FASE 3.
+

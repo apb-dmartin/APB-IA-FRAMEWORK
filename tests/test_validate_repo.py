@@ -511,5 +511,156 @@ class TestValidateBidirectionalWiring(unittest.TestCase):
             f"No se esperaba ningún WARNING, se obtuvo: {result.warnings}")
 
 
+class TestVersionDrift(unittest.TestCase):
+    """E-T3: validate_version_drift detecta cuando un agente referencia una
+    skill cuya major version es inferior a la última disponible en el repo."""
+
+    def setUp(self):
+        self.tmpdir = Path(tempfile.mkdtemp())
+        # Estructura mínima requerida
+        for folder in ["agents", "skills/apb-owned/development"]:
+            (self.tmpdir / folder).mkdir(parents=True, exist_ok=True)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _write(self, rel, content):
+        path = self.tmpdir / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(textwrap.dedent(content), encoding="utf-8")
+
+    def _make_skill(self, skill_id, version="1.0.0"):
+        parts = skill_id.rsplit("-", 1)  # apb-foo-v1.0
+        self._write(f"skills/apb-owned/development/{skill_id}.md", f"""\
+---
+id: "{skill_id}"
+name: "Fixture"
+description: "Fixture para tests de version drift."
+version: "{version}"
+status: "draft"
+owner: "test"
+domain: "development"
+autonomy_level: 1
+created_date: "2026-01-01"
+review_date: "2026-07-01"
+---
+
+# Fixture
+## ⚠️ Comportamiento ante inputs incompletos
+No aplica.
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+Generado por APB AI Framework.
+```python
+# ejemplo
+```
+""")
+
+    def _make_agent(self, agent_id, skills):
+        skills_yaml = "\n".join(f'  - "{s}"' for s in skills)
+        self._write(f"agents/{agent_id}.md", f"""\
+---
+id: "{agent_id}"
+name: "Test Agent"
+description: "Agente de prueba para version drift."
+version: "1.0.0"
+status: "draft"
+owner: "test"
+domain: "development"
+autonomy_level: 1
+skills:
+{skills_yaml}
+runtime: ["claude"]
+human_review_points: ["Revisar output"]
+created_date: "2026-01-01"
+review_date: "2026-07-01"
+---
+# Test Agent
+## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+Generado por APB AI Framework.
+""")
+
+    def test_version_drift_warns_on_major_bump(self):
+        """Agente referencia apb-fixture-v1.0 pero repo tiene apb-fixture-v2.0 → WARNING."""
+        self._make_skill("apb-fixture-v1.0", "1.0.0")
+        self._make_skill("apb-fixture-v2.0", "2.0.0")
+        self._make_agent("apb-agent-test-v1.0", ["apb-fixture-v1.0"])
+
+        result = vr.ValidationResult()
+        all_ids = {
+            "apb-fixture-v1.0": "skill",
+            "apb-fixture-v2.0": "skill",
+            "apb-agent-test-v1.0": "agent",
+        }
+        vr.validate_version_drift(self.tmpdir, result, all_ids)
+        self.assertTrue(
+            any("apb-fixture-v1.0" in w.message for w in result.warnings),
+            f"Se esperaba WARNING por version drift, obtenido: {result.warnings}"
+        )
+
+    def test_version_drift_no_warn_same_major(self):
+        """Agente y repo tienen la misma major version → sin WARNING."""
+        self._make_skill("apb-fixture-v1.0", "1.0.0")
+        self._make_agent("apb-agent-test-v1.0", ["apb-fixture-v1.0"])
+
+        result = vr.ValidationResult()
+        all_ids = {
+            "apb-fixture-v1.0": "skill",
+            "apb-agent-test-v1.0": "agent",
+        }
+        vr.validate_version_drift(self.tmpdir, result, all_ids)
+        drift_warnings = [w for w in result.warnings if "version drift" in w.message.lower()]
+        self.assertEqual(drift_warnings, [],
+            f"No se esperaba WARNING, obtenido: {drift_warnings}")
+
+
+class TestGoldenOutputStructure(unittest.TestCase):
+    """E-T2: verifica estáticamente que las 5 skills críticas del repo real
+    contienen las secciones obligatorias. No ejecuta el LLM — análisis de texto."""
+
+    REPO_ROOT = Path(__file__).resolve().parent.parent
+    SKILLS_DIR = REPO_ROOT / "skills" / "apb-owned"
+
+    CRITICAL_SKILLS = [
+        ("apb-arch-api-contract-v1.0", "architecture"),
+        ("apb-qa-accessibility-v1.0", "qa"),
+        ("apb-dev-code-review-v1.0", "development"),
+        ("apb-sec-threat-model-v1.0", "security"),
+        ("apb-gov-evidence-v1.0", "governance"),
+    ]
+
+    def _read_skill(self, skill_id, domain):
+        candidates = list(self.SKILLS_DIR.rglob(f"{skill_id}.md"))
+        self.assertTrue(candidates, f"Skill '{skill_id}' no encontrada en {self.SKILLS_DIR}")
+        return candidates[0].read_text(encoding="utf-8")
+
+    def _assert_skill_structure(self, skill_id, domain):
+        content = self._read_skill(skill_id, domain)
+        self.assertIn("## Marcado IA obligatorio",
+            content, f"[{skill_id}] Falta '## Marcado IA obligatorio'")
+        self.assertIn("## ⚠️ Comportamiento ante inputs incompletos",
+            content, f"[{skill_id}] Falta '## ⚠️ Comportamiento ante inputs incompletos'")
+        # Verificar que el id en frontmatter coincide con el nombre de archivo
+        import re as _re
+        m = _re.search(r'^id:\s*["\']?([^"\'\n]+)["\']?', content, _re.MULTILINE)
+        self.assertIsNotNone(m, f"[{skill_id}] No se encontró campo 'id:' en frontmatter")
+        self.assertEqual(m.group(1).strip(), skill_id,
+            f"[{skill_id}] El campo 'id' ({m.group(1).strip()}) no coincide con el nombre de archivo")
+
+    def test_golden_apb_arch_api_contract(self):
+        self._assert_skill_structure("apb-arch-api-contract-v1.0", "architecture")
+
+    def test_golden_apb_qa_accessibility(self):
+        self._assert_skill_structure("apb-qa-accessibility-v1.0", "qa")
+
+    def test_golden_apb_dev_code_review(self):
+        self._assert_skill_structure("apb-dev-code-review-v1.0", "development")
+
+    def test_golden_apb_sec_threat_model(self):
+        self._assert_skill_structure("apb-sec-threat-model-v1.0", "security")
+
+    def test_golden_apb_gov_evidence(self):
+        self._assert_skill_structure("apb-gov-evidence-v1.0", "governance")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

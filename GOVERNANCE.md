@@ -206,7 +206,52 @@ esta misma política busca evitar.
 
 ---
 
-## 7. Referencias
+## 7. Proceso de Deprecación
+
+Cuando un componente (skill, agente, subagente, workflow o provider) queda obsoleto,
+duplicado o es reemplazado por uno mejor, se sigue este proceso formal:
+
+### 7.1 Quién puede proponer
+
+Cualquier miembro del equipo de Arquitectura APB o propietario declarado en `owner:`.
+
+### 7.2 Quién aprueba
+
+Arquitectura APB — mínimo 1 revisor humano con acceso de escritura al repositorio.
+La aprobación debe quedar documentada en el Pull Request.
+
+### 7.3 Plazos de aviso
+
+| Situación | Plazo mínimo de aviso |
+|---|---|
+| Skill con `consumed_by` activo (agentes consumidores) | 30 días antes de deprecar |
+| Consolidación urgente aprobada explícitamente por Arquitectura | Sin plazo mínimo — documentar en `deprecated_reason` |
+| Skill sin consumidores (`consumed_by: []`) | Sin plazo mínimo |
+
+### 7.4 Pasos técnicos obligatorios
+
+1. Cambiar `status: deprecated` en el frontmatter YAML.
+2. Añadir `deprecated_reason:` con la motivación y fecha: `"Reemplazado por X (decisión Arquitectura APB YYYY-MM-DD)"`.
+3. Limpiar `consumed_by: []` — los agentes consumidores deben actualizarse antes o en el mismo commit.
+4. Actualizar el wiring de todos los agentes que la listaban en `skills:` para referenciar el sucesor.
+5. Ejecutar `python scripts/validate_repo.py --strict` — debe salir con código 0 antes del commit.
+
+### 7.5 Paso a `retired`
+
+Un componente pasa de `deprecated` a `retired` cuando:
+- Han transcurrido ≥ 90 días desde la deprecación sin incidencias asociadas.
+- El equipo propietario confirma que ningún proyecto activo la referencia.
+
+El cambio a `retired` se ejecuta mediante PR con el mismo proceso de aprobación.
+
+### 7.6 Referencia de marcado
+
+Los artefactos generados por el componente sucesor deben incluir el marcado de IA
+conforme a `context/apb/standards/AI_MARKING_STANDARD.md`.
+
+---
+
+## 8. Referencias
 
 - `SYSTEM.md` — Reglas globales y comportamiento del framework.
 - `CONTRIBUTING.md` — Guía de contribución y checklist de PR.

@@ -637,6 +637,51 @@ def validate_no_circular_dependencies(repo_path: Path, result: ValidationResult)
                 ))
 
 
+def validate_version_drift(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+    """Check E-T3: si un agente referencia una skill cuya major version es
+    inferior a la última disponible en el repo, emite WARNING para que el
+    equipo actualice la referencia o ancle explícitamente la versión antigua.
+
+    Ejemplo: agente usa 'apb-foo-v1.0' pero el repo tiene 'apb-foo-v2.0'
+    → WARNING. Ignorado si la skill referenciada no existe en all_ids (ya lo
+    detecta validate_references como ERROR de referencia rota)."""
+
+    _v_pattern = re.compile(r"^(.+)-v(\d+)\.\d+$")
+
+    # Mapa base_name → major version más alta disponible en el repo
+    base_to_max_major: Dict[str, int] = {}
+    for comp_id in all_ids:
+        m = _v_pattern.match(comp_id)
+        if m:
+            base, major_str = m.group(1), m.group(2)
+            major = int(major_str)
+            if major > base_to_max_major.get(base, 0):
+                base_to_max_major[base] = major
+
+    agents_folder = repo_path / "agents"
+    if not agents_folder.exists():
+        return
+
+    for fp in iter_component_files(agents_folder):
+        rel = str(fp.relative_to(repo_path))
+        meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        if not found:
+            continue
+        for skill_ref in (meta.get("skills") or []):
+            m = _v_pattern.match(skill_ref)
+            if not m:
+                continue
+            base, ref_major = m.group(1), int(m.group(2))
+            max_major = base_to_max_major.get(base, ref_major)
+            if ref_major < max_major:
+                result.add(ValidationIssue(
+                    "WARNING", rel,
+                    f"Version drift en skill '{skill_ref}': el repo tiene "
+                    f"'{base}-v{max_major}.x'. Actualizar la referencia o "
+                    f"documentar explícitamente por qué se ancla en v{ref_major}."
+                ))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -706,6 +751,7 @@ def main():
     validate_references(repo_path, result, all_ids)
     validate_agent_subagent_consistency(repo_path, result, all_ids)
     validate_bidirectional_wiring(repo_path, result)
+    validate_version_drift(repo_path, result, all_ids)
     validate_no_circular_dependencies(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 

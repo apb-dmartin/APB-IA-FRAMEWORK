@@ -3,7 +3,7 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-30 (post FASE #50/#51 — tests comportamiento 6 agentes + Golden Output Tests)  
+> **Última actualización:** 2026-06-30 (post T3 + E-T2/T3/G2/G3/DX1 — 33 tests OK, 343 componentes)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
 > **Estado global:** 342 componentes (175 skills APB, 52 third-party, 35 agentes, 33 subagentes,
 > 17 workflows, 19 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio

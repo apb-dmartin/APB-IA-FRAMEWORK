@@ -2104,8 +2104,8 @@ python scripts/generate_catalog.py
 PYTHONIOENCODING=utf-8 python scripts/validate_repo.py --strict
 
 # 3. Tests completos
-python -m unittest tests.test_validate_repo -v
-# → 23/23 actuales; 24/24 tras añadir test bidireccional
+python -m unittest tests.test_validate_repo tests.test_behavior_coverage -v
+# → 33/33 (test_validate_repo) + 5/5 (test_behavior_coverage) = 38 total (2026-06-30)
 
 # 4. Verificación de wirings aplicados (ejemplo)
 grep -A30 "^subagents:" agents/apb-agent-incident-support-v1.0.md
@@ -2131,8 +2131,8 @@ grep "CATALOG.md" README.md
 | ID | Título | Descripción | Prioridad | Esfuerzo est. |
 |----|--------|-------------|-----------|--------------|
 | E-T1 | **Motor de orquestación real** | Los workflows están en Markdown pero no se ejecutan automáticamente. Opciones: (A) GitHub Action parametrizable que lee el frontmatter YAML y pausa en `human_checkpoints` vía GitHub Environments — 1-2 días; (B) `orchestrator.py` con log de ejecución — 1 semana; (C) integración con `microsoft/semantic-kernel` — 1 mes+. Recomendada Opción A como primer paso. | Alta | 1-2 días (opción A) |
-| E-T2 | **Golden tests para skills críticas** | Para las 5 skills candidatas a aprobación, crear tests de comportamiento: dado input estándar → verificar que el output contiene las secciones obligatorias y campos del template. Análisis estático sin ejecutar el modelo. Añadir al suite `tests/`. | Media | 1 semana |
-| E-T3 | **Notificación de breaking changes en contratos de skills** | Cuando una skill actualiza su versión mayor, `validate_repo.py` debería generar WARNING para todos los agentes que la referencian. Detectar cuando el ID referenciado es `v1.0` pero el archivo real dice `v2.0`. | Media | 2-3 días |
+| E-T2 | **Golden tests para skills críticas** | ~~Para las 5 skills candidadas a aprobación, crear tests estáticos.~~ **✅ COMPLETADO (2026-06-30):** clase `TestGoldenOutputStructure` (5 tests) en `tests/test_validate_repo.py`. Verifica `## Marcado IA obligatorio`, `## ⚠️ Comportamiento ante inputs incompletos` e `id:` en frontmatter para: `apb-arch-api-contract-v1.0`, `apb-qa-accessibility-v1.0`, `apb-dev-code-review-v1.0`, `apb-sec-threat-model-v1.0`, `apb-gov-evidence-v1.0`. | ~~Media~~ | ✅ Cerrado |
+| E-T3 | **Notificación de breaking changes en contratos de skills** | ~~Cuando una skill actualiza su versión mayor, `validate_repo.py` debería generar WARNING.~~ **✅ COMPLETADO (2026-06-30):** función `validate_version_drift()` añadida a `scripts/validate_repo.py` + clase `TestVersionDrift` (2 tests) en `tests/test_validate_repo.py`. 33/33 tests OK. | ~~Media~~ | ✅ Cerrado |
 | E-T4 | **Capa formal de Capabilities** | Crear la carpeta `capabilities/` declarada en SYSTEM.md §3 con descriptores de capacidades de negocio (Generar Especificaciones, Revisar Código, Diseñar Arquitectura, Gestionar Incidentes...). Completa la jerarquía y facilita la alineación con el negocio. | Baja | 1 semana |
 | E-T5 | **Caching de outputs de agentes dentro de un workflow** | Para workflows que procesan el mismo artefacto base, implementar caching por hash de input. Reduce coste de tokens en re-ejecuciones parciales. | Baja | 1-2 semanas |
 
@@ -2159,14 +2159,14 @@ grep "CATALOG.md" README.md
 | ID | Título | Descripción | Prioridad | Implementación |
 |----|--------|-------------|-----------|---------------|
 | E-G1 | **Dashboard de métricas de gobernanza** | Dashboard en Log Analytics o Power BI: % de componentes por estado, tiempo medio de aprobación, skills más invocadas, evolución del reuso (objetivo >50%). Dependiente de telemetría activa. | Alta | Dependiente de telemetría |
-| E-G2 | **Ciclo de revisión semestral automatizado** | GitHub Action mensual que calcula días desde `review_date` y crea issue GitHub cuando han pasado ≥180 días. Implementa política ya declarada en GOVERNANCE.md §6. | Media | ~1 día |
-| E-G3 | **Proceso formal de deprecación** | Documentar en GOVERNANCE.md: quién propone, quién aprueba, aviso mínimo de 30 días para skills con consumidores activos, cuándo pasa a `retired` (propuesta: 90 días sin incidencias). | Media | Documentación + validador |
+| E-G2 | **Ciclo de revisión semestral automatizado** | ~~GitHub Action mensual.~~ **✅ COMPLETADO (2026-06-30):** `scripts/check_review_dates.py` + `.github/workflows/review-reminder.yml` (cron día 1 de cada mes). Abre issue automático con componentes con `review_date` > 180 días. | ~~Media~~ | ✅ Cerrado |
+| E-G3 | **Proceso formal de deprecación** | ~~Documentar en GOVERNANCE.md.~~ **✅ COMPLETADO (2026-06-30):** `GOVERNANCE.md §7` — quién propone, quién aprueba, plazos (30 días si consumed_by activo), pasos técnicos, paso a `retired` (90 días). | ~~Media~~ | ✅ Cerrado |
 
 ### K.5 Evoluciones de Developer Experience
 
 | ID | Título | Descripción | Prioridad | Esfuerzo est. |
 |----|--------|-------------|-----------|--------------|
-| E-DX1 | **Guía "Primera skill / Primer agente"** | `docs/getting-started-contributing.md` con walkthrough completo: leer SYSTEM.md, usar `invoke_agent.py --list`, crear skill desde template, ejecutar validador, abrir PR. | Media | 1-2 días |
+| E-DX1 | **Guía "Primera skill / Primer agente"** | ~~`docs/getting-started-contributing.md`.~~ **✅ COMPLETADO (2026-06-30):** `docs/getting-started-contributing.md` con 8 secciones: prerrequisitos, discovery, skill paso a paso, agente paso a paso, validador, catálogo, PR checklist, cierre de sesión. | ~~Media~~ | ✅ Cerrado |
 | E-DX2 | **Storybook para APB-DESIGN-SYSTEM** | Reemplazar o complementar `visual-reference.html` con Storybook. Cada componente JSX con ejemplos interactivos, documentación de props y tests de accesibilidad automáticos (addon a11y — WCAG 2.1 AA, requisito regulatorio vía RD 1112/2018). | Baja | 2-3 días configuración |
 
 ---

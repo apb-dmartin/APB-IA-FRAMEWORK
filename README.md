@@ -198,15 +198,22 @@ apb-ai-framework/
 
 Consultar [`catalog/CATALOG.md`](catalog/CATALOG.md) para el listado completo de skills, agentes, subagentes y workflows con sus metadatos, estados y dependencias.
 
+**343 componentes** (2026-06-30): 175 skills APB · 51 skills terceros · 35 agentes · 33 subagentes · 17 workflows · 19 providers · 7 wrappers · 4 adapters.
+
 ## Contribución
 
-Ver `CONTRIBUTING.md`. Antes de crear una skill APB, debe existir evidencia en `discovery/` de revisión de alternativas.
+Ver [`docs/getting-started-contributing.md`](docs/getting-started-contributing.md) para el walkthrough completo paso a paso.
+Ver `CONTRIBUTING.md` para las reglas generales y checklist de PR.
+
+Antes de crear una skill APB, debe existir evidencia en `discovery/` de revisión de alternativas — el validador detecta duplicados vía `CATALOG.md`.
 
 ## Estado Actual
 
 > **⚠️ Todos los componentes están en estado `draft`.**
 >
 > Este repositorio está preparado para iniciar pilotos controlados. No debe usarse en producción sin revisión y aprobación explícita de Arquitectura, QA, Ciberseguridad y Gobierno de APB.
+
+Último commit de producción: `eb4a348` (2026-06-30) — T3: resolución de duplicados WCAG/API/E2E (4 skills deprecadas, 1 nueva, 3 wirings actualizados).
 
 ## Contacto
 
