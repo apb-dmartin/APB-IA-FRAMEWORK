@@ -35,7 +35,7 @@
 | 25 (agente de deuda técnica/vulnerabilidades/remediación con Jira, añadido hoy) | ✅ **Confirmado: ampliación de Sesión 11** (decisión Debora post-Sesión 9) — alcance completo: deuda técnica, vulnerabilidades, dependencias obsoletas, rendimiento, incumplimientos de políticas APB |
 | 26 (telemetría para KPIs proyecto.md §6, añadido hoy — checklist Sesión 8) | A determinar — relacionado con Sesión 14 |
 | 31 (skill conversión universal a Markdown) | ✅ **Confirmado: Sesión 10** (decisión Debora post-Sesión 9), junto con #24 |
-| 38 Fase 0 (catálogo de dominios) | ✅ **Incluye #11** (decisión Debora post-Sesión 9) — sesión propia o ampliación de 13, pendiente de listado de APIs |
+| 38 Fase 0 (catálogo de dominios) | ✅ **EJECUTADO (Sesión DDD, 2026-06-30)** — inventario `API_INVENTORY_APIM.md` recibido; 15 dominios de negocio `proposed` en `APB-DOMAIN-CATALOG/domains/`. Incluye #11. Pendiente: aprobación Arquitectura + fronteras de negocio. BCs diferidos a "DDD Fase BC" (requiere código) |
 | 33 (skills/agentes de SQL) | **Sesión 21** |
 | 34 (validación QA en flujos de despliegue) | **Sesión 21** — aplica a framework y aplicaciones APB; durante construcción del framework no se activa sobre el propio repo, pero se diseña para poder hacerlo. |
 | 43 (aplicación retroactiva de política "Generado por IA" + "Validado por humano" a TODO el catálogo) | ✅ **CERRADA (Sesión 23, 2026-06-26)** — ver detalle en punto #43 abajo |
@@ -1813,7 +1813,7 @@ Los siguientes agentes tienen gaps de calidad o contenido que requieren actualiz
 | Revisión 2026-06-29: 26 agentes sin Marcado IA / 19 subagentes sin prompt / bug validador | 🔴 Pendiente | ✅ **Ya resueltos** (35/35 marcado, 33/33 prompt, validador corregido) |
 | Backlog M1–M6 | Mezcla | ✅ Resuelto |
 | `README.md` → enlace `CATALOG.md` (raíz) | — | ❌ **Roto**: el catálogo está en `catalog/CATALOG.md`, no en raíz |
-| `domain-catalog/domains/` | — | ❌ **Solo `.gitkeep`**: catálogo vacío, prerequisito crítico para DDD |
+| `domain-catalog/domains/` | — | ✅ **POBLADO (2026-06-30)**: 15 dominios de negocio `proposed` (Sesión DDD sobre `API_INVENTORY_APIM.md`) — pendiente aprobación Arquitectura |
 
 > **Conclusión de gobernanza:** falta un mecanismo que reconcilie "plan ↔ repo". Varias cosas marcadas
 > como pendientes ya están hechas, y al revés (el wiring de B figura implícito en el plan pero no se ejecutó).
@@ -1902,7 +1902,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | Desarrollo .NET/Django | ✅ Sólida | — |
 | Code Review | ✅ Buena | — |
 | QA Automatizado | ✅ Buena (caveat) | `qa-performance` no declarado en padre (fix pendiente) |
-| Arquitectura / DDD | ✅ Sólida | Domain Catalog vacío bloquea DDD real |
+| Arquitectura / DDD | ✅ Sólida | ✅ Domain Catalog poblado: 15 dominios `proposed` (Sesión DDD 2026-06-30) — pendiente aprobación Arquitectura |
 | Seguridad | ✅ Buena | `entra`/`sast` no declarados; sin DAST wrapper propio |
 | Gobernanza | ✅ Muy buena | 0 aprobaciones; ningún validador humano nombrado |
 | DevOps / Plataforma | 🟡 Media | Wiring de 4 platform skills pendiente |
@@ -1913,7 +1913,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | PM / Discovery | 🟡 Limitada | Skills Enriq. B no cableadas a BA/PM/TechDiscovery |
 | WCAG / Accesibilidad | 🟡 Nueva | accessibility-auditor nuevo; wiring pendiente |
 | LCSP / Licitación | ❌ Pendiente | Bloqueado: briefing de Débora |
-| Descomposición monolitos | ❌ Pendiente | Bloqueado: Domain Catalog poblado |
+| Descomposición monolitos | ❌ Pendiente | Domain Catalog ya poblado (15 dominios `proposed`); falta aprobación + acceso a código SOSTRAT |
 | M365 / Teams / SharePoint | ❌ Pendiente | Adapters existen; integración real pendiente |
 
 #### D.3 QA del framework
@@ -1954,7 +1954,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | R1 | Sin runtime de orquestación: workflows manuales no escalables | 🔴 | Decisión runtime + `prov-orchestration-engine-v1.0` |
 | R2 | 5 subagentes no declarados → capacidades invisibles a sus agentes | 🔴 | Wiring en próxima sesión (4 pendientes) |
 | R3 | 100% draft: sin ningún componente aprobado formalmente | 🔴 | Primer ciclo aprobación |
-| R4 | Domain Catalog vacío → DDD/monolitos bloqueados | 🔴 | Listado de APIs (Débora) |
+| R4 | ~~Domain Catalog vacío → DDD/monolitos bloqueados~~ ✅ MITIGADO: inventario recibido + 15 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 | Pendiente aprobación Arquitectura + experto de negocio para fronteras |
 | R5 | Wiring skills Enriq. B: capacidades funcionales no invocables desde agentes | 🟡 | Mapeo §C, próxima sesión |
 | R6 | Sin memoria compartida → contexto perdido inter-sesiones | 🟡 | Redis + Cosmos DB (cuando runtime listo) |
 | R7 | Telemetría no instrumentada → KPIs imposibles de medir | 🟡 | Instrumentar `invoke_agent.py` |
@@ -1994,7 +1994,7 @@ licencia + análisis de seguridad + `source_commit` SHA real.
 |---|---|---|
 | **Valoración COSMIC con histórico real** | #8 | `apb-disc-cosmic-v1.0` existe; **bloqueado: horas históricas de Débora** |
 | Agentes de licitación LCSP | #36/Sesión 20 | **Bloqueado: briefing de Débora** |
-| Descomposición de monolitos (Fase 1) | #38 F1 | Bloqueado: catálogo de dominios poblado |
+| Descomposición de monolitos (Fase 1) | #38 F1 | Catálogo ya poblado (15 dominios `proposed`); bloqueado por aprobación + acceso a código SOSTRAT |
 | Spec desde histórico Jira | #37 | Sin sesión asignada |
 | Runtime de orquestación real | #41 | **Bloqueado: decisión arquitectónica Débora/Plataforma** |
 | Dashboards Power BI/Grafana + logs | #39/#40 | Parcial (Sesión 17); falta agente dedicado |
@@ -2062,13 +2062,19 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 
 #### FASE 3 — Evolución estratégica (a 1–12 meses)
 
-21. **Domain Catalog** poblar `domain-catalog/domains/` (bloqueado: listado APIs de Débora).
+21. ✅ **Domain Catalog** poblado: 15 dominios de negocio `proposed` en
+    `APB-DOMAIN-CATALOG/domains/` (Sesión DDD 2026-06-30, sobre `API_INVENTORY_APIM.md`).
+    Pendiente: PR + aprobación de Arquitectura + experto de negocio para fronteras
+    (Escalas/Cruceros/Líneas, INS/PIF, MDE/OPS, FER). **Bounded contexts diferidos**
+    a sesión "DDD Fase BC" con acceso a código/BBDD.
 22. **Runtime de orquestación** (decisión + `prov-orchestration-engine-v1.0` + Semantic Kernel).
 23. **Memoria compartida** (`prov-agent-memory-v1.0`: Redis + Cosmos DB + Git).
 24. **Telemetría automática**: instrumentar `invoke_agent.py` con OpenTelemetry → dashboard Power BI.
 25. **Primer ciclo de aprobación formal**: seleccionar 10 componentes core, asignar aprobadores
     (2 por componente, ámbitos distintos), llevar a `approved`. KPI: <30% en draft.
-26. **Fase 1 descomposición monolitos** (bloqueado hasta Domain Catalog poblado).
+26. **Fase 1 descomposición monolitos** — Domain Catalog ya poblado (15 dominios
+    `proposed`); ahora bloqueado por: aprobación de dominios + acceso al código del
+    monolito SOSTRAT (Java/Oracle → DOCKS).
 
 ---
 
@@ -2078,7 +2084,7 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 
 | Decisión | Desbloquea | Urgencia |
 |----------|-----------|---------|
-| Listado de APIs/sistemas APB | Domain Catalog, DDD, descomposición monolitos | 🔴 |
+| ~~Listado de APIs/sistemas APB~~ ✅ **RECIBIDO (2026-06-30)** — `API_INVENTORY_APIM.md`; Sesión DDD ejecutada, 15 dominios `proposed` | ~~Domain Catalog, DDD, descomposición monolitos~~ → ahora desbloqueado | 🟢 |
 | Decisión runtime orquestación (Azure AI Foundry vs. Anthropic SDK) | Fase 3 §H-22 | 🟡 Mes 1 |
 | Mecanismo distribución Design System | Sesión 22 | 🟡 Mes 1 |
 | Ejemplos Word/Excel + mapa agentes↔Jira | Sesión 14, punto #6 | 🟡 Mes 1 |
@@ -2365,7 +2371,7 @@ Antes de construir nada, realizar:
 
 **Riesgos:**
 - Ciclo de aprobación como cuello de botella por falta de tiempo. Mitigación: slots recurrentes de 1h semanal de revisión.
-- APB-DOMAIN-CATALOG sigue bloqueado. Mitigación: deadline formal + `apb-sub-ddd-interview-v1.0` para extraer el inventario desde una entrevista estructurada.
+- ✅ APB-DOMAIN-CATALOG **desbloqueado (2026-06-30)**: inventario recibido + entrevista estructurada (`apb-sub-ddd-interview-v1.0`) ejecutada → 15 dominios de negocio `proposed`. Pendiente: aprobación de Arquitectura.
 
 ### Fase 2 — Adopción corporativa (6–18 meses)
 
@@ -2404,7 +2410,7 @@ Antes de construir nada, realizar:
 |--------|-------------|---------|------------|
 | LLM vendor lock-in | Media | Alto | Mantener los 4 adapters actualizados; no hardcodear behavior de un modelo en los prompts |
 | Proliferación descontrolada (>500 en draft) | Alta | Medio | Activar proceso de aprobación cuanto antes; ratio máximo draft/approved |
-| APB-DOMAIN-CATALOG vacío en 12 meses | Media | Crítico | Deadline formal + input de Débora como desbloqueador crítico |
+| ~~APB-DOMAIN-CATALOG vacío en 12 meses~~ ✅ MITIGADO (2026-06-30): 15 dominios `proposed` | Baja | Crítico | Aprobación de Arquitectura + experto de negocio para fronteras |
 | Obsolescencia de skills de terceros | Alta | Medio | E-S2 (supply chain verification en CI) + revisión anual |
 | Resistencia cultural | Media | Alto | ROI con métricas reales desde telemetría; involucrar equipos en los primeros dominios |
 | Cambio de modelo de IA | Alta | Bajo | Los adapters abstraen el modelo; actualizar el model string es tarea de horas |

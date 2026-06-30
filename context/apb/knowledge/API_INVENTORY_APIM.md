@@ -46,6 +46,18 @@ replica el sistema legacy pero gestiona APIs DOCKS nuevas.
 
 ---
 
+## 1bis. Aplicaciones conocidas NO publicadas en APIM
+
+Aplicaciones que existen en el ecosistema APB pero **no aparecen como APIs en el APIM**
+(legacy o pendientes de exponer). Señaladas por Débora — requieren clasificación DDD:
+
+| Aplicación | Descripción | Dominio candidato |
+|------------|-------------|-------------------|
+| `ARGOS` | Torre de control (vessel traffic / coordinación de movimientos de buques). Consume escalas. Ecosistema `TES/TBE/TMO`. | `dom-escalas-maritimas-v1` (consumidor) |
+| `SOJA` | Aplicación APB — **función pendiente de detallar por Débora**. | Pendiente de clasificar |
+
+---
+
 ## 2. Inventario completo de aplicaciones DOCKS y sus APIs
 
 ### 2.1 Plataforma y Servicios Horizontales (equipo: ARQUITECTURA)
