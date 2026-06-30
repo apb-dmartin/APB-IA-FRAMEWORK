@@ -2106,5 +2106,180 @@ grep "CATALOG.md" README.md
 # debe mostrar solo "catalog/CATALOG.md", nunca "CATALOG.md" sin prefijo
 ```
 
-> **Referencia:** `docs/HANDOFF_ENRIQUECIMIENTO_B.md` contiene el detalle por equipo y las
-> 8 decisiones bloqueantes de Débora/Dirección.
+> **Referencia:** `discovery/HANDOFF_TECNICOS.md` contiene el detalle por equipo y las decisiones bloqueantes de Débora/Dirección.
+
+
+---
+
+## K. Evoluciones propuestas — Análisis 360° (2026-06-29)
+
+> Fuente: `analisis_exhaustivo_framework.md` — análisis multi-perspectiva de los tres repositorios.
+> Todo lo que sigue es propuesta IA. Ningún punto es ejecutable sin revisión y aprobación humana.
+
+### K.1 Evoluciones técnicas
+
+| ID | Título | Descripción | Prioridad | Esfuerzo est. |
+|----|--------|-------------|-----------|--------------|
+| E-T1 | **Motor de orquestación real** | Los workflows están en Markdown pero no se ejecutan automáticamente. Opciones: (A) GitHub Action parametrizable que lee el frontmatter YAML y pausa en `human_checkpoints` vía GitHub Environments — 1-2 días; (B) `orchestrator.py` con log de ejecución — 1 semana; (C) integración con `microsoft/semantic-kernel` — 1 mes+. Recomendada Opción A como primer paso. | Alta | 1-2 días (opción A) |
+| E-T2 | **Golden tests para skills críticas** | Para las 5 skills candidatas a aprobación, crear tests de comportamiento: dado input estándar → verificar que el output contiene las secciones obligatorias y campos del template. Análisis estático sin ejecutar el modelo. Añadir al suite `tests/`. | Media | 1 semana |
+| E-T3 | **Notificación de breaking changes en contratos de skills** | Cuando una skill actualiza su versión mayor, `validate_repo.py` debería generar WARNING para todos los agentes que la referencian. Detectar cuando el ID referenciado es `v1.0` pero el archivo real dice `v2.0`. | Media | 2-3 días |
+| E-T4 | **Capa formal de Capabilities** | Crear la carpeta `capabilities/` declarada en SYSTEM.md §3 con descriptores de capacidades de negocio (Generar Especificaciones, Revisar Código, Diseñar Arquitectura, Gestionar Incidentes...). Completa la jerarquía y facilita la alineación con el negocio. | Baja | 1 semana |
+| E-T5 | **Caching de outputs de agentes dentro de un workflow** | Para workflows que procesan el mismo artefacto base, implementar caching por hash de input. Reduce coste de tokens en re-ejecuciones parciales. | Baja | 1-2 semanas |
+
+### K.2 Evoluciones funcionales
+
+| ID | Título | Descripción | Prioridad | Notas |
+|----|--------|-------------|-----------|-------|
+| E-F1 | **Agente de Change Management / ITIL** | APB opera con ITIL (P1–P4, L1/L2/L3, CAB, RFC, Problem Management). Ningún agente actual gestiona el proceso de cambio formal. `apb-agent-change-manager-v1.0` cubriría: evaluación de impacto de RFC, informe para CAB, tracking de cambios de emergencia, creación de tickets Jira via `prov-atlassian-v1.0`. | Alta | — |
+| E-F2 | **Agente de Data Governance / RGPD** | Obligación regulatoria: RAT, bases jurídicas, plazos de conservación, DPIA para tratamientos de alto riesgo. `apb-agent-data-governance-v1.0` que audite el estado de estos requisitos y genere el RAT actualizado. | Alta | No es nice-to-have — es requisito legal |
+| E-F3 | **Enriquecimiento FinOps Azure** | 19 providers Azure sin visibilidad de costes de IA. Agente o skill de FinOps que analice Azure Cost Management y proponga optimizaciones. Permite justificar ROI del framework con datos reales. | Media | — |
+| E-F4 | **Workflows de licitación / LCSP** | APB sujeto a LCSP. Preparación de pliegos, evaluación de ofertas, gestión de contratos de mantenimiento. Pendiente briefing de Débora. | Media | Bloqueado: briefing de Débora |
+| E-F5 | **Agente de Onboarding de Proyectos Legacy** | `apb-agent-legacy-onboarding-v1.0` que automatice el análisis inicial de un proyecto existente (estructura de código, deuda técnica, APIs no documentadas) y genere el primer borrador del `system-spec.md`. | Media | — |
+
+### K.3 Evoluciones de seguridad
+
+| ID | Título | Descripción | Prioridad | Implementación |
+|----|--------|-------------|-----------|---------------|
+| E-S1 | **SBOM automatizado para terceros** | Los 51 skills de terceros + 7 wrappers deberían generar automáticamente un Software Bill of Materials. Ampliar `generate_catalog.py` para añadir sección SBOM en `CATALOG.md` con `source_repo`, `source_license`, `source_commit`, `verified_date`. | Alta | Extensión de script existente |
+| E-S2 | **Supply chain verification en CI** | Step que intente verificar el SHA actual del repo de origen (`git ls-remote`). Si accesible y SHA cambió: WARNING "contenido modificado en origen desde la última revisión". | Media | GitHub Action adicional |
+| E-S3 | **Auditoría periódica de dependencias** | GitHub Action semanal con `pip-audit` o `safety check` para wrappers con dependencias Python. Integrar hallazgos como input a `apb-agent-tech-debt-v1.0`. | Media | GitHub Action semanal |
+
+### K.4 Evoluciones de gobernanza
+
+| ID | Título | Descripción | Prioridad | Implementación |
+|----|--------|-------------|-----------|---------------|
+| E-G1 | **Dashboard de métricas de gobernanza** | Dashboard en Log Analytics o Power BI: % de componentes por estado, tiempo medio de aprobación, skills más invocadas, evolución del reuso (objetivo >50%). Dependiente de telemetría activa. | Alta | Dependiente de telemetría |
+| E-G2 | **Ciclo de revisión semestral automatizado** | GitHub Action mensual que calcula días desde `review_date` y crea issue GitHub cuando han pasado ≥180 días. Implementa política ya declarada en GOVERNANCE.md §6. | Media | ~1 día |
+| E-G3 | **Proceso formal de deprecación** | Documentar en GOVERNANCE.md: quién propone, quién aprueba, aviso mínimo de 30 días para skills con consumidores activos, cuándo pasa a `retired` (propuesta: 90 días sin incidencias). | Media | Documentación + validador |
+
+### K.5 Evoluciones de Developer Experience
+
+| ID | Título | Descripción | Prioridad | Esfuerzo est. |
+|----|--------|-------------|-----------|--------------|
+| E-DX1 | **Guía "Primera skill / Primer agente"** | `docs/getting-started-contributing.md` con walkthrough completo: leer SYSTEM.md, usar `invoke_agent.py --list`, crear skill desde template, ejecutar validador, abrir PR. | Media | 1-2 días |
+| E-DX2 | **Storybook para APB-DESIGN-SYSTEM** | Reemplazar o complementar `visual-reference.html` con Storybook. Cada componente JSX con ejemplos interactivos, documentación de props y tests de accesibilidad automáticos (addon a11y — WCAG 2.1 AA, requisito regulatorio vía RD 1112/2018). | Baja | 2-3 días configuración |
+
+---
+
+## L. Fases de evolución del framework a medio/largo plazo
+
+### Fase 1 — Consolidación (0–6 meses)
+
+**Objetivo:** pasar de "framework diseñado" a "framework operativo".
+
+**Indicadores de éxito:**
+- ≥30 componentes en estado `approved`, incluyendo los 5 workflows principales
+- APB-DOMAIN-CATALOG con ≥5 dominios core `approved`
+- Telemetría activa — al menos un evento por sesión de agente en `APBFrameworkTelemetry_CL`
+- Runbooks para `wf-sdd-full`, `wf-code-review`, `wf-qa-evidence`
+- Primer agente ejecutado desde Teams vía M365 Copilot adapter por usuario no-Arquitectura
+- Métrica "% en draft" < 90%
+
+**Riesgos:**
+- Ciclo de aprobación como cuello de botella por falta de tiempo. Mitigación: slots recurrentes de 1h semanal de revisión.
+- APB-DOMAIN-CATALOG sigue bloqueado. Mitigación: deadline formal + `apb-sub-ddd-interview-v1.0` para extraer el inventario desde una entrevista estructurada.
+
+### Fase 2 — Adopción corporativa (6–18 meses)
+
+**Objetivo:** el framework pasa a ser la plataforma de referencia usada por múltiples equipos.
+
+**Indicadores de éxito:**
+- Rovo Agents activos y usados por equipos de proyecto (no solo Arquitectura APB)
+- Todos los proyectos nuevos arrancan con `wf-sdd-full`
+- ≥3 proyectos legacy con análisis DDD documentado y aprobado en APB-DOMAIN-CATALOG
+- Motor de orquestación real (E-T1) ejecutando ≥1 workflow por semana
+- Agente de Change Management / ITIL operativo (E-F1) integrado con el proceso CAB real
+- Agente de Data Governance / RGPD produciendo el RAT trimestralmente (E-F2)
+- Dashboard de gobernanza en producción (E-G1)
+- Métrica "% en draft" < 50%
+
+**Riesgos:**
+- Vibe coding sistémico: equipos generan código sin seguir proceso SDD. Mitigación: formación + validación en PR que exija spec previa (`apb-dev-grill-before-code-v1.0`).
+- Proliferación sin gobernanza. Mitigación: `apb-agent-meta-builder-v1.0` requiere discovery previo; todo componente nuevo pasa por el proceso de contribución.
+
+### Fase 3 — Madurez y expansión (18–36 meses)
+
+**Objetivo:** el framework es infraestructura corporativa madura, no un proyecto.
+
+**Indicadores de éxito:**
+- 80% de componentes en `approved` o `deprecated` — `draft` es la excepción
+- Contribuciones de equipos de proyecto al catálogo sin necesitar a Arquitectura como intermediario
+- Agente de FinOps con ahorro medible y documentado (E-F3)
+- Integración con sistemas core (GISPEM, Portal Docks, etc.) vía providers específicos
+- Ciclo de revisión semestral automatizado sin intervención manual (E-G2)
+- Metodología o templates publicados como referencia para otras autoridades portuarias
+- Métrica "% de skills con reuso >1 agente" > 50%
+
+**Riesgos transversales:**
+
+| Riesgo | Probabilidad | Impacto | Mitigación |
+|--------|-------------|---------|------------|
+| LLM vendor lock-in | Media | Alto | Mantener los 4 adapters actualizados; no hardcodear behavior de un modelo en los prompts |
+| Proliferación descontrolada (>500 en draft) | Alta | Medio | Activar proceso de aprobación cuanto antes; ratio máximo draft/approved |
+| APB-DOMAIN-CATALOG vacío en 12 meses | Media | Crítico | Deadline formal + input de Débora como desbloqueador crítico |
+| Obsolescencia de skills de terceros | Alta | Medio | E-S2 (supply chain verification en CI) + revisión anual |
+| Resistencia cultural | Media | Alto | ROI con métricas reales desde telemetría; involucrar equipos en los primeros dominios |
+| Cambio de modelo de IA | Alta | Bajo | Los adapters abstraen el modelo; actualizar el model string es tarea de horas |
+
+---
+
+## M. Repositorios de terceros de interés
+
+> Evaluación y decisión de Arquitectura APB obligatoria antes de incorporar cualquier componente.
+> No evaluar M.8 hasta que los bloqueos críticos (APB-DOMAIN-CATALOG, ciclo de aprobación) estén resueltos.
+
+### M.1 Orquestación (gap E-T1)
+
+| Repositorio | Licencia | Uso propuesto | Esfuerzo |
+|-------------|---------|--------------|---------|
+| `microsoft/semantic-kernel` | Apache 2.0 | Motor de orquestación multi-agente con soporte nativo Claude + .NET. Wrapper propuesto: `wrap-semantic-kernel-v1.0`. | 2-4 semanas |
+| `langchain-ai/langgraph` | MIT | Orquestación con estado persistente y backtracking. Alternativa ligera si el stack .NET no es requisito. | 1-2 semanas |
+
+### M.2 DDD y gestión de dominios (gap Domain Catalog vacío)
+
+| Repositorio | Licencia | Uso propuesto |
+|-------------|---------|--------------|
+| `ddd-crew/context-mapping` | Verificar antes de usar | Plantillas para Context Mapping DDD. Compatible con `bounded-context-template.md` del Domain Catalog. |
+| Metodología Event Storming | Referencia | Complemento para talleres presenciales. Documentar cómo conecta la salida del taller con `new-domain.sh`. |
+
+### M.3 Seguridad y compliance (gaps E-S1, E-S2, E-S3)
+
+| Repositorio | Licencia | Uso propuesto |
+|-------------|---------|--------------|
+| `aquasecurity/trivy` | Apache 2.0 | Escáner de vulnerabilidades en código, dependencias y manifiestos IaC. Step de CI: `trivy fs .`. También detecta secretos en código. |
+| OWASP DevSecOps Guideline | CC BY-SA 4.0 | Controles aplicables a cada fase del SDLC. Material para enriquecer `apb-sec-threat-model-v1.0` y agentes de seguridad. |
+
+### M.4 Observabilidad (gap telemetría no activa)
+
+| Repositorio | Licencia | Uso propuesto |
+|-------------|---------|--------------|
+| `open-telemetry/opentelemetry-python` | Apache 2.0 | Estándar de industria para trazas distribuidas. Compatible con `DefaultAzureCredential`. Permite envío simultáneo a Azure Monitor y otros backends (Grafana, Jaeger). |
+
+### M.5 Design System (gaps BUG-03, tipografía, mantenibilidad)
+
+| Repositorio | Licencia | Uso propuesto |
+|-------------|---------|--------------|
+| `storybookjs/storybook` | MIT | Catálogo de componentes UI con ejemplos interactivos, documentación de props generada automáticamente y tests de accesibilidad (addon a11y — WCAG 2.1 AA, RD 1112/2018). Elimina mantenimiento manual de `visual-reference.html`. |
+
+### M.6 Memoria y conocimiento de agentes
+
+| Repositorio | Licencia | Uso propuesto | Estado en catálogo |
+|-------------|---------|--------------|-------------------|
+| `HKUDS/LightRAG` | Apache 2.0 | RAG + grafos de conocimiento. Memoria episódica entre sesiones (decisiones de arquitectura, lenguaje ubicuo de dominio). Candidato para "memoria corporativa" del framework. | Wrapper existente: `wrap-hkuds-lightrag-v1.0`. Falta desplegar y conectar. |
+| `mem0ai/mem0` | Apache 2.0 | Alternativa más simple a LightRAG. SDK Python con backends PostgreSQL/Redis/Qdrant. Más fácil de operar en Azure. | Wrapper pendiente: `wrap-mem0-v1.0` |
+
+### M.7 Contratación pública LCSP (gap E-F4)
+
+| Recurso | Uso propuesto |
+|---------|--------------|
+| Plataforma de Contratación del Sector Público (API REST, Ministerio de Hacienda) | Datos públicos de contratos: precios de referencia, pliegos adjudicados, proveedores habituales APB. Integrable como `prov-lcsp-v1.0` una vez recibido el briefing de Débora. |
+
+### M.8 Repositorios pendientes de evaluación profunda
+
+| Repositorio | Posible uso | Prioridad |
+|-------------|------------|---------|
+| `ComposioHQ/agent-orchestrator` | Alternativa de orquestación de agentes | Media |
+| `ruvnet/ruflo` | Framework de agentes ligero | Baja |
+| `affaan-m/ecc` | Pendiente de evaluación | Baja |
+| `nexu-io/open-design` | Complemento para Design System | Baja |
+| `ComposioHQ/awesome-claude-plugins` | Fuente de discovery de MCPs — no incorporar como componente | Referencia |
