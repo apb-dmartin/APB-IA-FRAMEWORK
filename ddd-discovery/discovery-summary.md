@@ -28,34 +28,47 @@ aplicaciones DOCKS del inventario. El catálogo `domain-catalog/catalog/DOMAINS.
 está **vacío** → ningún candidato colisiona con dominios existentes (ver
 `catalog-comparison.md`).
 
-## Mapa de dominios de negocio (REVISADO tras entrevista — 15 dominios)
+## Mapa de dominios de negocio (ENRIQUECIDO — 21 dominios)
 
-> Versión final tras la entrevista con Débora (ver `interview-questions.md`).
-> Materializado en `APB-DOMAIN-CATALOG/domains/` (estado `proposed`).
+> Versión final tras la entrevista con Débora (`interview-questions.md`) +
+> enriquecimiento con `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (§2-§13),
+> que corrigió la hipótesis inicial basada solo en `API_INVENTORY_APIM.md`
+> (15 dominios → 21). Materializado en `APB-DOMAIN-CATALOG/domains/` (estado `proposed`).
 
-| # | Dominio | id | Clasif. | Aplicaciones | Confianza | Decisión pendiente |
-|---|---|---|---|---|---|---|
-| 1 | Escalas Marítimas | `dom-escalas-maritimas-v1` | core | ESC (+ ARGOS, SOSTRAT) | Media | frontera con #2/#4 (experto negocio) |
-| 2 | Cruceros | `dom-cruceros-v1` | core | CRE | Media | ¿peer o subdominio de #1? |
-| 3 | Gestión de Contenedores | `dom-contenedores-v1` | core | CTA | Alta | sale de SOSTRAT |
-| 4 | Líneas Regulares | `dom-lineas-regulares-v1` | core | LRG | Media | ¿subdominio de #1? |
-| 5 | Transporte Terrestre | `dom-transporte-terrestre-v1` | core | FER, TRU, PVI, EQV | Media | ¿FER aparte? |
-| 6 | Inspección de Mercancías | `dom-inspeccion-mercancias-v1` | supporting | INS, PIF | Media | ¿1 o 2? |
-| 7 | Acceso al Recinto | `dom-acceso-recinto-v1` | supporting | AUT | Alta | relación con PVI |
-| 8 | Emergencias y Seg. Industrial | `dom-emergencias-v1` | supporting | PEM, HEM | Alta | — |
-| 9 | Energía y Suministros | `dom-energia-portuaria-v1` | supporting | MDE, OPS | Media | ¿1 o 2? |
-| 10 | Facturación y Tasas | `dom-facturacion-v1` | supporting | P33, P51, REB, RCF | Media | unificar; ¿core? |
-| 11 | Administración Electrónica | `dom-administracion-electronica-v1` | supporting | PAD, AGE, GEISER, AEAT | Alta | — |
-| 12 | Gestión Corporativa Interna | `dom-corporativo-v1` | generic | MPS, OSMA | Media | identificar GPC/ROSS |
-| 13 | GIS y Plano del Puerto | `dom-gis-plano-v1` | supporting | GPS, PLANOLS | Baja | 1 API hoy |
-| 14 | Transversal / ARQ | `dom-transversal-arq-v1` | generic | APBAPI-Arq, FLC, GNA, NTA, FEL, SIG, FLU | Alta | shared kernel técnico |
-| 15 | Integraciones con Productos de Mercado | `dom-integraciones-mercado-v1` | generic | ROSS, GPC, DGS, ESF, ESM, FLO, IPB, MPA, MST, RESPONSIBLE | Baja | identificar producto de cada API |
+| # | Dominio | id | Clasif. | Decisión pendiente |
+|---|---|---|---|---|
+| 1 | Operaciones Marítimas | `dom-operaciones-maritimas-v1` | core | frontera con #2/#3 (experto negocio) |
+| 2 | Líneas Regulares | `dom-lineas-regulares-v1` | core | ¿peer o subdominio de #1? |
+| 3 | Cruceros | `dom-cruceros-v1` | core | ¿peer o subdominio de #1? |
+| 4 | Mercancías (incl. contenedores) | `dom-mercancias-v1` | core | — |
+| 5 | Mercancías Peligrosas (MMPP) | `dom-mercancias-peligrosas-v1` | core | — |
+| 6 | Concesiones y Ocupaciones | `dom-concesiones-v1` | core | — |
+| 7 | Facturación y Tasas | `dom-facturacion-v1` | supporting | unificar P33/P51/REB/RCF |
+| 8 | Inspección y Control (INS+PIF+EQV) | `dom-inspeccion-control-v1` | supporting | ¿1 o varios? |
+| 9 | Transporte Terrestre | `dom-transporte-terrestre-v1` | supporting | relación con #10 |
+| 10 | Ferrocarril Portuario | `dom-ferrocarril-v1` | supporting | ¿dominio propio confirmado? |
+| 11 | Suministros a Buques (MDE/OPS/Bunkering/Aiguada) | `dom-suministros-buques-v1` | supporting | ¿1 o 2? |
+| 12 | Medio Ambiente y MARPOL | `dom-medio-ambiente-marpol-v1` | supporting | — |
+| 13 | Emergencias y Seg. Industrial | `dom-emergencias-v1` | supporting | — |
+| 14 | Acceso y Seguridad Física (AUT+PPS) | `dom-acceso-seguridad-fisica-v1` | supporting | relación con PVI |
+| 15 | Pesca y Marinas Deportivas | `dom-pesca-marinas-v1` | supporting | — |
+| 16 | Estadísticas Portuarias | `dom-estadisticas-v1` | supporting | — |
+| 17 | Administración Electrónica | `dom-administracion-electronica-v1` | supporting | — |
+| 18 | GIS y Cartografía | `dom-gis-cartografia-v1` | supporting | — |
+| 19 | Transversal / ARQ (incl. IAM, SMS/GSM, SIG) | `dom-transversal-arq-v1` | generic | shared kernel técnico |
+| 20 | Gestión Corporativa Interna | `dom-corporativo-v1` | generic | identificar GPC/ROSS |
+| 21 | Integraciones Externas y EDI (PORTIC/EMSWe/VTS/AIS) | `dom-integraciones-edi-v1` | generic | identificar producto de DGS/ESF/ESM/FLO/IPB/MPA/MST/RESPONSIBLE |
 
-> **Cambios vs. mapa inicial:** Escalas y Cruceros separados (antes "Operaciones
-> Marítimas"); SOSTRAT **disuelto** (monolito Java → `related_systems`, no dominio);
-> Firma integrada en #14 Transversal/ARQ ("varios", respuesta D3); AEAT fusionado en
-> #11; nuevo #15 para las APIs de integración desconocidas; #14 formalizado como
-> subdominio genérico/técnico (concepto "transversal/ARQ" de APB).
+> **Cambios vs. mapa inicial (15 dominios):** se separan como dominios propios
+> Concesiones, Mercancías Peligrosas, Medio Ambiente/MARPOL, Pesca y Marinas,
+> Estadísticas y Suministros a Buques (antes ausentes o diluidos en "Energía");
+> "Gestión de Contenedores" pasa a subdominio de #4 Mercancías; "Acceso al Recinto"
+> se fusiona con PPS en #14; **corrección crítica**: SOJA (descarga de granel
+> sólido) NO es SMS (envío de SMS corporativo) — error del mapa inicial, corregido
+> en `API_INVENTORY_APIM.md` y reflejado en `notes` de #4 y #19; "Integraciones con
+> Productos de Mercado" (hipótesis no verificada) se sustituye por #21
+> "Integraciones Externas y EDI", basado en evidencia real (PORTIC/EDIFACT, EMSWe,
+> VTS Kongsberg, AIS) de la base de conocimiento.
 
 ## Señales fuertes detectadas
 
@@ -74,5 +87,6 @@ está **vacío** → ningún candidato colisiona con dominios existentes (ver
 
 ## Próximo paso
 
-Fase 3 — checkpoint humano: entrevista a Débora (ver `interview-questions.md`)
-para resolver las decisiones pendientes antes de generar los `dom-*.md`.
+`dom-*.md` × 21 generados en `APB-DOMAIN-CATALOG/domains/`. Pendiente: aprobación
+de Arquitectura APB vía PR, y resolución por un experto de negocio de las fronteras
+Operaciones Marítimas/Líneas Regulares/Cruceros (ver `notes` de cada `domain.md`).

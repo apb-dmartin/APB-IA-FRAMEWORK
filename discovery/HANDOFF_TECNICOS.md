@@ -184,13 +184,13 @@ import { APBButton } from './components/core/APBButton';
 
 ## 6. APB Domain Catalog
 
-> Repositorio: `APB-DOMAIN-CATALOG` — **15 dominios de negocio `proposed`** (Sesión DDD, 2026-06-30)  
+> Repositorio: `APB-DOMAIN-CATALOG` — **21 dominios de negocio `proposed`** (Sesión DDD, 2026-06-30)  
 > **Estado:** inventario `API_INVENTORY_APIM.md` recibido + entrevista ejecutada → 15 `domain.md` en `domains/`. **Pendiente:** PR + aprobación de Arquitectura APB (y experto de negocio para las fronteras pendientes). Hasta que pasen a `approved`, los subagentes DDD aún no deben consumirlos como verdad establecida. **Bounded contexts diferidos** a sesión con acceso a código/BBDD.
 
 | # | Tarea | Prerrequisito | Estado |
 |---|-------|--------------|--------|
-| DC1 | ~~Ejecutar entrevista DDD para identificar el primer dominio APB~~ | Lista de sistemas/APIs de Débora | ✅ **Hecho (2026-06-30)** — 15 dominios `proposed` |
-| DC2 | Aprobación de los 15 dominios `proposed` (PR a APB-DOMAIN-CATALOG) | Revisión Arquitectura + experto de negocio | ⬜ Pendiente |
+| DC1 | ~~Ejecutar entrevista DDD para identificar el primer dominio APB~~ | Lista de sistemas/APIs de Débora | ✅ **Hecho (2026-06-30)** — 21 dominios `proposed` |
+| DC2 | Aprobación de los 21 dominios `proposed` (PR a APB-DOMAIN-CATALOG) | Revisión Arquitectura + experto de negocio | ⬜ Pendiente |
 | DC3 | Modelar bounded contexts (`bc-*.md`) por dominio | Acceso a código/BBDD de los repos DOCKS/SOSTRAT | ⬜ Diferido |
 | DC2 | Revisar `domain.md` generado y abrir PR en `APB-DOMAIN-CATALOG/domains/<nombre>/` | DC1 | ⬜ Pendiente |
 | DC3 | Aprobar dominio (estado `proposed` → `under_review` → `approved`) vía GOVERNANCE.md del catalog | DC2 | ⬜ Pendiente |
@@ -268,7 +268,7 @@ Estas tareas no pueden iniciarse sin una decisión o aportación explícita de D
 
 | Prioridad | Insumo | Desbloquea | Cuándo se necesita |
 |-----------|--------|-----------|-------------------|
-| ~~🔴 Alta~~ ✅ | ~~**Lista de APIs/servicios APB por dominio de negocio**~~ **RECIBIDA (2026-06-30)** — `API_INVENTORY_APIM.md` | APB-DOMAIN-CATALOG poblado (15 dominios `proposed`) + agentes DDD desbloqueados | Hecho |
+| ~~🔴 Alta~~ ✅ | ~~**Lista de APIs/servicios APB por dominio de negocio**~~ **RECIBIDA (2026-06-30)** — `API_INVENTORY_APIM.md` | APB-DOMAIN-CATALOG poblado (21 dominios `proposed`) + agentes DDD desbloqueados | Hecho |
 | 🔴 Alta | **Mail oficial de contacto de Arquitectura APB** | Punto #52 — todo el framework | Este mes |
 | 🟡 Media | **Qué componentes aprobar primero + aprobadores por ámbito** | Primer ciclo de aprobación formal | Este mes |
 | 🟡 Media | **Decisión distribución Design System** (npm / submodule / CDN) | DS3 + sesión 22 punto #49 | Este trimestre |
@@ -326,7 +326,7 @@ ESTE TRIMESTRE:
 |-------------|---------|-------------|--------|
 | `APB-IA-FRAMEWORK` | — | **341 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
-| `APB-DOMAIN-CATALOG` | — | 15 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
+| `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 
 ---
 

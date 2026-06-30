@@ -54,7 +54,8 @@ Aplicaciones que existen en el ecosistema APB pero **no aparecen como APIs en el
 | Aplicación | Descripción | Dominio candidato |
 |------------|-------------|-------------------|
 | `ARGOS` | Torre de control (vessel traffic / coordinación de movimientos de buques). Consume escalas. Ecosistema `TES/TBE/TMO`. | `dom-escalas-maritimas-v1` (consumidor) |
-| `SOJA` | Aplicación APB — **función pendiente de detallar por Débora**. | Pendiente de clasificar |
+| `SOJA` | Aplicación de **descarga de soja** (granel sólido). NO confundir con SMS. | `dom-mercancias-v1` (granel) |
+| `SMS` / `GSM` (`APB.API.SMS`, app GSM) | Envío de SMS corporativo. | `dom-transversal-arq-v1` |
 
 ---
 
