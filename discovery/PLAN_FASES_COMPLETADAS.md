@@ -400,3 +400,40 @@ como insumo para #77). Ejecutado:
 `generate_catalog.py` OK (INDEX actualizado) · `validate_repo.py --strict` **exit 0**
 (0 errores; 60 warnings exentos de `source_commit`) · **38/38 tests** (33 validador
 incl. 5 nuevos + 5 behavior) · contador del retrofit: 244 → 0.
+
+---
+
+## Enriquecimiento #56–#76 — ✅ EJECUTADO (Enriq. B/C/D) · reconciliado 2026-07-02
+
+El bloque de construcción del análisis de enriquecimiento (`discovery/analisis-enriquecimiento-framework.md`)
+se ejecutó a lo largo de las Sesiones Enriquecimiento B/C/D (posteriores a la A, que cubrió
+#55 + primeros componentes). El plan `PLAN_FASES_FUTURAS.md` describía #56–#76 como "pendiente"
+porque **no se había reconciliado**; el discovery del repo (2026-07-02) confirma que está creado
+y cableado.
+
+**Verificado en repo (2026-07-02):**
+
+| Bloque | Propuesto | Creado | IDs |
+|---|---|---|---|
+| Agentes #56–#63 | 8 | **7** | change-manager, problem-manager, data-governance, accessibility-auditor, vendor-manager, knowledge-manager, api-product-manager |
+| Subagentes #65 | 8 | **8** | ops-k8s, ops-servicebus, finops-azure, doc-confluence, sec-sast, qa-performance, gov-data, ops-entra |
+| Skills #66–#72 | 43 | **43** | operation (+6), security (+4), governance (+8), platform+FinOps (+7), qa (+3), documentation (+4), architecture (+3), discovery (+4), pm (+3), design (+1) |
+| Providers #73 | 5 | **5** | azure-cost, confluence, entra-id, sentinel, jira-software |
+| Workflows #74 | 9 | **9** | change-management, problem-management, accessibility-audit, api-lifecycle, data-governance, finops-review, incident-l2, security-patch, vendor-procurement |
+
+Todos verificados como ficheros reales (no stubs): frontmatter completo, prompt de sistema,
+skills cableadas a agentes destino y `validate_repo.py --strict` exit 0. Además, todos quedaron
+retrofitados al Estándar de Prompting (check #18) en la sesión #78+#83.
+
+**No construido (por decisión, no por olvido):**
+
+- **#59 `apb-agent-incident-l2`** — no se creó agente dedicado; la capacidad L2 la cubren
+  `apb-agent-incident-support-v1.0` + `apb-agent-sre-v1.0` vía `apb-wf-incident-l2-v1.0`
+  (+ subagentes ops k8s/servicebus/oracle). Mantener así salvo decisión de separarlo.
+- **#64 `apb-agent-capacity-planner`** — diferido: requiere ≥12 meses de datos Azure.
+- **#64 `apb-agent-portfolio-it`** — diferido: requiere datos reales de uso del framework.
+- **#75 / #76** (calidad por agente / priorización) — aplicados como guía durante Enriq.;
+  gaps de calidad residuales se rastrean vía check #18 y §H del plan.
+
+**Pendiente de gobernanza (no de construcción):** los 7 agentes y sus skills están en `draft` —
+requieren el ciclo de aprobación (validador humano nombrado) para pasar a `approved`.

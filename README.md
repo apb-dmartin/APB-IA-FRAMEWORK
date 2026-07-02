@@ -198,7 +198,9 @@ apb-ai-framework/
 
 Consultar [`catalog/CATALOG.md`](catalog/CATALOG.md) para el listado completo de skills, agentes, subagentes y workflows con sus metadatos, estados y dependencias.
 
-**343 componentes** (2026-06-30): 175 skills APB · 51 skills terceros · 35 agentes · 33 subagentes · 17 workflows · 19 providers · 7 wrappers · 4 adapters.
+**343 componentes** (2026-07-02): 176 skills APB · 52 skills terceros · 35 agentes · 33 subagentes · 17 workflows · 19 providers · 7 wrappers · 4 adapters.
+
+Todos los componentes cumplen el [`PROMPTING_STANDARD`](context/apb/standards/PROMPTING_STANDARD.md) (estructura de prompt obligatoria, verificada por el check #18 de `validate_repo.py`) y el modelo de **Harness Engineering** (`SYSTEM.md §10` + `GOVERNANCE.md §8`, agnóstico de LLM).
 
 ## Contribución
 
@@ -213,7 +215,7 @@ Antes de crear una skill APB, debe existir evidencia en `discovery/` de revisió
 >
 > Este repositorio está preparado para iniciar pilotos controlados. No debe usarse en producción sin revisión y aprobación explícita de Arquitectura, QA, Ciberseguridad y Gobierno de APB.
 
-Último commit de producción: `eb4a348` (2026-06-30) — T3: resolución de duplicados WCAG/API/E2E (4 skills deprecadas, 1 nueva, 3 wirings actualizados).
+Último hito (2026-07-02): estándar de prompting (#78) + Harness Engineering (#83) aplicados a todo el catálogo (retrofit de 244 componentes) y reconciliación del Enriquecimiento #56–#76 (ya construido en Enriq. B/C/D). El ciclo de aprobación `draft → approved` sigue pendiente.
 
 ## Contacto
 

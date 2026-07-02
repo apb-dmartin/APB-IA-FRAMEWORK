@@ -48,7 +48,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 
 ## 2. Ciclo de aprobación — la prioridad de gobernanza
 
-**Situación actual:** 341 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
+**Situación actual:** 343 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
@@ -56,6 +56,14 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 (estándar de estructura de prompt, ya aplicado a 244 componentes y exigido por el check #18
 de `validate_repo.py`) y las secciones de harness `SYSTEM.md §10` / `GOVERNANCE.md §8`
 (Pass-State Gating, Clean State Handoff). Responsable: Arquitectura APB.
+
+**Reconciliación 2026-07-02 (Enriquecimiento #56–#76):** el discovery confirma que los
+~55 componentes del enriquecimiento (7 agentes, 8 subagentes, 43 skills, 5 providers,
+9 workflows) **ya están construidos** (Enriq. B/C/D) y **en `draft`** — son parte
+prioritaria de este ciclo de aprobación. Diferidos por falta de datos: `apb-agent-capacity-planner`
+y `apb-agent-portfolio-it` (#64). El agente `apb-agent-incident-l2` (#59) no se creó: su
+función la cubren `apb-agent-incident-support` + `apb-wf-incident-l2`. Detalle en
+`PLAN_FASES_COMPLETADAS.md`.
 
 ### Preparación previa (Arquitectura APB, 2h)
 
@@ -99,7 +107,7 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual:** `validate_repo.py --strict` → exit 0. 341 componentes, 0 huérfanos de wiring.
+**Estado actual (2026-07-02):** `validate_repo.py --strict` → exit 0. 343 componentes, 0 huérfanos de wiring. 244 componentes conformes al estándar de prompting (check #18 en ERROR).
 
 ---
 
@@ -254,7 +262,7 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 | DOC5 | Documento Word: Manual de administración del framework | Plataforma / Operaciones | ⬜ Pendiente |
 | DOC6 | Guía de "Primera skill / Primer agente" para onboarding rápido | Nuevos contribuidores | ⬜ Pendiente |
 | DOC7 | Documentar deprecación `apb-ai-skills` en README del framework | Todos | ⬜ Pendiente |
-| DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 341 componentes (sesiones 15-23 no registradas) | IA / Arquitectura APB | ⬜ Pendiente |
+| DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 343 componentes (sesiones 15-23 no registradas) | IA / Arquitectura APB | ⬜ Pendiente |
 
 **Estructura mínima de cada runbook:**
 ```markdown
@@ -329,7 +337,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **341 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **343 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 
