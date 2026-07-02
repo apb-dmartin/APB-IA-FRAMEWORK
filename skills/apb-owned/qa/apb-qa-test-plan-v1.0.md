@@ -2,15 +2,16 @@
 id: "apb-qa-test-plan-v1.0"
 name: "Test Plan Generator"
 description: "Genera planes de pruebas estructurados a partir de especificaciones, historias de usuario o requisitos, con trazabilidad LCSP/ENS/RGPD/WCAG 2.1 AA cuando el proyecto lo requiere. Incluye casos de prueba, criterios de aceptación, datos de prueba, estimaciones y asignación de responsables."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 1
 created_date: "2026-06-20"
-review_date: "2026-06-24"
+review_date: "2026-07-02"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "apb-plat-doc-to-markdown-v1.0"  # Normaliza planes aportados por el usuario (cualquier formato)
 
 ---
 
@@ -22,12 +23,29 @@ depends_on:
 > Debora: fusionar e incorporar a `APB-IA-FRAMEWORK`, sin mantener duplicado en el repo de
 > origen.
 
+> **Ampliación v1.2.0 (Sesión QA-2, 2026-07-02):** esta skill implementa ahora el
+> [`TEST_PLAN_STANDARD`](../../../context/apb/standards/TEST_PLAN_STANDARD.md): orden de fuentes con
+> degradación, **ingesta de planes aportados por el usuario en cualquier formato**, unificación sin
+> duplicados con **procedencia múltiple** por prueba, detección de plan previo con actualización
+> incremental, secciones de gobernanza (histórico, aprobados, enlace a evidencias/Jira) y no-regresión de
+> rendimiento. Plantilla: [`TEST_PLAN.md`](../../../context/apb/templates/TEST_PLAN.md). Ejemplo canónico:
+> [`QA_TRU_TruckCenter_UNIFICADO.md`](../../../docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md).
+> **La skill es interactiva: pregunta al usuario por los inputs que falten en lugar de asumirlos.**
+
 # SKILL: Test Plan Generator
 
 ## 1. Responsabilidad
 
 Esta skill:
 - Genera planes de pruebas completos a partir de specs, historias Jira o requisitos.
+- **Ingiere planes de pruebas aportados por el usuario** en cualquier formato (Markdown, Word, Excel,
+  PDF…), normalizándolos con `apb-plat-doc-to-markdown-v1.0`, y los funde conservando **todas** las pruebas.
+- **Unifica sin duplicados** varias visiones del mismo plan (Jira/Rovo, documentación/AF, código/Copilot,
+  aportadas por usuario) por **intención de la prueba**, con **procedencia múltiple** (herramienta + origen).
+- **Detecta plan previo** y actualiza **incrementalmente desde su fecha** (no regenera desde cero).
+- Aplica el **orden de fuentes con degradación**: si Jira/AF faltan o están obsoletos, se apoya en el código
+  y marca la confianza real, sin inventar respaldo funcional.
+- Verifica **no-regresión de rendimiento** (cruce con `prov-k6-v1.0`).
 - Define casos de prueba con precondiciones, pasos, datos de entrada y resultados esperados.
 - Clasifica pruebas por tipo: unitarias, integración, sistema, regresión, rendimiento, seguridad, accesibilidad.
 - Asigna prioridad y severidad a cada caso de prueba.
@@ -51,6 +69,12 @@ Esta skill:
 | `ens_level` | enum | No | Nivel ENS aplicable: `alto`, `medio`, `no_aplica`. Activa la sección de marco normativo si no es `no_aplica`. |
 | `processes_personal_data` | bool | No | Si el sistema procesa datos personales (RGPD). Activa la verificación de anonimización de fixtures en la sección de datos de prueba. |
 | `contractual_context` | bool | No | Si el plan se usará como documento contractual de licitación. Activa el formato de archivo en expediente (sección 12bis). |
+| `provided_plans` | list[file_path] | No | Uno o varios planes de pruebas aportados por el usuario, en **cualquier formato**. Se normalizan a Markdown (`apb-plat-doc-to-markdown-v1.0`) y se funden conservando todas sus pruebas. |
+| `sources` | list | No | Fuentes a usar y su estado: p. ej. `rovo` (Jira+AF), `github-copilot` (código), `usuario`. Cada una con `disponible`/`obsoleta`. Default: preguntar al usuario. |
+| `previous_plan` | file_path | No | Plan de pruebas anterior de la app. Si se aporta, se hace **actualización incremental** desde su fecha, no regeneración. |
+| `app_repo` | string | No | Repo de la aplicación donde se guardarán plan y resultados (el framework guarda solo estándar/plantilla/ejemplo). |
+| `performance_baseline` | file_path / ref | No | Resultado de rendimiento anterior para la verificación de no-regresión. Si no existe, se ejecuta sobre versión anterior + nueva. |
+| `evidence_destination` | enum | No | Destino de evidencias de ejecución: `zip`, `jira`, `ambos`. Default: preguntar al usuario. |
 
 ## 3. Outputs
 
@@ -62,6 +86,8 @@ Esta skill:
 | `traceability_matrix` | markdown | Matriz de trazabilidad: requisito → caso de prueba → resultado |
 | `effort_estimate` | markdown | Estimación de esfuerzo por tipo de prueba y fase |
 | `normative_framework` | markdown | Tabla de marco normativo aplicable (solo si `ens_level` o `processes_personal_data` activos) |
+| `unified_plan` | markdown | Plan **unificado sin duplicados** con columnas de **procedencia** (herramienta + origen), «Desde» y «OK func.», secciones fijas + gobernanza, y tabla de mapeo de numeraciones de origen. Conforme a `TEST_PLAN.md`. |
+| `provenance_map` | markdown | Trazabilidad por prueba: qué fuente(s) la propusieron y de qué origen (Jira/documentación/código/usuario). |
 
 ## 4. Dependencias
 
@@ -176,15 +202,23 @@ Cada caso debe tener:
 - Criterio de bloqueo de release: 0 Críticos, 0 Altos sin resolver
 
 ## Instrucciones
-1. Analiza los requisitos proporcionados.
-2. Identifica escenarios de prueba principales y alternativos.
-3. Genera casos de prueba con cobertura completa.
-4. Clasifica por tipo y prioridad.
-5. Estima esfuerzo en horas/días por tipo.
-6. Genera matriz de trazabilidad.
-7. Propone estrategia de datos de prueba.
-8. Si `ens_level` o `processes_personal_data` están activos, genera la sección de marco
-   normativo con la tabla LCSP/ENS/RGPD/WCAG.
+0. **Pregunta primero (interactivo).** Antes de generar, si faltan inputs relevantes, PREGUNTA al usuario:
+   ¿aporta planes de pruebas propios y en qué formato? ¿qué fuentes hay y están vigentes u obsoletas
+   (Jira/AF/código)? ¿existe un plan previo? ¿repo destino de resultados? ¿credenciales/entorno?
+   ¿destino de evidencias (zip/jira/ambos)? **No asumas**; si algo es ambiguo, consúltalo.
+1. **Ingiere y normaliza** los `provided_plans` (cualquier formato → Markdown vía `apb-plat-doc-to-markdown-v1.0`).
+2. **Orden de fuentes con degradación:** usuario → Rovo (Jira+AF) → Copilot (código). Si Jira/AF faltan o
+   están obsoletos, apóyate en el código y **marca la confianza/origen real**; nunca inventes respaldo funcional.
+3. **Unifica sin duplicados** por intención de la prueba; asigna procedencia **múltiple** (herramienta + origen)
+   y una columna «Desde»; publica tabla de mapeo si había varias numeraciones.
+4. Si hay `previous_plan`, **actualiza incrementalmente** desde su fecha (no regeneres).
+5. Analiza requisitos, identifica escenarios (principales y alternativos), genera casos con cobertura completa.
+6. Clasifica por **Tipo** y **Prioridad**; genera matriz de trazabilidad; propone estrategia de datos.
+7. Rellena las **secciones obligatorias** del `TEST_PLAN_STANDARD` (arquitectura topológica, modelo de datos,
+   histórico, aprobados por cambio, enlace bidireccional plan↔evidencias↔Jira).
+8. Evalúa **no-regresión de rendimiento** (consulta resultado anterior o ejecuta versión anterior + nueva; cruce `prov-k6`).
+9. Si `ens_level` o `processes_personal_data` están activos, genera la sección de marco normativo (LCSP/ENS/RGPD/WCAG).
+10. Guarda plan y resultados en el `app_repo`; el framework solo conserva estándar/plantilla/ejemplo.
 
 ## Restricciones
 - No uses datos reales de producción sin anonimización.
@@ -308,6 +342,7 @@ Cada caso debe tener:
 |---------|-------|-------|--------|
 | 1.0.0-draft | 2026-06-20 | QA Gobierno APB | Creación inicial |
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Fusión con `apb-test-plan-lcsp` (apb-ai-skills): marco normativo LCSP/ENS/RGPD/WCAG, tabla de criterios de éxito cuantificados, contexto contractual de licitación |
+| 1.2.0 | 2026-07-02 | APB AI Framework (Sesión QA-2) | Implementa `TEST_PLAN_STANDARD`: ingesta de planes aportados (cualquier formato), unificación sin duplicados con procedencia múltiple, orden de fuentes con degradación, detección de plan previo + actualización incremental, secciones de gobernanza, no-regresión de rendimiento, skill interactiva. Inputs: `provided_plans`, `sources`, `previous_plan`, `app_repo`, `performance_baseline`, `evidence_destination`. `depends_on` += `apb-plat-doc-to-markdown-v1.0` |
 
 > **Generado por IA:** Claude (Anthropic), Sesión QA del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
@@ -319,7 +354,12 @@ Cada caso debe tener:
 
 | Input | Si falta o es ambiguo | Bloquea ejecución |
 |-------|-----------------------|-------------------|
-| *(Sin inputs declarados)* | No aplica | No |
+| `requirements` / `provided_plans` | Preguntar al usuario si aporta plan propio (y formato) o de qué requisitos partir | Sí, hasta obtener al menos una fuente |
+| `sources` | Preguntar qué fuentes hay y si están vigentes u obsoletas (Jira/AF/código) | No — degrada a las disponibles marcando confianza |
+| `previous_plan` | Preguntar si existe plan anterior (para actualización incremental) | No |
+| `app_repo` | Preguntar dónde guardar plan y resultados | No — avisa que se entregan sin ubicación fija |
+| `evidence_destination` | Preguntar destino de evidencias (zip/jira/ambos) | No — por defecto zip |
+| credenciales/entorno de ejecución | Preguntar; nunca inventar ni hardcodear (usar AKV por referencia) | Sí para ejecución funcional |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

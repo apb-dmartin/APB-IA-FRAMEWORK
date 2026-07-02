@@ -836,3 +836,38 @@ exit 0 (0 errores, 60 warnings exentos). Tests 38/38.
 
 **Inventario al cierre:** 343 componentes (sin cambios en número — estándar + harness, no
 nuevos componentes).
+
+## 23. Sesión QA-2 — Planes de pruebas (#82) + Navegación agéntica (#84) (2026-07-02, cerrada)
+
+**Contexto:** Débora eligió el bloque QA. Aportó 3 visiones del plan de pruebas de TruckCenter
+(Rovo/Jira, Rovo/Jira+AF, Copilot/código) y pidió unificarlas sin duplicar con trazabilidad de
+procedencia; además exigió **ejecución funcional real** con evidencias descargables o a Jira, skill
+interactiva, degradación de fuentes, procedencia múltiple e ingesta de planes aportados en cualquier formato.
+
+**Ejecutado:**
+- **`context/apb/standards/TEST_PLAN_STANDARD.md`** + plantilla **`context/apb/templates/TEST_PLAN.md`**.
+- **`apb-qa-test-plan-v1.0` → v1.2.0** (interactiva; ingesta de planes aportados vía
+  `apb-plat-doc-to-markdown`; procedencia múltiple; degradación de fuentes; plan previo incremental;
+  no-regresión rendimiento).
+- **`docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md`** (112 casos sin duplicar, procedencia por prueba,
+  mapeo A→unificado) + fuentes en `docs/qa/examples/sources/`.
+- **#84:** `providers/prov-browser-agent-v1.0.md` + `skills/apb-owned/qa/apb-qa-exploratory-nav-v1.0.md`,
+  cableados a `apb-agent-qa-auto-v1.0` y `apb-wf-qa-evidence-v1.0`.
+- **Ejecución real** sobre TruckCenter PRE (EntraID asistido, rol MANAGE): 4 PASS, 1 no evaluable, 2 hallazgos;
+  evidencias en ZIP (informe MD+HTML+log); 0 datos modificados.
+- **Validador:** check **#20** `validate_test_plan_methodology` + 2 tests → 40/40 suite.
+
+**Resultado:** `validate_repo.py --strict` exit 0 (0 errores, 60 warnings exentos). Tests 40/40.
+
+**Inventario al cierre:** **345 componentes** (+2: `prov-browser-agent-v1.0`, `apb-qa-exploratory-nav-v1.0`).
+
+**Pendiente derivado (Débora):** el agente de pruebas funcionales debe **consultar credenciales desde un
+repositorio central** (Azure Key Vault, `GOVERNANCE.md §5`) + captura/reutilización de `storage_state` para
+ejecutar sin login manual. Ver HANDOFF.
+
+**Continuación E-bis (2026-07-02):** ejecución ampliada para cubrir los 112 casos en **solo lectura** (informe
+en OneDrive `QA_TruckCenter_evidencias/INFORME_EJECUCION_112.md`). 8 PASS + 8 parciales (MANAGE). Hallazgos:
+**F2** (form Alta no carga >45s), **F3** (PRE sin datos → ~45 casos no evaluables), **F4** (API LGP ~9,3s),
+**F5** (maestro multiidioma CA/ES/EN ≠ AF). Rendimiento, seguridad, USER_READ y evidencia visual PNG/vídeo →
+**Sesión QA-3** (registrada en FUTURAS). Limitación de entorno: las capturas del navegador MCP no persisten
+como fichero → visual con Playwright en QA-3. **0 datos modificados en PRE.**

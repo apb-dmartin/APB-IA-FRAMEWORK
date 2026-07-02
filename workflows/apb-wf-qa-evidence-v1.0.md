@@ -15,6 +15,7 @@ agents:
 skills:
   - "apb-qa-performance-v1.0"
   - "apb-qa-accessibility-v1.0"
+  - "apb-qa-exploratory-nav-v1.0"
 human_checkpoints:
   - "Validación humana antes de cada fase crítica del workflow"
 created_date: "2026-06-20"

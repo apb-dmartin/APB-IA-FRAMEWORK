@@ -787,7 +787,8 @@ punto.
 | ~~**Sesión 18 cont. (#54)**~~ | ~~Entrevista portuaria + verificación de dominio + actualización repo dominios~~ | ~~#54~~ | ✅ CERRADA (2026-06-26) — `apb-sub-ddd-interview-v1.0` v1.3.0: (A) Banco A portuario (buques, escalas, consignatario, GISPEM, PORTIC…); (B) Banco B corporativo (RRHH, viajes, contratación LCSP, adm. electrónica, finanzas, jurídico); (C) Fase 1-INT integración entre sistemas (flujo de datos, trigger, frecuencia, fallo, patrón ACL/Published Language/Shared Kernel/event-driven); (D) Fase 1-EVO evolutivos (revisión de lo existente, clasifica en extensión/nuevo BC/deuda técnica/breaking change); Fase 5 verificación APB-DOMAIN-CATALOG; Fase 6 generación artefacto `domain.md`. |
 | ~~**Harness**~~ | ~~Harness Engineering agnóstico de LLM: 5 subsistemas, System of Record + ACID, Feature Lists + Pass-State Gating, validación 3 capas, Clean State Handoff. Gobernanza + scaffolding + checks nuevos en `validate_repo.py`~~ | ~~#83~~ | ✅ CERRADA (2026-07-02, sesión combinada con #78) — SYSTEM.md §10 + GOVERNANCE.md §8 + `repo-scaffold/harness-ready/` + check #19 |
 | ~~**Estándar Prompting**~~ | ~~Estándar de estructura de prompt para todos los componentes (razonar→plan→ejecutar, objetivo, autocrítica, qué-NO-hacer, ejemplo E/S, separación SISTEMA/USUARIO) + retrofit + check en validador~~ | ~~#78~~ | ✅ CERRADA (2026-07-02, sesión combinada con #83) — `PROMPTING_STANDARD.md` + 6 plantillas + retrofit 244 componentes + check #18 en ERROR |
-| **QA-2** | Metodología y plantilla de planes de pruebas (Rovo→Copilot, trazabilidad, histórico, gobernanza, no-regresión rendimiento) + navegación agéntica para pruebas funcionales | #82, #84 | **Bloqueante: ejemplo real + planes preliminares de Debora** |
+| ~~**QA-2**~~ | ~~Metodología y plantilla de planes de pruebas + navegación agéntica para pruebas funcionales~~ | ~~#82, #84~~ | ✅ CERRADA (2026-07-02) — `TEST_PLAN_STANDARD` + plantilla `TEST_PLAN.md`, skill `apb-qa-test-plan` v1.2.0 (interactiva, procedencia múltiple, degradación de fuentes, ingesta de planes aportados), ejemplo unificado TruckCenter (112 casos sin duplicar), `prov-browser-agent-v1.0` + `apb-qa-exploratory-nav-v1.0` (#84), ejecución real sobre TruckCenter PRE con evidencias, check #20. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
+| **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. Ver `PLAN_FASES_COMPLETADAS.md` (QA-2). |
 | **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | "Fine Skills" requiere URL de Debora |
 | **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
 
@@ -1702,7 +1703,23 @@ introduce una fuente de verdad paralela (Principio #4: la fuente de verdad
 técnica es Git; Obsidian es solo proyección de lectura, como Confluence en
 Principio #6). **Sesión candidata: Sesión 19** (junto con #79).
 
-### 82. Metodología y plantilla corporativa de planes de pruebas
+### 82. Metodología y plantilla corporativa de planes de pruebas — ✅ EJECUTADO
+(Sesión QA-2, 2026-07-02). `context/apb/standards/TEST_PLAN_STANDARD.md` + plantilla
+`context/apb/templates/TEST_PLAN.md` + skill `apb-qa-test-plan-v1.0` v1.2.0 (interactiva; orden de
+fuentes con degradación; **ingesta de planes aportados por el usuario en cualquier formato** vía
+`apb-plat-doc-to-markdown`; unificación sin duplicados con **procedencia múltiple**; detección de plan
+previo + actualización incremental; secciones de gobernanza; no-regresión de rendimiento). Ejemplo
+canónico: `docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md` (112 casos sin duplicar) + fuentes en
+`docs/qa/examples/sources/`. Check #20 en el validador. Detalle en
+[`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+> **Pendiente derivado (nuevo, Débora 2026-07-02):** el agente de pruebas funcionales debe poder
+> **consultar credenciales desde un repositorio central** (encaja con Azure Key Vault, `GOVERNANCE.md §5`)
+> para ejecutar de forma autónoma sin que el usuario introduzca credenciales cada vez. En la demo de QA-2
+> las introdujo el usuario (login EntraID asistido). Diseñar el mecanismo (provider de secretos + captura y
+> reutilización de `storage_state`). Ver HANDOFF.
+
+<details><summary>Requisitos originales (histórico)</summary>
 
 Elevar el plan de pruebas de "artefacto que genera una skill" a **proceso
 gobernado con plantilla, histórico y trazabilidad**. Requisitos:
@@ -1767,6 +1784,8 @@ plan previo) + define la plantilla de resultados esperados + gobernanza.
 plantilla (g) y los **planes preliminares** (i). **Sesión candidata:**
 Sesión QA-2 propia (el volumen lo justifica).
 
+</details>
+
 ### 83. Harness Engineering agnóstico de LLM — ✅ EJECUTADO
 (Sesión #78+#83, 2026-07-02). Normativa permanente: `SYSTEM.md §10` (5 subsistemas, ACID,
 routing files, WIP=1, Feature Lists) + `GOVERNANCE.md §8` (Pass-State Gating, 3 capas,
@@ -1774,7 +1793,16 @@ Clean State Handoff). Scaffolding en `repo-scaffold/harness-ready/` (AGENTS/PROG
 Check #19 del validador (Cold-Start Test). Fuera de alcance aquí: OTel §83.7 (→ Sesión 17) y
 arquitectura de 3 agentes ejecutable (→ #77). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-### 84. Navegación agéntica para pruebas funcionales (gap detectado)
+### 84. Navegación agéntica para pruebas funcionales — ✅ EJECUTADO
+(Sesión QA-2, 2026-07-02). `providers/prov-browser-agent-v1.0.md` (provider de acción agnóstico:
+abrir URL, observar pantalla/DOM, decidir siguiente paso, rellenar, aseverar, capturar evidencia;
+implementaciones de referencia Playwright MCP / claude-in-chrome / computer-use) + skill
+`apb-qa-exploratory-nav-v1.0` (frontera exploratorio vs scriptado; cableada a `apb-agent-qa-auto` y
+`apb-wf-qa-evidence`). **Ejecución real demostrada** sobre TruckCenter PRE (login EntraID asistido, rol
+MANAGE): 4 casos PASS (TRU-T77/T26/T15/T16), 1 no evaluable, 2 hallazgos; evidencias empaquetadas (ZIP)
+y camino Jira definido. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+<details><summary>Análisis original del gap (histórico)</summary>
 
 **Origen:** pregunta de Debora (2026-07-02) — "¿el framework puede abrir un
 navegador para pruebas funcionales?". Respuesta: **parcial**. Existe
@@ -1800,6 +1828,8 @@ principio agnóstico de LLM del #83). Definir la frontera: exploratorio para
 descubrimiento/QA manual asistido; scriptado para regresión reproducible en
 CI. **Sesión candidata:** Sesión QA-2 (junto con #82, comparten insumo de
 plan de pruebas y evidencias).
+
+</details>
 
 ---
 

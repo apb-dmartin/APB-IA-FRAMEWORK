@@ -5,8 +5,8 @@
 > **De:** Arquitectura APB — Débora Martín  
 > **Última actualización:** 2026-06-30 (post KB+SP — knowledge base corporativa + system prompts LLM-agnósticos)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** 343 componentes (176 skills APB, 52 third-party, 35 agentes, 33 subagentes,
-> 17 workflows, 19 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
+> **Estado global:** 345 componentes (177 skills APB, 52 third-party, 35 agentes, 33 subagentes,
+> 17 workflows, 20 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
 > del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
 
 ---
@@ -48,7 +48,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 
 ## 2. Ciclo de aprobación — la prioridad de gobernanza
 
-**Situación actual:** 343 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
+**Situación actual:** 345 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
@@ -107,7 +107,7 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-02):** `validate_repo.py --strict` → exit 0. 343 componentes, 0 huérfanos de wiring. 244 componentes conformes al estándar de prompting (check #18 en ERROR).
+**Estado actual (2026-07-02):** `validate_repo.py --strict` → exit 0. 345 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20). Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
 
 ---
 
@@ -263,6 +263,8 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 | DOC6 | Guía de "Primera skill / Primer agente" para onboarding rápido | Nuevos contribuidores | ⬜ Pendiente |
 | DOC7 | Documentar deprecación `apb-ai-skills` en README del framework | Todos | ⬜ Pendiente |
 | DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 343 componentes (sesiones 15-23 no registradas) | IA / Arquitectura APB | ⬜ Pendiente |
+| QA2-1 | **Credenciales centrales para pruebas funcionales:** el agente de pruebas (`apb-qa-exploratory-nav` / `prov-browser-agent`) debe consultar credenciales desde un **repositorio central de secretos** (Azure Key Vault, `GOVERNANCE.md §5`) y capturar/reutilizar `storage_state` (EntraID), para ejecutar sin login manual. En la demo QA-2 (2026-07-02) las introdujo el usuario. Diseñar: provider de secretos + flujo de captura de sesión autenticada + política de custodia de evidencias con datos sensibles. | Plataforma / Ciberseguridad / IA | ⬜ Pendiente (Débora 2026-07-02) |
+| QA3-1 | **Sesión QA-3 — ejecución funcional COMPLETA de TruckCenter.** Bloqueantes detectados en QA-2 E-bis: **F3** (PRE sin datos → sembrar dataset anonimizado RGPD), **F2** (formulario de Alta no carga >45s → investigar/priorizar), acceso de escritura para altas/bajas, 2ª pasada **USER_READ**, **k6** (rendimiento; API LGP ~9,3s F4), **SonarQube/OWASP ZAP** (seguridad), **Playwright** para evidencia visual PNG/traza/vídeo (las capturas del navegador MCP no persisten como fichero), **unitarias** (repo `APB.TRU` + xUnit). Actualizar el AF por **F5** (maestro multiidioma CA/ES/EN). | QA / Plataforma / Ciberseguridad / Dev | ⬜ Pendiente (Débora 2026-07-02) |
 
 **Estructura mínima de cada runbook:**
 ```markdown
@@ -337,7 +339,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **343 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **345 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 

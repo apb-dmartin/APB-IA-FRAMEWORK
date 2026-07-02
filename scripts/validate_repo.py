@@ -772,6 +772,46 @@ def validate_harness_cold_start(repo_path: Path, result: ValidationResult):
     result.add(ValidationIssue("INFO", "SYSTEM.md", "Harness / Cold-Start verificado"))
 
 
+def validate_test_plan_methodology(repo_path: Path, result: ValidationResult):
+    """20. Metodología de planes de pruebas (punto #82, sesión QA-2 2026-07-02).
+
+    Toda skill apb-owned de plan de pruebas (id contiene 'test-plan') debe
+    referenciar el estándar corporativo TEST_PLAN_STANDARD, para que la
+    metodología (orden de fuentes, procedencia múltiple, secciones obligatorias,
+    gobernanza, no-regresión) no derive en silencio. Mensaje 'bolígrafo rojo'."""
+    standard_rel = "context/apb/standards/TEST_PLAN_STANDARD.md"
+    standard_path = repo_path / standard_rel
+
+    qa_folder = repo_path / "skills" / "apb-owned" / "qa"
+    if not qa_folder.exists():
+        return
+    referencing = []
+    for fp in iter_component_files(qa_folder):
+        meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        if not found:
+            continue
+        cid = str(meta.get("id", ""))
+        if "test-plan" not in cid:
+            continue
+        referencing.append(cid)
+        body = fp.read_text(encoding="utf-8")
+        if "TEST_PLAN_STANDARD" not in body:
+            result.add(ValidationIssue(
+                "ERROR", str(fp.relative_to(repo_path)),
+                "Skill de plan de pruebas sin referencia a 'TEST_PLAN_STANDARD'. "
+                f"Añadir el enlace al estándar ({standard_rel}) en el cuerpo (punto #82)."
+            ))
+
+    # Si hay skills que lo referencian, el estándar debe existir
+    if referencing and not standard_path.exists():
+        result.add(ValidationIssue(
+            "ERROR", standard_rel,
+            "Falta el estándar TEST_PLAN_STANDARD.md referenciado por las skills de "
+            "plan de pruebas. Restaurarlo (punto #82, sesión QA-2)."
+        ))
+    result.add(ValidationIssue("INFO", standard_rel, "Metodología de planes de pruebas verificada"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -844,6 +884,7 @@ def main():
     validate_version_drift(repo_path, result, all_ids)
     validate_no_circular_dependencies(repo_path, result)
     validate_harness_cold_start(repo_path, result)
+    validate_test_plan_methodology(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 
     print()

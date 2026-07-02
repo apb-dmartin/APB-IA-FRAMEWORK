@@ -770,5 +770,45 @@ class TestHarnessColdStartCheck(unittest.TestCase):
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+class TestTestPlanMethodologyCheck(unittest.TestCase):
+    """Punto #82 (sesión QA-2): toda skill de plan de pruebas debe referenciar
+    TEST_PLAN_STANDARD (check #20, anti-deriva de la metodología)."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_methodology(self):
+        result = vr.ValidationResult()
+        vr.validate_test_plan_methodology(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de metodología de planes de pruebas.",
+        )
+
+    def test_test_plan_skill_without_standard_reference_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            qa = tmp_dir / "skills" / "apb-owned" / "qa"
+            qa.mkdir(parents=True)
+            (qa / "apb-qa-test-plan-vX.md").write_text(
+                "---\n"
+                'id: "apb-qa-test-plan-vX"\n'
+                'name: "Fixture"\n'
+                'status: "draft"\n'
+                "---\n\n"
+                "# Skill sin referencia al estándar.\n",
+                encoding="utf-8",
+            )
+            result = vr.ValidationResult()
+            vr.validate_test_plan_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("TEST_PLAN_STANDARD" in m for m in messages),
+                f"Se esperaba error por falta de referencia al estándar; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

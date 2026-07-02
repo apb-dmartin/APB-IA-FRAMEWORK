@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 343
+- **Total Components**: 345
 
 ## Component Breakdown
 
-### Skills APB-Owned (176 total)
+### Skills APB-Owned (177 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -163,6 +163,7 @@
 | `apb-qa-anonymize-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-anonymize-v1.0.md` |
 | `apb-qa-contract-testing-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-contract-testing-v1.0.md` |
 | `apb-qa-e2e-patterns-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-e2e-patterns-v1.0.md` |
+| `apb-qa-exploratory-nav-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-exploratory-nav-v1.0.md` |
 | `apb-qa-framework-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-framework-v1.0.md` |
 | `apb-qa-performance-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-performance-v1.0.md` |
 | `apb-qa-pipeline-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-pipeline-v1.0.md` |
@@ -347,7 +348,7 @@
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 | `apb-wf-vendor-procurement-v1.0` | Vendor Procurement LCSP | draft | `workflows/apb-wf-vendor-procurement-v1.0.md` |
 
-### Providers (19 total)
+### Providers (20 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -359,6 +360,7 @@
 | `prov-azure-cost-v1.0` | Provider: Azure Cost Management API | draft | `providers/prov-azure-cost-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-v1.0` | Provider: Azure MCP | draft | `providers/prov-azure-v1.0.md` |
+| `prov-browser-agent-v1.0` | Provider: Agentic Browser | draft | `providers/prov-browser-agent-v1.0.md` |
 | `prov-confluence-v1.0` | Provider: Atlassian Confluence REST API | draft | `providers/prov-confluence-v1.0.md` |
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
 | `prov-entra-id-v1.0` | Provider: Microsoft Entra ID (Azure Active Directory) | draft | `providers/prov-entra-id-v1.0.md` |

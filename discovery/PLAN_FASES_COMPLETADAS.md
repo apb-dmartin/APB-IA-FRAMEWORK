@@ -11,6 +11,55 @@
 
 ---
 
+## Sesión QA-2 — ✅ CERRADA (2026-07-02): planes de pruebas (#82) + navegación agéntica (#84)
+
+**Puntos:** #82 (metodología/plantilla de planes de pruebas) + #84 (navegación agéntica).
+
+1. ✅ **Estándar y plantilla corporativos:** `context/apb/standards/TEST_PLAN_STANDARD.md`
+   (orden de fuentes con degradación, procedencia múltiple obligatoria, unificación sin duplicados,
+   detección de plan previo + actualización incremental, 12 secciones obligatorias, gobernanza del cambio,
+   almacenamiento en el repo de la app, evidencias ZIP/Jira seleccionables, no-regresión de rendimiento) +
+   plantilla `context/apb/templates/TEST_PLAN.md`.
+2. ✅ **Skill `apb-qa-test-plan-v1.0` → v1.2.0:** interactiva (pregunta por los inputs), ingesta de planes
+   aportados por el usuario en **cualquier formato** (vía `apb-plat-doc-to-markdown`), procedencia múltiple,
+   inputs nuevos (`provided_plans`, `sources`, `previous_plan`, `app_repo`, `performance_baseline`,
+   `evidence_destination`).
+3. ✅ **Ejemplo unificado TruckCenter:** `docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md` — fusión sin
+   duplicados de las 3 visiones (A Rovo/Jira 38 · B Rovo/Jira+AF 112 · C Copilot/código 112) → **112 casos**,
+   procedencia por prueba (herramienta + origen), columna «Desde» y mapeo A→unificado. Fuentes archivadas en
+   `docs/qa/examples/sources/`.
+4. ✅ **#84 navegación agéntica:** `providers/prov-browser-agent-v1.0.md` (agnóstico) +
+   `skills/apb-owned/qa/apb-qa-exploratory-nav-v1.0.md` (exploratorio vs scriptado), cableados a
+   `apb-agent-qa-auto-v1.0` y `apb-wf-qa-evidence-v1.0`.
+5. ✅ **Ejecución real sobre TruckCenter PRE** (login EntraID asistido, rol MANAGE): 4 PASS
+   (TRU-T77 login, T26 título pestaña, T15 columnas añadibles, T16 columnas auditoría), 1 no evaluable
+   (T13, GRID vacío sin criterio), 2 hallazgos (F1 GRID no autocarga; F2 form Alta con carga prolongada).
+   Evidencias empaquetadas (ZIP con informe MD+HTML+log) y camino Jira definido; 0 datos modificados en PRE.
+6. ✅ **Validador:** check #20 (`validate_test_plan_methodology`) — las skills de plan de pruebas deben
+   referenciar `TEST_PLAN_STANDARD`. Tests nuevos (`TestTestPlanMethodologyCheck`, 2 casos) → 40/40 suite.
+7. ✅ **Cierre:** catálogo regenerado, `--strict` exit 0 (345 componentes), 40/40 tests, docs actualizadas.
+
+**Pendiente derivado (Débora):** el agente de pruebas funcionales debe consultar credenciales desde un
+**repositorio central** (Azure Key Vault, `GOVERNANCE.md §5`) + captura/reutilización de `storage_state`,
+para ejecutar de forma autónoma. Ver HANDOFF y #82 en FUTURAS.
+
+### Continuación E-bis (2026-07-02): cobertura completa de los 112 + hallazgos
+
+A petición de Débora se amplió la ejecución para **cubrir los 112 casos** (no 5), en **solo lectura**, con
+informe de estado por caso (en OneDrive: `…/Proyectos/SDD - Framework.../QA_TruckCenter_evidencias/INFORME_EJECUCION_112.md`).
+**Verificado (MANAGE):** 8 PASS (login, título, selector de columnas, columnas de auditoría, acciones MANAGE,
+TLS, health-checks API/web) + 8 parciales. **Hallazgos clave:**
+- **F3** — PRE **sin datos** de Truck Center (GRID y maestro vacíos) → ~45 casos NO EVALUABLES/REQUIERE ESCRITURA en solo lectura.
+- **F2** — formulario de Alta principal no carga (>45 s) → bloquea ~18 casos (lupas, desplegable, alta).
+- **F4** — API LGP responde ~9,3 s (lenta) → indicador de rendimiento.
+- **F5** — discrepancia AF↔código: el maestro Tipos de Vehículo es **multiidioma CA/ES/EN** (no un único `DESCRIPCIO`); el código (Copilot) era correcto.
+
+**Decisiones Débora (E-bis):** solo lectura; 2ª pasada USER_READ, rendimiento, seguridad y **evidencia visual
+(PNG/vídeo)** → **Sesión QA-3** (las capturas del navegador MCP no persisten como fichero en este entorno; se
+harán con Playwright). Registrada QA-3 en FUTURAS. **0 datos modificados en PRE.**
+
+---
+
 ## Sesión QA — ✅ CERRADA (ejecutada post-Sesión 12)
 
 Debora decidió que la auditoría de testing/Playwright (#17) y el
