@@ -804,3 +804,35 @@ Tech Debt en `legacy-onboarding`, performance + accessibility en `qa-evidence`.
 
 **Inventario al cierre:** 343 componentes (sin cambios en número — mejora de calidad interna, no nuevos componentes).
 
+
+## 22. Sesión #78+#83 — Estándar de Prompting + Harness Engineering (2026-07-02, cerrada)
+
+**Contexto:** Sesión combinada decidida por Debora ANTES del Enriquecimiento #56–#76,
+para que los futuros componentes nazcan conformes al estándar (anti-retrabajo). Registro
+completo en `PLAN_FASES_COMPLETADAS.md`.
+
+**Ejecutado:**
+
+- **`context/apb/standards/PROMPTING_STANDARD.md`** (nuevo): estándar canónico de estructura
+  de prompt — 10 ejes, "Qué NO hacer" con 4 mínimos + 7 prohibiciones adicionales, bloque
+  canónico machine-checkable (6 headings literales), ejemplo E/S completo, ámbito por tipo.
+- **6 plantillas actualizadas** (AGENT, SUBAGENT, SKILL_APB, SKILL_THIRD_PARTY, ADAPTER,
+  WORKFLOW) con el bloque canónico + checklist.
+- **`scripts/retrofit_prompting.py`** (nuevo, idempotente): retrofit de **244 componentes**
+  (35 agentes + 33 subagentes + 176 skills APB); deriva el contenido de lo que cada
+  componente ya declara (referencia sus secciones, no duplica ni inventa).
+- **Harness (punto #83), agnóstico de LLM/herramienta:** `SYSTEM.md §10` (5 subsistemas,
+  System of Record + ACID, routing files 50–200 líneas, WIP=1 + Bootstrap Contract, Feature
+  Lists; Referencias → §11) + `GOVERNANCE.md §8` (Pass-State Gating, validación 3 capas,
+  Clean State Handoff, Planner/Generator/Evaluator como insumo de #77; Referencias → §9).
+- **`repo-scaffold/harness-ready/`** (nuevo): `AGENTS.md`, `PROGRESS.md`, `FEATURES.md`,
+  `init_check.py` (Python portable).
+- **`scripts/validate_repo.py`**: check **#18** Estándar de Prompting (nivel ERROR tras el
+  retrofit — anti-repetición) + check **#19** `validate_harness_cold_start` (Cold-Start Test,
+  gobernanza harness, scaffold completo). +5 tests (33 en test_validate_repo).
+
+**Resultado:** 244/244 componentes conformes (contador 244→0). `validate_repo.py --strict`
+exit 0 (0 errores, 60 warnings exentos). Tests 38/38.
+
+**Inventario al cierre:** 343 componentes (sin cambios en número — estándar + harness, no
+nuevos componentes).

@@ -258,10 +258,66 @@ Los agentes son **una capa más del sistema**, no el sistema en sí.
 
 ---
 
-## 10. Referencias
+## 10. Harness Engineering (agnóstico de LLM y de herramienta)
+
+> El harness es toda la infraestructura de ingeniería que vive **fuera de los pesos
+> del modelo**. Su objetivo no es aumentar la inteligencia del LLM sino garantizar
+> **ejecución fiable y predecible en ciclo cerrado**. Es infraestructura pura
+> (Principio #1): no depende de Claude, GPT, Gemini, Kimi ni de una herramienta
+> concreta (Claude Code, Copilot, Rovo). Referencia: punto #83 del plan de fases.
+
+### 10.1 Los 5 subsistemas del harness
+
+| Subsistema | Función | Materialización en este repo |
+|---|---|---|
+| **Instrucciones** | Reglas no negociables: stack, versiones, restricciones | Routing file `AGENTS.md` (50–200 líneas) + `context/apb/` bajo demanda. Las vistas por runtime (`CLAUDE.md`, adapters) **derivan** de él, nunca al revés |
+| **Herramientas** | Acceso controlado a shell, ficheros y testing bajo mínimo privilegio | Scripts en `scripts/` (Python — portable y agnóstico); permisos según autonomy_level |
+| **Entorno** | Estados reproducibles | Manifiestos de dependencias versionados; scaffolds en `repo-scaffold/` |
+| **Estado** | Progreso persistente entre sesiones | `PROGRESS.md` (plantilla en `repo-scaffold/harness-ready/`) — evita la amnesia entre sesiones |
+| **Retroalimentación** | Comandos de verificación con resultados procesables | `validate_repo.py --strict` + tests unitarios + Feature Lists |
+
+### 10.2 El repositorio como System of Record
+
+**Si no está en el repositorio, no existe para el agente.**
+
+- **Cold-Start Test:** el repo debe responder por sí solo: ¿qué es el sistema?
+  (README), ¿cómo está organizado? (INDEX/SYSTEM), ¿cómo se ejecuta? (docs/adapters),
+  ¿cómo se verifica? (scripts/tests), ¿dónde estamos ahora? (CONTINUIDAD/PROGRESS).
+- **Principios ACID del estado:**
+  - *Atomicidad:* cada tarea lógica → un commit único; todo o nada.
+  - *Consistencia:* solo se permite commit si `validate_repo.py --strict` y los tests pasan (CI `validate.yml`).
+  - *Aislamiento:* agentes concurrentes no comparten estado mutable sin coordinación (ramas/worktrees).
+  - *Durabilidad:* el conocimiento crítico se persiste en archivos versionados, no en la memoria de la sesión.
+
+### 10.3 Gestión modular de instrucciones (evitar "Lost in the Middle")
+
+- Routing file raíz entre **50 y 200 líneas**; detalles técnicos en documentos
+  temáticos que el agente lee **bajo demanda** (divulgación progresiva).
+- **SNR (señal/ruido):** auditar y eliminar instrucciones obsoletas periódicamente.
+
+### 10.4 Ciclo de vida de la sesión
+
+1. **Inicialización dedicada:** antes de trabajar, verificar que el entorno es
+   ejecutable y el framework de pruebas funciona (script de init del scaffold).
+2. **Contrato de Bootstrap:** cada sesión nueva recibe: estado del repo (commit),
+   tasa de aprobación de pruebas, bloqueadores y próximas acciones.
+3. **WIP=1:** una sola tarea activa por sesión de agente — maximiza el presupuesto
+   de razonamiento por funcionalidad.
+
+### 10.5 Feature Lists (primitivas de control)
+
+Las funcionalidades se registran como primitivas machine-readable (Markdown/JSON),
+con estructura triple: **descripción de comportamiento + comando de verificación +
+estado** (`not_started` / `active` / `blocked` / `passing`). Plantilla en
+`repo-scaffold/harness-ready/FEATURES.md`. El gating lo define `GOVERNANCE.md §8`.
+
+---
+
+## 11. Referencias
 
 - `GOVERNANCE.md` — Reglas de gobierno, estados y aprobadores.
 - `CONTRIBUTING.md` — Guía de contribución y checklist de PR.
 - `catalog/CATALOG.md` — Catálogo centralizado de componentes.
 - `context/apb/` — Contexto corporativo (estándares, plantillas, políticas).
 - `context/apb/SCHEMA.md` — Esquema de metadatos YAML obligatorio para todo componente.
+- `context/apb/standards/PROMPTING_STANDARD.md` — Estándar de estructura de prompt de componentes.

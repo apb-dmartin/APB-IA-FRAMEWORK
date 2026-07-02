@@ -662,5 +662,113 @@ class TestGoldenOutputStructure(unittest.TestCase):
         self._assert_skill_structure("apb-gov-evidence-v1.0", "governance")
 
 
+PROMPTING_BLOCK = """
+## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)
+
+### Objetivo
+Fixture.
+
+### Proceso (razonar → plan → aceptación → ejecutar)
+1. Razonar. 2. Plan. 3. Ejecutar. 4. Verificar.
+
+### Qué NO hacer
+- Nada fuera de alcance.
+
+### Ejemplo entrada → salida
+ENTRADA: x → SALIDA: y.
+
+### Formato de respuesta
+Markdown.
+
+### Separación SISTEMA / USUARIO
+- SISTEMA: reglas. USUARIO: datos.
+"""
+
+MARKING_BLOCK = "\n## Marcado IA obligatorio (POLICY_AI_USAGE §6)\nFixture.\n"
+INCOMPLETE_INPUTS_BLOCK = "\n## ⚠️ Comportamiento ante inputs incompletos\n| a | b | c |\n"
+
+
+class TestPromptingStandardCheck(unittest.TestCase):
+    """Punto #78 (sesión 2026-07-02): skills APB, agentes y subagentes deben
+    incluir el bloque canónico del Estándar de Prompting (check #18)."""
+
+    def setUp(self):
+        self.tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        (self.tmp_dir / "skills" / "apb-owned").mkdir(parents=True)
+        self._original_level = vr.PROMPTING_STANDARD_LEVEL
+        vr.PROMPTING_STANDARD_LEVEL = "ERROR"  # estado permanente post-retrofit
+
+    def tearDown(self):
+        vr.PROMPTING_STANDARD_LEVEL = self._original_level
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
+
+    def _validate_skill(self, body_extra: str):
+        content = VALID_SKILL_FRONTMATTER + body_extra
+        path = self.tmp_dir / "skills" / "apb-owned" / "apb-test-fixture-v1.0.md"
+        path.write_text(content, encoding="utf-8")
+        result = vr.ValidationResult()
+        vr.validate_component_file(path, self.tmp_dir, "skill", result, {})
+        return result
+
+    def test_skill_without_prompting_block_is_flagged(self):
+        result = self._validate_skill(MARKING_BLOCK + INCOMPLETE_INPUTS_BLOCK)
+        messages = [i.message for i in result.errors]
+        self.assertTrue(
+            any("Estándar de Prompting" in m for m in messages),
+            f"Se esperaba issue del check #18; errores: {messages}",
+        )
+
+    def test_skill_with_incomplete_block_reports_missing_headings(self):
+        truncated = PROMPTING_BLOCK.replace("### Qué NO hacer\n- Nada fuera de alcance.\n", "")
+        result = self._validate_skill(MARKING_BLOCK + INCOMPLETE_INPUTS_BLOCK + truncated)
+        messages = [i.message for i in result.errors]
+        self.assertTrue(
+            any("Qué NO hacer" in m and "headings canónicos" in m for m in messages),
+            f"Se esperaba heading faltante señalado; errores: {messages}",
+        )
+
+    def test_skill_with_full_block_passes(self):
+        result = self._validate_skill(MARKING_BLOCK + INCOMPLETE_INPUTS_BLOCK + PROMPTING_BLOCK)
+        messages = [i.message for i in result.errors + result.warnings]
+        self.assertFalse(
+            any("Estándar de Prompting" in m for m in messages),
+            f"No debía haber issue del check #18; issues: {messages}",
+        )
+
+
+class TestHarnessColdStartCheck(unittest.TestCase):
+    """Punto #83: el repo real debe pasar el Cold-Start Test y conservar la
+    infraestructura del harness (check #19). Se valida contra el repo REAL:
+    es un check de System of Record, no de fixtures."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_cold_start(self):
+        result = vr.ValidationResult()
+        vr.validate_harness_cold_start(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el Cold-Start Test del harness.",
+        )
+
+    def test_missing_scaffold_is_detected(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            result = vr.ValidationResult()
+            vr.validate_harness_cold_start(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Cold-Start" in m for m in messages),
+                f"Se esperaban errores cold-start en repo vacío; errores: {messages}",
+            )
+            self.assertTrue(
+                any("harness-ready" in m for m in messages),
+                f"Se esperaba scaffold faltante señalado; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -3,6 +3,12 @@
 > Este documento acumula tareas anotadas por Debora para sesiones futuras.
 > Nada de lo aquí listado se ejecuta hasta que se aborde explícitamente su
 > propia sesión.
+>
+> 📁 **Lo ya ejecutado vive en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md)** (bitácora).
+> Regla de mantenimiento: **antes de cerrar cada sesión**, mover a ese archivo
+> los temas que se hayan completado y dejar aquí solo un puntero. Las tablas-índice
+> de más abajo (Mapeo a sesiones, Plan de sesiones) se conservan íntegras como
+> cuadro de mando del roadmap.
 
 ## Mapeo a sesiones planificadas (actualizado durante Sesión 8)
 
@@ -66,91 +72,12 @@ Debora señaló que esto generaba la duda razonable de si de verdad estaban
 en el plan. Se corrige asignándoles **Sesión 13** (sesión de cierre de
 pendientes históricos), en vez de dejarlos en un cajón sin fecha.
 
-## Sesión QA — ✅ CERRADA (ejecutada post-Sesión 12)
+## Sesión QA — ✅ CERRADA · Sesión Frontend — ✅ CERRADA
 
-Debora decidió que la auditoría de testing/Playwright (#17) y el
-solapamiento detectado entre `APB-IA-FRAMEWORK` y el repositorio
-`apb-ai-skills` merecen una **sesión propia de QA**, no una sub-tarea de la
-Sesión 8. Contenido confirmado de esta sesión:
-
-1. ✅ **Auditoría completa de `apb-ai-skills.zip`** (subido en Sesión QA,
-   no Sesión 8 — el zip no había persistido entre sesiones, hubo que
-   re-subirlo). Verificado: 10 skills propias APB ✓, 10 externas ✓
-   (incluidas las de Playwright), agente `qa-orchestrator` + 5 subagentes
-   ✓ — todos coinciden con lo descrito. **Hallazgo no anticipado:** existe
-   además una carpeta `skills/_spec-driven/` con 3 skills más
-   (`spec-to-api-contract`, `spec-to-e2e-flows`, `spec-to-test-plan`) que
-   no estaba contabilizada en la descripción original de la Sesión 8.
-
-2. ✅ **Solapamiento resuelto — 4 fusiones, no 1.** El solapamiento real
-   encontrado fue mayor que el único caso anticipado
-   (`apb-qa-anonymize-v1.0` vs `apb-test-data-rgpd`). Se detectaron y
-   fusionaron **4 pares**, decisión de Debora: "fusionar e incorporar al
-   repo de APB-IA-FRAMEWORK" en todos los casos:
-   - `apb-qa-unit-test-gen-v1.0` ← `apb-unit-test-generator` (ampliado a
-     JS/TS, ejemplos de código, eventos, vínculo RGPD) → v1.1.0
-   - `apb-qa-test-plan-v1.0` ← `apb-test-plan-lcsp` (marco normativo
-     LCSP/ENS/RGPD/WCAG, tabla de criterios de éxito cuantificados,
-     contexto contractual de licitación) → v1.1.0
-   - `apb-sec-ens-v1.0` ← `apb-ens-security-audit` (tablas operativas de
-     controles concretos por nivel Alto/Medio, cruce OWASP, formato de
-     informe de hallazgos con severidad) → v1.1.0
-   - `apb-qa-anonymize-v1.0` ← `apb-test-data-rgpd` (tabla de dominios
-     ficticios APB con vocabulario portuario específico — IMO de buques,
-     código de atraque —, fixtures concretos Oracle/TypeScript/Cosmos
-     DB/PostGIS/.NET) → v1.2.0
-
-3. ✅ **Frontera de responsabilidad resuelta: `apb-ai-skills` queda
-   DEPRECADO** (decisión de Debora). Todo desarrollo futuro de
-   skills/agentes/subagentes de QA vive exclusivamente en
-   `APB-IA-FRAMEWORK`. El orquestador `qa-orchestrator` y 3 subagentes
-   (`dotnet-backend-agent`, `data-persistence-agent`, `django-gis-agent`)
-   referencian las 4 skills ahora fusionadas por su nombre antiguo —
-   **estas referencias no se han corregido ni se ha tocado nada del
-   repositorio `apb-ai-skills`**, por decisión explícita de Debora ("no
-   toques nada de apb-ai-skills, quédate solo con la decisión verbal").
-   El repo tiene 2 GitHub Actions activos (`sync-skills.yml`,
-   `validate-skills.yml`) que seguirán ejecutándose normalmente — Debora
-   fue informada de esto y decidió no actuar sobre ello en esta sesión.
-
-## Sesión Frontend — ✅ CERRADA (ejecutada 2026-06-24)
-
-Inicialmente agrupada con la Sesión QA por compartir la guía de estilo como
-insumo común; Debora pidió explícitamente separarlas — QA trata pruebas,
-Frontend trata construcción de interfaz. Contenido:
-
-1. ✅ **(Punto #20)** `apb-agent-ux-mockup-v1.0` creado (dominio `architecture`).
-   Agente para perfiles funcionales: traduce descripción en lenguaje natural a mockup
-   estructurado con componentes DevExtreme. Base: WidgetsGallery + ThemeBuilder.
-   Guía de estilos APB (PDFs) diferida — se añadirá en sesión futura.
-2. ✅ **(Punto #21)** Cubierto: `apb-dev-devexpress-front-v1.0` actualizado (v1.1 efectivo)
-   para referenciar `apb-dev-devexpress-selector-v1.0` como predecesor cuando no hay
-   mockup funcional, y aceptar output de `apb-agent-ux-mockup-v1.0` como input directo.
-   Stack ya existente (`apb-sub-dev-devexpress-v1.0`, `apb-agent-implementer-v1.0`)
-   cubre el flujo de generación de código real.
-3. ✅ **(Skill nueva)** `apb-dev-devexpress-selector-v1.0` creado — catálogo de
-   componentes DevExtreme con árbol de decisión, patrones de layout APB y guía de
-   theming ThemeBuilder. Usada por el agente de mockups y el subagente de desarrollo.
-4. **(Punto #22 — pendiente, sesión futura)** Analizar si APB necesita un catálogo
-   formal de componentes / design system más allá de la guía de estilo en PDF.
-
-**Componentes entregados en Sesión Frontend:**
-- `apb-dev-devexpress-selector-v1.0` (skill, domain: development)
-- `apb-agent-ux-mockup-v1.0` (agent, domain: architecture)
-- `apb-dev-devexpress-front-v1.0` actualizado (referencias a selector y agente de mockups)
-
-**Documentos ya disponibles para Sesión QA y Sesión Frontend** (en
-`/mnt/project/`, subidos por Debora antes de la Sesión 8):
-- `Guía_Estilos__Port_de_Barcelona__2022__v1.pdf` — "Rediseño componentes -
-  Port de Barcelona" — la guía de estilo UI/UX confirmada (punto #13
-  original). Insumo principal de Sesión Frontend.
-- `GISPEM__Guía_de_estilos.pdf` — guía de estilo relacionada (a confirmar
-  alcance exacto: ¿específica de GIS/GISPEM, o complementaria a la
-  anterior?).
-- `ManualUsuario_WidgetsLayout_v1.pdf` — manual de usuario de widgets y
-  layout, octubre 2022, autoría APB — candidato a referencia técnica de
-  componentes DevExpress/DevExtreme reales en uso.
-- `apb-ai-skills.zip` — insumo principal de Sesión QA.
+> ✅ **Ejecutadas** (QA post-Sesión 12; Frontend 2026-06-24). Registro completo
+> movido a [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+> Pendiente derivado que sigue vivo: **#22** (catálogo de componentes /
+> design system más allá de la guía en PDF) — ver más abajo.
 
 ---
 
@@ -269,14 +196,8 @@ Frontend trata construcción de interfaz. Contenido:
     / Arquitectura" en su copia del documento, o pedir a Claude que genere
     el texto exacto a copiar si lo prefiere.
 
-17. **Auditoría de skills/agentes de testing Playwright** ✅ **Material
-    recibido en Sesión 8** (`apb-ai-skills.zip`). Confirmado: cobertura
-    Playwright vía 3 skills externas (`playwright-generate-test`,
-    `playwright-regression-testing`, `api-playwright-test-developer`),
-    coherente con `proyecto.md` §2 ("MCP de interés: Playwright"). Sin
-    pérdida detectada. **Promovido a Sesión QA propia** por decisión de
-    Debora (Sesión 8), junto con el solapamiento de responsabilidad entre
-    `APB-IA-FRAMEWORK` y `apb-ai-skills` detectado durante la revisión.
+17. **Auditoría de skills/agentes de testing Playwright** — ✅ EJECUTADO
+    (Sesión QA). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
 18. **Comparación de funcionalidad: GitHub real vs. zip vs. zips de sesiones previas**
     Confirmar que no se ha perdido funcionalidad respecto al repo de GitHub
@@ -291,25 +212,16 @@ Frontend trata construcción de interfaz. Contenido:
 
 ## Bloque añadido durante Sesión 8 (Sesión Frontend)
 
-20. **Agente de mockups para perfiles funcionales**
-    Agente para que personas con perfil funcional (no desarrolladoras)
-    generen mockups de interfaz basados en la guía de estilo APB y en
-    componentes DevExpress/DevExtreme, sin necesidad de escribir código.
-    Sesión Frontend.
+20. **Agente de mockups para perfiles funcionales** — ✅ EJECUTADO (Sesión
+    Frontend: `apb-agent-ux-mockup-v1.0`). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-21. **Agente/skill de generación de frontend para desarrolladores**
-    Para que desarrolladores generen código de frontend real (no mockup)
-    basado en la misma guía de estilo + DevExpress/DevExtreme. Revisar si
-    amplía `apb-dev-devexpress-front-v1.0` (ya existente en
-    `APB-IA-FRAMEWORK`) o si se crea como skill nueva complementaria.
-    Sesión Frontend.
+21. **Agente/skill de generación de frontend para desarrolladores** — ✅
+    EJECUTADO (Sesión Frontend: `apb-dev-devexpress-front-v1.0` +
+    `apb-dev-devexpress-selector-v1.0`). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-22. **Análisis de catálogo de componentes de frontend / sistema de diseño**
-    Evaluar, como paso posterior a los puntos 20 y 21 (no en la misma
-    sesión), si APB necesita un catálogo de componentes de frontend
-    formalizado y/o un sistema de diseño (design system) más allá de la
-    guía de estilo en PDF. Decisión de alcance mayor — requiere primero ver
-    qué patrones emergen al construir los agentes de los puntos 20 y 21.
+22. **Catálogo de componentes / sistema de diseño** — ✅ EJECUTADO (Sesión
+    Design System, repo `APB-DESIGN-SYSTEM`). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+    Pendiente derivado vivo: **#53** (prueba e2e Design System).
 
 23. **Documentación del framework por audiencias, en formato Word**
     Generar documentación de `APB-IA-FRAMEWORK` (no de `apb-ai-skills`,
@@ -348,70 +260,15 @@ Frontend trata construcción de interfaz. Contenido:
     los convierte a .docx y añade el documento de Dirección (que aún no
     existe en ningún formato).
 
-24. **Incorporar el enfoque de `multica-ai/andrej-karpathy-skills`** ✅
-    **Sesión asignada confirmada: Sesión 10** (decisión Debora, post-Sesión
-    9). Razón: si se construye primero el agente meta-gobernanza (Sesión
-    10) y se decide después si estos principios aplican a todo componente
-    nuevo, habría que retocar el agente meta-gobernanza ya cerrado. Se
-    resuelve ANTES o DENTRO del briefing de Sesión 10, no en Sesión 13.
-    (añadido en Sesión 8). Repositorio MIT (175k★) que condensa 4
-    principios operacionales para agentes de codificación, derivados de
-    observaciones públicas de Andrej Karpathy sobre fallos típicos de LLMs
-    al programar:
-    1. **Think Before Coding** — no asumir en silencio; presentar
-       interpretaciones alternativas cuando hay ambigüedad; señalar
-       confusión en vez de adivinar.
-    2. **Simplicity First** — código mínimo que resuelve el problema, sin
-       abstracciones ni flexibilidad no solicitadas.
-    3. **Surgical Changes** — tocar solo lo que el cambio requiere; no
-       "mejorar" código adyacente; limpiar únicamente los huérfanos que el
-       propio cambio genera, no deuda técnica preexistente no solicitada.
-    4. **Goal-Driven Execution** — transformar tareas imperativas en
-       criterios de éxito verificables (ej. "arregla el bug" → "escribe un
-       test que lo reproduzca, luego haz que pase").
+24. **Incorporar el enfoque de `multica-ai/andrej-karpathy-skills`** — ✅
+    EJECUTADO (Sesión 10/11): `apb-dev-simplicity-first-v1.0` +
+    `apb-dev-surgical-changes-v1.0` creadas; principios 1 y 4 tratados como
+    transversales. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-    Evaluar en qué nivel del framework encaja mejor: ¿skill propia
-    (`apb-dev-*`), ampliación de `GOVERNANCE.md`/`SYSTEM.md` como principio
-    transversal, o ambos? Relacionado con el Principio Fundamental #8 del
-    framework ("No vibe coding") y con el punto #12 de este mismo documento
-    (necesidad de loops) — el principio 4 (Goal-Driven Execution) es
-    literalmente un mecanismo de loop con criterio de verificación
-    explícito. Sesión a determinar — candidata natural: Sesión 13 (cierre
-    de pendientes históricos) por su relación directa con el punto #12, o
-    Sesión 10 (agente meta-gobernanza) si se decide que debe aplicarse a
-    todo componente nuevo que se genere.
-
-25. **Agente/subagente de análisis de deuda técnica y remediación**
-    (añadido en Sesión 8). Agente o subagente dedicado a analizar, sobre un
-    repositorio o proyecto APB dado:
-    - Deuda técnica acumulada
-    - Vulnerabilidades de seguridad
-    - Dependencias obsoletas (librerías, paquetes, versiones de runtime)
-    - Actualizaciones pendientes (frameworks, SDKs, herramientas)
-    - Cuellos de botella de rendimiento
-    - Ajustes de rendimiento recomendados
-    - Incumplimientos de las políticas corporativas APB (LCSP, ENS, RGPD,
-      WCAG 2.1 AA, estándares internos de `GOVERNANCE.md`)
-
-    Salida esperada: **plan detallado y priorizado** de cómo abordar y
-    corregir cada hallazgo (no solo el diagnóstico), y **apertura de
-    tickets en Jira** por cada acción del plan — coherente con el principio
-    de "todo resultado debe identificarse claramente" (`proyecto.md` §2) y
-    con la prohibición de auto-aprobación (`proyecto.md` §3.6): el agente
-    propone y prioriza, un humano decide qué se ejecuta y cuándo.
-
-    Relacionado con trabajo ya existente: `apb-agent-risk-exception-v1.0`
-    (riesgos/excepciones, pero no genera plan de remediación ni abre
-    tickets), `apb-dev-sonar-clean-v1.0` / Sesión 11 (incumplimientos Sonar
-    específicamente — este agente nuevo tiene alcance más amplio: no solo
-    Sonar, sino dependencias, rendimiento y vulnerabilidades en conjunto),
-    `apb-agent-finops-v1.0` (cuellos de botella de coste, no de
-    rendimiento técnico). Evaluar si se construye como agente nuevo
-    (`apb-agent-tech-debt-v1.0` o similar) o como subagente de
-    `apb-agent-sre-v1.0` / `apb-agent-platform-engineer-v1.0`. Sesión a
-    determinar — candidata natural: ampliar el alcance de la Sesión 11
-    (hoy centrada solo en Sonar) o crear sesión propia si el volumen lo
-    justifica.
+25. **Agente/subagente de análisis de deuda técnica y remediación** — ✅
+    EJECUTADO: `apb-agent-tech-debt-v1.0` creado (deuda, vulnerabilidades,
+    dependencias, rendimiento, incumplimientos APB → plan priorizado +
+    tickets Jira). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
 26. **Mecanismo de telemetría para los KPIs de `proyecto.md` §6**
     (añadido en Sesión 8, durante el checklist exhaustivo). El framework no
@@ -572,25 +429,11 @@ plataforma transversal. **Pendiente de alcance con Debora**: ¿qué casos de
 uso concretos? (¿notificación de aprobaciones humanas vía Teams/mail?
 ¿lectura de documentos desde SharePoint como input de skills?).
 
-### 31. Skill de conversión universal a Markdown ✅ **Sesión asignada
-confirmada: Sesión 10** (decisión Debora, post-Sesión 9), junto con #24,
-por la misma razón de naturaleza transversal — debe decidirse antes de que
-el agente meta-gobernanza quede cerrado, no después.
+### 31. Skill de conversión universal a Markdown — ✅ EJECUTADO
 
-Skill para transformar cualquier adjunto (Office: Word/Excel/PowerPoint,
-PDF, etc.) que se pase a agentes/skills/subagentes a Markdown, bajo el
-principio de que todos los componentes del framework deben trabajar
-internamente en Markdown por eficiencia, aunque el usuario aporte archivos
-ofimáticos. Es un principio transversal con impacto en **todos** los
-agentes que aceptan adjuntos como input — candidata a:
-- Nueva skill `apb-dev-doc-to-markdown-v1.0` (o nombre similar) en dominio
-  `platform` o `development`
-- Posible principio nuevo en `GOVERNANCE.md`/`SYSTEM.md`: "todo input
-  ofimático se normaliza a Markdown antes de ser consumido por cualquier
-  componente"
-Sesión candidata: Sesión 10 (meta-gobernanza) por su naturaleza
-transversal, con implementación de la skill en la sesión que corresponda
-por dominio.
+> `apb-plat-doc-to-markdown-v1.0` creada (dominio `platform`): normaliza
+> cualquier adjunto ofimático/PDF a Markdown antes de ser consumido por los
+> componentes. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
 ### 32. Mecanismo automático de actualización de inventario/documentación
 
@@ -812,26 +655,10 @@ arriesga conclusiones contradictorias entre sí.
 
 ---
 
-### 42. Hallazgo de formato: comillas mal cerradas en sección "Dependencias" ✅ **RESUELTO**
+### 42. Comillas mal cerradas en sección "Dependencias" ✅ **RESUELTO**
 
-**Detectado durante preparación de Sesión 11, corregido el mismo día por decisión explícita
-de Debora** ("Arregla el tema de las comillas"). 19 archivos de skills (dominios
-`development`, `discovery`, `qa`) tenían un patrón de error sistemático en la sección
-"🔗 Dependencias" del cuerpo del documento: backtick de apertura sin cierre o mezclado con
-comilla doble, p. ej. `` `apb-dev-code-review-v1.0" `` en lugar de
-`` `apb-dev-code-review-v1.0` ``. No afectaba al frontmatter YAML (los IDs declarados ahí
-eran correctos) — era puramente cosmético en Markdown del cuerpo.
-
-**Archivos corregidos (19, 47 líneas en total):** `apb-dev-pr-doc-v1.0`,
-`apb-dev-openspec-review-v1.0`, `apb-dev-legacy-mapper-v1.0`, `apb-dev-sonar-clean-v1.0`,
-`apb-dev-devexpress-front-v1.0`, `apb-dev-gis-django-v1.0`, `apb-disc-backlog-v1.0`,
-`apb-disc-adversarial-v1.0`, `apb-disc-ddd-legacy-v1.0`, `apb-disc-reverse-doc-v1.0`,
-`apb-disc-enrich-req-v1.0`, `apb-disc-epic-mono-v1.0`, `apb-disc-reverse-code-v1.0`,
-`apb-disc-cosmic-v1.0`, `apb-disc-business-v1.0`, `apb-disc-spec-gen-v1.0`,
-`apb-qa-release-ready-v1.0`, `apb-qa-unit-test-gen-v1.0`, `apb-qa-post-migration-v1.0`,
-`apb-qa-test-auto-v1.0`. Corrección puramente sintáctica (cierre de backtick), sin tocar
-ningún otro contenido de los archivos. Validado: `scripts/validate_repo.py --strict` sigue
-en 0 errores tras el cambio.
+> ✅ Corregido (19 archivos, preparación de Sesión 11). Registro completo en
+> [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
 ---
 
@@ -958,6 +785,11 @@ punto.
 | ~~**22 (#47bis)**~~ | ~~Refactorización de taxonomía de carpetas skills/ — consolidar 13 carpetas de un solo archivo en dominios correctos~~ | ~~#47bis~~ | ✅ CERRADA (2026-06-26) — 13 carpetas consolidadas, archivos movidos a dominios correctos, nomenclatura auditada (259 componentes verificados), 1 violación corregida (`apb-skill-` → `apb-design-`), 12 terceros reorganizados en subcarpetas por autor. |
 | **22 (#49)** | Propagación automática Design System (decisión distribución: npm / Git submodule / CDN) | #49 | **Requiere decisión de Debora sobre mecanismo de distribución** |
 | ~~**Sesión 18 cont. (#54)**~~ | ~~Entrevista portuaria + verificación de dominio + actualización repo dominios~~ | ~~#54~~ | ✅ CERRADA (2026-06-26) — `apb-sub-ddd-interview-v1.0` v1.3.0: (A) Banco A portuario (buques, escalas, consignatario, GISPEM, PORTIC…); (B) Banco B corporativo (RRHH, viajes, contratación LCSP, adm. electrónica, finanzas, jurídico); (C) Fase 1-INT integración entre sistemas (flujo de datos, trigger, frecuencia, fallo, patrón ACL/Published Language/Shared Kernel/event-driven); (D) Fase 1-EVO evolutivos (revisión de lo existente, clasifica en extensión/nuevo BC/deuda técnica/breaking change); Fase 5 verificación APB-DOMAIN-CATALOG; Fase 6 generación artefacto `domain.md`. |
+| ~~**Harness**~~ | ~~Harness Engineering agnóstico de LLM: 5 subsistemas, System of Record + ACID, Feature Lists + Pass-State Gating, validación 3 capas, Clean State Handoff. Gobernanza + scaffolding + checks nuevos en `validate_repo.py`~~ | ~~#83~~ | ✅ CERRADA (2026-07-02, sesión combinada con #78) — SYSTEM.md §10 + GOVERNANCE.md §8 + `repo-scaffold/harness-ready/` + check #19 |
+| ~~**Estándar Prompting**~~ | ~~Estándar de estructura de prompt para todos los componentes (razonar→plan→ejecutar, objetivo, autocrítica, qué-NO-hacer, ejemplo E/S, separación SISTEMA/USUARIO) + retrofit + check en validador~~ | ~~#78~~ | ✅ CERRADA (2026-07-02, sesión combinada con #83) — `PROMPTING_STANDARD.md` + 6 plantillas + retrofit 244 componentes + check #18 en ERROR |
+| **QA-2** | Metodología y plantilla de planes de pruebas (Rovo→Copilot, trazabilidad, histórico, gobernanza, no-regresión rendimiento) + navegación agéntica para pruebas funcionales | #82, #84 | **Bloqueante: ejemplo real + planes preliminares de Debora** |
+| **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | "Fine Skills" requiere URL de Debora |
+| **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
@@ -1146,73 +978,10 @@ Ampliación del agente `apb-agent-ddd-v1.0` (creado en Sesión 18) o posible age
 > Fuente: `discovery/analisis-enriquecimiento-framework.md` (análisis completo: 26 agentes · 23 subagentes · 129 skills · 8 workflows, generado 2026-06-27). El documento fuente completo está en el repo — esta sección extrae las tareas accionables en formato de plan.
 > Sesiones candidatas: **Sesión Enriquecimiento A** (rewirings + agentes alta prioridad), **Sesión Enriquecimiento B** (skills nuevas por dominio), **Sesión Enriquecimiento C** (workflows + providers).
 
-**Estado de ejecución — Sesión Enriquecimiento A (2026-06-27):**
-
-| Bloque | Descripción | Estado |
-|---|---|---|
-| Bloque 1 — Rewirings (punto #55) | 44 conexiones aplicadas en 19 agentes. Corrección: ID real es `third-google-finops-multicloud-v1.0` (p, no b). validate_repo.py --strict → 0 errores. INDEX.md regenerado. | ✅ COMPLETADO |
-| Bloque 2 — skills nuevas (ops×1 alerting-design + sec×4 + gov×1 audit) | sec: sast, dast, supply-chain, patch-management. gov: framework-audit. ops: alerting-design (sesión anterior). validate_repo.py 0 errores. | ✅ COMPLETADO |
-| Bloque 3 — 3 agentes nuevos (Change Manager, Problem Manager, Data Governance) | change-manager, problem-manager, data-governance. ITIL + RGPD/ENS/NIS2. validate_repo.py 0 errores. | ✅ COMPLETADO |
-| Bloque 4 — 5 subagentes nuevos (k8s, ACA, Rancher, ServiceBus, FinOps Azure) | k8s, aca, rancher, servicebus, finops-azure. System prompts incluidos. validate_repo.py 0 errores. | ✅ COMPLETADO |
-| Bloque 5 — Prompts de sistema en iis-apache, network, oracle + qa-e2e | System prompts añadidos en 4 subagentes existentes. Stack APB detallado en cada uno. | ✅ COMPLETADO |
-
----
-
-### 55. ✅ Rewirings: skills/subagentes existentes sin conectar a sus agentes correctos (costo cero, impacto inmediato)
-
-> **EJECUTADO** — Sesión Enriquecimiento A, 2026-06-27. 44 rewirings aplicados en 19 agentes. validate_repo.py --strict → 0 errores. INDEX.md regenerado.
-
-El análisis detecta ~20 conexiones faltantes entre skills ya creadas y los agentes que deberían usarlas. No requieren crear nada nuevo — solo añadir la referencia en el frontmatter del agente correspondiente y ejecutar `validate_repo.py --strict`.
-
-**Lista completa de rewirings pendientes:**
-
-| Skill/subagente a conectar | Agente destino | Justificación |
-|---|---|---|
-| `apb-sub-dev-parallel-v1.0` | `apb-agent-implementer-v1.0` | El subagente de despacho paralelo existe pero no está en la lista del Implementer — impide implementación paralela en el agente principal |
-| `apb-dev-frontend-devexpress-events-v1.0` | `apb-agent-implementer-v1.0` | Skill de DevExtreme para eventos, no conectada |
-| `apb-dev-implementation-patterns-v1.0` | `apb-agent-implementer-v1.0` | Catálogo de patrones, no conectado al Implementer principal |
-| `apb-dev-sql-gen-v1.0` | `apb-agent-implementer-v1.0` | `apb-dev-sql-fix-v1.0` sí está, pero no la de generación |
-| `apb-disc-brainstorming-v1.0` | `apb-agent-business-analyst-v1.0` | Obligatoria antes de cualquier trabajo creativo — gap inconsistente con "grill before code" |
-| `apb-disc-adversarial-v1.0` | `apb-agent-business-analyst-v1.0` | El BA debe hacer devil's advocate sobre los requisitos que recoge |
-| `apb-pm-product-analysis-v1.0` | `apb-agent-business-analyst-v1.0` | Análisis de producto complementa al BA |
-| `apb-disc-brainstorming-v1.0` | `apb-agent-spec-engineer-v1.0` | Fase exploratoria previa a generación de spec |
-| `apb-disc-design-approval-v1.0` | `apb-agent-spec-engineer-v1.0` | Gate de aprobación de diseño, existe pero no conectada |
-| `apb-disc-brainstorming-v1.0` | `apb-agent-domain-architect-v1.0` | Fase exploratoria antes de modelar |
-| `apb-disc-brainstorming-v1.0` | `apb-agent-tech-discovery-v1.0` | Exploración inicial en evaluación de tecnologías |
-| `apb-gov-standards-v1.0` | `apb-agent-tech-discovery-v1.0` | Verificar que la tecnología evaluada cumple los estándares APB |
-| `apb-sec-mitre-mapping-v1.0` | `apb-agent-security-architect-v1.0` | Existe en catálogo pero no conectada al Security Architect |
-| `apb-sec-cloud-hardening-v1.0` | `apb-agent-security-architect-v1.0` | CIS Benchmark hardening, existe pero no conectada |
-| `apb-arch-event-driven-master-v1.0` | `apb-agent-technical-architect-v1.0` | Skill maestro de eventos, más profunda que la básica ya conectada |
-| `apb-arch-dotnet-base-v1.0` | `apb-agent-technical-architect-v1.0` | Reglas obligatorias para proyectos .NET, no conectada |
-| `apb-arch-design-events-v1.0` | `apb-agent-technical-architect-v1.0` | Diseño de microservicios orientados a eventos, no conectada |
-| `apb-arch-event-driven-master-v1.0` | `apb-agent-cloud-architect-v1.0` | Skill maestro de eventos no conectada al Cloud Architect |
-| `apb-plat-deployment-finish-v1.0` | `apb-agent-release-manager-v1.0` | La skill de cierre de deployment existe exactamente para esto pero no está aquí |
-| `apb-plat-ms-notify-v1.0` | `apb-agent-release-manager-v1.0` | Notificación post-release a stakeholders |
-| `apb-gov-jira-evidence-v1.0` | `apb-agent-risk-exception-v1.0` | El agente de excepciones no puede crear tickets de excepción |
-| `apb-gov-evidence-v1.0` | `apb-agent-risk-exception-v1.0` | Generación de evidencias para expediente de excepción |
-| `apb-plat-ms-notify-v1.0` | `apb-agent-risk-exception-v1.0` | Notificación a validadores de excepción |
-| `apb-qa-tdd-v1.0` | `apb-agent-qa-auto-v1.0` | TDD existe pero no está en el QA Agent |
-| `apb-qa-readiness-check-v1.0` | `apb-agent-qa-auto-v1.0` | Gate de readiness antes de implementar |
-| `apb-qa-testing-strategy-v1.0` | `apb-agent-qa-auto-v1.0` | Estrategia de testing para eventos, no conectada |
-| `apb-qa-pipeline-v1.0` | `apb-agent-qa-auto-v1.0` | Evaluación de calidad del pipeline CI/CD |
-| `apb-qa-framework-v1.0` | `apb-agent-meta-builder-v1.0` | El meta-builder debería auto-validar los componentes que genera |
-| `apb-sub-ops-azure-v1.0` | `apb-agent-observability-v1.0` | Es la fuente de datos principal (APBFrameworkTelemetry_CL) pero el subagente solo está en SRE |
-| `apb-ops-slo-design-v1.0` | `apb-agent-observability-v1.0` | Monitoring sin SLOs no tiene objetivo |
-| `apb-gov-spec-sync-v1.0` | `apb-agent-governance-v1.0` | Gobernanza implica que las specs estén sincronizadas |
-| `apb-plat-db-migration-v1.0` | `apb-agent-modernization-v1.0` | La modernización sin migración de BD es incompleta |
-| `apb-disc-reverse-doc-v1.0` | `apb-agent-modernization-v1.0` | Análisis de documentación del legacy, complementa reverse-code |
-| `apb-dev-review-tl-v1.0` | `apb-agent-code-reviewer-v1.0` | Perspectiva de Tech Lead, complementa al review básico |
-| `apb-dev-impact-analysis-v1.0` | `apb-agent-code-reviewer-v1.0` | ¿Qué rompe este PR? Esencial en un reviewer |
-| `apb-dev-surgical-changes-v1.0` | `apb-agent-code-reviewer-v1.0` | Detectar scope creep en un PR es función del reviewer |
-| `apb-dev-gis-django-v1.0` | `apb-agent-code-reviewer-v1.0` | Review de código Python/Django |
-| `apb-doc-event-specs-v1.0` | `apb-agent-documentation-v1.0` | Specs CloudEvents/AsyncAPI, existe pero no conectada |
-| `apb-doc-generate-ppt-v1.0` | `apb-agent-documentation-v1.0` | Skill de generación de PPT sin agente asignado |
-| `apb-doc-generate-word-v1.0` | `apb-agent-documentation-v1.0` | Skill de generación de Word sin agente asignado |
-| `third-google-finobs-multicloud-v1.0` | `apb-agent-finops-v1.0` | Ya aprobada en catálogo, no está conectada al FinOps Agent |
-| `apb-ops-dependency-audit-v1.0` | `apb-agent-finops-v1.0` | Detectar recursos huérfanos (sin proyecto asignado) |
-| `third-nextlevel-ux-v1.0` | `apb-agent-ux-mockup-v1.0` | Skill de UX aprobada, existe pero no conectada al agente |
-
-**Sesión asignada:** Sesión Enriquecimiento A — primera acción (sin bloqueantes, costo cero).
+> **Estado de ejecución — Sesión Enriquecimiento A (2026-06-27): ✅ COMPLETADA.**
+> Los 5 bloques (rewirings #55 · skills sec/gov/ops · 3 agentes · 5 subagentes ·
+> prompts de sistema) y el detalle del **punto #55** (44 rewirings en 19 agentes)
+> se han movido a [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
 ---
 
@@ -1655,113 +1424,12 @@ Los siguientes agentes tienen gaps de calidad o contenido que requieren actualiz
 
 ---
 
-## Revisión integral del framework — 2026-06-29
+## Revisión integral del framework — 2026-06-29 → ✅ ARCHIVADA
 
-> Revisión ejecutada post-Sesión Enriquecimiento B. Cuatro dimensiones: estructura/consistencia, funcional, seguridad/implementación, cobertura de pruebas. Fuente: validate_repo.py + 3 agentes de análisis paralelo.
-
-### Resultados por dimensión
-
-#### Dimensión 1 — Estructura y consistencia
-
-| Hallazgo | Severidad | Estado |
-|---|---|---|
-| 26 de 29 agentes sin `## Marcado IA obligatorio (POLICY_AI_USAGE §6)` | 🔴 Crítico | Pendiente |
-| 19 subagentes sin System Prompt (esqueletos sin instrucciones al LLM) | 🔴 Crítico | Pendiente |
-| validate_repo.py no comprueba Marcado IA en `agents/` (condición `skills/apb-owned` excluye la carpeta agents) | 🔴 Crítico (bug validador) | Pendiente |
-| 4 skills nuevas (sec×3 + gov×1) no referenciadas en ningún agente | 🟡 Medio | Pendiente |
-| Dominio `orchestration`: solo 1 skill (`apb-orch-multi-agent-v1.0`), sin agente dedicado | 🟡 Medio | Pendiente |
-| Dominio `design`: solo 2 skills, sin agente dedicado de diseño | 🟡 Bajo | Pendiente |
-| 59 warnings de `source_commit: unverified` en skills de terceros | ⚪ Info | Deliberado (política GOVERNANCE.md §4.2) |
-
-#### Dimensión 2 — Funcional
-
-| Hallazgo | Severidad | Descripción |
-|---|---|---|
-| `apb-wf-incident-l1-v1.0` orquesta skills directamente, NO usa `apb-agent-incident-support-v1.0` como agente padre | 🟡 Medio | El workflow y el agente están desacoplados — debería referenciar al agente |
-| Workflow `apb-wf-cloud-migration-v1.0`: 9 agentes en cadena sin formato de output inter-agente definido | 🟡 Medio | Platform Engineer → SRE: no hay contrato de datos entre pasos |
-| Solapamiento funcional: `apb-ops-incident-diagnose-v1.0` vs `apb-ops-rca-v1.0` | 🟡 Medio | Ambas producen "causa raíz"; diagnose es táctico/inmediato, rca es post-incidente. Diferencia no documentada claramente |
-| Solapamiento parcial: `apb-sec-threat-model-v1.0` (STRIDE) vs `apb-sec-risk-analysis-v1.0` (ISO 27005) | 🟢 Bajo | Diferencia real (táctico vs. estratégico) pero no explicada en los propios documentos |
-| `apb-agent-finops-v1.0` requiere "catálogo de precios Azure" sin que ninguna skill tenga ese output | 🟡 Medio | Gap de input no cubierto en la cadena |
-| Todos los agentes críticos tienen autonomy_level 1 | ✅ Correcto | |
-| `apb-agent-compliance-audit-v1.0` respeta gates humanos correctamente | ✅ Correcto | |
-
-#### Dimensión 3 — Seguridad e implementación
-
-| Hallazgo | Severidad | Descripción |
-|---|---|---|
-| Sin credenciales hardcodeadas detectadas en ningún fichero | ✅ Seguro | Patrones detectados por validate_repo.py línea 102-108 |
-| Máximo autonomy_level en producción: 2. Nivel 4 no usado (declarado en AUTONOMY_LEVELS.md) | ✅ Correcto | |
-| Skills de seguridad con instrucciones defensivas, sin instrucciones de ataque | ✅ Correcto | |
-| `apb-ops-incident-diagnose-v1.0` (nivel 2) propone `ALTER SYSTEM KILL SESSION` Oracle | 🟡 Bajo | Requiere "confirmación humana" en texto pero el framework no lo bloquea mecánicamente |
-| SCHEMA.md y validate_repo.py están sincronizados en campos obligatorios | ✅ Correcto | |
-| CI/CD `.github/workflows/validate.yml` usa `--strict`, no auto-commitea catálogo | ✅ Correcto | |
-| validate_repo.py línea 346: condición `"skills/apb-owned" in rel_path` excluye comprobación Marcado IA en agentes | 🔴 Bug | Requiere corrección |
-
-#### Dimensión 4 — Cobertura de pruebas
-
-| Hallazgo | Severidad | Descripción |
-|---|---|---|
-| `tests/test_validate_repo.py`: 19 tests unitarios sobre validate_repo.py | ✅ Existe | Cubre YAML, secretos, refs rotas, circularidades |
-| ~85% de skills tienen sección "Ejemplo de Uso" con casos concretos | ✅ Bueno | |
-| ~90% de criterios de calidad son verificables objetivamente (checkboxes, porcentajes) | ✅ Bueno | |
-| Solo ~40% de skills documentan casos de error / edge cases en los ejemplos | 🟡 Medio | La mayoría asume inputs válidos |
-| ~30% de skills no documentan qué hace el agente si el input está incompleto | 🟡 Medio | Comportamiento ante entrada nula no especificado |
-| Workflows documentan happy path y gates, pero NO fallos en cascada ni iteraciones | 🟡 Medio | ¿Qué ocurre si falla el paso 3 de 8? No documentado |
-| Tests de comportamiento de agentes: AUSENTES | 🔴 Gap crítico | No existe suite que valide "dado prompt X → output Y esperado" |
-| Self-testing: `apb-qa-framework-v1.0` solo valida estructura, no comportamiento | 🟡 Medio | Pendiente extensión semántica |
-
----
-
-### Sesiones propuestas resultado de la revisión
-
-#### Sesión Correcciones Urgentes (estimado: 2-3h)
-
-**Objetivo:** Corregir los 3 hallazgos críticos de estructura antes de continuar añadiendo componentes.
-
-| Tarea | Detalle |
-|---|---|
-| C1 — Corregir validate_repo.py línea 346 | Extender condición para incluir directorio `agents/` en comprobación de Marcado IA |
-| C2 — Marcado IA en 26 agentes | Añadir sección `## Marcado IA obligatorio (POLICY_AI_USAGE §6)` a los 26 agentes sin ella. Patrón: los 3 creados en Sesión Enriquecimiento B son la referencia |
-| C3 — Rewiring 4 skills huérfanas | `apb-sec-sast`, `apb-sec-dast`, `apb-sec-supply-chain` → `apb-agent-security-architect-v1.0`; `apb-gov-framework-audit` → `apb-agent-governance-v1.0` |
-
-#### Sesión Enriquecimiento C — Subagentes + Funcional (estimado: 4-6h)
-
-**Objetivo:** System prompts en 19 subagentes prioritarios + correcciones funcionales detectadas.
-
-| Bloque | Tareas |
-|---|---|
-| C-Bloque 1 — System prompts prioritarios (9 subagentes) | `apb-sub-dev-net`, `apb-sub-dev-devexpress`, `apb-sub-dev-django`, `apb-sub-dev-sql`, `apb-sub-obs-grafana`, `apb-sub-obs-powerbi`, `apb-sub-sec-ens`, `apb-sub-gov-standards`, `apb-sub-ops-azure` |
-| C-Bloque 2 — System prompts secundarios (10 subagentes) | `apb-sub-ddd-*` (×5), `apb-sub-dev-parallel`, `apb-sub-plat-ghactions`, `apb-sub-plat-jenkins`, `apb-sub-qa-unit`, `apb-sub-qa-security` |
-| C-Bloque 3 — Correcciones funcionales | (1) Añadir `apb-agent-incident-support-v1.0` como orquestador en `apb-wf-incident-l1-v1.0`. (2) Documentar diferencia diagnose vs RCA en ambas skills. (3) Definir formato de output inter-agente en `apb-wf-cloud-migration-v1.0` (contrato Platform Engineer → SRE). (4) Identificar cómo cubre el framework el input "catálogo de precios Azure" para FinOps |
-
-#### Sesión Calidad de Pruebas (estimado: 3-4h)
-
-**Objetivo:** Mejorar cobertura de casos de error y crear base de tests de comportamiento.
-
-| Tarea | Detalle |
-|---|---|
-| Q1 — Edge cases en skills críticas | Añadir sección "Comportamiento ante inputs incompletos" en las 20 skills más usadas (operation, security, governance). Documenta: qué pregunta el agente, qué devuelve si falta input obligatorio |
-| Q2 — Fallos en cascada en workflows | Añadir sección `## Manejo de fallos` en los 3 workflows más complejos (cloud-migration, sdd-full, incident-l1): qué ocurre si falla cada paso y cómo se recupera |
-| Q3 — Extender apb-qa-framework-v1.0 | Añadir validaciones semánticas: presencia de ejemplos de error, criterios cuantificables, sección de comportamiento ante inputs nulos |
-| Q4 — Primer test de comportamiento (piloto) | Crear `tests/test_agent_behavior.md`: 3-5 casos de prueba documentados para `apb-agent-incident-support-v1.0` con prompt de entrada, output esperado y criterios de evaluación. Base para futura automatización |
-
-#### Sesión Power BI / Framework Metrics (sesión separada, bloqueante: datos reales)
-
-> Ya planificada anteriormente. Pipeline: GitHub Action → Azure Storage → Power BI dinámico. No iniciar hasta tener al menos 30 días de uso real del framework con datos registrados.
-
----
-
-### Backlog de mejoras detectadas (no urgentes)
-
-| ID | Mejora | Prioridad | Sesión candidata |
-|---|---|---|---|
-| ~~M1~~ | ~~Dominio `orchestration`: añadir 2-3 skills de coordinación multi-agente~~ | Baja | ✅ RESUELTO (2026-06-29) — `apb-orch-context-handoff-v1.0` (transferencia secuencial) + `apb-orch-human-checkpoint-v1.0` (protocolo aprobación humana) creadas |
-| ~~M2~~ | ~~Dominio `design`: añadir agente UX/IA design y 2-3 skills de design system~~ | Baja | ✅ RESUELTO (2026-06-29) — `apb-design-frontend-design-system-v1.0` añadida a `apb-agent-ux-mockup-v1.0` (gap crítico corregido) + `apb-design-wcag-v1.0` creada (obligatoria por RD 1112/2018) |
-| ~~M3~~ | ~~Documentar diferencia STRIDE vs ISO 27005 en las propias skills (cuándo usar cada una)~~ | Baja | ✅ RESUELTO (2026-06-29) — callout diferenciador añadido en `apb-sec-threat-model-v1.0` y `apb-sec-risk-analysis-v1.0` |
-| ~~M4~~ | ~~`apb-ops-incident-diagnose-v1.0`: añadir nota sobre relación con `apb-ops-rca-v1.0`~~ | Baja | ✅ RESUELTO (verificado) — ya estaba documentado en ambas skills en sesión anterior |
-| ~~M5~~ | ~~Agente PM dedicado para las 7 skills de gestión de proyecto huérfanas~~ | Media | ✅ RESUELTO (2026-06-29) — `apb-agent-pm-v1.0` creado con 8 skills PM; `consumed_by: apb-agent-pm-v1.0` añadido en las 8 skills |
-| ~~M6~~ | ~~Encoding workflows: verificar que todos los .md están guardados UTF-8 sin BOM~~ | Baja | ✅ RESUELTO (2026-06-29) — `grep -rl $'\xef\xbb\xbf' workflows/` → sin BOM detectado |
-- Confirmar prioridad entre Sesión Enriquecimiento A y la Sesión 21 (SQL + incidencias), ya que ambas tocan el dominio `operation`.
+> Auditoría fechada (4 dimensiones + sesiones propuestas + backlog M1–M6, todos
+> resueltos) movida a [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+> Es una fotografía de estado ya superada por la ejecución posterior; los
+> pendientes derivados se siguen en las secciones §H/§I de más abajo.
 
 ---
 
@@ -2365,6 +2033,184 @@ Antes de construir nada, realizar:
 
 ---
 
+## Bloque añadido 2026-07-02 (Debora — estándar de prompting, memoria, planes de pruebas, harness)
+
+> Estado: **#78 y #83 ejecutados** (Sesión #78+#83, 2026-07-02 — ver
+> [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md)). El resto (#79–#82, #84)
+> sigue anotado, no ejecutado, hasta su sesión propia. Se cruzan explícitamente
+> con contenido existente para evitar duplicación.
+
+### 78. Estándar de prompting para TODOS los componentes — ✅ EJECUTADO
+(Sesión #78+#83, 2026-07-02). Estándar canónico: `context/apb/standards/PROMPTING_STANDARD.md`
+(10 ejes + 11 prohibiciones). 6 plantillas actualizadas, retrofit completo de 244 componentes,
+check #18 del validador en ERROR. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+### 79. Terceros a verificar/incorporar: MCP Builder, Fine Skills, Anthropic cybersecurity skills
+
+- **MCP Builder** — **ya incorporado** como `third-anthropic-mcp-builder-v1.0`
+  (Sesión 8). Acción: confirmar que el alcance incorporado cubre lo que
+  Debora espera (¿construir MCPs propios de APB para providers como
+  Teams/SharePoint del #30?), no re-incorporar.
+- **"Fine Skills"** — fuente a identificar con precisión (¿`skills.sh`
+  "fine skills", fine-tuning de skills, u otra fuente?). **Requiere que
+  Debora aporte URL/organización exacta** antes de evaluar (mismo criterio
+  que el bloque #27).
+- **Anthropic cybersecurity skills** — evaluar el conjunto de skills de
+  ciberseguridad de Anthropic para enriquecer el dominio `security` (cruzar
+  con `apb-sec-threat-model-v1.0`, `apb-sec-ens-v1.0`,
+  `apb-sec-risk-analysis-v1.0` y las skills de terceros ya presentes de
+  `mukul975`, `openai/threat-model`, `garrytan/cso-owasp`). Verificar solape
+  antes de incorporar.
+
+**Cruce:** bloque #27 (terceros pendientes) y sección M.8. Se añaden como
+filas de referencia en M. **Sesión candidata: Sesión 19** (terceros
+pendientes de §8).
+
+### 80. Memoria corporativa del framework (contexto + histórico + aprendizaje continuo + persistencia)
+
+Configurar una **memoria propia del framework** que proporcione a los
+agentes: (a) **contexto** de proyecto/dominio, (b) **histórico** de
+decisiones y sesiones, (c) **aprendizaje continuo** (lecciones, correcciones
+recurrentes), con **opción de memoria persistente** entre sesiones.
+
+**Cruces (no duplicar — esto es una DECISIÓN de arquitectura, no un
+componente suelto):**
+- M.6 ya propone `HKUDS/LightRAG` (`wrap-hkuds-lightrag-v1.0`, definido, sin
+  desplegar) y `mem0ai/mem0` (`wrap-mem0-v1.0`, pendiente) como candidatos a
+  "memoria corporativa".
+- Punto #23 / R6 / la línea 2071 ya prevén **memoria compartida
+  inter-sesiones** (`prov-agent-memory-v1.0`: Redis short-term + Cosmos DB
+  state + Git long-term), condicionada a la decisión de runtime.
+- El modelo de **Harness Engineering (#83)** aporta el mecanismo concreto de
+  persistencia versionada: `PROGRESS.md`, principios ACID de estado y
+  Bootstrap Contract (ver §2 y §4 de #83). La "memoria persistente en Git"
+  del harness y la "memoria episódica" de LightRAG/mem0 son **capas
+  complementarias**, no alternativas: Git = durabilidad/auditoría;
+  LightRAG/mem0 = recuperación semántica.
+
+**Trabajo del punto:** decidir la arquitectura de memoria (¿Git+PROGRESS.md
+como capa base obligatoria + LightRAG/mem0 como capa semántica opcional?),
+no reabrir la elección de herramienta desde cero. **Sesión candidata:**
+ligada a la decisión de runtime (misma que #77 Orquestación) porque la
+memoria compartida depende del motor.
+
+### 81. Obsidian como capa de conocimiento/memoria navegable
+
+Evaluar **Obsidian** (vault Markdown local + grafo de enlaces) como:
+- Interfaz humana de navegación sobre la memoria del framework (#80): el
+  repo ya es Markdown enlazado, Obsidian lo convierte en grafo navegable sin
+  transformación.
+- Herramienta de visualización de dependencias entre componentes
+  (`depends_on`/`consumed_by` de `SCHEMA.md`) vía backlinks/graph view.
+
+**Cruce:** #80 (memoria) y bloque #27 (Excalidraw/context7 como
+herramientas, no como skills). No es un componente del catálogo sino una
+**herramienta de apoyo** — documentar como tal en M. Verificar que no
+introduce una fuente de verdad paralela (Principio #4: la fuente de verdad
+técnica es Git; Obsidian es solo proyección de lectura, como Confluence en
+Principio #6). **Sesión candidata: Sesión 19** (junto con #79).
+
+### 82. Metodología y plantilla corporativa de planes de pruebas
+
+Elevar el plan de pruebas de "artefacto que genera una skill" a **proceso
+gobernado con plantilla, histórico y trazabilidad**. Requisitos:
+
+**a) Orden de fuentes obligatorio del agente de plan de pruebas:**
+   1. **Rovo primero** — analiza los tickets de Jira y sus adjuntos, el
+      análisis funcional y la documentación aportada por el usuario.
+   2. **GitHub Copilot después** — ingeniería inversa del código para
+      completar/contrastar lo funcional.
+   (Es decir: lo funcional manda; el código se usa para verificar y
+   completar, no como fuente primaria.)
+
+**b) Detección de plan previo:** antes de generar uno nuevo, comprobar si ya
+   existía un plan de pruebas. Si existe, **revisar cambios y actualizar
+   desde la fecha del plan anterior** (no regenerar desde cero).
+
+**c) Columna de trazabilidad por prueba:** cada caso lleva una columna que
+   indica **qué funcional dio el OK** y **desde cuándo** se definió esa
+   prueba en el plan.
+
+**d) Secciones nuevas obligatorias del documento de plan:**
+   - **Histórico de cambios del plan.**
+   - **Aprobados del plan según cambios** (quién aprobó qué versión/cambio).
+   - **Enlace bidireccional plan ↔ evidencias** (desde el plan a las
+     evidencias de resultados y desde las evidencias al plan).
+   - **Evidencias vinculadas a Jira.**
+
+**e) Almacenamiento de resultados:** definir dónde se guardan — propuesta a
+   confirmar con Debora: **en el repo de cada aplicación** (no en el repo del
+   framework), con las evidencias enlazadas a Jira.
+
+**f) Gobernanza y gestión del cambio** del plan de pruebas: proceso de
+   aprobación de cambios, versionado, responsables.
+
+**g) Plantilla de resultados esperados:** partir de **un ejemplo real que
+   Debora facilitará** y convertirlo en plantilla. Todos los ejemplos
+   incluyen: introducción funcional, integraciones, resumen de arquitectura
+   topológica, relación de tablas y Spec — la plantilla debe contemplar
+   estas secciones fijas.
+
+**h) Verificación de no-regresión de rendimiento:** comprobar que el
+   rendimiento **no empeora** respecto a la ejecución anterior del plan.
+   Definir **dónde se consulta el resultado anterior**; y cuando **nunca se
+   ejecutó antes**, ejecutar el plan **sobre la versión anterior del código
+   y luego sobre la nueva** para obtener la comparativa. (Cruce con
+   `prov-k6-v1.0` — carga/rendimiento.)
+
+**i) Planes preliminares existentes:** Debora aportará un conjunto de
+   **planes de pruebas preliminares** de ciertas aplicaciones; hay que
+   dejarlos disponibles en el repo para el futuro y **actualizarlos con la
+   nueva versión del agente**.
+
+**Cruces (no duplicar):** skills `apb-qa-test-plan-v1.0` (marco
+LCSP/ENS/RGPD/WCAG, ya tiene tabla de criterios de éxito),
+`apb-qa-test-auto-v1.0`, wrapper `third-anthropic-playwright-v1.0`, workflow
+`apb-wf-qa-evidence-v1.0`, adapter `adapter-rovo-v1.0`, provider `prov-k6-v1.0`.
+Este punto **no crea otra skill de plan de pruebas**: amplía
+`apb-qa-test-plan-v1.0` (columnas de trazabilidad, histórico, detección de
+plan previo) + define la plantilla de resultados esperados + gobernanza.
+
+**Bloqueantes (aportados por Debora):** el **ejemplo real** para la
+plantilla (g) y los **planes preliminares** (i). **Sesión candidata:**
+Sesión QA-2 propia (el volumen lo justifica).
+
+### 83. Harness Engineering agnóstico de LLM — ✅ EJECUTADO
+(Sesión #78+#83, 2026-07-02). Normativa permanente: `SYSTEM.md §10` (5 subsistemas, ACID,
+routing files, WIP=1, Feature Lists) + `GOVERNANCE.md §8` (Pass-State Gating, 3 capas,
+Clean State Handoff). Scaffolding en `repo-scaffold/harness-ready/` (AGENTS/PROGRESS/FEATURES/init_check).
+Check #19 del validador (Cold-Start Test). Fuera de alcance aquí: OTel §83.7 (→ Sesión 17) y
+arquitectura de 3 agentes ejecutable (→ #77). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+### 84. Navegación agéntica para pruebas funcionales (gap detectado)
+
+**Origen:** pregunta de Debora (2026-07-02) — "¿el framework puede abrir un
+navegador para pruebas funcionales?". Respuesta: **parcial**. Existe
+navegación *scripted* (Playwright) a nivel de diseño; **no existe**
+navegación *agéntica/exploratoria* en vivo.
+
+Estado actual:
+- **Cubierto (diseño, `draft`, sin desplegar):** `prov-playwright-v1.0`
+  (abre chromium/firefox/webkit, screenshots, trazas, simula interacciones),
+  `third-anthropic-playwright-v1.0`, `apb-sub-qa-e2e-v1.0`,
+  `apb-qa-test-auto-v1.0`, `apb-wf-qa-evidence-v1.0` → generan y ejecutan
+  **tests Playwright escritos** (guion fijo).
+- **Gap:** ningún componente permite que un agente **navegue la UI en vivo y
+  de forma exploratoria** (abrir la app, "ver" la pantalla, rellenar
+  formularios y decidir el siguiente paso sin guion) — la "agent browser
+  skill" que menciona Debora.
+
+**Propuesta:** cubrir el gap combinando **Playwright (pruebas scriptadas
+reproducibles)** + una **skill de browser agéntico** para exploración en
+vivo (candidatos a evaluar: Playwright MCP conducido por el agente,
+computer-use / Claude-in-Chrome como referencia de patrón, siempre bajo el
+principio agnóstico de LLM del #83). Definir la frontera: exploratorio para
+descubrimiento/QA manual asistido; scriptado para regresión reproducible en
+CI. **Sesión candidata:** Sesión QA-2 (junto con #82, comparten insumo de
+plan de pruebas y evidencias).
+
+---
+
 ## L. Fases de evolución del framework a medio/largo plazo
 
 ### Fase 1 — Consolidación (0–6 meses)
@@ -2471,6 +2317,7 @@ Antes de construir nada, realizar:
 |-------------|---------|--------------|-------------------|
 | `HKUDS/LightRAG` | Apache 2.0 | RAG + grafos de conocimiento. Memoria episódica entre sesiones (decisiones de arquitectura, lenguaje ubicuo de dominio). Candidato para "memoria corporativa" del framework. | Wrapper existente: `wrap-hkuds-lightrag-v1.0`. Falta desplegar y conectar. |
 | `mem0ai/mem0` | Apache 2.0 | Alternativa más simple a LightRAG. SDK Python con backends PostgreSQL/Redis/Qdrant. Más fácil de operar en Azure. | Wrapper pendiente: `wrap-mem0-v1.0` |
+| Obsidian (`obsidianmd`) | Freemium (app propietaria; vault = Markdown abierto) | Capa **humana** de navegación sobre la memoria del framework (#80/#81): grafo de backlinks sobre el repo Markdown ya enlazado; visualización de `depends_on`/`consumed_by`. **Solo proyección de lectura** — no fuente de verdad (Principio #4/#6). | Herramienta de apoyo, no componente de catálogo |
 
 ### M.7 Contratación pública LCSP (gap E-F4)
 
@@ -2487,3 +2334,6 @@ Antes de construir nada, realizar:
 | `affaan-m/ecc` | Pendiente de evaluación | Baja |
 | `nexu-io/open-design` | Complemento para Design System | Baja |
 | `ComposioHQ/awesome-claude-plugins` | Fuente de discovery de MCPs — no incorporar como componente | Referencia |
+| `walkinglabs/learn-harness-engineering` | Modelo de Harness Engineering (12 lecciones) — base del punto #83. Insumo de gobernanza + scaffolding + checks de validación, no componente del catálogo | Alta (#83) |
+| Anthropic **cybersecurity skills** | Enriquecer dominio `security` (#79). Verificar solape con `apb-sec-*` y terceros ya presentes (`mukul975/*`, `openai/threat-model`, `garrytan/cso-owasp`) antes de incorporar | Media (#79) |
+| "Fine Skills" (fuente a identificar) | Pendiente de URL/organización exacta de Debora (#79) | A determinar |

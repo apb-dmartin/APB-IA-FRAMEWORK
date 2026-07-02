@@ -52,6 +52,11 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
+**Añadido 2026-07-02:** aprobar también `context/apb/standards/PROMPTING_STANDARD.md`
+(estándar de estructura de prompt, ya aplicado a 244 componentes y exigido por el check #18
+de `validate_repo.py`) y las secciones de harness `SYSTEM.md §10` / `GOVERNANCE.md §8`
+(Pass-State Gating, Clean State Handoff). Responsable: Arquitectura APB.
+
 ### Preparación previa (Arquitectura APB, 2h)
 
 Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:

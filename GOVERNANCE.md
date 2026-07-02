@@ -251,10 +251,58 @@ conforme a `context/apb/standards/AI_MARKING_STANDARD.md`.
 
 ---
 
-## 8. Referencias
+## 8. Disciplina operacional del harness
 
-- `SYSTEM.md` — Reglas globales y comportamiento del framework.
+> Complementa `SYSTEM.md §10` (Harness Engineering). Agnóstico de LLM y de
+> herramienta: estas reglas gobiernan la *infraestructura*, no el modelo.
+
+### 8.1 Pass-State Gating
+
+- Toda tarea/funcionalidad gestionada como Feature List tiene un **comando de
+  verificación** declarado.
+- **Solo el harness** (tras ejecutar ese comando con éxito) marca el estado
+  `passing`. **El agente no puede declarar victoria por sí mismo.**
+- Coherente con `SYSTEM.md §6` (Human Review) y con la prohibición #5 del
+  `PROMPTING_STANDARD` ("no declares completado sin verificación").
+
+### 8.2 Validación de 3 capas
+
+| Capa | Qué detecta | En este repo |
+|---|---|---|
+| 1. Sintaxis / estático | Errores de forma, tipos, esquema | `validate_repo.py --strict` (frontmatter, IDs, wiring) |
+| 2. Comportamiento | Errores de lógica unitaria | `tests/` (unittest) + Golden Output Tests |
+| 3. Sistema / E2E | Defectos en los límites entre componentes | Verificación end-to-end de cierre de sesión (plan de fases §J) |
+
+Los mensajes de error deben ser **"bolígrafo rojo"**: no genéricos, con
+instrucción de corrección concreta (qué archivo, qué sección, cómo arreglarlo).
+
+### 8.3 Clean State Handoff (cierre de sesión)
+
+Al final de cada sesión de trabajo se garantizan las **5 dimensiones**:
+
+1. **Build:** el repo valida sin errores (`--strict` exit 0).
+2. **Tests:** todos pasan — nuevos y antiguos.
+3. **Progreso:** el estado persistente está actualizado **con evidencia**
+   (CONTINUIDAD / PROGRESS / plan de fases).
+4. **Artefactos:** sin logs de debug ni ficheros temporales.
+5. **Inicio:** la ruta de inicialización estándar funciona para la siguiente sesión.
+
+**Bucle de limpieza periódico:** sesiones rutinarias para reducir deuda del
+harness y **eliminar componentes ya innecesarios** por mejoras del modelo.
+
+### 8.4 Separación de roles (insumo para orquestación, punto #77)
+
+La arquitectura de 3 agentes — **Planner** (coordina), **Generator** (trabaja),
+**Evaluator** (verifica) — se adopta como principio: quien genera nunca es quien
+verifica. Su implementación ejecutable queda para la sesión de Orquestación (#77).
+
+---
+
+## 9. Referencias
+
+- `SYSTEM.md` — Reglas globales y comportamiento del framework (incl. §10 Harness).
 - `CONTRIBUTING.md` — Guía de contribución y checklist de PR.
 - `catalog/CATALOG.md` — Catálogo centralizado de componentes.
 - `context/apb/policies/` — Políticas corporativas aplicables.
 - `context/apb/SCHEMA.md` — Esquema de metadatos YAML obligatorio para todo componente.
+- `context/apb/standards/PROMPTING_STANDARD.md` — Estándar de estructura de prompt de componentes.

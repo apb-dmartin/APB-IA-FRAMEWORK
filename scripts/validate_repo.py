@@ -120,6 +120,24 @@ OLD_BRAND_PATTERNS = [
 
 IGNORED_DIR_NAMES = {"templates", ".git", "node_modules"}
 
+# Nivel del check #18 (Estándar de Prompting). "WARNING" solo durante un
+# retrofit en curso; el estado permanente es "ERROR" (anti-repetición:
+# ningún componente puede existir sin el bloque canónico).
+# Retrofit de 244 componentes completado 2026-07-02 → ERROR.
+PROMPTING_STANDARD_LEVEL = "ERROR"
+
+# Headings canónicos exigidos por PROMPTING_STANDARD.md §3 (literales, no
+# traducir ni renombrar). El primero es la sección contenedora.
+PROMPTING_SECTION = "## \U0001f9ed Estándar de Prompting"
+PROMPTING_REQUIRED_HEADINGS = [
+    "### Objetivo",
+    "### Proceso (razonar → plan → aceptación → ejecutar)",
+    "### Qué NO hacer",
+    "### Ejemplo entrada → salida",
+    "### Formato de respuesta",
+    "### Separación SISTEMA / USUARIO",
+]
+
 
 # ──────────────────────────────────────────────────────────────────────────
 # CLASES DE DATOS
@@ -402,6 +420,26 @@ def validate_component_file(
                     "Añadir tabla de contratos entre agentes consecutivos."
                 ))
 
+    # 18. Estándar de Prompting (PROMPTING_STANDARD v1.0, punto #78)
+    #     Skills apb-owned, agentes y subagentes deben incluir el bloque canónico
+    #     completo (sección 🧭 + 6 headings). Ver context/apb/standards/PROMPTING_STANDARD.md §3.
+    if _is_apb_skill or _is_agent or _is_subagent:
+        if PROMPTING_SECTION not in content:
+            result.add(ValidationIssue(
+                PROMPTING_STANDARD_LEVEL, rel_path,
+                "Falta la sección '## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)'. "
+                "Añadir el bloque canónico según context/apb/standards/PROMPTING_STANDARD.md §3."
+            ))
+        else:
+            missing_headings = [h for h in PROMPTING_REQUIRED_HEADINGS if h not in content]
+            if missing_headings:
+                result.add(ValidationIssue(
+                    PROMPTING_STANDARD_LEVEL, rel_path,
+                    "Bloque 'Estándar de Prompting' incompleto — faltan headings canónicos: "
+                    + ", ".join(f"'{h}'" for h in missing_headings)
+                    + ". No traducir ni renombrar (PROMPTING_STANDARD.md §3)."
+                ))
+
     result.add(ValidationIssue("INFO", rel_path, f"Componente validado: {comp_id or '(sin id)'}"))
 
 
@@ -682,6 +720,58 @@ def validate_version_drift(repo_path: Path, result: ValidationResult, all_ids: D
                 ))
 
 
+def validate_harness_cold_start(repo_path: Path, result: ValidationResult):
+    """19. Cold-Start Test + infraestructura del harness (SYSTEM.md §10, punto #83).
+
+    El repo es el System of Record: debe responder por sí solo las 5 preguntas
+    cold-start y contener el scaffolding del harness. Mensajes 'bolígrafo rojo':
+    indican qué falta y dónde reponerlo (GOVERNANCE.md §8.2)."""
+    # Las 5 preguntas cold-start → archivo que las responde
+    cold_start_map = {
+        "¿Qué es el sistema?": "README.md",
+        "¿Cómo está organizado?": "INDEX.md",
+        "¿Cómo se ejecuta?": "SYSTEM.md",
+        "¿Cómo se verifica?": "scripts/validate_repo.py",
+        "¿Dónde estamos ahora?": "discovery/CONTINUIDAD_PROYECTO.md",
+    }
+    for question, rel in cold_start_map.items():
+        path = repo_path / rel
+        if not path.exists() or path.stat().st_size == 0:
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"Cold-Start Test roto: falta o está vacío el archivo que responde "
+                f"'{question}'. Reponer {rel} (SYSTEM.md §10.2)."
+            ))
+
+    # Secciones de gobernanza del harness
+    system_md = repo_path / "SYSTEM.md"
+    if system_md.exists() and "## 10. Harness Engineering" not in system_md.read_text(encoding="utf-8"):
+        result.add(ValidationIssue(
+            "ERROR", "SYSTEM.md",
+            "Falta la sección '## 10. Harness Engineering'. Restaurarla (punto #83, sesión 2026-07-02)."
+        ))
+    gov_md = repo_path / "GOVERNANCE.md"
+    if gov_md.exists() and "## 8. Disciplina operacional del harness" not in gov_md.read_text(encoding="utf-8"):
+        result.add(ValidationIssue(
+            "ERROR", "GOVERNANCE.md",
+            "Falta la sección '## 8. Disciplina operacional del harness'. Restaurarla (punto #83)."
+        ))
+
+    # Scaffolding harness-ready completo
+    for rel in ("repo-scaffold/harness-ready/AGENTS.md",
+                "repo-scaffold/harness-ready/PROGRESS.md",
+                "repo-scaffold/harness-ready/FEATURES.md",
+                "repo-scaffold/harness-ready/init_check.py"):
+        if not (repo_path / rel).exists():
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"Scaffold del harness incompleto: falta {rel}. "
+                "Restaurarlo desde el historial git (SYSTEM.md §10)."
+            ))
+
+    result.add(ValidationIssue("INFO", "SYSTEM.md", "Harness / Cold-Start verificado"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -753,6 +843,7 @@ def main():
     validate_bidirectional_wiring(repo_path, result)
     validate_version_drift(repo_path, result, all_ids)
     validate_no_circular_dependencies(repo_path, result)
+    validate_harness_cold_start(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 
     print()
