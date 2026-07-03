@@ -922,5 +922,67 @@ class TestAgnosticRootRoutingCheck(unittest.TestCase):
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+class TestExecutionApprovalMethodologyCheck(unittest.TestCase):
+    """Check #23 (Fase I, 2026-07-03): roles + usuario de ejecución + destino +
+    acta de aprobación del informe (TEST_PLAN_STANDARD v1.3.0) no deben derivar
+    en silencio de la plantilla, el estándar ni el ejemplo canónico."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_execution_approval(self):
+        result = vr.ValidationResult()
+        vr.validate_execution_and_approval_methodology(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de roles/ejecución/aprobación (Fase I).",
+        )
+
+    def test_template_without_acta_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            std = tmp_dir / "context" / "apb" / "standards"
+            tpl = tmp_dir / "context" / "apb" / "templates"
+            std.mkdir(parents=True)
+            tpl.mkdir(parents=True)
+            # estándar completo
+            (std / "TEST_PLAN_STANDARD.md").write_text(
+                "Roles de usuario y usuario de ejecución\nAprobación del informe\nDestino de ejecución\n",
+                encoding="utf-8",
+            )
+            # plantilla a la que le falta el «Acta de aprobación»
+            (tpl / "TEST_PLAN.md").write_text(
+                "Rol requerido\nUsuario de ejecución\n(sin acta)\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_and_approval_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Acta de aprobación" in m for m in messages),
+                f"Se esperaba error por falta del «Acta de aprobación» en la plantilla; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_standard_without_execution_target_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            std = tmp_dir / "context" / "apb" / "standards"
+            std.mkdir(parents=True)
+            # estándar al que le falta «Destino de ejecución»
+            (std / "TEST_PLAN_STANDARD.md").write_text(
+                "Roles de usuario y usuario de ejecución\nAprobación del informe\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_and_approval_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Destino de ejecución" in m for m in messages),
+                f"Se esperaba error por falta de «Destino de ejecución»; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

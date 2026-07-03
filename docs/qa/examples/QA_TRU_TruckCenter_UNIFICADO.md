@@ -177,14 +177,23 @@ TRU se integra en el portal DOCKS siguiendo directrices ARQ:
   `FASE = FORA DEL PARKING`) y crea nuevo; si cancela, no permite alta.
 - **Vía API/LPR:** cierra anterior y crea nuevo automáticamente, sin confirmación del usuario.
 
-### 1.6 Roles EntraID (TRANSTE-1520)
+### 1.6 Roles EntraID (TRANSTE-1520) y usuario de ejecución
 
-| Rol / Permiso | Alcance |
-|---|---|
-| `USER_READ_TRUCK_CENTER` | Solo lectura (ver GRID, consultar mantenimiento) |
-| `MANAGE_TRUCK_CENTER` | Gestión completa: alta, baja, modificación, asignar terminal, salir parking, maestros |
-| `USER_TRUCK_CENTER` | Usuario estándar |
-| `API_CALL_TRU_CONTROL_PUERTAS` | Permite llamar al WS de control de puertas (IKUSI) |
+> Matriz de roles necesarios para las pruebas (§9.2). Cada caso de la matriz (§5) declara su **«Rol
+> requerido»**. El **usuario concreto** que ejecuta se resuelve por **referencia AKV** o se **proporciona en
+> runtime** — **nunca** se escriben credenciales en este documento (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
+
+| Rol / Permiso | Alcance | Bloques que lo requieren |
+|---|---|---|
+| `USER_READ_TRUCK_CENTER` | Solo lectura (ver GRID, consultar mantenimiento) | B02, B05, B06, B09 (y lectura en B08) |
+| `MANAGE_TRUCK_CENTER` | Gestión completa: alta, baja, modificación, asignar terminal, salir parking, maestros | B03, B04, B07, B10, B12 (y gestión en B08) |
+| `USER_TRUCK_CENTER` | Usuario estándar | — |
+| `API_CALL_TRU_CONTROL_PUERTAS` | Permite llamar al WS de control de puertas (IKUSI) | B01 |
+
+**Usuario de ejecución:** `AKV://tru-qa-user-{rol}` (por defecto, ejecución autónoma vía `prov-akv-v1.0`) o
+login asistido EntraID en runtime (→ `storageState`, no persistido). **Destino de ejecución (§9.1):**
+`local` (demo QA-2, login asistido) → `azure-qa` para la ejecución completa (QA-3). B11 es análisis
+estático (SonarQube/ZAP): no requiere rol de aplicación.
 
 > Soporte ARQ para creación de AppRegistration en External ID (ARQ-2157). Documento de especificaciones:
 > "Cambios en DOCKS para integración con Microsoft EntraID SSO_v1.1".
@@ -402,175 +411,175 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 ### Bloque B01 — API ControlPuertas / Recepción LPR (12)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B01-T01 | TRU-T01 | Entrada normal con matrícula | Funcional | Crítica | Nuevo registro `EN EL PARKING`, elec=0, ITV=0, HORA_ENTRADA=fecha; evento `TRU_CREACION..._OK` | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T02 | TRU-T02 | Salida normal con matrícula | Funcional | Crítica | Registro activo → `HORA_SORTIDA`=fecha, `FORA DEL PARKING`; evento `TRU_SALIR_PARKING_OK` | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T03 | TRU-T03 | Entrada duplicada — camión aún en parking | Funcional | Crítica | Cierra anterior (now-1s) + crea nuevo; dos eventos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B01-T04 | TRU-T04 | Salida sin registro previo | Funcional | Alta | Sin error, no modifica datos, sin evento KO | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B01-T05 | TRU-T05 | Lectura sin matrícula (NOMATRI) | Funcional | Crítica | Evento `TRU_CONTROL_PUERTAS_KO` con texto `Matricula:NOMATRI` | R[J:TRANSTE-1513·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T06 | TRU-T06 | idCamara 17 dígitos (nuevo formato) | Integración | Alta | La API acepta el parámetro sin error de parsing | R[J:TRANSTE-1522·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T07 | TRU-T07 | idCamara 8 dígitos (legacy) | Compatibilidad | Alta | Compatibilidad con formato antiguo, sin error | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T08 | TRU-T08 | Campos no utilizados con valores extremos | Integración | Media | Solo se validan los 4 campos usados; resto ignorado | R[J:TRANSTE-1523·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T09 | TRU-T09 | JSON malformado | API | Alta | Error HTTP 400 controlado (no 500) | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B01-T10 | TRU-T10 | Llamada sin permiso `API_CALL_TRU_CONTROL_PUERTAS` | Seguridad | Crítica | Rechazo 401/403 | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B01-T11 | TRU-T11 | HORA_SORTIDA anterior = now − 1s exacto | Lógica | Alta | El cierre del anterior registra salida con diferencia exacta de 1s | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B01-T12 | TRU-T12 | Campos de salida de la API | API | Media | Respuesta consistente con la lógica de negocio y el contrato | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B01-T01 | TRU-T01 | Entrada normal con matrícula | Funcional | Crítica | `API_CALL_TRU_CONTROL_PUERTAS` | Nuevo registro `EN EL PARKING`, elec=0, ITV=0, HORA_ENTRADA=fecha; evento `TRU_CREACION..._OK` | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T02 | TRU-T02 | Salida normal con matrícula | Funcional | Crítica | `API_CALL_TRU_CONTROL_PUERTAS` | Registro activo → `HORA_SORTIDA`=fecha, `FORA DEL PARKING`; evento `TRU_SALIR_PARKING_OK` | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T03 | TRU-T03 | Entrada duplicada — camión aún en parking | Funcional | Crítica | `API_CALL_TRU_CONTROL_PUERTAS` | Cierra anterior (now-1s) + crea nuevo; dos eventos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B01-T04 | TRU-T04 | Salida sin registro previo | Funcional | Alta | `API_CALL_TRU_CONTROL_PUERTAS` | Sin error, no modifica datos, sin evento KO | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B01-T05 | TRU-T05 | Lectura sin matrícula (NOMATRI) | Funcional | Crítica | `API_CALL_TRU_CONTROL_PUERTAS` | Evento `TRU_CONTROL_PUERTAS_KO` con texto `Matricula:NOMATRI` | R[J:TRANSTE-1513·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T06 | TRU-T06 | idCamara 17 dígitos (nuevo formato) | Integración | Alta | `API_CALL_TRU_CONTROL_PUERTAS` | La API acepta el parámetro sin error de parsing | R[J:TRANSTE-1522·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T07 | TRU-T07 | idCamara 8 dígitos (legacy) | Compatibilidad | Alta | `API_CALL_TRU_CONTROL_PUERTAS` | Compatibilidad con formato antiguo, sin error | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T08 | TRU-T08 | Campos no utilizados con valores extremos | Integración | Media | `API_CALL_TRU_CONTROL_PUERTAS` | Solo se validan los 4 campos usados; resto ignorado | R[J:TRANSTE-1523·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T09 | TRU-T09 | JSON malformado | API | Alta | `API_CALL_TRU_CONTROL_PUERTAS` | Error HTTP 400 controlado (no 500) | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B01-T10 | TRU-T10 | Llamada sin permiso `API_CALL_TRU_CONTROL_PUERTAS` | Seguridad | Crítica | `API_CALL_TRU_CONTROL_PUERTAS` | Rechazo 401/403 | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B01-T11 | TRU-T11 | HORA_SORTIDA anterior = now − 1s exacto | Lógica | Alta | `API_CALL_TRU_CONTROL_PUERTAS` | El cierre del anterior registra salida con diferencia exacta de 1s | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B01-T12 | TRU-T12 | Campos de salida de la API | API | Media | `API_CALL_TRU_CONTROL_PUERTAS` | Respuesta consistente con la lógica de negocio y el contrato | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B02 — GRID Principal (14)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B02-T01 | TRU-T13 | Columnas por defecto visibles | UI | Crítica | 9 columnas en orden: Id, Matrícula, Entrada, Salida, Terminal, Nombre, Apellido1, Apellido2, Empresa | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T02 | TRU-T14 | Ordenación por defecto | UI | Alta | Registros de más nuevo a más viejo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T03 | TRU-T15 | Selector de columnas — campos añadibles | UI | Alta | Aparecen Fase, NIFs, Ids Sòstrat, elec., ITV, Observaciones | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T04 | TRU-T16 | Columnas auditoría en selector | UI | Alta | APB_CREADOR/MODIFICADOR/CREAT/MODIFICAT disponibles y filtrables | R[J:TRANSTE-1515·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T05 | TRU-T17 | Filtro por lupa en cada columna | UI | Alta | Filtrado correcto en todas las columnas visibles | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T06 | TRU-T18 | Botón refresco GRID | UI | Alta | GRID actualizado sin recargar la página completa | R[J:TRANSTE-1511·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T07 | TRU-T19 | Acción "Salir del Parking" desde GRID | Funcional | Crítica | HORA_SORTIDA=now, fase final; evento `TRU_SALIR_PARKING_OK` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T08 | TRU-T20 | "Salir del Parking" sin registro seleccionado | UI | Alta | Acción no disponible o aviso | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T09 | TRU-T21 | "Salir del Parking" en registro ya FORA | UI | Alta | Acción no permitida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T10 | TRU-T22 | Exportar a Excel — todos los campos | Funcional | Alta | Excel con 9 defecto + 10 añadibles + 4 auditoría, datos correctos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T11 | TRU-T23 | Exportar a Excel — GRID vacío | Funcional | Media | Excel generado sin error (cabeceras/vacío) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T12 | TRU-T24 | Acceso GRID con USER_READ | Permisos | Crítica | Consulta sí; acción "Salir del Parking" no disponible | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T13 | TRU-T25 | Acceso GRID con MANAGE | Permisos | Crítica | Consulta + acciones de gestión disponibles | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T14 | TRU-T26 | Pestaña navegador | UI | Media | Título = "Truck Center" (no "Aplicación de Arquitectura APB") | R[J:TRANSTE-1517·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B02-T01 | TRU-T13 | Columnas por defecto visibles | UI | Crítica | `USER_READ_TRUCK_CENTER` | 9 columnas en orden: Id, Matrícula, Entrada, Salida, Terminal, Nombre, Apellido1, Apellido2, Empresa | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B02-T02 | TRU-T14 | Ordenación por defecto | UI | Alta | `USER_READ_TRUCK_CENTER` | Registros de más nuevo a más viejo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T03 | TRU-T15 | Selector de columnas — campos añadibles | UI | Alta | `USER_READ_TRUCK_CENTER` | Aparecen Fase, NIFs, Ids Sòstrat, elec., ITV, Observaciones | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T04 | TRU-T16 | Columnas auditoría en selector | UI | Alta | `USER_READ_TRUCK_CENTER` | APB_CREADOR/MODIFICADOR/CREAT/MODIFICAT disponibles y filtrables | R[J:TRANSTE-1515·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B02-T05 | TRU-T17 | Filtro por lupa en cada columna | UI | Alta | `USER_READ_TRUCK_CENTER` | Filtrado correcto en todas las columnas visibles | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B02-T06 | TRU-T18 | Botón refresco GRID | UI | Alta | `USER_READ_TRUCK_CENTER` | GRID actualizado sin recargar la página completa | R[J:TRANSTE-1511·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B02-T07 | TRU-T19 | Acción "Salir del Parking" desde GRID | Funcional | Crítica | `USER_READ_TRUCK_CENTER` | HORA_SORTIDA=now, fase final; evento `TRU_SALIR_PARKING_OK` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T08 | TRU-T20 | "Salir del Parking" sin registro seleccionado | UI | Alta | `USER_READ_TRUCK_CENTER` | Acción no disponible o aviso | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T09 | TRU-T21 | "Salir del Parking" en registro ya FORA | UI | Alta | `USER_READ_TRUCK_CENTER` | Acción no permitida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T10 | TRU-T22 | Exportar a Excel — todos los campos | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Excel con 9 defecto + 10 añadibles + 4 auditoría, datos correctos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T11 | TRU-T23 | Exportar a Excel — GRID vacío | Funcional | Media | `USER_READ_TRUCK_CENTER` | Excel generado sin error (cabeceras/vacío) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T12 | TRU-T24 | Acceso GRID con USER_READ | Permisos | Crítica | `USER_READ_TRUCK_CENTER` | Consulta sí; acción "Salir del Parking" no disponible | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T13 | TRU-T25 | Acceso GRID con MANAGE | Permisos | Crítica | `USER_READ_TRUCK_CENTER` | Consulta + acciones de gestión disponibles | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T14 | TRU-T26 | Pestaña navegador | UI | Media | `USER_READ_TRUCK_CENTER` | Título = "Truck Center" (no "Aplicación de Arquitectura APB") | R[J:TRANSTE-1517·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 
 ### Bloque B03 — Mantenimiento / Alta (16)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B03-T01 | TRU-T27 | Alta mínima (solo obligatorios) | Funcional | Crítica | Registro `EN EL PARKING`, checkboxes 0; evento creación OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T02 | TRU-T28 | Alta completa (todos los campos) | Funcional | Crítica | Registro con todos los datos; verificar cada columna en BD | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T03 | TRU-T29 | Alta sin matrícula | Validación | Crítica | No permite guardar; error de obligatorio | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T04 | TRU-T30 | Alta sin tipo vehículo | Validación | Alta | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T05 | TRU-T31 | Alta sin hora entrada | Validación | Alta | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T06 | TRU-T32 | Alta duplicado — usuario CONFIRMA | Regla negocio | Crítica | Cierra anterior (now-1s) + crea nuevo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T07 | TRU-T33 | Alta duplicado — usuario CANCELA | Regla negocio | Crítica | No crea; mensaje "El registro del camión en el parking no se ha hecho" | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T08 | TRU-T34 | Matrícula existente en CAMIONS | Integración | Alta | Tipo de vehículo auto-recuperado, editable | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T09 | TRU-T35 | Matrícula nueva (no en CAMIONS) | Integración | Alta | Tipo vacío a seleccionar; nueva entrada en CAMIONS al guardar | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T10 | TRU-T36 | Modificar tipo vehículo recuperado | Integración | Alta | Se actualiza expediente y tabla CAMIONS | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T11 | TRU-T37 | Botón reloj entrada | UI | Media | Hora entrada = hora actual del sistema | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T12 | TRU-T38 | Checkbox conexión eléctrica | UI | Media | Valor 1/0 en BD según estado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T13 | TRU-T39 | Checkbox ITV | UI | Media | Valor 1/0 en BD según estado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T14 | TRU-T40 | Checkbox mercancías peligrosas | UI | Media | Valor 1/0 en BD (`MERCADERIES_PERILLOSES`) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T15 | TRU-T41 | Observaciones 4000 caracteres | Validación | Media | Se guarda completo sin truncar | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T16 | TRU-T42 | Rol USER_READ no puede crear | Permisos | Crítica | Botón alta no visible / acción denegada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B03-T01 | TRU-T27 | Alta mínima (solo obligatorios) | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Registro `EN EL PARKING`, checkboxes 0; evento creación OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T02 | TRU-T28 | Alta completa (todos los campos) | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Registro con todos los datos; verificar cada columna en BD | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T03 | TRU-T29 | Alta sin matrícula | Validación | Crítica | `MANAGE_TRUCK_CENTER` | No permite guardar; error de obligatorio | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T04 | TRU-T30 | Alta sin tipo vehículo | Validación | Alta | `MANAGE_TRUCK_CENTER` | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T05 | TRU-T31 | Alta sin hora entrada | Validación | Alta | `MANAGE_TRUCK_CENTER` | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T06 | TRU-T32 | Alta duplicado — usuario CONFIRMA | Regla negocio | Crítica | `MANAGE_TRUCK_CENTER` | Cierra anterior (now-1s) + crea nuevo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T07 | TRU-T33 | Alta duplicado — usuario CANCELA | Regla negocio | Crítica | `MANAGE_TRUCK_CENTER` | No crea; mensaje "El registro del camión en el parking no se ha hecho" | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T08 | TRU-T34 | Matrícula existente en CAMIONS | Integración | Alta | `MANAGE_TRUCK_CENTER` | Tipo de vehículo auto-recuperado, editable | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T09 | TRU-T35 | Matrícula nueva (no en CAMIONS) | Integración | Alta | `MANAGE_TRUCK_CENTER` | Tipo vacío a seleccionar; nueva entrada en CAMIONS al guardar | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T10 | TRU-T36 | Modificar tipo vehículo recuperado | Integración | Alta | `MANAGE_TRUCK_CENTER` | Se actualiza expediente y tabla CAMIONS | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T11 | TRU-T37 | Botón reloj entrada | UI | Media | `MANAGE_TRUCK_CENTER` | Hora entrada = hora actual del sistema | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T12 | TRU-T38 | Checkbox conexión eléctrica | UI | Media | `MANAGE_TRUCK_CENTER` | Valor 1/0 en BD según estado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T13 | TRU-T39 | Checkbox ITV | UI | Media | `MANAGE_TRUCK_CENTER` | Valor 1/0 en BD según estado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T14 | TRU-T40 | Checkbox mercancías peligrosas | UI | Media | `MANAGE_TRUCK_CENTER` | Valor 1/0 en BD (`MERCADERIES_PERILLOSES`) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T15 | TRU-T41 | Observaciones 4000 caracteres | Validación | Media | `MANAGE_TRUCK_CENTER` | Se guarda completo sin truncar | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T16 | TRU-T42 | Rol USER_READ no puede crear | Permisos | Crítica | `MANAGE_TRUCK_CENTER` | Botón alta no visible / acción denegada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B04 — Mantenimiento / Modificación y Baja (8)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B04-T01 | TRU-T43 | Modificar registro existente | Funcional | Crítica | Datos actualizados; evento modificación OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T02 | TRU-T44 | Campos solo lectura no editables | UI | Alta | ID, Fase, Empresa (razón social), Ids Sòstrat no editables | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T03 | TRU-T45 | "Salir del Parking" desde mantenimiento | Funcional | Crítica | HORA_SORTIDA=now, fase final; evento salir OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T04 | TRU-T46 | Botón no visible en FORA DEL PARKING | UI | Alta | Botón oculto para registros cerrados | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T05 | TRU-T47 | Baja de registro | Funcional | Alta | Registro eliminado; evento correspondiente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T06 | TRU-T48 | Modificar con USER_READ | Permisos | Crítica | Modificación denegada; solo consulta | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T07 | TRU-T49 | Rollback en error transaccional | Integridad | Crítica | ROLLBACK completo; sin cambios parciales persistidos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T08 | TRU-T50 | Sin reintento automático tras error | Comportamiento | Alta | No reintenta; el usuario reejecuta manualmente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B04-T01 | TRU-T43 | Modificar registro existente | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Datos actualizados; evento modificación OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T02 | TRU-T44 | Campos solo lectura no editables | UI | Alta | `MANAGE_TRUCK_CENTER` | ID, Fase, Empresa (razón social), Ids Sòstrat no editables | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T03 | TRU-T45 | "Salir del Parking" desde mantenimiento | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | HORA_SORTIDA=now, fase final; evento salir OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T04 | TRU-T46 | Botón no visible en FORA DEL PARKING | UI | Alta | `MANAGE_TRUCK_CENTER` | Botón oculto para registros cerrados | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T05 | TRU-T47 | Baja de registro | Funcional | Alta | `MANAGE_TRUCK_CENTER` | Registro eliminado; evento correspondiente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T06 | TRU-T48 | Modificar con USER_READ | Permisos | Crítica | `MANAGE_TRUCK_CENTER` | Modificación denegada; solo consulta | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T07 | TRU-T49 | Rollback en error transaccional | Integridad | Crítica | `MANAGE_TRUCK_CENTER` | ROLLBACK completo; sin cambios parciales persistidos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T08 | TRU-T50 | Sin reintento automático tras error | Comportamiento | Alta | `MANAGE_TRUCK_CENTER` | No reintenta; el usuario reejecuta manualmente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B05 — Lupas / Conductores y Empresas (12)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B05-T01 | TRU-T51 | Lupa conductores — búsqueda y selección | Integración | Crítica | Recupera NIF, nombre, apellidos, teléfono, ID Sòstrat (tipo F) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T02 | TRU-T52 | Lupa conductores — nuevo en PERSONES | Integración | Crítica | Inserta automáticamente como `TIPUS_PERSONA=F` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T03 | TRU-T53 | Lupa conductores — ya existente | Integración | Alta | Recupera de PERSONES, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T04 | TRU-T54 | Lupa conductores — filtrado funciona | UI | Crítica | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B05-T05 | TRU-T55 | Lupa empresas — búsqueda y selección | Integración | Crítica | Recupera NIF, razón social, ID Sòstrat (sin filtro tipo) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T06 | TRU-T56 | Lupa empresas — nueva en PERSONES | Integración | Crítica | Inserta como `TIPUS_PERSONA=J` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T07 | TRU-T57 | Lupa empresas — ya existente | Integración | Alta | Recupera datos, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T08 | TRU-T58 | Lupa empresas — filtrado funciona | UI | Crítica | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B05-T09 | TRU-T59 | WS Sòstrat no disponible | Error handling | Alta | Error controlado, sin excepción no manejada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T10 | TRU-T60 | Datos duplicados WS usuarios | Integración | Alta | Lista sin duplicados | R[J:SOSO-2075·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B05-T11 | TRU-T61 | Escritura manual conductor (sin lupa) | Funcional | Media | Permite ingreso manual, datos guardados | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T12 | TRU-T62 | Escritura manual empresa (sin lupa) | Funcional | Media | Permite ingreso manual | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B05-T01 | TRU-T51 | Lupa conductores — búsqueda y selección | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Recupera NIF, nombre, apellidos, teléfono, ID Sòstrat (tipo F) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T02 | TRU-T52 | Lupa conductores — nuevo en PERSONES | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Inserta automáticamente como `TIPUS_PERSONA=F` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T03 | TRU-T53 | Lupa conductores — ya existente | Integración | Alta | `USER_READ_TRUCK_CENTER` | Recupera de PERSONES, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T04 | TRU-T54 | Lupa conductores — filtrado funciona | UI | Crítica | `USER_READ_TRUCK_CENTER` | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B05-T05 | TRU-T55 | Lupa empresas — búsqueda y selección | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Recupera NIF, razón social, ID Sòstrat (sin filtro tipo) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T06 | TRU-T56 | Lupa empresas — nueva en PERSONES | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Inserta como `TIPUS_PERSONA=J` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T07 | TRU-T57 | Lupa empresas — ya existente | Integración | Alta | `USER_READ_TRUCK_CENTER` | Recupera datos, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T08 | TRU-T58 | Lupa empresas — filtrado funciona | UI | Crítica | `USER_READ_TRUCK_CENTER` | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B05-T09 | TRU-T59 | WS Sòstrat no disponible | Error handling | Alta | `USER_READ_TRUCK_CENTER` | Error controlado, sin excepción no manejada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T10 | TRU-T60 | Datos duplicados WS usuarios | Integración | Alta | `USER_READ_TRUCK_CENTER` | Lista sin duplicados | R[J:SOSO-2075·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B05-T11 | TRU-T61 | Escritura manual conductor (sin lupa) | Funcional | Media | `USER_READ_TRUCK_CENTER` | Permite ingreso manual, datos guardados | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T12 | TRU-T62 | Escritura manual empresa (sin lupa) | Funcional | Media | `USER_READ_TRUCK_CENTER` | Permite ingreso manual | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B06 — Desplegable Terminales (8)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B06-T01 | TRU-T63 | Desplegable solo actividad TU | UI | Crítica | Solo usuarios con actividad TU (no todos) | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T02 | TRU-T64 | Desplegable no bloquea página | Rendimiento | Crítica | Página responde con fluidez, sin bloqueo | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T03 | TRU-T65 | Asignar PORTCEMENT SA | Funcional | Alta | Asignación correcta, guardado OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T04 | TRU-T66 | Asignar APM TERMINALS | Funcional | Alta | Asignación correcta | R[J:TRANSTE-1510·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T05 | TRU-T67 | Asignar GRIMALDI | Funcional | Alta | Asignación correcta | R[J:TRANSTE-1510·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T06 | TRU-T68 | Asignar AUTOTERMINAL SA | Funcional | Alta | Asignación correcta | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T07 | TRU-T69 | Asignar cada una de las 13 terminales | Funcional | Alta | Todas asignables sin error | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T08 | TRU-T70 | Desplegable sin servicio Sòstrat | Error handling | Media | Fallo manejado sin bloquear interfaz | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B06-T01 | TRU-T63 | Desplegable solo actividad TU | UI | Crítica | `USER_READ_TRUCK_CENTER` | Solo usuarios con actividad TU (no todos) | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T02 | TRU-T64 | Desplegable no bloquea página | Rendimiento | Crítica | `USER_READ_TRUCK_CENTER` | Página responde con fluidez, sin bloqueo | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T03 | TRU-T65 | Asignar PORTCEMENT SA | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta, guardado OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T04 | TRU-T66 | Asignar APM TERMINALS | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J:TRANSTE-1510·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T05 | TRU-T67 | Asignar GRIMALDI | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J:TRANSTE-1510·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T06 | TRU-T68 | Asignar AUTOTERMINAL SA | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T07 | TRU-T69 | Asignar cada una de las 13 terminales | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Todas asignables sin error | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T08 | TRU-T70 | Desplegable sin servicio Sòstrat | Error handling | Media | `USER_READ_TRUCK_CENTER` | Fallo manejado sin bloquear interfaz | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B07 — Tabla Maestra / Tipos de Vehículo (6)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B07-T01 | TRU-T71 | GRID tipos vehículo — 5 registros iniciales | Datos | Alta | Portacontenedores, Portavehículos, Lonas, Cisternas, Bañeras | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B07-T02 | TRU-T72 | Alta nuevo tipo vehículo | Funcional | Alta | Nuevo tipo visible en GRID y desplegable | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B07-T03 | TRU-T73 | Modificar tipo existente | Funcional | Media | Descripción actualizada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B07-T04 | TRU-T74 | Eliminar tipo sin dependencias | Funcional | Media | Eliminado sin error | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B07-T05 | TRU-T75 | Eliminar tipo con dependencias | Integridad | Alta | Impide eliminación por integridad referencial | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B07-T06 | TRU-T76 | USER_READ no puede modificar maestro | Permisos | Alta | Solo consulta permitida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B07-T01 | TRU-T71 | GRID tipos vehículo — 5 registros iniciales | Datos | Alta | `MANAGE_TRUCK_CENTER` | Portacontenedores, Portavehículos, Lonas, Cisternas, Bañeras | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T02 | TRU-T72 | Alta nuevo tipo vehículo | Funcional | Alta | `MANAGE_TRUCK_CENTER` | Nuevo tipo visible en GRID y desplegable | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T03 | TRU-T73 | Modificar tipo existente | Funcional | Media | `MANAGE_TRUCK_CENTER` | Descripción actualizada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T04 | TRU-T74 | Eliminar tipo sin dependencias | Funcional | Media | `MANAGE_TRUCK_CENTER` | Eliminado sin error | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T05 | TRU-T75 | Eliminar tipo con dependencias | Integridad | Alta | `MANAGE_TRUCK_CENTER` | Impide eliminación por integridad referencial | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T06 | TRU-T76 | USER_READ no puede modificar maestro | Permisos | Alta | `MANAGE_TRUCK_CENTER` | Solo consulta permitida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B08 — Autenticación y Permisos EntraID (10)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B08-T01 | TRU-T77 | Login EntraID exitoso | Autenticación | Crítica | Acceso según rol asignado | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B08-T02 | TRU-T78 | Rol USER_READ — solo lectura completa | Permisos | Crítica | Ver GRID + consultar; sin alta/baja/mod/salir | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B08-T03 | TRU-T79 | Rol MANAGE — gestión completa | Permisos | Crítica | Alta, baja, mod, asignar terminal, salir, maestros | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B08-T04 | TRU-T80 | Rol USER — usuario estándar | Permisos | Alta | Acceso conforme al perfil estándar | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B08-T05 | TRU-T81 | Sin rol TRU | Autorización | Crítica | Acceso denegado, sin menú TRU | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B08-T06 | TRU-T82 | Token expirado | Seguridad | Alta | Redirección a login EntraID | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B08-T07 | TRU-T83 | Idioma predeterminado catalán | Internacionalización | Media | Interfaz en catalán para usuario sin preferencia | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B08-T08 | TRU-T84 | Cambio de idioma en perfil | Internacionalización | Media | Interfaz en idioma seleccionado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B08-T09 | TRU-T85 | AppRegistration External ID configurada | Configuración | Alta | AppRegistration TRU correcta en External ID | R[AF·J:ARQ-2157] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B08-T10 | TRU-T86 | Tokens correctos tras renombrado API | Integración | Alta | Tokens apuntan a la app TRU correcta | R[AF·J:TRANSTE-1527] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B08-T01 | TRU-T77 | Login EntraID exitoso | Autenticación | Crítica | `USER_READ` / `MANAGE` | Acceso según rol asignado | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B08-T02 | TRU-T78 | Rol USER_READ — solo lectura completa | Permisos | Crítica | `USER_READ` / `MANAGE` | Ver GRID + consultar; sin alta/baja/mod/salir | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B08-T03 | TRU-T79 | Rol MANAGE — gestión completa | Permisos | Crítica | `USER_READ` / `MANAGE` | Alta, baja, mod, asignar terminal, salir, maestros | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B08-T04 | TRU-T80 | Rol USER — usuario estándar | Permisos | Alta | `USER_READ` / `MANAGE` | Acceso conforme al perfil estándar | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B08-T05 | TRU-T81 | Sin rol TRU | Autorización | Crítica | `USER_READ` / `MANAGE` | Acceso denegado, sin menú TRU | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B08-T06 | TRU-T82 | Token expirado | Seguridad | Alta | `USER_READ` / `MANAGE` | Redirección a login EntraID | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B08-T07 | TRU-T83 | Idioma predeterminado catalán | Internacionalización | Media | `USER_READ` / `MANAGE` | Interfaz en catalán para usuario sin preferencia | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B08-T08 | TRU-T84 | Cambio de idioma en perfil | Internacionalización | Media | `USER_READ` / `MANAGE` | Interfaz en idioma seleccionado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B08-T09 | TRU-T85 | AppRegistration External ID configurada | Configuración | Alta | `USER_READ` / `MANAGE` | AppRegistration TRU correcta en External ID | R[AF·J:ARQ-2157] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B08-T10 | TRU-T86 | Tokens correctos tras renombrado API | Integración | Alta | `USER_READ` / `MANAGE` | Tokens apuntan a la app TRU correcta | R[AF·J:TRANSTE-1527] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B09 — Eventos de Auditoría (8)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B09-T01 | TRU-T87 | Evento creación OK | Auditoría | Crítica | `TRU_CREACION_TRUCK_CENTER_OK` con ID en eventos dominio TRU | R[AF·J:TRANSTE-1524] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B09-T02 | TRU-T88 | Evento creación KO | Auditoría | Alta | `TRU_CREACION_TRUCK_CENTER_KO` ante error | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B09-T03 | TRU-T89 | Evento modificación OK | Auditoría | Alta | `TRU_MODIFICACION_TRUCK_CENTER_OK` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B09-T04 | TRU-T90 | Evento modificación KO | Auditoría | Alta | `TRU_MODIFICACION_TRUCK_CENTER_KO` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B09-T05 | TRU-T91 | Evento control puertas OK | Auditoría | Crítica | `TRU_CONTROL_PUERTAS_OK` con tarjeta/acceso/carril/fecha/matrícula | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B09-T06 | TRU-T92 | Evento control puertas KO | Auditoría | Alta | `TRU_CONTROL_PUERTAS_KO` con NOMATRI | R[J:TRANSTE-1513·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B09-T07 | TRU-T93 | Evento salir parking OK | Auditoría | Alta | `TRU_SALIR_PARKING_OK` con matrícula e ID | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B09-T08 | TRU-T94 | Eventos visibles en dominio TRU | Auditoría | Alta | En sección TRU propia, no en pantalla ARQ genérica | R[J:TRANSTE-1524·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B09-T01 | TRU-T87 | Evento creación OK | Auditoría | Crítica | `USER_READ_TRUCK_CENTER` | `TRU_CREACION_TRUCK_CENTER_OK` con ID en eventos dominio TRU | R[AF·J:TRANSTE-1524] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B09-T02 | TRU-T88 | Evento creación KO | Auditoría | Alta | `USER_READ_TRUCK_CENTER` | `TRU_CREACION_TRUCK_CENTER_KO` ante error | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B09-T03 | TRU-T89 | Evento modificación OK | Auditoría | Alta | `USER_READ_TRUCK_CENTER` | `TRU_MODIFICACION_TRUCK_CENTER_OK` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B09-T04 | TRU-T90 | Evento modificación KO | Auditoría | Alta | `USER_READ_TRUCK_CENTER` | `TRU_MODIFICACION_TRUCK_CENTER_KO` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B09-T05 | TRU-T91 | Evento control puertas OK | Auditoría | Crítica | `USER_READ_TRUCK_CENTER` | `TRU_CONTROL_PUERTAS_OK` con tarjeta/acceso/carril/fecha/matrícula | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B09-T06 | TRU-T92 | Evento control puertas KO | Auditoría | Alta | `USER_READ_TRUCK_CENTER` | `TRU_CONTROL_PUERTAS_KO` con NOMATRI | R[J:TRANSTE-1513·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B09-T07 | TRU-T93 | Evento salir parking OK | Auditoría | Alta | `USER_READ_TRUCK_CENTER` | `TRU_SALIR_PARKING_OK` con matrícula e ID | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B09-T08 | TRU-T94 | Eventos visibles en dominio TRU | Auditoría | Alta | `USER_READ_TRUCK_CENTER` | En sección TRU propia, no en pantalla ARQ genérica | R[J:TRANSTE-1524·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 
 ### Bloque B10 — Integración WS ARQ Docks (6)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B10-T01 | TRU-T95 | Expediente Docks creado | Integración | Alta | Visible en pantalla común de expedientes Docks | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B10-T02 | TRU-T96 | Fases expediente correctas | Integración | Alta | Solo `EN EL PARKING` → `FORA DEL PARKING` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B10-T03 | TRU-T97 | Menú contextual funcional | Integración | Media | Menú contextual Docks operativo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B10-T04 | TRU-T98 | Pantalla errores Docks | Integración | Media | Error visible en pantalla común de errores | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B10-T05 | TRU-T99 | Mensajes Docks funcionales | Integración | Alta | Aviso de duplicado con el mensaje esperado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B10-T06 | TRU-T100 | WS ARQ todos operativos | Integración | Alta | APPFASES/EVENTOS/MENSAJES/ERRORES/LOGIN_CAS/LOGIN_TOKEN/FASES OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B10-T01 | TRU-T95 | Expediente Docks creado | Integración | Alta | `MANAGE_TRUCK_CENTER` | Visible en pantalla común de expedientes Docks | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B10-T02 | TRU-T96 | Fases expediente correctas | Integración | Alta | `MANAGE_TRUCK_CENTER` | Solo `EN EL PARKING` → `FORA DEL PARKING` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B10-T03 | TRU-T97 | Menú contextual funcional | Integración | Media | `MANAGE_TRUCK_CENTER` | Menú contextual Docks operativo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B10-T04 | TRU-T98 | Pantalla errores Docks | Integración | Media | `MANAGE_TRUCK_CENTER` | Error visible en pantalla común de errores | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B10-T05 | TRU-T99 | Mensajes Docks funcionales | Integración | Alta | `MANAGE_TRUCK_CENTER` | Aviso de duplicado con el mensaje esperado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B10-T06 | TRU-T100 | WS ARQ todos operativos | Integración | Alta | `MANAGE_TRUCK_CENTER` | APPFASES/EVENTOS/MENSAJES/ERRORES/LOGIN_CAS/LOGIN_TOKEN/FASES OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B11 — Seguridad y Calidad de Código (6)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B11-T01 | TRU-T101 | SonarQube sin vulnerabilidades altas | Calidad | Crítica | Sin vulnerabilidades altas | R[J:TRANSTE-1530·AF·Cod] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B11-T02 | TRU-T102 | No inyección SQL en lupas | Seguridad | Crítica | Input sanitizado, sin efecto en consultas | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B11-T03 | TRU-T103 | No XSS en observaciones | Seguridad | Crítica | Contenido malicioso no ejecutado | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B11-T04 | TRU-T104 | No XSS en matrícula | Seguridad | Alta | Input no genera ejecución de script | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B11-T05 | TRU-T105 | Validación de largo de campos según modelo | Validación | Alta | Rechazo/control de valor fuera de rango, sin error BD | R[AF·Cod] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B11-T06 | TRU-T106 | HTTPS en todos los endpoints | Seguridad | Alta | PRE y PRO usan HTTPS exclusivamente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B11-T01 | TRU-T101 | SonarQube sin vulnerabilidades altas | Calidad | Crítica | N/A (análisis estático) | Sin vulnerabilidades altas | R[J:TRANSTE-1530·AF·Cod] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B11-T02 | TRU-T102 | No inyección SQL en lupas | Seguridad | Crítica | N/A (análisis estático) | Input sanitizado, sin efecto en consultas | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B11-T03 | TRU-T103 | No XSS en observaciones | Seguridad | Crítica | N/A (análisis estático) | Contenido malicioso no ejecutado | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B11-T04 | TRU-T104 | No XSS en matrícula | Seguridad | Alta | N/A (análisis estático) | Input no genera ejecución de script | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B11-T05 | TRU-T105 | Validación de largo de campos según modelo | Validación | Alta | N/A (análisis estático) | Rechazo/control de valor fuera de rango, sin error BD | R[AF·Cod] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B11-T06 | TRU-T106 | HTTPS en todos los endpoints | Seguridad | Alta | N/A (análisis estático) | PRE y PRO usan HTTPS exclusivamente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B12 — Regresión, Despliegue y E2E (6)
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|
-| TRU-B12-T01 | TRU-T107 | Health check API LGP | Despliegue | Crítica | GET endpoint TRC → 200 OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B12-T02 | TRU-T108 | Health check APP TRU | Despliegue | Crítica | GET endpoint web → 200 OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B12-T03 | TRU-T109 | Nomenclatura APIs post-renombrado | Despliegue | Alta | Se observan `APB.API.LGP` y `APB.API.TRU` (no nombres antiguos) | R[J:ARQ-2444·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B12-T04 | TRU-T110 | Repositorio APB.TRU | Despliegue | Alta | Repo y pipelines apuntan al nuevo nombre | R[J:TRANSTE-1527·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B12-T05 | TRU-T111 | E2E: Entrada LPR → GRID → Terminal → Salida LPR | E2E | Crítica | Registro completo con entrada, terminal, conductor, empresa, salida; todos los eventos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B12-T06 | TRU-T112 | E2E: Alta manual → Modificar → Salir Parking | E2E | Crítica | Flujo completo manual; eventos creación + modificación + salida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B12-T01 | TRU-T107 | Health check API LGP | Despliegue | Crítica | `MANAGE_TRUCK_CENTER` | GET endpoint TRC → 200 OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B12-T02 | TRU-T108 | Health check APP TRU | Despliegue | Crítica | `MANAGE_TRUCK_CENTER` | GET endpoint web → 200 OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B12-T03 | TRU-T109 | Nomenclatura APIs post-renombrado | Despliegue | Alta | `MANAGE_TRUCK_CENTER` | Se observan `APB.API.LGP` y `APB.API.TRU` (no nombres antiguos) | R[J:ARQ-2444·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B12-T04 | TRU-T110 | Repositorio APB.TRU | Despliegue | Alta | `MANAGE_TRUCK_CENTER` | Repo y pipelines apuntan al nuevo nombre | R[J:TRANSTE-1527·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B12-T05 | TRU-T111 | E2E: Entrada LPR → GRID → Terminal → Salida LPR | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Registro completo con entrada, terminal, conductor, empresa, salida; todos los eventos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B12-T06 | TRU-T112 | E2E: Alta manual → Modificar → Salir Parking | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Flujo completo manual; eventos creación + modificación + salida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ---
 
@@ -737,6 +746,7 @@ MISA-1471, MISA-1434, MISA-1428, MISA-1381, MISA-1346, SOSO-2075
 | Unificado 1.0 | 2026-07-02 | APB AI Framework (IA) | Unificación sin duplicados de A (Rovo/Jira, 38), B (Rovo/Jira+AF, 112) y C (Copilot/código, 112) → 112 casos con procedencia múltiple, Tipo y mapeo A→unificado. |
 | Unificado 1.1 | 2026-07-02 | APB AI Framework (IA) | **Restauración de contenido:** se reincorpora TODA la información narrativa de las tres fuentes que se había perdido en 1.0 — §2 Funcionalidad detallada (API, GRID, Mantenimiento, lupas, terminales, eventos, mensajes, errores), §1.4 Modelo de datos con tipos/nulabilidad, §3 Incidencias históricas relevantes, §4 Proyectos futuros, §9 Checklist ejecutable, §10 Plantilla de ejecución, §11 Tickets Jira, §12 Documentos de referencia. Unificar ya no elimina información. |
 | Unificado 1.2 | 2026-07-03 | APB AI Framework (IA) | **Renumeración a ID canónico (§3.2 `TEST_PLAN_STANDARD` v1.2.0):** los 112 casos pasan de numeración plana (`TRU-T01…T112`) a esquema `TRU-B{NN}-T{NN}` (bloque + secuencia, append-only), conservando el **ID legado** en columna propia de la matriz (§5) para no romper la trazabilidad con `INFORME_EJECUCION_112.md`. §7 Mapeo actualizado con ambos IDs. §9 Checklist con IDs canónicos. Resuelve el problema de correlación plan↔informe al crecer el plan (añadir una prueba a un bloque existente ya no exige renumerar las demás). |
+| Unificado 1.3 | 2026-07-03 | APB AI Framework (IA) | **Fase I (`TEST_PLAN_STANDARD` v1.3.0):** §1.6 amplía la matriz de roles con «Bloques que lo requieren» + nota de **usuario de ejecución** (AKV/runtime, sin credenciales en fichero) y **destino de ejecución** (§9.1/§9.2); la matriz de casos (§5) incorpora la columna **«Rol requerido»** con el rol EntraID mínimo por bloque. Sin pérdida de contenido (§3.1): solo se añade información. |
 
 ## 14. Aprobados del plan (por cambio)
 

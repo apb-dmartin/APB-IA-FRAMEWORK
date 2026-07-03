@@ -894,3 +894,20 @@ Check **#22** `validate_agnostic_root_routing` (anti-deriva) + 3 tests. Detalle:
 **41/41 tests** · 345 componentes (sin cambio — ficheros de routing no son catalogables). Pendiente:
 decidir si pushear la rama `feat/qa2-test-plan-methodology`; provider de VCS alternativo si Débora
 diversifica de GitHub (distinto del punto agnóstico de LLM/herramienta, ya resuelto en Fase H).
+
+**Fase I (2026-07-03):** Débora aportó 7 huecos de la metodología de planes de pruebas frente a un uso
+real. Cubiertos en `TEST_PLAN_STANDARD` v1.3.0 y skill `apb-qa-test-plan` v1.4.0: **(1)** matriz de roles +
+columna «Rol requerido» por caso, usuario de ejecución por **AKV** o runtime (nunca en fichero, §9.2);
+**(2)** informe corporativo (HTML con badges de estado); **(3)** **Acta de aprobación del informe**
+(Funcional + Desarrollador, persistida en `.md` **y** Jira, §6.2 — decisión: se aprueba el *informe*, no el
+PR); **(4)** destino de ejecución `local`/`ci-runner`/`azure-qa` (§9.1, k6 nunca desde el portátil);
+**(5)** guía `docs/qa/EJECUCION_LOCAL.md` + instalación asistida; **(6)** `spec` SDD como fuente
+autoritativa (§1) + nuevo subagente **`apb-sub-qa-fix-loop-v1.0`** (fallo→PR→Jira, propone sin mergear),
+cableado en `apb-wf-qa-evidence` y `apb-wf-sdd-full`; **(7)** nuevo provider **`prov-azure-qa-runtime-v1.0`**
+(`draft`) para ejecución en la suscripción QA de Azure sin instalar nada. Check **#23**
+`validate_execution_and_approval_methodology` + 3 tests. Detalle: `PLAN_FASES_COMPLETADAS.md`.
+
+**Estado al cierre de Fase I:** `validate_repo.py --strict` exit 0 (0 errores, 60 warnings exentos) ·
+**49/49 tests** · **347 componentes** (345 + subagente fix-loop + provider Azure QA, ambos `draft`).
+Pendiente: decidir si pushear la rama `feat/qa2-test-plan-methodology`; **QA-3** (despliegue real del
+entorno Azure QA + ejecución funcional completa con dataset, k6 y SonarQube/OWASP ZAP).

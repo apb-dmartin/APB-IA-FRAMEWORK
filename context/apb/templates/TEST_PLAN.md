@@ -57,13 +57,23 @@ ID anterior (nunca se pierde la trazabilidad con informes ya emitidos).
 ### 1.5 Máquina de estados / reglas de negocio clave
 {Estados y transiciones; reglas críticas (p. ej. duplicados, confirmaciones).}
 
-### 1.6 Roles y permisos
-| Rol / Permiso | Alcance |
-|---|---|
-| {rol} | {qué puede hacer} |
+### 1.6 Roles de usuario y usuario de ejecución (§9.2)
+> Roles necesarios para las pruebas + qué bloques los requieren. El **usuario concreto** que ejecuta se
+> resuelve por **referencia AKV** (`AKV://<secret>`, vía `prov-akv-v1.0`) **o** se **proporciona en runtime**
+> (login asistido → `storageState`). **Nunca** se escribe usuario/contraseña/token/`storageState` con
+> secretos en este documento ni en ningún fichero versionado (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
+
+| Rol / Permiso | Alcance | Bloques / casos que lo requieren |
+|---|---|---|
+| {rol} | {qué puede hacer} | {B02, B05…} |
+
+**Usuario de ejecución:** {`AKV://<secret>` (por defecto, ejecución autónoma) | proporcionado por el
+usuario en runtime}. **Destino de ejecución (§9.1):** {`local` | `ci-runner` | `azure-qa`}.
 
 ### 1.7 Referencia a Spec / Análisis Funcional
-{Documentos de origen, versión, fecha.}
+{Documentos de origen, versión, fecha. Si el plan nace de un flujo SDD, **enlazar la spec** —
+`apb-disc-spec-gen-v1.0` — que es la fuente funcional autoritativa (§1); cada caso traza a su criterio
+de aceptación.}
 
 ---
 
@@ -124,9 +134,9 @@ ID anterior (nunca se pierde la trazabilidad con informes ya emitidos).
 
 ### Bloque B{NN} — {área}
 
-| ID | Legado | Caso | Tipo | Prio | Resultado esperado | Procedencia | Desde | OK func. | Estado | Evidencia |
-|----|--------|------|------|------|--------------------|-------------|-------|----------|--------|-----------|
-| {APP}-B{NN}-T{NN} | {ID plano si migró, si no —} | {caso} | {Funcional/UI/Integración/Seguridad/…} | {Crítica/Alta/Media} | {resultado} | {R[J:TICKET·AF]·C[Cod]} | {AAAA-MM-DD} | {rol o —} | Pendiente | {enlace} |
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado | Evidencia |
+|----|--------|------|------|------|---------------|--------------------|-------------|-------|----------|--------|-----------|
+| {APP}-B{NN}-T{NN} | {ID plano si migró, si no —} | {caso} | {Funcional/UI/Integración/Seguridad/…} | {Crítica/Alta/Media} | {rol mínimo, p. ej. USER_READ_*} | {resultado} | {R[J:TICKET·AF]·C[Cod] / S[spec:CRIT-id]} | {AAAA-MM-DD} | {rol o —} | Pendiente | {enlace} |
 
 ---
 
@@ -192,6 +202,22 @@ ID anterior (nunca se pierde la trazabilidad con informes ya emitidos).
 | Versión | Cambio | Aprobado por (rol) | Fecha |
 |---------|--------|--------------------|-------|
 | {v} | {cambio} | {rol} | {fecha} |
+
+## 14bis. Acta de aprobación del informe de resultados (§6.2)
+> **Rellenar en el informe de ejecución** (no en el plan base). Autoriza los **resultados** de una corrida.
+> El agente **no** se autoaprueba: cada fila la firma una persona nombrada. La decisión se persiste aquí
+> **y** se refleja en el ticket Jira vinculado (`prov-jira-software-v1.0`).
+
+- **Estado del informe:** {`pendiente-aprobación` | `aprobado` | `rechazado` | `aprobado-con-reservas`}
+
+| Rol | Nombre | Fecha | Decisión | Comentarios |
+|---|---|---|---|---|
+| **Analista Funcional** | {nombre} | {AAAA-MM-DD} | {Aprobado / Rechazado / Con reservas} | {texto} |
+| **Desarrollador** | {nombre} | {AAAA-MM-DD} | {Aprobado / Rechazado / Con reservas} | {texto} |
+| QA Lead (si aplica) | {nombre} | {AAAA-MM-DD} | {decisión} | {texto} |
+
+> Si hay decisión `Rechazado` / `Con reservas` con pruebas en fallo → se dispara el **bucle de corrección**
+> `apb-sub-qa-fix-loop-v1.0` (§6.3): propone PR con correcciones y anota el ticket Jira.
 
 ## 15. Evidencias y vínculo a Jira
 - **Ubicación de resultados/evidencias:** {repo de la app / ruta}.

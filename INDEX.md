@@ -21,12 +21,12 @@
 | Skills APB | 177 / 177 |
 | Skills terceros | 52 / 52 |
 | Agentes | 35 / 35 |
-| Subagentes | 33 / 33 |
+| Subagentes | 34 / 34 |
 | Workflows | 17 / 17 |
-| Providers | 20 / 20 |
+| Providers | 21 / 21 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **345** |
+| **Total** | **347** |
 
 ---
 
@@ -53,12 +53,12 @@ APB-IA-FRAMEWORK/
 ├── INDEX.md
 ├── DOMAIN_REGISTRY.md
 ├── agents/                     # 35 agentes
-├── subagents/                  # 33 subagentes
+├── subagents/                  # 34 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
 │   ├── apb-owned/             # 177 skills
 │   └── third-party/           # 52 skills
-├── providers/                  # 20 providers
+├── providers/                  # 21 providers
 ├── wrappers/                   # 7 wrappers
 ├── adapters/                   # 4 adaptadores
 │   ├── copilot/

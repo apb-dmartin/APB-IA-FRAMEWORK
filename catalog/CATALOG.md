@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 345
+- **Total Components**: 347
 
 ## Component Breakdown
 
@@ -288,7 +288,7 @@
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
 | `apb-agent-vendor-manager-v1.0` | Vendor Manager | draft | `agents/apb-agent-vendor-manager-v1.0.md` |
 
-### Subagentes (33 total)
+### Subagentes (34 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -320,6 +320,7 @@
 | `apb-sub-plat-ghactions-v1.0` | GitHub Actions Subagent | draft | `subagents/apb-sub-plat-ghactions-v1.0.md` |
 | `apb-sub-plat-jenkins-v1.0` | Jenkins Specialist Subagent | draft | `subagents/apb-sub-plat-jenkins-v1.0.md` |
 | `apb-sub-qa-e2e-v1.0` | E2E Testing Subagent | draft | `subagents/apb-sub-qa-e2e-v1.0.md` |
+| `apb-sub-qa-fix-loop-v1.0` | QA Fix-Loop Subagent | draft | `subagents/apb-sub-qa-fix-loop-v1.0.md` |
 | `apb-sub-qa-performance-v1.0` | Performance Testing Subagent | draft | `subagents/apb-sub-qa-performance-v1.0.md` |
 | `apb-sub-qa-security-v1.0` | Security Testing Subagent | draft | `subagents/apb-sub-qa-security-v1.0.md` |
 | `apb-sub-qa-unit-v1.0` | Unit Testing Subagent | draft | `subagents/apb-sub-qa-unit-v1.0.md` |
@@ -348,7 +349,7 @@
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 | `apb-wf-vendor-procurement-v1.0` | Vendor Procurement LCSP | draft | `workflows/apb-wf-vendor-procurement-v1.0.md` |
 
-### Providers (20 total)
+### Providers (21 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -359,6 +360,7 @@
 | `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
 | `prov-azure-cost-v1.0` | Provider: Azure Cost Management API | draft | `providers/prov-azure-cost-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
+| `prov-azure-qa-runtime-v1.0` | Provider: Azure QA Runtime | draft | `providers/prov-azure-qa-runtime-v1.0.md` |
 | `prov-azure-v1.0` | Provider: Azure MCP | draft | `providers/prov-azure-v1.0.md` |
 | `prov-browser-agent-v1.0` | Provider: Agentic Browser | draft | `providers/prov-browser-agent-v1.0.md` |
 | `prov-confluence-v1.0` | Provider: Atlassian Confluence REST API | draft | `providers/prov-confluence-v1.0.md` |

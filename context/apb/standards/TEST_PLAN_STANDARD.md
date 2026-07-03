@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.2.0"
+version: "1.3.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -35,8 +35,14 @@ el código verifica y completa):
 1. **Planes de pruebas aportados por el usuario** — en cualquier formato (Markdown, Word, Excel, PDF…).
    Se normalizan a Markdown con [`apb-plat-doc-to-markdown-v1.0`](../../../skills/apb-owned/platform/apb-plat-doc-to-markdown-v1.0.md)
    antes de fundirse. Se conservan **todas** sus pruebas.
-2. **Rovo (Atlassian)** — tickets de Jira, sus adjuntos, análisis funcional y documentación aportada.
-3. **GitHub Copilot** — ingeniería inversa del código, para **completar y contrastar** lo funcional.
+2. **Especificación SDD (`spec`)** — cuando el plan se genera dentro de un flujo Spec-Driven Development
+   ([`apb-wf-sdd-full-v1.0`](../../../workflows/apb-wf-sdd-full-v1.0.md)), la spec previamente definida
+   ([`apb-disc-spec-gen-v1.0`](../../../skills/apb-owned/discovery/apb-disc-spec-gen-v1.0.md)) es **input
+   obligatorio** y **fuente funcional autoritativa**: los casos derivan de los **criterios de aceptación**
+   de la spec, y cada caso queda trazado a su criterio de origen. La spec manda sobre la ingeniería inversa
+   del código cuando ambos discrepan (la discrepancia se registra como observación, ver §1.1).
+3. **Rovo (Atlassian)** — tickets de Jira, sus adjuntos, análisis funcional y documentación aportada.
+4. **GitHub Copilot** — ingeniería inversa del código, para **completar y contrastar** lo funcional.
 
 ### 1.1 Degradación cuando faltan fuentes
 
@@ -58,7 +64,7 @@ Toda prueba lleva **≥1 origen** y **≥1 herramienta**. La procedencia es una 
 | Dimensión | Valores canónicos |
 |---|---|
 | **Herramienta** (quién la propuso) | `rovo` · `github-copilot` · `usuario` · (otras: nombre libre) |
-| **Origen** (de dónde sale) | `jira` (con ticket) · `documentacion` (AF/spec) · `codigo` · `usuario` (con formato de origen) |
+| **Origen** (de dónde sale) | `spec` (SDD, con id de la spec/criterio) · `jira` (con ticket) · `documentacion` (AF) · `codigo` · `usuario` (con formato de origen) |
 
 **Notación recomendada en la columna «Procedencia»** de la matriz de casos:
 `R[J:TICKET·AF] · C[Cod]` donde `R`=Rovo, `C`=Copilot, `U`=Usuario; orígenes `J`/`AF`/`Cod`.
@@ -165,6 +171,8 @@ Todo plan de pruebas incluye, además de la matriz de casos:
 10. **Enlace bidireccional plan ↔ evidencias** (del plan a las evidencias de resultados y viceversa).
 11. **Evidencias vinculadas a Jira.**
 12. Criterios de entrada / salida.
+13. **Matriz de roles de usuario y usuario de ejecución** (§9.2).
+14. **Acta de aprobación del informe de resultados** (§6.2) — en el informe de ejecución, no en el plan base.
 
 ---
 
@@ -196,6 +204,46 @@ necesita un responsable a lo largo del tiempo, no solo en su versión inicial.
 - **Cambio de owner:** si el owner cambia (rotación de equipo), se registra como entrada en el histórico
   (§6) del plan, igual que cualquier otro cambio significativo.
 
+### 6.2 Aprobación del informe de resultados (autorización persistida)
+
+> El **plan** se aprueba con la gobernanza de §6/§6.1. El **informe de ejecución** (los resultados de una
+> corrida concreta) requiere además una **autorización explícita de las personas responsables**, que quede
+> **reflejada y persistida** — no basta con generarlo.
+
+- **Acta de aprobación** — todo informe de ejecución incluye una sección **«Acta de aprobación»** con los
+  aprobadores nombrados. Como mínimo:
+
+  | Rol | Nombre | Fecha | Decisión | Comentarios |
+  |---|---|---|---|---|
+  | **Analista Funcional** | | | `Aprobado` / `Rechazado` / `Con reservas` | |
+  | **Desarrollador** | | | `Aprobado` / `Rechazado` / `Con reservas` | |
+  | QA Lead (si aplica) | | | | |
+
+- **Qué se aprueba:** el **informe de resultados**, no el Pull Request. La aprobación del código (PR) y la
+  del informe son actos distintos; esta sección gobierna la del informe.
+- **Persistencia (doble registro, obligatorio):**
+  1. En el **`.md`** del informe (fuente de verdad, versionada en el repo de la app) — el acta rellena
+     queda en el propio documento y su cambio entra en el histórico.
+  2. En el **ticket Jira** vinculado — la decisión se refleja como comentario y/o transición de estado vía
+     [`prov-jira-software-v1.0`](../../../providers/prov-jira-software-v1.0.md), enlazando al informe.
+- **Mecanismo:** un *sign-off* controlado y auditable (nombre + rol + fecha + decisión). **No exige firma
+  criptográfica**; si en el futuro se requiere firma digital certificada, se añade sin cambiar este acta.
+- **Regla de dos ojos:** el agente **nunca** autoaprueba su propio informe (coherente con `SYSTEM.md §2.1`
+  y `POLICY_AI_USAGE §6-7`). La decisión es siempre de una persona nombrada.
+- **Estado del informe:** `pendiente-aprobación` → `aprobado` / `rechazado` / `aprobado-con-reservas`. Un
+  informe `rechazado` o `con reservas` dispara, si procede, el bucle de corrección de §6.3.
+
+### 6.3 Bucle de corrección tras fallo (fallo → PR → Jira)
+
+Cuando una o más pruebas **fallan** (o el informe se aprueba «con reservas»), el proceso no termina en el
+informe: se **propone la corrección** y se deja traza en Jira.
+
+- Lo orquesta el sub-workflow [`apb-sub-qa-fix-loop-v1.0`](../../../subagents/apb-sub-qa-fix-loop-v1.0.md):
+  **test FALLA → propone un PR con las correcciones** (vía `apb-dev-pr-doc-v1.0`) **→ anota el ticket Jira**
+  correspondiente (vía `prov-jira-software-v1.0`) con el enlace al PR y la evidencia del fallo.
+- **Autonomía:** el bucle **propone** el PR; **nunca lo mergea**. La aprobación y el merge son humanos
+  (`POLICY_AI_USAGE §6-7`). En flujo SDD, la corrección se contrasta contra la **spec** (§1) origen del caso.
+
 ---
 
 ## 7. Almacenamiento y entrega de resultados y evidencias
@@ -225,6 +273,10 @@ Tanto el **plan** como el **informe de ejecución** se generan siempre en **dos 
   (ya pregunta formato y destino); lo que este estándar fija es que el **`.html` deja de ser opcional**
   para el tipo de artefacto «plan de pruebas» / «informe de ejecución» — se genera siempre, aunque el
   usuario no lo pida explícitamente como destino de entrega.
+- **El informe de ejecución también es corporativo:** la versión `.html` del **informe** usa el mismo
+  formato (cabecera azul + logo, nav, acordeón) y **renderiza el «Acta de aprobación» (§6.2)** como una
+  tabla de firmantes con su estado — de modo que la autorización sea visible para el stakeholder que abre
+  el HTML, no solo en el `.md`.
 
 ---
 
@@ -246,6 +298,64 @@ Tanto el **plan** como el **informe de ejecución** se generan siempre en **dos 
   (`prov-browser-agent-v1.0` + `apb-qa-exploratory-nav-v1.0`).
 - **Autenticación** (p. ej. EntraID/SSO): capturar `storageState` en un login asistido y reutilizarlo;
   nunca hardcodear credenciales (usar Azure Key Vault por referencia, `GOVERNANCE.md` §5).
+
+### 9.1 Destino de ejecución (quién ejecuta y dónde corren Playwright / k6)
+
+Las pruebas puede lanzarlas **una persona** o **un workflow**. El plan declara el **destino de ejecución**:
+
+| Destino | Quién lanza | Dónde corren Playwright / k6 | Cuándo usarlo |
+|---|---|---|---|
+| **`local`** | Persona, en su PC | En la máquina del usuario (requiere instalación — ver §9.3 y `docs/qa/EJECUCION_LOCAL.md`). El agente **guía la instalación paso a paso** si falta tooling. | Exploratorio, desarrollo, depuración de un caso puntual. |
+| **`ci-runner`** | Workflow (GitHub Actions / Azure DevOps) | En el runner del pipeline (imagen con navegadores/k6). | Regresión automática por PR/nightly. |
+| **`azure-qa`** | Workflow **o** persona (dispara el job) | En un **entorno efímero de la suscripción QA de Azure** con Playwright y k6 **pre-instalados** — el usuario/runner **no instala nada** (§9.4, `prov-azure-qa-runtime-v1.0`). | Ejecución completa (funcional + rendimiento + seguridad) reproducible y sin dependencias locales. |
+
+**Reglas de destino:**
+- **La carga k6 nunca se lanza desde el portátil** contra infraestructura compartida (PRE/PRO): rendimiento
+  y estrés van a `ci-runner` o, preferentemente, `azure-qa`.
+- Exploratorio/descubrimiento → `local` (o navegación agéntica). Regresión/rendimiento/seguridad →
+  `ci-runner` / `azure-qa`.
+- El destino se decide en la elicitación de la skill; si no se indica, se pregunta.
+
+### 9.2 Roles de usuario y usuario de ejecución
+
+Un plan de pruebas realista no basta con "qué se prueba": necesita **con qué rol** se prueba y **qué usuario
+concreto** ejecuta.
+
+- **Matriz de roles (obligatoria, §5.13):** el plan enumera los roles de usuario necesarios para las pruebas,
+  con su alcance y qué bloques/casos los requieren:
+
+  | Rol | Alcance / permisos | Bloques / casos que lo requieren |
+  |---|---|---|
+  | {p. ej. `USER_READ_*`} | Solo lectura | {B02, B05…} |
+  | {p. ej. `MANAGE_*`} | Alta/baja/modificación | {B07…} |
+
+- **Columna «Rol requerido» por caso:** cada caso de la matriz de pruebas declara el **rol mínimo** con el
+  que debe ejecutarse (permite planificar pasadas por rol y detectar fallos de autorización).
+- **Usuario concreto de ejecución** — **dos vías, nunca credenciales en el fichero** (`AGENTS.md §3`,
+  `GOVERNANCE.md §5.2`):
+  1. **Guardado en Key Vault** — referencia simbólica `AKV://<secret>` resuelta en runtime vía
+     [`prov-akv-v1.0`](../../../providers/prov-akv-v1.0.md) (Managed Identity). Es la vía por defecto para
+     ejecución autónoma (workflow / `azure-qa`).
+  2. **Proporcionado por el usuario** — introducido interactivamente en tiempo de ejecución (p. ej. login
+     asistido EntraID que produce un `storageState`). Ni la credencial ni el `storageState` con secretos se
+     **persisten** en el repo.
+- **Prohibido:** escribir usuarios, contraseñas, tokens o `storageState` con secretos en el plan, el informe,
+  el catálogo o cualquier fichero versionado. Solo referencias simbólicas.
+
+### 9.3 Ejecución local: guía de instalación asistida
+
+Si el destino es `local` y la máquina del usuario **no** tiene el tooling (Node/Playwright/k6), la skill
+**no falla**: **guía al usuario paso a paso** en la instalación, remitiendo a
+[`docs/qa/EJECUCION_LOCAL.md`](../../../docs/qa/EJECUCION_LOCAL.md) (Node vía winget, `@playwright/test`,
+`npx playwright install`, k6, verificación y captura de `storageState`).
+
+### 9.4 Entorno QA en Azure (ejecución sin instalar nada)
+
+Para "pruebas completas sin que el usuario ni el workflow instalen nada", el destino `azure-qa` usa
+[`prov-azure-qa-runtime-v1.0`](../../../providers/prov-azure-qa-runtime-v1.0.md): un **job efímero** en la
+**suscripción QA de Azure** con Playwright + k6 pre-instalados, **Managed Identity → AKV** para credenciales
+y `storageState`, acceso de red a PRE/QA y salida de evidencias. **Diseño en `draft`**; el despliegue real
+de la infraestructura es trabajo de la sesión QA-3.
 
 ---
 
@@ -269,6 +379,15 @@ Un plan de pruebas es conforme cuando:
       (por release) está declarada.
 - [ ] **Entrega dual (§7.1):** existen versión `.md` y versión `.html` (cabecera azul + logo, nav lateral,
       acordeón por bloque) del plan y, tras ejecutar, del informe.
+- [ ] **Roles y usuario de ejecución (§9.2):** existe la matriz de roles y cada caso declara su «Rol
+      requerido»; el usuario de ejecución se resuelve por referencia AKV o entrada en runtime — **ningún
+      secreto ni `storageState` con credenciales está en fichero versionado**.
+- [ ] **Destino de ejecución (§9.1):** el plan declara `local` / `ci-runner` / `azure-qa`; la carga k6 no
+      se lanza desde el portátil contra infra compartida.
+- [ ] **Fuente spec en flujo SDD (§1):** si el plan nace de un flujo SDD, la spec es input y cada caso
+      traza a su criterio de aceptación.
+- [ ] **Acta de aprobación del informe (§6.2):** el informe de ejecución incluye el acta (Funcional +
+      Desarrollador), persistida en el `.md` y reflejada en Jira; el agente no se autoaprueba.
 
 > **Generado por IA:** Claude (Anthropic), Sesión QA-2 del APB AI Framework.
 > **Validado por humano:** _pendiente — completar nombre/rol antes de pasar a `candidate`._
@@ -282,3 +401,4 @@ Un plan de pruebas es conforme cuando:
 | 1.0.0 | 2026-07-02 | Creación del estándar (orden de fuentes, procedencia múltiple, unificación, secciones obligatorias, gobernanza, no-regresión). |
 | 1.1.0 | 2026-07-02 | **§3.1 Principio de conservación** (regla no negociable): unificar es un superconjunto — conserva pruebas **y** todo el contenido narrativo; la pérdida silenciosa es defecto bloqueante. Ítem añadido al checklist §10. Refuerza el check #21 del validador. Origen: feedback de Débora tras detectar pérdida de contenido (incidencias históricas) en el ejemplo unificado. |
 | 1.2.0 | 2026-07-03 | **§3.2 Identificador canónico y crecimiento** (`{APP}-B{NN}-T{NN}` append-only, migración con columna «Legado» — resuelve la ruptura de correlación plan↔informe al añadir pruebas a un bloque existente). **§6.1 Gobernanza por aplicación** (owner nombrado, cadencia por release, ciclo de vida `GOVERNANCE.md`). **§7.1 Entrega dual Markdown + HTML** obligatoria (cabecera azul + logo APB, nav lateral, acordeón nativo por bloque, sin DevExpress/CDN). 3 ítems añadidos al checklist §10. Origen: feedback de Débora. |
+| 1.3.0 | 2026-07-03 | **Fase I** (7 huecos detectados por Débora). **§1** añade `spec` (SDD) como fuente funcional autoritativa de primer nivel; **§2** añade origen canónico `spec`. **§6.2 Aprobación del informe de resultados** (acta Funcional + Desarrollador, persistida en `.md` **y** Jira, sign-off no criptográfico, dos ojos). **§6.3 Bucle de corrección** fallo → PR → Jira (`apb-sub-qa-fix-loop-v1.0`, propone PR sin mergear). **§9.1 Destino de ejecución** (`local`/`ci-runner`/`azure-qa`; k6 nunca desde portátil). **§9.2 Roles de usuario y usuario de ejecución** (matriz de roles, columna «Rol requerido», usuario por AKV o runtime, nunca en fichero). **§9.3 Instalación local asistida** (`docs/qa/EJECUCION_LOCAL.md`). **§9.4 Entorno QA en Azure** (`prov-azure-qa-runtime-v1.0`, draft). Secciones obligatorias §5.13/§5.14 y 4 ítems al checklist §10. Origen: feedback de Débora. |

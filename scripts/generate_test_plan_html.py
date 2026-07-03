@@ -75,6 +75,31 @@ def md_inline(text: str) -> str:
     return "".join(out)
 
 
+# Estados de decisión/ejecución → badge de color (acta de aprobación §6.2, columna Estado).
+STATUS_CLASS = {
+    "aprobado": "ok",
+    "pass": "ok",
+    "ok": "ok",
+    "rechazado": "ko",
+    "fail": "ko",
+    "con reservas": "warn",
+    "aprobado-con-reservas": "warn",
+    "pendiente": "pend",
+    "pendiente-aprobación": "pend",
+    "pendiente-aprobacion": "pend",
+}
+
+
+def cell_html(c: str) -> str:
+    """HTML de una celda de datos; envuelve los estados conocidos en un badge de color."""
+    key = c.strip().lower().strip("`")
+    inner = md_inline(c)
+    cls = STATUS_CLASS.get(key)
+    if cls:
+        return f'<span class="badge badge-{cls}">{inner}</span>'
+    return inner
+
+
 def render_table(lines):
     header = [c.strip() for c in lines[0].strip().strip("|").split("|")]
     rows = [
@@ -88,7 +113,7 @@ def render_table(lines):
     for row in rows:
         out.append("<tr>")
         for c in row:
-            out.append(f"<td>{md_inline(c)}</td>")
+            out.append(f"<td>{cell_html(c)}</td>")
         out.append("</tr>")
     out.append("</tbody></table></div>")
     return "\n".join(out)
@@ -322,6 +347,11 @@ def generate_html(md_path: Path, out_path: Path):
       border-left: 4px solid var(--azul-corporativo); background: var(--gris-muy-claro);
       margin: 12px 0; padding: 8px 16px; color: var(--gris-medio); font-size: 13px;
     }}
+    .badge {{ display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }}
+    .badge-ok {{ background: #DCF3E4; color: #1B7A3D; }}
+    .badge-ko {{ background: #FBE0E0; color: #B12A2A; }}
+    .badge-warn {{ background: #FCEFD3; color: #8A6100; }}
+    .badge-pend {{ background: var(--gris-muy-claro); color: var(--gris-oscuro-texto); }}
     code {{ background: var(--gris-muy-claro); padding: 1px 5px; border-radius: 3px; font-size: 12px; }}
     pre {{ background: #2b2b2b; color: #eee; padding: 12px; border-radius: 6px; overflow-x: auto; }}
     pre code {{ background: transparent; color: inherit; }}

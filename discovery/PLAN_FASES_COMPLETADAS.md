@@ -548,3 +548,49 @@ catalogables) · `validate_repo.py --strict` exit 0 · **41/41 tests**.
 `prov-github-v1.0.md` para control de versiones — si Débora diversifica de GitHub como
 proveedor de VCS/CI (no de LLM/herramienta), haría falta un provider equivalente para la
 alternativa elegida.
+
+---
+
+## Fase I — Roles, autorización del informe, ejecución local/CI/Azure-QA, SDD spec + fix-loop — ✅ EJECUTADO 2026-07-03
+
+**Origen:** Débora detectó 7 huecos que hacían la metodología de planes de pruebas incompleta frente a un
+uso real en APB. Tres exploraciones paralelas confirmaron la infraestructura ya existente (provider AKV
+`draft`, roles por app en el ejemplo, workflow SDD, `prov-jira-software`, `apb-dev-pr-doc`, generador HTML)
+y localizaron los huecos. Decisiones de Débora: (1) aprobar el **informe** — no el PR — con acta persistida
+(Funcional + Desarrollador), sin exigir firma criptográfica; (2) **diseñar ya el provider Azure QA** en
+`draft`; (3) **nuevo sub-workflow reutilizable** para el bucle fallo→PR→Jira.
+
+**Ejecutado (`TEST_PLAN_STANDARD` v1.2.0 → v1.3.0; skill `apb-qa-test-plan` v1.3.0 → v1.4.0):**
+
+- **Req 1 — Roles + usuario de ejecución:** §9.2 (matriz de roles + columna «Rol requerido» por caso;
+  usuario por referencia **AKV** `prov-akv-v1.0` o aportado en runtime, **nunca en fichero**). Plantilla
+  `TEST_PLAN.md` con la columna y la nota de usuario. Ejemplo TruckCenter (v1.3): §1.6 con «Bloques que lo
+  requieren» + columna «Rol requerido» en las 12 tablas (112 casos, rol EntraID por bloque).
+- **Req 2 — Informe corporativo:** §7.1 explícito para el informe; el HTML renderiza el **Acta de
+  aprobación** como tabla de firmantes con estados en badge de color.
+- **Req 3 — Autorización del informe:** §6.2 «Acta de aprobación del informe» (Funcional + Desarrollador,
+  decisión + fecha, persistida en el `.md` **y** en Jira; sign-off no criptográfico; el agente no se
+  autoaprueba). Plantilla §14bis. `generate_test_plan_html.py` con badges de estado.
+- **Req 4 — Dónde corren Playwright/k6:** §9.1 «Destino de ejecución» (`local` / `ci-runner` / `azure-qa`;
+  k6 nunca desde el portátil contra infra compartida).
+- **Req 5 — Instalación local guiada:** nuevo `docs/qa/EJECUCION_LOCAL.md` (Node/Playwright/k6, Windows
+  first, captura de `storageState`); la skill guía la instalación si falta tooling.
+- **Req 6 — SDD:** §1 añade `spec` como fuente funcional autoritativa; skill con input `spec`;
+  `apb-wf-sdd-full` Fase 6 pasa la spec a la skill. Bucle fallo→PR→Jira: nuevo subagente
+  **`apb-sub-qa-fix-loop-v1.0`** (`draft`, parent `apb-agent-qa-auto-v1.0`) que **propone PR** (`apb-dev-pr-doc`)
+  y **anota Jira** (`prov-jira-software`) — **nunca mergea**; cableado en `apb-wf-qa-evidence` y `apb-wf-sdd-full`.
+- **Req 7 — Azure QA:** nuevo **`providers/prov-azure-qa-runtime-v1.0.md`** (`draft`): job efímero en la
+  suscripción QA con Playwright+k6 pre-instalados, Managed Identity → AKV, sin instalar nada local.
+  Implementaciones de referencia (ACA job / Container Instances / Azure Load Testing / MS Playwright
+  Testing). **Diseño**; el despliegue real es QA-3. (Nota: los providers no se registran en `SYSTEM.md §4.2`
+  — esa tabla es solo de adaptadores; el registro es el catálogo.)
+- **Check #23** (`validate_execution_and_approval_methodology`): verifica que estándar, plantilla y ejemplo
+  conservan las secciones obligatorias de Fase I (roles/«Rol requerido», acta de aprobación, destino de
+  ejecución). +3 tests.
+
+`generate_catalog.py` → **347 componentes** (345 + `apb-sub-qa-fix-loop-v1.0` + `prov-azure-qa-runtime-v1.0`,
+ambos `draft`) · `validate_repo.py --strict` **exit 0** (0 errores, 60 warnings exentos) · **49/49 tests**.
+
+**Pendiente (registrado, fuera de esta sesión):** despliegue real del entorno Azure QA (nombrar
+suscripción/entorno + autorizar) → **QA-3**; ejecución funcional completa de TruckCenter con dataset,
+rendimiento k6 y seguridad SonarQube/OWASP ZAP → **QA-3**.

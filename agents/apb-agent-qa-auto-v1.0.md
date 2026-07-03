@@ -31,6 +31,7 @@ subagents:
   - "apb-sub-qa-e2e-v1.0"
   - "apb-sub-qa-security-v1.0"
   - "apb-sub-qa-performance-v1.0"
+  - "apb-sub-qa-fix-loop-v1.0"
 runtime:
   - "copilot"
   - "claude"

@@ -912,6 +912,53 @@ def validate_agnostic_root_routing(repo_path: Path, result: ValidationResult):
     result.add(ValidationIssue("INFO", "AGENTS.md", "Routing raíz agnóstico de LLM/herramienta verificado"))
 
 
+def validate_execution_and_approval_methodology(repo_path: Path, result: ValidationResult):
+    """23. Roles + usuario de ejecución + destino + aprobación del informe
+    (TEST_PLAN_STANDARD v1.3.0, Fase I, 2026-07-03).
+
+    Anti-deriva: las secciones obligatorias de la Fase I no deben perderse en
+    silencio ni de la plantilla, ni del estándar, ni del ejemplo canónico:
+      - Estándar: «Roles de usuario y usuario de ejecución», «Aprobación del
+        informe», «Destino de ejecución».
+      - Plantilla: columna «Rol requerido», «Acta de aprobación», «Usuario de
+        ejecución».
+      - Ejemplo canónico: columna «Rol requerido» en la matriz de casos.
+    Si falta alguno → ERROR 'bolígrafo rojo'."""
+    standard = repo_path / "context" / "apb" / "standards" / "TEST_PLAN_STANDARD.md"
+    template = repo_path / "context" / "apb" / "templates" / "TEST_PLAN.md"
+    unified = repo_path / "docs" / "qa" / "examples" / "QA_TRU_TruckCenter_UNIFICADO.md"
+
+    checks = [
+        (standard, [
+            "Roles de usuario y usuario de ejecución",
+            "Aprobación del informe",
+            "Destino de ejecución",
+        ]),
+        (template, [
+            "Rol requerido",
+            "Acta de aprobación",
+            "Usuario de ejecución",
+        ]),
+        (unified, [
+            "Rol requerido",
+        ]),
+    ]
+    for path, needles in checks:
+        if not path.exists():
+            continue  # su ausencia la cubren otros checks (#82/#21)
+        rel = str(path.relative_to(repo_path))
+        body = path.read_text(encoding="utf-8")
+        for needle in needles:
+            if needle not in body:
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"Falta el elemento obligatorio de Fase I '{needle}' "
+                    f"(TEST_PLAN_STANDARD v1.3.0 §6.2/§9.1/§9.2). No debe derivar en silencio."
+                ))
+    result.add(ValidationIssue("INFO", "context/apb/standards/TEST_PLAN_STANDARD.md",
+                               "Metodología de roles/ejecución/aprobación (Fase I) verificada"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -987,6 +1034,7 @@ def main():
     validate_test_plan_methodology(repo_path, result)
     validate_unified_plan_conservation(repo_path, result)
     validate_agnostic_root_routing(repo_path, result)
+    validate_execution_and_approval_methodology(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 
     print()
