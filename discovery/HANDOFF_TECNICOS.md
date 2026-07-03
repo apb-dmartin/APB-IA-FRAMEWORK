@@ -3,7 +3,7 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-07-03 (Fase I — roles/usuario de ejecución, acta de aprobación del informe, destino de ejecución local/ci/azure-qa, spec SDD + fix-loop, provider Azure QA runtime)  
+> **Última actualización:** 2026-07-03 (Sesión QA TruckCenter — ejecución real en PRE + corrección de metodología de informes + activación Playwright MCP; ver §3)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
 > **Estado global:** 347 componentes (177 skills APB, 52 third-party, 35 agentes, 34 subagentes,
 > 17 workflows, 21 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
@@ -111,7 +111,25 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-03):** `validate_repo.py --strict` → exit 0. 347 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + **metodología de ejecución y aprobación (check #23, nuevo Fase I)**. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+**Estado actual (2026-07-03):** `validate_repo.py --strict` → exit 0. 347 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+
+**Sesión QA TruckCenter (2026-07-03) — ejecución real + corrección de metodología:**
+- **Ejecución:** 44/120 casos del plan unificado (v1.4 → v1.5) con escritura real en PRE (B02-B07 + E2E
+  T112), login EntraID asistido por Débora. **2 hallazgos críticos en la app** (H1 sin integridad
+  referencial al eliminar Tipo de Vehículo; H2 maestro de tipos desactualizado) — documentados en el plan
+  §15 y en `PLAN_FASES_COMPLETADAS.md`. **Acción manual pendiente de un desarrollador de TruckCenter (no
+  IA, fuera de este framework): corregir H1 en el repo `APB.TRU`** (validación de integridad referencial
+  antes de eliminar un tipo de vehículo en uso) — el defecto ya está materializado en PRE.
+- **Corrección de metodología:** `TEST_PLAN_STANDARD` v1.3.0 → v1.4.0 (§5.15 casos no ejecutados
+  obligatorios por ID, §7.2 vídeo real no GIF), skill `apb-qa-exploratory-nav` v1.0.0 → v1.1.0, check #24
+  nuevo (+3 tests).
+- **Playwright MCP activado:** `.mcp.json` de **proyecto** (raíz del repo, pendiente de confirmar commit)
+  con el servidor oficial `@playwright/mcp`; `providers/prov-playwright-v1.0.md` v1.0.0 → v1.1.0 con la
+  configuración real (sustituye el placeholder `local://playwright`). **Acción manual pendiente de
+  cualquiera que retome esta sesión: reiniciar/reabrir Claude Code sobre el repo** para que las
+  herramientas Playwright queden disponibles (no se cargan en caliente).
+- Detalle completo → `discovery/PLAN_FASES_FUTURAS.md` puntos #84 (continuación) y #88 (nuevo,
+  reejecución pendiente) + `PLAN_FASES_COMPLETADAS.md`.
 
 **Fase I (2026-07-03) — 7 huecos de uso real cubiertos, `TEST_PLAN_STANDARD` v1.2.0 → v1.3.0:**
 - Matriz de roles + usuario de ejecución (AKV ref o runtime, nunca persistido) — §9.2, columna «Rol requerido» en el ejemplo TruckCenter.

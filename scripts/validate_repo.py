@@ -959,6 +959,51 @@ def validate_execution_and_approval_methodology(repo_path: Path, result: Validat
                                "Metodología de roles/ejecución/aprobación (Fase I) verificada"))
 
 
+def validate_execution_report_evidence_methodology(repo_path: Path, result: ValidationResult):
+    """24. Informe de ejecución: entrega dual + casos no ejecutados + evidencia vídeo
+    (TEST_PLAN_STANDARD v1.4.0 §5.15/§7.1/§7.2, 2026-07-03).
+
+    Anti-repetición del error 2026-07-03: se generó un informe de ejecución de QA
+    (TruckCenter) solo en '.md' (sin '.html' corporativo), sin listar por ID los
+    casos NO ejecutados (solo un recuento agregado), y con un GIF presentado como
+    evidencia de sesión completa sin verificar su cobertura real (tope de
+    fotogramas de la herramienta de captura). El informe en sí vive en el repo de
+    cada aplicación (fuera de este repo, TEST_PLAN_STANDARD §7), así que este
+    check no puede inspeccionar informes concretos de apps — verifica que las
+    fuentes normativas del framework (estándar + skill de navegación exploratoria)
+    no pierdan en silencio estas tres obligaciones, que es lo que falló esta vez."""
+    standard = repo_path / "context" / "apb" / "standards" / "TEST_PLAN_STANDARD.md"
+    exploratory_skill = repo_path / "skills" / "apb-owned" / "qa" / "apb-qa-exploratory-nav-v1.0.md"
+
+    checks = [
+        (standard, [
+            "Casos NO ejecutados",
+            "vídeo real",
+            "Nunca solo",
+        ]),
+        (exploratory_skill, [
+            "Casos NO ejecutados",
+            "HTML",
+        ]),
+    ]
+    for path, needles in checks:
+        if not path.exists():
+            continue  # su ausencia la cubren otros checks (#82/#20)
+        rel = str(path.relative_to(repo_path))
+        body = path.read_text(encoding="utf-8")
+        for needle in needles:
+            if needle not in body:
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"Falta el elemento obligatorio de evidencia de ejecución '{needle}' "
+                    f"(TEST_PLAN_STANDARD v1.4.0 §5.15/§7.1/§7.2). No debe derivar en silencio "
+                    "— un informe sin esto vuelve a ser incompleto como el del 2026-07-03."
+                ))
+    result.add(ValidationIssue("INFO", "context/apb/standards/TEST_PLAN_STANDARD.md",
+                               "Metodología de evidencia de informes de ejecución (entrega dual, "
+                               "casos no ejecutados, vídeo) verificada"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -1035,6 +1080,7 @@ def main():
     validate_unified_plan_conservation(repo_path, result)
     validate_agnostic_root_routing(repo_path, result)
     validate_execution_and_approval_methodology(repo_path, result)
+    validate_execution_report_evidence_methodology(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 
     print()

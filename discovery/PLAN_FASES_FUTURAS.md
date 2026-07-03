@@ -788,7 +788,7 @@ punto.
 | ~~**Harness**~~ | ~~Harness Engineering agnóstico de LLM: 5 subsistemas, System of Record + ACID, Feature Lists + Pass-State Gating, validación 3 capas, Clean State Handoff. Gobernanza + scaffolding + checks nuevos en `validate_repo.py`~~ | ~~#83~~ | ✅ CERRADA (2026-07-02, sesión combinada con #78) — SYSTEM.md §10 + GOVERNANCE.md §8 + `repo-scaffold/harness-ready/` + check #19 |
 | ~~**Estándar Prompting**~~ | ~~Estándar de estructura de prompt para todos los componentes (razonar→plan→ejecutar, objetivo, autocrítica, qué-NO-hacer, ejemplo E/S, separación SISTEMA/USUARIO) + retrofit + check en validador~~ | ~~#78~~ | ✅ CERRADA (2026-07-02, sesión combinada con #83) — `PROMPTING_STANDARD.md` + 6 plantillas + retrofit 244 componentes + check #18 en ERROR |
 | ~~**QA-2**~~ | ~~Metodología y plantilla de planes de pruebas + navegación agéntica para pruebas funcionales~~ | ~~#82, #84~~ | ✅ CERRADA (2026-07-02) — `TEST_PLAN_STANDARD` + plantilla `TEST_PLAN.md`, skill `apb-qa-test-plan` v1.2.0 (interactiva, procedencia múltiple, degradación de fuentes, ingesta de planes aportados), ejemplo unificado TruckCenter (112 casos sin duplicar), `prov-browser-agent-v1.0` + `apb-qa-exploratory-nav-v1.0` (#84), ejecución real sobre TruckCenter PRE con evidencias, check #20. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
-| **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit) + **despliegue real del entorno Azure QA** (`prov-azure-qa-runtime-v1.0`, diseñado en `draft` en Fase I: nombrar suscripción/entorno + autorizar aprovisionamiento del job efímero con Playwright+k6 + Managed Identity → AKV) + **bucle fallo→PR→Jira real** (`apb-sub-qa-fix-loop-v1.0`, cableado en Fase I). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. **Fase I (2026-07-03) dejó diseñados en `draft`** el provider Azure QA y el subagente fix-loop; QA-3 los **despliega/ejecuta**. Ver `PLAN_FASES_COMPLETADAS.md` (QA-2 + Fase I). |
+| **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit) + **despliegue real del entorno Azure QA** (`prov-azure-qa-runtime-v1.0`, diseñado en `draft` en Fase I: nombrar suscripción/entorno + autorizar aprovisionamiento del job efímero con Playwright+k6 + Managed Identity → AKV) + **bucle fallo→PR→Jira real** (`apb-sub-qa-fix-loop-v1.0`, cableado en Fase I). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. **Fase I (2026-07-03) dejó diseñados en `draft`** el provider Azure QA y el subagente fix-loop; QA-3 los **despliega/ejecuta**. ⚠️ **PARCIAL (2026-07-03):** sesión de continuación ejecutó 44/120 casos con escritura real (B02-B07 + E2E T112), 2 hallazgos críticos (H1/H2), y activó Playwright MCP para vídeo real → **punto #88** para el resto (76 casos, despliegue Azure QA, corrección H1). Ver `PLAN_FASES_COMPLETADAS.md` (QA-2 + Fase I + Sesión QA TruckCenter). |
 | **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | "Fine Skills" requiere URL de Debora |
 | **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
 
@@ -1806,6 +1806,16 @@ implementaciones de referencia Playwright MCP / claude-in-chrome / computer-use)
 MANAGE): 4 casos PASS (TRU-T77/T26/T15/T16), 1 no evaluable, 2 hallazgos; evidencias empaquetadas (ZIP)
 y camino Jira definido. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
+**Continuación (2026-07-03) — ejecución a mayor escala + corrección de metodología:** nueva sesión con
+Débora ejecutando **44 de los 120 casos** del plan unificado v1.4 (lectura y escritura real en PRE,
+bloques B02-B07 + E2E T112), con **2 hallazgos críticos** en la app (H1 sin integridad referencial al
+eliminar Tipo de Vehículo; H2 maestro de tipos desactualizado en el AF/plan) documentados en el propio
+plan (§15, → v1.5). Corrección de metodología derivada: `TEST_PLAN_STANDARD` → v1.4.0 (§5.15 casos no
+ejecutados obligatorios por ID, §7.2 vídeo real no GIF), skill `apb-qa-exploratory-nav` → v1.1.0, check
+#24 del validador, y activación real de Playwright MCP (`.mcp.json` de proyecto +
+`prov-playwright-v1.0` v1.1.0) para vídeo nativo en la próxima ejecución. Detalle completo → **punto #88**
+y [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
 <details><summary>Análisis original del gap (histórico)</summary>
 
 **Origen:** pregunta de Debora (2026-07-02) — "¿el framework puede abrir un
@@ -1834,6 +1844,57 @@ CI. **Sesión candidata:** Sesión QA-2 (junto con #82, comparten insumo de
 plan de pruebas y evidencias).
 
 </details>
+
+### 85. Enriquecimiento del catálogo corporativo de dominios (consulta funcional + guía de clasificación)
+
+Ampliar el **catálogo corporativo de dominios de negocio** (repo
+`APB-DOMAIN-CATALOG`, 21 dominios `proposed`, ver #38 Fase 0 y #54) con:
+
+**a) Vista HTML de consulta para perfiles funcionales.** Generar un HTML
+navegable (autocontenido) para que **personas funcionales, no técnicas**,
+puedan consultar el catálogo sin abrir el repo ni leer Markdown/YAML:
+listado de dominios, búsqueda/filtro, ficha por dominio. Debe generarse
+**automáticamente** desde los `domain.md`/artefactos del catálogo (no
+mantenerse a mano) — candidato a extender
+`scaffolding/scripts/validate_catalog.py` o un `generate_catalog_html.py`
+nuevo en el repo del catálogo. Cruce con #81 (Obsidian) como alternativa de
+navegación, pero el HTML es para **usuarios sin herramientas**, no para
+arquitectos.
+
+**b) Descripción detallada por dominio.** Cada dominio debe documentar de
+forma estructurada y homogénea:
+- **Descripción detallada** (qué es, propósito de negocio).
+- **Tipo de elementos** que lo componen.
+- **Datos** que gestiona.
+- **Actividades** que abarca.
+Formalizar estos campos como **obligatorios** en la plantilla del catálogo
+(`bounded-context-template.md` / `domain.md`).
+
+**c) Guía de clasificación para nuevos análisis.** Orientación explícita —
+usable tanto por un humano como por `apb-agent-ddd-v1.0` /
+`apb-sub-ddd-interview-v1.0` — sobre **cómo decidir, ante un dominio nuevo
+detectado en un análisis, si es independiente o debe incorporarse a uno
+existente** (criterios de frontera: acoplamiento de datos, lenguaje ubicuo
+compartido, propiedad/gobernanza, actividades solapadas). Cruce directo con
+el "mecanismo anti-duplicación de dominios" (#11) y con la Fase 1-EVO de
+`apb-sub-ddd-interview-v1.0` (extensión / nuevo BC / deuda técnica).
+
+**d) Análisis de referencia de dominios típicos.** Elaborar dos catálogos de
+referencia que sirvan de base y contraste al inventario APB:
+- **Dominios típicos de una empresa** (genéricos: RRHH, finanzas, compras,
+  jurídico, IT, CRM, adm. electrónica…).
+- **Dominios típicos de un entorno portuario** (buques/escalas,
+  consignatarios, atraques, mercancías, aduana/PIF/EQV, GIS portuario,
+  concesiones, seguridad marítima, PORTIC/comunidad portuaria…).
+Útil para validar que el inventario APB no tiene huecos y para acelerar el
+onboarding de dominios en nuevos análisis.
+
+**Cruces (no duplicar):** #38 Fase 0 (catálogo poblado), #54 (banco de
+entrevista portuario A + corporativo B — ya contiene mucho material de (d)),
+#11 (anti-duplicación de dominios), M.2 (`ddd-crew/context-mapping`).
+**Sesión candidata:** ampliación de la línea DDD (Sesión 18 cont. / DDD Fase
+BC), tras la aprobación de Arquitectura de los 21 dominios `proposed`. Los
+apartados (a) y (d) no dependen de esa aprobación y pueden adelantarse.
 
 ---
 
@@ -2057,3 +2118,28 @@ aprobación, validación de coste, rollback) sin inventar un proceso paralelo al
 **Pendiente de Débora (bloqueante):** los pasos concretos del proceso de evaluación/migración a Cloud
 de APB. Sin este insumo no se puede iniciar la sesión — es un insumo de tipo "briefing" equivalente a
 los ya listados en `discovery/HANDOFF_TECNICOS.md §10`.
+
+### 88. Reejecución completa del plan TruckCenter con vídeo real (Playwright MCP) + corrección de H1
+
+**Origen:** continuación del punto #84 (sesión QA TruckCenter, 2026-07-03). Tras ejecutar 44/120 casos con
+2 hallazgos críticos (H1/H2 en Tabla Maestra de Vehículos) y corregir la metodología de informes
+(`TEST_PLAN_STANDARD` v1.4.0, ver #84), quedan pendientes:
+
+1. **Reiniciar/reabrir Claude Code sobre el repo** para que el servidor Playwright MCP (recién registrado
+   en `.mcp.json` de proyecto) quede disponible como herramienta — no se carga en caliente dentro de una
+   sesión ya iniciada.
+2. **Confirmar el commit** de `.mcp.json` + `providers/prov-playwright-v1.0.md` v1.1.0 (pendiente de OK de
+   Débora, hecho en la sesión anterior sin commitear aún).
+3. **Corregir H1 en TruckCenter** (repo de la app, fuera de este framework): añadir validación de
+   integridad referencial antes de permitir eliminar un Tipo de Vehículo en uso. Prioridad alta — el
+   defecto ya está materializado en PRE (tipo "Cisterna" eliminado con 4 expedientes huérfanos).
+4. **Reejecutar el plan completo de TruckCenter** (120 casos) con vídeo real por bloque vía Playwright MCP:
+   los 76 casos restantes de la sesión anterior (B01 vía API, B08/B09/B10 completos con un segundo
+   usuario/rol — incluido uno con permiso de "Auditoría de procesos", B02-B07 exhaustivo) + B11 (SonarQube/
+   ZAP)/B13 (k6, en `azure-qa`/`ci-runner`, nunca portátil)/B14 (xUnit, repo `APB.TRU`) según corresponda a
+   cada herramienta (plan §6).
+
+**Bloqueantes:** (1) y (2) son de esta misma máquina/sesión (no requieren a Débora salvo el OK de commit);
+(3) requiere acceso al repo `APB.TRU` (fuera del framework); (4) requiere login EntraID asistido de Débora
+de nuevo, igual que en la sesión anterior. **Sesión candidata:** continuación directa de QA-2/#84, no
+sesión nueva — mismo hilo de trabajo.

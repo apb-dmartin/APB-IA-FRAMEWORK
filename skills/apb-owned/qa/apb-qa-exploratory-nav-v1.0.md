@@ -2,13 +2,13 @@
 id: "apb-qa-exploratory-nav-v1.0"
 name: "Exploratory Browser Navigation"
 description: "Conduce navegación agéntica/exploratoria en vivo sobre una aplicación web: abre la app, observa la pantalla y el DOM, decide el siguiente paso sin guion fijo, interactúa y asevera, capturando evidencias. Complementa la ejecución scriptada de Playwright (regresión) con exploración para descubrimiento y QA manual asistido."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 1
 created_date: "2026-07-02"
-review_date: "2026-07-02"
+review_date: "2026-07-03"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
   - "prov-browser-agent-v1.0"  # Motor de navegación agéntica (agnóstico de herramienta)
@@ -90,7 +90,14 @@ descubriendo defectos que un guion fijo no anticiparía, y capturando evidencia 
 4. Captura evidencia por paso; ante un fallo, no lo ocultes: regístralo como finding con su evidencia.
 5. Respeta constraints (dominios, acciones prohibidas, timeouts) y el principio de no tocar producción sin autorización.
 6. Al cerrar, consolida el paquete de evidencias al destino elegido (zip/jira/ambos) y propón regression_candidates.
-7. Emitir TELEMETRY_BLOCK al finalizar (skill_id, user, timestamp, resultado).
+7. Genera el informe de ejecución en **Markdown y HTML corporativo** (nunca solo `.md`; `TEST_PLAN_STANDARD §7.1`)
+   listando explícitamente por ID canónico los casos **NO ejecutados/bloqueados** con su motivo
+   (`TEST_PLAN_STANDARD §5.15`), no solo un recuento agregado.
+8. La evidencia visual de la sesión debe ser **vídeo real**, no GIF (`TEST_PLAN_STANDARD §7.2`): si la
+   herramienta de captura tiene tope de fotogramas (p. ej. Claude-in-Chrome `gif_creator`, 50 frames),
+   segmenta la grabación por bloque (start/export/clear en cada límite) y etiqueta cada fichero con el
+   bloque que cubre; nunca presentes un único GIF como si cubriera toda la sesión sin verificarlo.
+9. Emitir TELEMETRY_BLOCK al finalizar (skill_id, user, timestamp, resultado).
 
 ## Restricciones
 - Preferente PRE/staging; nunca PRO sin autorización explícita.
@@ -99,8 +106,10 @@ descubriendo defectos que un guion fijo no anticiparía, y capturando evidencia 
 - Agnóstico de herramienta: no asumas una implementación concreta del navegador; usa la disponible en runtime.
 
 ## Formato de Salida
-Markdown con: Resumen de exploración, Traza de pasos, Aserciones (tabla pass/fail), Hallazgos,
-Candidatos a regresión, y referencia al paquete de evidencias.
+Markdown **y HTML corporativo** (`TEST_PLAN_STANDARD §7.1`, `scripts/generate_test_plan_html.py`) con:
+Resumen de exploración, Traza de pasos, Aserciones (tabla pass/fail), Hallazgos, **Casos NO ejecutados**
+(IDs canónicos + motivo, `TEST_PLAN_STANDARD §5.15`), Candidatos a regresión, y referencia al paquete de
+evidencias (vídeo real o GIF segmentado por bloque, `TEST_PLAN_STANDARD §7.2`).
 ```
 
 ## ⚠️ Comportamiento ante inputs incompletos
@@ -141,6 +150,7 @@ Candidatos a regresión, y referencia al paquete de evidencias.
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-02 | APB AI Framework (Sesión QA-2) | Creación inicial — punto #84, navegación agéntica exploratoria |
+| 1.1.0 | 2026-07-03 | APB AI Framework (feedback de Débora) | Alinea con `TEST_PLAN_STANDARD v1.4.0`: el informe de ejecución se entrega siempre en Markdown **y** HTML corporativo (nunca solo `.md`), lista explícitamente los casos NO ejecutados por ID canónico, y la evidencia visual debe ser vídeo real o GIF segmentado por bloque (nunca un GIF único sin verificar su cobertura). Origen: sesión QA TruckCenter (2026-07-03) donde el informe se generó incompleto en estos tres aspectos. |
 
 ---
 

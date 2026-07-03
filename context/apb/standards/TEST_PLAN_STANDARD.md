@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.3.0"
+version: "1.4.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -173,6 +173,12 @@ Todo plan de pruebas incluye, además de la matriz de casos:
 12. Criterios de entrada / salida.
 13. **Matriz de roles de usuario y usuario de ejecución** (§9.2).
 14. **Acta de aprobación del informe de resultados** (§6.2) — en el informe de ejecución, no en el plan base.
+15. **Casos NO ejecutados / bloqueados** (obligatoria en el informe de ejecución) — listado explícito por
+    **ID canónico** (no solo un recuento agregado por bloque) de los casos que no se ejecutaron en la
+    corrida, con el motivo (fuera de alcance de la herramienta, requiere rol/usuario adicional, bloqueado
+    por hardware/entorno, pendiente de siguiente sesión…). Un informe que solo reporta lo ejecutado y omite
+    lo pendiente no es válido — el lector debe poder ver la cobertura real sin tener que restar contra el
+    plan.
 
 ---
 
@@ -276,7 +282,28 @@ Tanto el **plan** como el **informe de ejecución** se generan siempre en **dos 
 - **El informe de ejecución también es corporativo:** la versión `.html` del **informe** usa el mismo
   formato (cabecera azul + logo, nav, acordeón) y **renderiza el «Acta de aprobación» (§6.2)** como una
   tabla de firmantes con su estado — de modo que la autorización sea visible para el stakeholder que abre
-  el HTML, no solo en el `.md`.
+  el HTML, no solo en el `.md`. **Esta obligación de entrega dual aplica igual al plan y al informe de
+  ejecución — nunca se entrega un informe solo en `.md`.**
+
+### 7.2 Evidencia visual: vídeo real, no GIF
+
+- La evidencia visual de una sesión de ejecución (navegación agéntica/exploratoria, §9) debe ser **vídeo
+  real** (`.mp4`/`.webm`), no un GIF animado. Un GIF generado por herramientas de captura del navegador
+  (p. ej. la extensión Claude-in-Chrome) suele tener un **tope duro de fotogramas por grabación** —
+  insuficiente y no representativo para cubrir la ejecución de un plan de pruebas completo; los
+  fotogramas más antiguos se pierden o la grabación deja de añadir frames antes de cubrir todo el plan,
+  sin que quede claro para el lector qué parte de la sesión falta.
+- **Alternativa preferente:** cuando la ejecución se conduce vía **Playwright MCP** (una de las
+  implementaciones de referencia de [`prov-browser-agent-v1.0`](../../../providers/prov-browser-agent-v1.0.md)),
+  usar su grabación de vídeo nativa (`video: 'on'`), igual que ya hace `prov-playwright-v1.0` para
+  regresión scriptada.
+  - Si no hay grabador de vídeo real disponible en el entorno (ni Playwright MCP, ni un grabador de
+    pantalla local), **segmentar** la evidencia GIF por bloque de la matriz (parar/exportar/limpiar la
+    grabación en cada límite de bloque) en vez de una única grabación continua que pueda truncarse sin
+    avisar, y **etiquetar cada fichero con el bloque que cubre**.
+  - En ningún caso se presenta un GIF como si cubriera «toda la sesión» sin verificar que efectivamente
+    la cubre — si hay duda razonable de truncamiento (sesión larga, muchos pasos), se declara
+    explícitamente la limitación en el informe.
 
 ---
 
@@ -378,7 +405,11 @@ Un plan de pruebas es conforme cuando:
 - [ ] **Owner de gobernanza (§6.1):** el plan tiene un responsable nombrado y su cadencia de revisión
       (por release) está declarada.
 - [ ] **Entrega dual (§7.1):** existen versión `.md` y versión `.html` (cabecera azul + logo, nav lateral,
-      acordeón por bloque) del plan y, tras ejecutar, del informe.
+      acordeón por bloque) del plan y, tras ejecutar, del informe. **Nunca solo `.md` en el informe.**
+- [ ] **Casos no ejecutados listados (§5.15):** el informe de ejecución lista por ID canónico los casos no
+      ejecutados/bloqueados, no solo un recuento por bloque.
+- [ ] **Evidencia visual = vídeo, no GIF (§7.2):** si hay evidencia visual de sesión, es vídeo real o, en
+      su defecto, GIF segmentado por bloque con la limitación declarada explícitamente.
 - [ ] **Roles y usuario de ejecución (§9.2):** existe la matriz de roles y cada caso declara su «Rol
       requerido»; el usuario de ejecución se resuelve por referencia AKV o entrada en runtime — **ningún
       secreto ni `storageState` con credenciales está en fichero versionado**.
@@ -402,3 +433,4 @@ Un plan de pruebas es conforme cuando:
 | 1.1.0 | 2026-07-02 | **§3.1 Principio de conservación** (regla no negociable): unificar es un superconjunto — conserva pruebas **y** todo el contenido narrativo; la pérdida silenciosa es defecto bloqueante. Ítem añadido al checklist §10. Refuerza el check #21 del validador. Origen: feedback de Débora tras detectar pérdida de contenido (incidencias históricas) en el ejemplo unificado. |
 | 1.2.0 | 2026-07-03 | **§3.2 Identificador canónico y crecimiento** (`{APP}-B{NN}-T{NN}` append-only, migración con columna «Legado» — resuelve la ruptura de correlación plan↔informe al añadir pruebas a un bloque existente). **§6.1 Gobernanza por aplicación** (owner nombrado, cadencia por release, ciclo de vida `GOVERNANCE.md`). **§7.1 Entrega dual Markdown + HTML** obligatoria (cabecera azul + logo APB, nav lateral, acordeón nativo por bloque, sin DevExpress/CDN). 3 ítems añadidos al checklist §10. Origen: feedback de Débora. |
 | 1.3.0 | 2026-07-03 | **Fase I** (7 huecos detectados por Débora). **§1** añade `spec` (SDD) como fuente funcional autoritativa de primer nivel; **§2** añade origen canónico `spec`. **§6.2 Aprobación del informe de resultados** (acta Funcional + Desarrollador, persistida en `.md` **y** Jira, sign-off no criptográfico, dos ojos). **§6.3 Bucle de corrección** fallo → PR → Jira (`apb-sub-qa-fix-loop-v1.0`, propone PR sin mergear). **§9.1 Destino de ejecución** (`local`/`ci-runner`/`azure-qa`; k6 nunca desde portátil). **§9.2 Roles de usuario y usuario de ejecución** (matriz de roles, columna «Rol requerido», usuario por AKV o runtime, nunca en fichero). **§9.3 Instalación local asistida** (`docs/qa/EJECUCION_LOCAL.md`). **§9.4 Entorno QA en Azure** (`prov-azure-qa-runtime-v1.0`, draft). Secciones obligatorias §5.13/§5.14 y 4 ítems al checklist §10. Origen: feedback de Débora. |
+| 1.4.0 | 2026-07-03 | **§5.15 Casos NO ejecutados/bloqueados** — obligatorio en el informe de ejecución listar por ID canónico (no solo recuento agregado) los casos no ejecutados y su motivo. **§7.1** refuerza que la entrega dual Markdown+HTML nunca se omite en el informe. **§7.2 Evidencia visual: vídeo real, no GIF** — el GIF de herramientas de captura del navegador tiene tope de fotogramas y puede truncar sesiones largas sin avisar; se prefiere vídeo real (Playwright MCP `video:'on'`) o, en su defecto, GIF segmentado por bloque con la limitación declarada. 3 ítems añadidos al checklist §10. Origen: feedback de Débora tras detectar que el informe de ejecución de la sesión QA TruckCenter (2026-07-03) se generó solo en `.md`, sin listar los casos no ejecutados, y con un GIF de cobertura dudosa presentado sin esa advertencia. |

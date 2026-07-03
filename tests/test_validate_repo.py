@@ -984,5 +984,64 @@ class TestExecutionApprovalMethodologyCheck(unittest.TestCase):
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+class TestExecutionReportEvidenceMethodologyCheck(unittest.TestCase):
+    """Check #24 (2026-07-03): entrega dual + casos no ejecutados + evidencia
+    vídeo del informe de ejecución (TEST_PLAN_STANDARD v1.4.0) no deben derivar
+    en silencio del estándar ni de la skill de navegación exploratoria.
+
+    Anti-repetición del error real: un informe de ejecución de QA (TruckCenter,
+    2026-07-03) se generó solo en '.md', sin listar por ID los casos NO
+    ejecutados, y con un GIF presentado sin verificar su cobertura."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_execution_report_evidence(self):
+        result = vr.ValidationResult()
+        vr.validate_execution_report_evidence_methodology(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de evidencia de informes de ejecución.",
+        )
+
+    def test_standard_without_no_ejecutados_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            std = tmp_dir / "context" / "apb" / "standards"
+            std.mkdir(parents=True)
+            # estándar al que le falta "Casos NO ejecutados"
+            (std / "TEST_PLAN_STANDARD.md").write_text(
+                "vídeo real\nNunca solo en el informe\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_report_evidence_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Casos NO ejecutados" in m for m in messages),
+                f"Se esperaba error por falta de 'Casos NO ejecutados'; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_skill_without_html_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            qa = tmp_dir / "skills" / "apb-owned" / "qa"
+            qa.mkdir(parents=True)
+            # skill de navegación exploratoria a la que le falta mención de HTML
+            (qa / "apb-qa-exploratory-nav-v1.0.md").write_text(
+                "Formato de Salida: Markdown con Casos NO ejecutados\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_report_evidence_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("HTML" in m for m in messages),
+                f"Se esperaba error por falta de 'HTML'; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

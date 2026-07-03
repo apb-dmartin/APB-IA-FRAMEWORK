@@ -2,14 +2,15 @@
 id: "prov-playwright-v1.0"
 name: "Provider: Playwright MCP"
 description: "Proveedor de acción para automatización de pruebas E2E con Playwright. Permite ejecutar tests, capturar screenshots y generar trazas de ejecución."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
 provider_type: "action"
 access_mode: "read-write"
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-07-03"
+verified_date: "2026-07-03"
 ---
 
 # Provider: Playwright MCP
@@ -27,6 +28,27 @@ Proveedor de acción para automatización de pruebas E2E con Playwright. Permite
 - Simulación de interacciones de usuario
 
 ## Configuración
+
+**Verificada (2026-07-03):** registrada a nivel de proyecto en `.mcp.json` (raíz del repo, versionado en
+git), usando el servidor oficial [`@playwright/mcp`](https://github.com/microsoft/playwright-mcp):
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
+```
+
+Al estar en `.mcp.json` del repo, está disponible para cualquier sesión de Claude Code que se abra sobre
+`APB-IA-FRAMEWORK` sin reconfiguración adicional (norma de activación de providers MCP del framework:
+proyecto + doc, no solo sesión de usuario).
+
+**Contrato conceptual del provider** (agnóstico de la config anterior — otros runtimes/adaptadores pueden
+resolver el mismo contrato con su propio mecanismo de conexión MCP):
 ```json
 {
   "provider_id": "prov-playwright-v1.0",

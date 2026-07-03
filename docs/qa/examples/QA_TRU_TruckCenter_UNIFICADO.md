@@ -3,6 +3,7 @@
 > **Borrador generado por IA** (APB AI Framework — apb-qa-test-plan-v1.2.0) — pendiente validación humana. No distribuir sin revisión.
 >
 > **Fecha de unificación:** 2026-07-02 (v1.0) · **v1.2 (2026-07-03):** renumeración a ID canónico §3.2 ·
+> **v1.5 (2026-07-03):** primera ejecución real en PRE (44 casos, 4 hallazgos — ver [§15](#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03)) ·
 > **Aplicación:** TruckCenter (DOCKS .NET) · **APIs:** `APB.API.LGP` (control de puertas LPR) + `APB.API.TRU` (web)
 >
 > Ejemplo canónico de aplicación de [`TEST_PLAN_STANDARD`](../../../context/apb/standards/TEST_PLAN_STANDARD.md).
@@ -462,36 +463,36 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
 | ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
-| TRU-B02-T01 | TRU-T13 | Columnas por defecto visibles | UI | Crítica | `USER_READ_TRUCK_CENTER` | 9 columnas en orden: Id, Matrícula, Entrada, Salida, Terminal, Nombre, Apellido1, Apellido2, Empresa | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T02 | TRU-T14 | Ordenación por defecto | UI | Alta | `USER_READ_TRUCK_CENTER` | Registros de más nuevo a más viejo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T03 | TRU-T15 | Selector de columnas — campos añadibles | UI | Alta | `USER_READ_TRUCK_CENTER` | Aparecen Fase, NIFs, Ids Sòstrat, elec., ITV, Observaciones | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T04 | TRU-T16 | Columnas auditoría en selector | UI | Alta | `USER_READ_TRUCK_CENTER` | APB_CREADOR/MODIFICADOR/CREAT/MODIFICAT disponibles y filtrables | R[J:TRANSTE-1515·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T05 | TRU-T17 | Filtro por lupa en cada columna | UI | Alta | `USER_READ_TRUCK_CENTER` | Filtrado correcto en todas las columnas visibles | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T06 | TRU-T18 | Botón refresco GRID | UI | Alta | `USER_READ_TRUCK_CENTER` | GRID actualizado sin recargar la página completa | R[J:TRANSTE-1511·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B02-T07 | TRU-T19 | Acción "Salir del Parking" desde GRID | Funcional | Crítica | `USER_READ_TRUCK_CENTER` | HORA_SORTIDA=now, fase final; evento `TRU_SALIR_PARKING_OK` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T01 | TRU-T13 | Columnas por defecto visibles | UI | Crítica | `USER_READ_TRUCK_CENTER` | 9 columnas en orden: Id, Matrícula, Entrada, Salida, Terminal, Nombre, Apellido1, Apellido2, Empresa | R[J·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
+| TRU-B02-T02 | TRU-T14 | Ordenación por defecto | UI | Alta | `USER_READ_TRUCK_CENTER` | Registros de más nuevo a más viejo | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B02-T03 | TRU-T15 | Selector de columnas — campos añadibles | UI | Alta | `USER_READ_TRUCK_CENTER` | Aparecen Fase, NIFs, Ids Sòstrat, elec., ITV, Observaciones | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B02-T04 | TRU-T16 | Columnas auditoría en selector | UI | Alta | `USER_READ_TRUCK_CENTER` | APB_CREADOR/MODIFICADOR/CREAT/MODIFICAT disponibles y filtrables | R[J:TRANSTE-1515·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
+| TRU-B02-T05 | TRU-T17 | Filtro por lupa en cada columna | UI | Alta | `USER_READ_TRUCK_CENTER` | Filtrado correcto en todas las columnas visibles | R[J·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
+| TRU-B02-T06 | TRU-T18 | Botón refresco GRID | UI | Alta | `USER_READ_TRUCK_CENTER` | GRID actualizado sin recargar la página completa | R[J:TRANSTE-1511·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
+| TRU-B02-T07 | TRU-T19 | Acción "Salir del Parking" desde GRID | Funcional | Crítica | `USER_READ_TRUCK_CENTER` | HORA_SORTIDA=now, fase final; evento `TRU_SALIR_PARKING_OK` | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B02-T08 | TRU-T20 | "Salir del Parking" sin registro seleccionado | UI | Alta | `USER_READ_TRUCK_CENTER` | Acción no disponible o aviso | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B02-T09 | TRU-T21 | "Salir del Parking" en registro ya FORA | UI | Alta | `USER_READ_TRUCK_CENTER` | Acción no permitida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T10 | TRU-T22 | Exportar a Excel — todos los campos | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Excel con 9 defecto + 10 añadibles + 4 auditoría, datos correctos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B02-T10 | TRU-T22 | Exportar a Excel — todos los campos | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Excel con 9 defecto + 10 añadibles + 4 auditoría, datos correctos | R[AF] · C[Cod] | 2026-07-01 | — | ⚠️ PASS estructural (2026-07-03) — menú con ambas opciones confirmado; descarga no ejecutada |
 | TRU-B02-T11 | TRU-T23 | Exportar a Excel — GRID vacío | Funcional | Media | `USER_READ_TRUCK_CENTER` | Excel generado sin error (cabeceras/vacío) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B02-T12 | TRU-T24 | Acceso GRID con USER_READ | Permisos | Crítica | `USER_READ_TRUCK_CENTER` | Consulta sí; acción "Salir del Parking" no disponible | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B02-T13 | TRU-T25 | Acceso GRID con MANAGE | Permisos | Crítica | `USER_READ_TRUCK_CENTER` | Consulta + acciones de gestión disponibles | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B02-T14 | TRU-T26 | Pestaña navegador | UI | Media | `USER_READ_TRUCK_CENTER` | Título = "Truck Center" (no "Aplicación de Arquitectura APB") | R[J:TRANSTE-1517·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B02-T14 | TRU-T26 | Pestaña navegador | UI | Media | `USER_READ_TRUCK_CENTER` | Título = "Truck Center" (no "Aplicación de Arquitectura APB") | R[J:TRANSTE-1517·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
 
 ### Bloque B03 — Mantenimiento / Alta (16)
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
 | ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
-| TRU-B03-T01 | TRU-T27 | Alta mínima (solo obligatorios) | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Registro `EN EL PARKING`, checkboxes 0; evento creación OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T01 | TRU-T27 | Alta mínima (solo obligatorios) | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Registro `EN EL PARKING`, checkboxes 0; evento creación OK | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B03-T02 | TRU-T28 | Alta completa (todos los campos) | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Registro con todos los datos; verificar cada columna en BD | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T03 | TRU-T29 | Alta sin matrícula | Validación | Crítica | `MANAGE_TRUCK_CENTER` | No permite guardar; error de obligatorio | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T04 | TRU-T30 | Alta sin tipo vehículo | Validación | Alta | `MANAGE_TRUCK_CENTER` | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T05 | TRU-T31 | Alta sin hora entrada | Validación | Alta | `MANAGE_TRUCK_CENTER` | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T06 | TRU-T32 | Alta duplicado — usuario CONFIRMA | Regla negocio | Crítica | `MANAGE_TRUCK_CENTER` | Cierra anterior (now-1s) + crea nuevo | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T07 | TRU-T33 | Alta duplicado — usuario CANCELA | Regla negocio | Crítica | `MANAGE_TRUCK_CENTER` | No crea; mensaje "El registro del camión en el parking no se ha hecho" | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T08 | TRU-T34 | Matrícula existente en CAMIONS | Integración | Alta | `MANAGE_TRUCK_CENTER` | Tipo de vehículo auto-recuperado, editable | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T03 | TRU-T29 | Alta sin matrícula | Validación | Crítica | `MANAGE_TRUCK_CENTER` | No permite guardar; error de obligatorio | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B03-T04 | TRU-T30 | Alta sin tipo vehículo | Validación | Alta | `MANAGE_TRUCK_CENTER` | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B03-T05 | TRU-T31 | Alta sin hora entrada | Validación | Alta | `MANAGE_TRUCK_CENTER` | Bloquea guardado | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B03-T06 | TRU-T32 | Alta duplicado — usuario CONFIRMA | Regla negocio | Crítica | `MANAGE_TRUCK_CENTER` | Cierra anterior (now-1s) + crea nuevo | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B03-T07 | TRU-T33 | Alta duplicado — usuario CANCELA | Regla negocio | Crítica | `MANAGE_TRUCK_CENTER` | No crea; mensaje "El registro del camión en el parking no se ha hecho" | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) — no crea registro; el mensaje textual de cancelación no se observó en pantalla |
+| TRU-B03-T08 | TRU-T34 | Matrícula existente en CAMIONS | Integración | Alta | `MANAGE_TRUCK_CENTER` | Tipo de vehículo auto-recuperado, editable | R[AF] · C[Cod] | 2026-07-01 | — | ⚠️ Hallazgo H3 (2026-07-03) — no se autocompletó al perder el foco; ver §15 |
 | TRU-B03-T09 | TRU-T35 | Matrícula nueva (no en CAMIONS) | Integración | Alta | `MANAGE_TRUCK_CENTER` | Tipo vacío a seleccionar; nueva entrada en CAMIONS al guardar | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B03-T10 | TRU-T36 | Modificar tipo vehículo recuperado | Integración | Alta | `MANAGE_TRUCK_CENTER` | Se actualiza expediente y tabla CAMIONS | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B03-T11 | TRU-T37 | Botón reloj entrada | UI | Media | `MANAGE_TRUCK_CENTER` | Hora entrada = hora actual del sistema | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B03-T11 | TRU-T37 | Botón reloj entrada | UI | Media | `MANAGE_TRUCK_CENTER` | Hora entrada = hora actual del sistema | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B03-T12 | TRU-T38 | Checkbox conexión eléctrica | UI | Media | `MANAGE_TRUCK_CENTER` | Valor 1/0 en BD según estado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B03-T13 | TRU-T39 | Checkbox ITV | UI | Media | `MANAGE_TRUCK_CENTER` | Valor 1/0 en BD según estado | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B03-T14 | TRU-T40 | Checkbox mercancías peligrosas | UI | Media | `MANAGE_TRUCK_CENTER` | Valor 1/0 en BD (`MERCADERIES_PERILLOSES`) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
@@ -502,11 +503,11 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
 | ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
-| TRU-B04-T01 | TRU-T43 | Modificar registro existente | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Datos actualizados; evento modificación OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T02 | TRU-T44 | Campos solo lectura no editables | UI | Alta | `MANAGE_TRUCK_CENTER` | ID, Fase, Empresa (razón social), Ids Sòstrat no editables | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T03 | TRU-T45 | "Salir del Parking" desde mantenimiento | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | HORA_SORTIDA=now, fase final; evento salir OK | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T04 | TRU-T46 | Botón no visible en FORA DEL PARKING | UI | Alta | `MANAGE_TRUCK_CENTER` | Botón oculto para registros cerrados | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B04-T05 | TRU-T47 | Baja de registro | Funcional | Alta | `MANAGE_TRUCK_CENTER` | Registro eliminado; evento correspondiente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B04-T01 | TRU-T43 | Modificar registro existente | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | Datos actualizados; evento modificación OK | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B04-T02 | TRU-T44 | Campos solo lectura no editables | UI | Alta | `MANAGE_TRUCK_CENTER` | ID, Fase, Empresa (razón social), Ids Sòstrat no editables | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B04-T03 | TRU-T45 | "Salir del Parking" desde mantenimiento | Funcional | Crítica | `MANAGE_TRUCK_CENTER` | HORA_SORTIDA=now, fase final; evento salir OK | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B04-T04 | TRU-T46 | Botón no visible en FORA DEL PARKING | UI | Alta | `MANAGE_TRUCK_CENTER` | Botón oculto para registros cerrados | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
+| TRU-B04-T05 | TRU-T47 | Baja de registro | Funcional | Alta | `MANAGE_TRUCK_CENTER` | Registro eliminado; evento correspondiente | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B04-T06 | TRU-T48 | Modificar con USER_READ | Permisos | Crítica | `MANAGE_TRUCK_CENTER` | Modificación denegada; solo consulta | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B04-T07 | TRU-T49 | Rollback en error transaccional | Integridad | Crítica | `MANAGE_TRUCK_CENTER` | ROLLBACK completo; sin cambios parciales persistidos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B04-T08 | TRU-T50 | Sin reintento automático tras error | Comportamiento | Alta | `MANAGE_TRUCK_CENTER` | No reintenta; el usuario reejecuta manualmente | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
@@ -515,13 +516,13 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
 | ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
-| TRU-B05-T01 | TRU-T51 | Lupa conductores — búsqueda y selección | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Recupera NIF, nombre, apellidos, teléfono, ID Sòstrat (tipo F) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T01 | TRU-T51 | Lupa conductores — búsqueda y selección | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Recupera NIF, nombre, apellidos, teléfono, ID Sòstrat (tipo F) | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B05-T02 | TRU-T52 | Lupa conductores — nuevo en PERSONES | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Inserta automáticamente como `TIPUS_PERSONA=F` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B05-T03 | TRU-T53 | Lupa conductores — ya existente | Integración | Alta | `USER_READ_TRUCK_CENTER` | Recupera de PERSONES, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T04 | TRU-T54 | Lupa conductores — filtrado funciona | UI | Crítica | `USER_READ_TRUCK_CENTER` | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B05-T05 | TRU-T55 | Lupa empresas — búsqueda y selección | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Recupera NIF, razón social, ID Sòstrat (sin filtro tipo) | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T04 | TRU-T54 | Lupa conductores — filtrado funciona | UI | Crítica | `USER_READ_TRUCK_CENTER` | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) — filtro NIF redujo 188.242→1 |
+| TRU-B05-T05 | TRU-T55 | Lupa empresas — búsqueda y selección | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Recupera NIF, razón social, ID Sòstrat (sin filtro tipo) | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B05-T06 | TRU-T56 | Lupa empresas — nueva en PERSONES | Integración | Crítica | `USER_READ_TRUCK_CENTER` | Inserta como `TIPUS_PERSONA=J` | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B05-T07 | TRU-T57 | Lupa empresas — ya existente | Integración | Alta | `USER_READ_TRUCK_CENTER` | Recupera datos, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B05-T07 | TRU-T57 | Lupa empresas — ya existente | Integración | Alta | `USER_READ_TRUCK_CENTER` | Recupera datos, no duplica | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) |
 | TRU-B05-T08 | TRU-T58 | Lupa empresas — filtrado funciona | UI | Crítica | `USER_READ_TRUCK_CENTER` | Resultados filtrados correctamente | R[J:TRANSTE-1534·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 | TRU-B05-T09 | TRU-T59 | WS Sòstrat no disponible | Error handling | Alta | `USER_READ_TRUCK_CENTER` | Error controlado, sin excepción no manejada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B05-T10 | TRU-T60 | Datos duplicados WS usuarios | Integración | Alta | `USER_READ_TRUCK_CENTER` | Lista sin duplicados | R[J:SOSO-2075·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
@@ -532,12 +533,12 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
 | ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
-| TRU-B06-T01 | TRU-T63 | Desplegable solo actividad TU | UI | Crítica | `USER_READ_TRUCK_CENTER` | Solo usuarios con actividad TU (no todos) | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T02 | TRU-T64 | Desplegable no bloquea página | Rendimiento | Crítica | `USER_READ_TRUCK_CENTER` | Página responde con fluidez, sin bloqueo | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T01 | TRU-T63 | Desplegable solo actividad TU | UI | Crítica | `USER_READ_TRUCK_CENTER` | Solo usuarios con actividad TU (no todos) | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | ⚠️ PASS con matiz (2026-07-03) — 18 terminales en desplegable vs 13 documentadas; ver §15 |
+| TRU-B06-T02 | TRU-T64 | Desplegable no bloquea página | Rendimiento | Crítica | `USER_READ_TRUCK_CENTER` | Página responde con fluidez, sin bloqueo | R[J:TRANSTE-1509·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
 | TRU-B06-T03 | TRU-T65 | Asignar PORTCEMENT SA | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta, guardado OK | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 | TRU-B06-T04 | TRU-T66 | Asignar APM TERMINALS | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J:TRANSTE-1510·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 | TRU-B06-T05 | TRU-T67 | Asignar GRIMALDI | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J:TRANSTE-1510·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
-| TRU-B06-T06 | TRU-T68 | Asignar AUTOTERMINAL SA | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
+| TRU-B06-T06 | TRU-T68 | Asignar AUTOTERMINAL SA | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Asignación correcta | R[J·AF] · C[Cod] | 2026-06-30 | — | ✅ PASS (2026-07-03) |
 | TRU-B06-T07 | TRU-T69 | Asignar cada una de las 13 terminales | Funcional | Alta | `USER_READ_TRUCK_CENTER` | Todas asignables sin error | R[J·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 | TRU-B06-T08 | TRU-T70 | Desplegable sin servicio Sòstrat | Error handling | Media | `USER_READ_TRUCK_CENTER` | Fallo manejado sin bloquear interfaz | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
@@ -545,11 +546,11 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
 | ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
-| TRU-B07-T01 | TRU-T71 | GRID tipos vehículo — 5 registros iniciales | Datos | Alta | `MANAGE_TRUCK_CENTER` | Portacontenedores, Portavehículos, Lonas, Cisternas, Bañeras | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T01 | TRU-T71 | GRID tipos vehículo — 5 registros iniciales | Datos | Alta | `MANAGE_TRUCK_CENTER` | Portacontenedores, Portavehículos, Lonas, Cisternas, Bañeras | R[AF] · C[Cod] | 2026-07-01 | — | 🔴 FAIL — Hallazgo H2 (2026-07-03): el maestro real tiene 9 tipos (001-011, salta 006), no 5; ver §15 |
 | TRU-B07-T02 | TRU-T72 | Alta nuevo tipo vehículo | Funcional | Alta | `MANAGE_TRUCK_CENTER` | Nuevo tipo visible en GRID y desplegable | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B07-T03 | TRU-T73 | Modificar tipo existente | Funcional | Media | `MANAGE_TRUCK_CENTER` | Descripción actualizada | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B07-T04 | TRU-T74 | Eliminar tipo sin dependencias | Funcional | Media | `MANAGE_TRUCK_CENTER` | Eliminado sin error | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B07-T05 | TRU-T75 | Eliminar tipo con dependencias | Integridad | Alta | `MANAGE_TRUCK_CENTER` | Impide eliminación por integridad referencial | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B07-T05 | TRU-T75 | Eliminar tipo con dependencias | Integridad | Alta | `MANAGE_TRUCK_CENTER` | Impide eliminación por integridad referencial | R[AF] · C[Cod] | 2026-07-01 | — | 🔴 FAIL — Hallazgo H1 CRÍTICO (2026-07-03): se eliminó "Cisterna" sin bloqueo pese a 4 expedientes dependientes; ver §15 |
 | TRU-B07-T06 | TRU-T76 | USER_READ no puede modificar maestro | Permisos | Alta | `MANAGE_TRUCK_CENTER` | Solo consulta permitida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
 ### Bloque B08 — Autenticación y Permisos EntraID (10)
@@ -611,7 +612,7 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 | TRU-B12-T03 | TRU-T109 | Nomenclatura APIs post-renombrado | Despliegue | Alta | `MANAGE_TRUCK_CENTER` | Se observan `APB.API.LGP` y `APB.API.TRU` (no nombres antiguos) | R[J:ARQ-2444·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 | TRU-B12-T04 | TRU-T110 | Repositorio APB.TRU | Despliegue | Alta | `MANAGE_TRUCK_CENTER` | Repo y pipelines apuntan al nuevo nombre | R[J:TRANSTE-1527·AF] · C[Cod] | 2026-06-30 | — | Pendiente |
 | TRU-B12-T05 | TRU-T111 | E2E: Entrada LPR → GRID → Terminal → Salida LPR | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Registro completo con entrada, terminal, conductor, empresa, salida; todos los eventos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
-| TRU-B12-T06 | TRU-T112 | E2E: Alta manual → Modificar → Salir Parking | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Flujo completo manual; eventos creación + modificación + salida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
+| TRU-B12-T06 | TRU-T112 | E2E: Alta manual → Modificar → Salir Parking | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Flujo completo manual; eventos creación + modificación + salida | R[AF] · C[Cod] | 2026-07-01 | — | ✅ PASS (2026-07-03) — ejecutado íntegro sobre registros 1493 y 1494→1495 |
 
 ### Bloque B13 — Rendimiento (k6) (4)
 
@@ -751,19 +752,21 @@ con los IDs de este plan. Se muestran ambos: el **ID legado** (numeración plana
 > Preservado de la visión formal C (Copilot). Marcar `[x]` al ejecutar cada caso. IDs canónicos §3.2.
 
 **Bloque B01 — API ControlPuertas:** ☐ TRU-B01-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12
-**Bloque B02 — GRID Principal:** ☐ TRU-B02-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12 ☐ T13 ☐ T14
-**Bloque B03 — Mantenimiento/Alta:** ☐ TRU-B03-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12 ☐ T13 ☐ T14 ☐ T15 ☐ T16
-**Bloque B04 — Modif./Baja:** ☐ TRU-B04-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08
-**Bloque B05 — Lupas:** ☐ TRU-B05-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12
-**Bloque B06 — Terminales:** ☐ TRU-B06-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08
-**Bloque B07 — Tabla Maestra:** ☐ TRU-B07-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
-**Bloque B08 — Autenticación EntraID:** ☐ TRU-B08-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10
-**Bloque B09 — Eventos Auditoría:** ☐ TRU-B09-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08
+**Bloque B02 — GRID Principal:** ☑ TRU-B02-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☑ T06 ☑ T07 ☐ T08 ☐ T09 ☑ T10 ☐ T11 ☐ T12 ☐ T13 ☑ T14
+**Bloque B03 — Mantenimiento/Alta:** ☑ TRU-B03-T01 ☐ T02 ☑ T03 ☑ T04 ☑ T05 ☑ T06 ☑ T07 ☑ T08 (⚠️ H3) ☐ T09 ☐ T10 ☑ T11 ☐ T12 ☐ T13 ☐ T14 ☐ T15 ☐ T16
+**Bloque B04 — Modif./Baja:** ☑ TRU-B04-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☐ T06 ☐ T07 ☐ T08
+**Bloque B05 — Lupas:** ☑ TRU-B05-T01 ☐ T02 ☐ T03 ☑ T04 ☑ T05 ☐ T06 ☑ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12
+**Bloque B06 — Terminales:** ☑ TRU-B06-T01 (⚠️ nota) ☑ T02 ☐ T03 ☐ T04 ☐ T05 ☑ T06 ☐ T07 ☐ T08
+**Bloque B07 — Tabla Maestra:** ☒ TRU-B07-T01 (🔴 H2) ☐ T02 ☐ T03 ☐ T04 ☒ T05 (🔴 H1) ☐ T06
+**Bloque B08 — Autenticación EntraID:** ☑ TRU-B08-T01 (implícito) ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10
+**Bloque B09 — Eventos Auditoría:** ☐ TRU-B09-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 — *bloqueado: pantalla "Auditoría de procesos" → Forbidden con el rol usado (2026-07-03)*
 **Bloque B10 — WS ARQ Docks:** ☐ TRU-B10-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
 **Bloque B11 — Seguridad/Calidad:** ☐ TRU-B11-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
-**Bloque B12 — Regresión/Despliegue/E2E:** ☐ TRU-B12-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
+**Bloque B12 — Regresión/Despliegue/E2E:** ☐ TRU-B12-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☑ T06
 **Bloque B13 — Rendimiento (k6):** ☐ TRU-B13-T01 ☐ T02 ☐ T03 ☐ T04
 **Bloque B14 — Unitarias (xUnit):** ☐ TRU-B14-T01 ☐ T02 ☐ T03 ☐ T04
+
+> **Leyenda añadida 2026-07-03:** ☑ = ejecutado PASS · ☒ = ejecutado con hallazgo/FAIL · ☐ = pendiente. Detalle completo en [§15](#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03).
 
 ---
 
@@ -818,6 +821,7 @@ MISA-1471, MISA-1434, MISA-1428, MISA-1381, MISA-1346, SOSO-2075
 | Unificado 1.2 | 2026-07-03 | APB AI Framework (IA) | **Renumeración a ID canónico (§3.2 `TEST_PLAN_STANDARD` v1.2.0):** los 112 casos pasan de numeración plana (`TRU-T01…T112`) a esquema `TRU-B{NN}-T{NN}` (bloque + secuencia, append-only), conservando el **ID legado** en columna propia de la matriz (§5) para no romper la trazabilidad con `INFORME_EJECUCION_112.md`. §7 Mapeo actualizado con ambos IDs. §9 Checklist con IDs canónicos. Resuelve el problema de correlación plan↔informe al crecer el plan (añadir una prueba a un bloque existente ya no exige renumerar las demás). |
 | Unificado 1.3 | 2026-07-03 | APB AI Framework (IA) | **Fase I (`TEST_PLAN_STANDARD` v1.3.0):** §1.6 amplía la matriz de roles con «Bloques que lo requieren» + nota de **usuario de ejecución** (AKV/runtime, sin credenciales en fichero) y **destino de ejecución** (§9.1/§9.2); la matriz de casos (§5) incorpora la columna **«Rol requerido»** con el rol EntraID mínimo por bloque. Sin pérdida de contenido (§3.1): solo se añade información. |
 | Unificado 1.4 | 2026-07-03 | APB AI Framework (IA) | **Feedback de Débora (legibilidad + cobertura de tipos de prueba):** (a) **nuevos Bloques B13 — Rendimiento (k6, 4 casos)** y **B14 — Pruebas Unitarias (xUnit, 4 casos)**, append-only (§3.2) — el plan no representaba estos tipos, solo un caso aislado de fluidez en B06; total **112 → 120 casos**; §6 Resumen, §9 Checklist e Histórico actualizados. (b) **Reformateo a tabla** de secciones que mezclaban información en prosa con puntos, difíciles de leer: §1.3 Integración con ARQ Docks, §1.7 Integraciones, §2.1 lógica de negocio ENTRADA/SALIDA y casos particulares, §2.2.1 columnas por defecto y características del GRID. Sin pérdida de contenido (§3.1): mismo contenido, presentación tabular. |
+| Unificado 1.5 | 2026-07-03 | APB AI Framework (IA, sesión navegador con Débora) | **Primera ejecución real en PRE con el agente de navegación del framework** (`apb-qa-exploratory-nav-v1.0` + `prov-browser-agent-v1.0`, login EntraID asistido): 44 casos con evidencia directa (lectura y escritura) en B02-B07 y B12-T06; **nueva §15 Resultados de ejecución** con 4 hallazgos (H1 crítico — sin integridad referencial al eliminar Tipo de Vehículo; H2 — maestro de tipos desactualizado en AF/plan; H3 — auto-recuperación de tipo no disparada; H4 — pantalla de Auditoría inaccesible con el rol usado); columna **Estado** de la matriz (§5) y checklist (§9) actualizados para los casos ejecutados. Sin pérdida de contenido (§3.1): solo se añade estado y hallazgos, ninguna prueba se elimina. Evidencia (informe + vídeo) en `QA_TruckCenter_evidencias/030726/` (fuera de este repo). |
 
 ## 14. Aprobados del plan (por cambio)
 
@@ -828,6 +832,59 @@ MISA-1471, MISA-1434, MISA-1428, MISA-1381, MISA-1346, SOSO-2075
 | Unificado 1.2 | Renumeración a ID canónico append-only | _pendiente — QA Lead / Analista Funcional_ | — |
 | Unificado 1.3 | Roles + usuario de ejecución + destino de ejecución | _pendiente — QA Lead / Analista Funcional_ | — |
 | Unificado 1.4 | Bloques B13/B14 (rendimiento/unitarias) + reformateo a tabla | _pendiente — QA Lead / Analista Funcional_ | — |
+| Unificado 1.5 | §15 Resultados de ejecución (sesión navegador 2026-07-03) + hallazgos H1-H4 | _pendiente — QA Lead / Analista Funcional / Arquitectura (revisar H1 con prioridad)_ | — |
+
+---
+
+## 15. Resultados de ejecución — Sesión QA navegador (2026-07-03)
+
+> **Borrador generado por IA** (APB AI Framework — `apb-qa-exploratory-nav-v1.0` + `prov-browser-agent-v1.0`,
+> sesión Claude en navegador vía extensión Chrome, login asistido por Débora Martín) — pendiente validación
+> humana. Añadido en v1.5 (§3.1 principio de conservación: no se elimina información, solo se añade).
+
+### 15.1 Datos de la ejecución
+
+| Campo | Valor |
+|---|---|
+| Entorno | PRE (`dockspre.portdebarcelona.cat/tru/`) |
+| Responsable / rol | Débora Martín — sesión con permisos de gestión completos sobre Truck Center; **sin acceso** a "Auditoría de procesos" (`Forbidden`) |
+| Alcance | B02, B03, B04, B05, B06, B07 (ejecución real con escritura); B08/B10/B12 parcial; B01/B09(directo)/B11/B13/B14 fuera de alcance de esta sesión |
+| Evidencia | `QA_TruckCenter_evidencias/030726/` (repo local del framework, fuera de este repo de código — ver `INFORME_EJECUCION_030726.md` y GIF de 50 fotogramas de la sesión) |
+| Resultado global | 44 casos con evidencia directa; **2 hallazgos críticos** en B07; resto PASS o bloqueado por alcance (no defecto) |
+
+### 15.2 Hallazgos
+
+**🔴 H1 — CRÍTICO — Sin integridad referencial al eliminar Tipo de Vehículo (`TRU-B07-T05`).** Se eliminó el
+tipo "Cisterna" (código 004) desde Tablas Maestras sin ningún aviso ni bloqueo, pese a estar referenciado por
+al menos 4 expedientes de Truck Center (IDs 1494, 1493, 1491, 1486). Riesgo de referencias huérfanas
+(`TIPUS_VEHICLE` apuntando a un maestro inexistente). **Recomendación:** validación de integridad referencial
+(FK o check aplicativo) antes de permitir el borrado.
+
+**🟠 H2 — Tabla Maestra desactualizada respecto al AF/plan (`TRU-B07-T01`).** El plan documenta 5 tipos
+iniciales (Portacontenedores, Portavehículos, Lonas, Cisternas, Bañeras); el sistema PRE real tiene **9 tipos**
+(códigos 001-005, 007-011 — salta el 006, indicio de otro borrado previo sin control, mismo patrón que H1):
+Turismo, Moto, Autocaravana/Furgoneta, Servicios (Limpieza, Basuras, Mantenimiento) y Flota APB no estaban
+documentados. **Recomendación:** actualizar AF y §1.4.4/§6 de este plan; investigar el hueco del código 006.
+
+**🟡 H3 — Auto-recuperación de Tipo de Vehículo no se disparó al blur (`TRU-B03-T08`/`TRU-T34`).** Al
+reutilizar una matrícula ya existente en `CAMIONS`, el campo Tipo de Vehículo no se autocompletó al perder el
+foco; hubo que seleccionarlo manualmente. No confirmado si ocurre en otro punto del ciclo (p. ej. al guardar).
+No bloqueante — a validar en próxima sesión.
+
+**🔵 H4 — Pantalla "Auditoría de procesos" inaccesible con el rol usado (relacionado con B08/B09).** Recibió
+`Forbidden`. Coherente con control de acceso por permiso específico (no es un defecto), pero impide verificar
+directamente los eventos `TRU_*` de B09 en esta sesión; se infieren indirectamente por los mensajes de éxito
+de UI ("Se ha creado un registro...", "Se ha actualizado el registro...").
+
+### 15.3 Pendiente para próximas sesiones
+
+1. Corregir H1 (prioridad alta — riesgo ya materializado en PRE).
+2. Actualizar AF y este plan con los 9 tipos de vehículo reales (H2).
+3. Completar B05 (T09-T12), B06 (resto de terminales, T08), B07 (T02-T04, T06 — con cautela tras H1), B08 y
+   B09 completos con un segundo usuario/rol (`USER_READ_TRUCK_CENTER` puro y un usuario con permiso de
+   Auditoría).
+4. B01 vía llamadas HTTP directas; B11/B13 en `azure-qa`/`ci-runner` (§9.1, nunca desde sesión de navegador
+   local); B14 requiere acceso al repo `APB.TRU`.
 
 ---
 

@@ -613,3 +613,61 @@ rendimiento k6 y seguridad SonarQube/OWASP ZAP → **QA-3**.
 
 `validate_repo.py --strict` exit 0 · **49/49 tests** (sin cambio de componentes catalogables — es
 contenido de ejemplo y CSS, no un componente nuevo).
+
+---
+
+## Sesión QA TruckCenter — Ejecución real en PRE con el agente de navegación — ✅ CERRADA (2026-07-03)
+
+**Origen:** Débora pidió ejecutar el plan de pruebas unificado de TruckCenter (`QA_TRU_TruckCenter_UNIFICADO.md`,
+120 casos) con el agente del framework, con navegador real (login EntraID asistido por ella) e incluyendo
+casos de **escritura** (no solo lectura), sobre el entorno PRE.
+
+**Ejecutado:**
+
+- **Sesión de navegación agéntica** (`apb-qa-exploratory-nav-v1.0` conducida vía extensión Chrome, provider
+  `prov-browser-agent-v1.0`): **44 de 120 casos** con evidencia directa (lectura y escritura real en PRE) —
+  bloques B02 (GRID), B03 (Alta, incluyendo el flujo completo de duplicado con confirmar/cancelar), B04
+  (Modificación/Baja), B05 (Lupas), B06 (asignación de terminal), B07 (Tabla Maestra) y el E2E completo
+  alta→modificar→salir del parking (`TRU-B12-T06`/T112).
+- **2 hallazgos críticos en B07** (Tabla Maestra de Vehículos): **H1** — se pudo eliminar el tipo "Cisterna"
+  sin ningún bloqueo pese a tener 4 expedientes dependientes (sin integridad referencial); **H2** — el
+  maestro real tiene 9 tipos de vehículo, no los 5 documentados en el AF/plan (desactualización). H3/H4
+  (auto-recuperación de tipo no disparada; pantalla de Auditoría `Forbidden` con el rol usado) registrados
+  como no bloqueantes/limitación de alcance.
+- **Plan unificado → v1.5:** matriz (§5) con columna Estado actualizada por caso ejecutado, checklist (§9)
+  marcado, nueva **§15 Resultados de ejecución** con los 4 hallazgos y pendientes, histórico/aprobados
+  (§13/§14) actualizados. HTML regenerado.
+
+**Corrección de proceso (feedback de Débora tras la primera entrega del informe):** el informe de ejecución
+se había generado solo en `.md`, sin listar por ID los casos NO ejecutados (solo un recuento agregado), y
+con un GIF de la extensión Claude-in-Chrome (tope de 50 fotogramas) presentado como evidencia de sesión
+completa sin verificar su cobertura real. Corregido y **codificado en el framework** para que no se repita:
+
+- **`TEST_PLAN_STANDARD` v1.3.0 → v1.4.0:** nuevo **§5.15 Casos NO ejecutados/bloqueados** (obligatorio
+  listar por ID canónico + motivo, no solo recuento); nuevo **§7.2 Evidencia visual: vídeo real, no GIF**
+  (preferencia por vídeo nativo — p. ej. Playwright MCP `video:'on'` — o, en su defecto, GIF **segmentado
+  por bloque** con la limitación declarada); refuerzo de §7.1 (entrega dual nunca solo `.md` en el informe).
+  3 ítems nuevos en el checklist §10.
+- **`apb-qa-exploratory-nav-v1.0` v1.0.0 → v1.1.0:** alineada — informe siempre MD+HTML, casos no
+  ejecutados listados, evidencia vídeo real o GIF segmentado.
+- **Check #24** (`validate_execution_report_evidence_methodology`): verifica que el estándar y la skill de
+  navegación exploratoria no pierdan en silencio estas tres obligaciones. +3 tests.
+- **Activación real de Playwright MCP** (para vídeo nativo en la próxima ejecución): `.mcp.json` de
+  **proyecto** (versionado en el repo, no solo sesión de usuario) con el servidor oficial `@playwright/mcp`;
+  `providers/prov-playwright-v1.0.md` v1.0.0 → v1.1.0 con la configuración real verificada (sustituye el
+  placeholder conceptual `local://playwright`). **Norma general fijada por Débora**: al activar de verdad
+  cualquier MCP conceptual del framework, seguir el mismo patrón (proyecto + doc actualizada), no solo este
+  caso de Playwright.
+
+`generate_catalog.py` → **347 componentes** (sin cambio — no se creó ningún componente nuevo, solo se
+editaron existentes) · `validate_repo.py --strict` **exit 0** (0 errores, 60 warnings exentos) ·
+**47/47 tests**.
+
+**Pendiente (registrado, fuera de esta sesión):**
+- Reiniciar/reabrir la sesión de Claude Code sobre el repo para que las herramientas de Playwright MCP
+  queden disponibles (el `.mcp.json` no se carga en caliente).
+- Confirmar el commit de `.mcp.json` + `prov-playwright-v1.0.md` (pendiente de OK de Débora).
+- **Corregir H1** en TruckCenter (integridad referencial de Tipos de Vehículo) — prioridad alta, ya
+  materializado en PRE.
+- **Reejecutar el plan completo de TruckCenter** con vídeo real por bloque (Playwright MCP), cubriendo los
+  76 casos restantes (B01, B08/B09/B10 completos con un segundo rol, B11/B13/B14 fuera de navegador).
