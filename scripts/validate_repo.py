@@ -812,6 +812,63 @@ def validate_test_plan_methodology(repo_path: Path, result: ValidationResult):
     result.add(ValidationIssue("INFO", standard_rel, "Metodología de planes de pruebas verificada"))
 
 
+def validate_unified_plan_conservation(repo_path: Path, result: ValidationResult):
+    """21. Conservación íntegra al unificar planes de pruebas (TEST_PLAN_STANDARD §3.1).
+
+    Anti-repetición del error 2026-07-02: unificar debe conservar TODO el contenido
+    de las fuentes (pruebas Y narrativa), no resumir. Se verifica sobre el ejemplo
+    canónico QA_TRU_TruckCenter_UNIFICADO.md que:
+      (a) referencia cada fuente archivada en docs/qa/examples/sources/, y
+      (b) contiene los encabezados narrativos obligatorios que las fuentes aportan.
+    La pérdida silenciosa de un bloque es un defecto bloqueante → ERROR 'bolígrafo rojo'."""
+    examples_dir = repo_path / "docs" / "qa" / "examples"
+    unified = examples_dir / "QA_TRU_TruckCenter_UNIFICADO.md"
+    sources_dir = examples_dir / "sources"
+    if not unified.exists():
+        return  # sin ejemplo canónico no hay nada que verificar
+    unified_rel = str(unified.relative_to(repo_path))
+    body = unified.read_text(encoding="utf-8")
+
+    # (a) cada fuente archivada debe estar referenciada por su nombre en el unificado
+    if sources_dir.exists():
+        for src in sorted(sources_dir.glob("*.md")):
+            if src.name not in body:
+                result.add(ValidationIssue(
+                    "ERROR", unified_rel,
+                    f"El plan unificado no referencia la fuente archivada '{src.name}'. "
+                    "Unificar debe conservar la trazabilidad de todas las fuentes "
+                    "(TEST_PLAN_STANDARD §3.1 — conservación íntegra)."
+                ))
+
+    # (b) encabezados narrativos obligatorios (pérdida silenciosa = defecto bloqueante)
+    required_sections = [
+        "Incidencias históricas",
+        "Proyectos futuros",
+        "Modelo de datos",
+        "Funcionalidad detallada",
+        "Documentos de referencia",
+    ]
+    lowered = body.lower()
+    for section in required_sections:
+        if section.lower() not in lowered:
+            result.add(ValidationIssue(
+                "ERROR", unified_rel,
+                f"El plan unificado ha perdido la sección '{section}'. Unificar NUNCA "
+                "elimina información (TEST_PLAN_STANDARD §3.1). Reincorpórela desde las fuentes."
+            ))
+
+    # (c) esquema de ID canónico {APP}-B{NN}-T{NN} (TEST_PLAN_STANDARD §3.2, anti-repetición 2026-07-03)
+    canonical_ids = re.findall(r"\bTRU-B\d{2}-T\d{2}\b", body)
+    if not canonical_ids:
+        result.add(ValidationIssue(
+            "ERROR", unified_rel,
+            "El plan unificado no usa el esquema de ID canónico 'TRU-B{NN}-T{NN}' "
+            "(TEST_PLAN_STANDARD §3.2). No derivar de vuelta a numeración plana sin bloque."
+        ))
+
+    result.add(ValidationIssue("INFO", unified_rel, "Conservación íntegra del plan unificado verificada"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -885,6 +942,7 @@ def main():
     validate_no_circular_dependencies(repo_path, result)
     validate_harness_cold_start(repo_path, result)
     validate_test_plan_methodology(repo_path, result)
+    validate_unified_plan_conservation(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 
     print()

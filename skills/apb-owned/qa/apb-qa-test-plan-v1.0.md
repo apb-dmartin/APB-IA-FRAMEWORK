@@ -2,16 +2,17 @@
 id: "apb-qa-test-plan-v1.0"
 name: "Test Plan Generator"
 description: "Genera planes de pruebas estructurados a partir de especificaciones, historias de usuario o requisitos, con trazabilidad LCSP/ENS/RGPD/WCAG 2.1 AA cuando el proyecto lo requiere. Incluye casos de prueba, criterios de aceptación, datos de prueba, estimaciones y asignación de responsables."
-version: "1.2.0"
+version: "1.3.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 1
 created_date: "2026-06-20"
-review_date: "2026-07-02"
+review_date: "2026-07-03"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
   - "apb-plat-doc-to-markdown-v1.0"  # Normaliza planes aportados por el usuario (cualquier formato)
+  - "apb-plat-deliver-artifact-v1.0"  # Resuelve destino/formato de entrega del plan (Markdown+HTML obligatorios)
 
 ---
 
@@ -31,6 +32,14 @@ depends_on:
 > rendimiento. Plantilla: [`TEST_PLAN.md`](../../../context/apb/templates/TEST_PLAN.md). Ejemplo canónico:
 > [`QA_TRU_TruckCenter_UNIFICADO.md`](../../../docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md).
 > **La skill es interactiva: pregunta al usuario por los inputs que falten en lugar de asumirlos.**
+
+> **Ampliación v1.3.0 (Sesión QA-2, continuación 2026-07-03):** todo caso de prueba se identifica con el
+> **esquema de ID canónico** [`TEST_PLAN_STANDARD §3.2`](../../../context/apb/standards/TEST_PLAN_STANDARD.md)
+> — `{APP}-B{NN}-T{NN}` (bloque + secuencia, ambos **append-only**): añadir una prueba a un bloque existente
+> nunca renumera las demás. El plan tiene un **owner de gobernanza por aplicación** (§6.1). El plan (y su
+> informe de ejecución) se entregan siempre en **Markdown + HTML** (§7.1: cabecera azul + logo APB, nav
+> lateral, acordeón por bloque — `scripts/generate_test_plan_html.py`), resolviendo el destino final con
+> `apb-plat-deliver-artifact-v1.0`.
 
 # SKILL: Test Plan Generator
 
@@ -86,8 +95,9 @@ Esta skill:
 | `traceability_matrix` | markdown | Matriz de trazabilidad: requisito → caso de prueba → resultado |
 | `effort_estimate` | markdown | Estimación de esfuerzo por tipo de prueba y fase |
 | `normative_framework` | markdown | Tabla de marco normativo aplicable (solo si `ens_level` o `processes_personal_data` activos) |
-| `unified_plan` | markdown | Plan **unificado sin duplicados** con columnas de **procedencia** (herramienta + origen), «Desde» y «OK func.», secciones fijas + gobernanza, y tabla de mapeo de numeraciones de origen. Conforme a `TEST_PLAN.md`. |
+| `unified_plan` | markdown + html | Plan **unificado sin duplicados** con **ID canónico** (`{APP}-B{NN}-T{NN}`, §3.2), columnas de **procedencia** (herramienta + origen), «Desde» y «OK func.», secciones fijas + gobernanza, y tabla de mapeo de numeraciones de origen. Conforme a `TEST_PLAN.md`. **Se entrega siempre en ambos formatos** (§7.1). |
 | `provenance_map` | markdown | Trazabilidad por prueba: qué fuente(s) la propusieron y de qué origen (Jira/documentación/código/usuario). |
+| `test_plan_html` | html | Versión HTML autocontenida del plan (cabecera azul + logo, nav lateral, acordeón por bloque), generada con `scripts/generate_test_plan_html.py`. |
 
 ## 4. Dependencias
 
@@ -211,7 +221,10 @@ Cada caso debe tener:
    están obsoletos, apóyate en el código y **marca la confianza/origen real**; nunca inventes respaldo funcional.
 3. **Unifica sin duplicados** por intención de la prueba; asigna procedencia **múltiple** (herramienta + origen)
    y una columna «Desde»; publica tabla de mapeo si había varias numeraciones.
-4. Si hay `previous_plan`, **actualiza incrementalmente** desde su fecha (no regeneres).
+3bis. **Asigna ID canónico** `{APP}-B{NN}-T{NN}` (§3.2, append-only) a cada caso. Si el plan migra desde una
+   numeración plana previa, conserva el ID anterior en columna «Legado» — nunca renumeres pruebas existentes.
+4. Si hay `previous_plan`, **actualiza incrementalmente** desde su fecha (no regeneres): las pruebas nuevas
+   se añaden al **final de la secuencia de su bloque** (nunca insertadas en medio ni renumerando otras).
 5. Analiza requisitos, identifica escenarios (principales y alternativos), genera casos con cobertura completa.
 6. Clasifica por **Tipo** y **Prioridad**; genera matriz de trazabilidad; propone estrategia de datos.
 7. Rellena las **secciones obligatorias** del `TEST_PLAN_STANDARD` (arquitectura topológica, modelo de datos,
@@ -219,6 +232,8 @@ Cada caso debe tener:
 8. Evalúa **no-regresión de rendimiento** (consulta resultado anterior o ejecuta versión anterior + nueva; cruce `prov-k6`).
 9. Si `ens_level` o `processes_personal_data` están activos, genera la sección de marco normativo (LCSP/ENS/RGPD/WCAG).
 10. Guarda plan y resultados en el `app_repo`; el framework solo conserva estándar/plantilla/ejemplo.
+11. **Genera siempre la versión HTML** del plan (`scripts/generate_test_plan_html.py`) junto a la Markdown
+    (§7.1); invoca `apb-plat-deliver-artifact-v1.0` para resolver formato adicional y destino final.
 
 ## Restricciones
 - No uses datos reales de producción sin anonimización.
@@ -343,6 +358,7 @@ Cada caso debe tener:
 | 1.0.0-draft | 2026-06-20 | QA Gobierno APB | Creación inicial |
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Fusión con `apb-test-plan-lcsp` (apb-ai-skills): marco normativo LCSP/ENS/RGPD/WCAG, tabla de criterios de éxito cuantificados, contexto contractual de licitación |
 | 1.2.0 | 2026-07-02 | APB AI Framework (Sesión QA-2) | Implementa `TEST_PLAN_STANDARD`: ingesta de planes aportados (cualquier formato), unificación sin duplicados con procedencia múltiple, orden de fuentes con degradación, detección de plan previo + actualización incremental, secciones de gobernanza, no-regresión de rendimiento, skill interactiva. Inputs: `provided_plans`, `sources`, `previous_plan`, `app_repo`, `performance_baseline`, `evidence_destination`. `depends_on` += `apb-plat-doc-to-markdown-v1.0` |
+| 1.3.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, continuación) | Adopta el **ID canónico** `{APP}-B{NN}-T{NN}` (`TEST_PLAN_STANDARD §3.2`, append-only, con columna «Legado» en migraciones). Declara **gobernanza por aplicación** (§6.1). Entrega el plan siempre en **Markdown + HTML** (§7.1, `scripts/generate_test_plan_html.py`), delegando destino final en `apb-plat-deliver-artifact-v1.0` (añadido a `depends_on`). |
 
 > **Generado por IA:** Claude (Anthropic), Sesión QA del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._

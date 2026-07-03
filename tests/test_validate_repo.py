@@ -810,5 +810,66 @@ class TestTestPlanMethodologyCheck(unittest.TestCase):
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+class TestUnifiedPlanConservationCheck(unittest.TestCase):
+    """Check #21 (anti-repetición, 2026-07-02): unificar planes de pruebas debe
+    conservar TODO el contenido de las fuentes (pruebas Y narrativa), no resumir
+    (TEST_PLAN_STANDARD §3.1). La pérdida silenciosa de una sección es ERROR."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_conserves_unified_plan(self):
+        result = vr.ValidationResult()
+        vr.validate_unified_plan_conservation(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El plan unificado real debe conservar todas las fuentes y secciones narrativas.",
+        )
+
+    def test_missing_narrative_section_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            examples = tmp_dir / "docs" / "qa" / "examples"
+            (examples / "sources").mkdir(parents=True)
+            # Unificado al que le falta la sección "Incidencias históricas"
+            (examples / "QA_TRU_TruckCenter_UNIFICADO.md").write_text(
+                "# Unificado\n\n## Modelo de datos\n\n## Funcionalidad detallada\n\n"
+                "## Proyectos futuros\n\n## Documentos de referencia\n",
+                encoding="utf-8",
+            )
+            result = vr.ValidationResult()
+            vr.validate_unified_plan_conservation(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Incidencias históricas" in m for m in messages),
+                f"Se esperaba error por sección narrativa perdida; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_missing_canonical_id_scheme_is_flagged(self):
+        """Anti-repetición (2026-07-03): si el unificado vuelve a numeración plana sin
+        bloque (p. ej. TRU-T01), sin ningún TRU-B{NN}-T{NN}, el check #21 debe marcarlo."""
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            examples = tmp_dir / "docs" / "qa" / "examples"
+            (examples / "sources").mkdir(parents=True)
+            (examples / "QA_TRU_TruckCenter_UNIFICADO.md").write_text(
+                "# Unificado\n\n## Incidencias históricas\n\n## Modelo de datos\n\n"
+                "## Funcionalidad detallada\n\n## Proyectos futuros\n\n## Documentos de referencia\n\n"
+                "| ID | Caso |\n|----|------|\n| TRU-T01 | Ejemplo |\n",
+                encoding="utf-8",
+            )
+            result = vr.ValidationResult()
+            vr.validate_unified_plan_conservation(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("ID canónico" in m for m in messages),
+                f"Se esperaba error por ausencia de esquema de ID canónico; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
