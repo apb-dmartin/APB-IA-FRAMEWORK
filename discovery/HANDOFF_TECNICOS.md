@@ -3,10 +3,10 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-30 (post KB+SP — knowledge base corporativa + system prompts LLM-agnósticos)  
+> **Última actualización:** 2026-07-03 (Fase I — roles/usuario de ejecución, acta de aprobación del informe, destino de ejecución local/ci/azure-qa, spec SDD + fix-loop, provider Azure QA runtime)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** 345 componentes (177 skills APB, 52 third-party, 35 agentes, 33 subagentes,
-> 17 workflows, 20 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
+> **Estado global:** 347 componentes (177 skills APB, 52 third-party, 35 agentes, 34 subagentes,
+> 17 workflows, 21 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
 > del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
 
 ---
@@ -107,7 +107,17 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-02):** `validate_repo.py --strict` → exit 0. 345 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20). Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+**Estado actual (2026-07-03):** `validate_repo.py --strict` → exit 0. 347 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + **metodología de ejecución y aprobación (check #23, nuevo Fase I)**. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+
+**Fase I (2026-07-03) — 7 huecos de uso real cubiertos, `TEST_PLAN_STANDARD` v1.2.0 → v1.3.0:**
+- Matriz de roles + usuario de ejecución (AKV ref o runtime, nunca persistido) — §9.2, columna «Rol requerido» en el ejemplo TruckCenter.
+- Acta de aprobación del informe de resultados (Analista Funcional + Desarrollador; persistida en `.md` y en Jira, no firma criptográfica) — §6.2.
+- Destino de ejecución `local` / `ci-runner` / `azure-qa` con matriz de decisión — §9.1; guía `docs/qa/EJECUCION_LOCAL.md` (nueva).
+- Spec SDD como fuente autoritativa de primer nivel en el plan de pruebas — §1.
+- Nuevo subagente `subagents/apb-sub-qa-fix-loop-v1.0.md` (`draft`): fallo → propone PR → anota Jira; nunca mergea.
+- Nuevo provider `providers/prov-azure-qa-runtime-v1.0.md` (`draft`): entorno de ejecución efímero en Azure QA (Playwright + k6 preinstalados, Managed Identity → AKV) para no requerir instalación local.
+- Ejemplo TruckCenter ampliado a 120 casos (**B13 Rendimiento k6** + **B14 Unitarias xUnit**, nuevos, append-only); secciones en prosa reformateadas a tabla (ARQ Docks, Integraciones, flujos ENTRADA/SALIDA, columnas GRID).
+- Nota de desviación menor: el provider Azure QA **no** se registró en `SYSTEM.md §4.2` — esa tabla es solo de `adapters/`, no de `providers/`. Sin acción pendiente al respecto.
 
 ---
 
@@ -263,8 +273,8 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 | DOC6 | Guía de "Primera skill / Primer agente" para onboarding rápido | Nuevos contribuidores | ⬜ Pendiente |
 | DOC7 | Documentar deprecación `apb-ai-skills` en README del framework | Todos | ⬜ Pendiente |
 | DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 343 componentes (sesiones 15-23 no registradas) | IA / Arquitectura APB | ⬜ Pendiente |
-| QA2-1 | **Credenciales centrales para pruebas funcionales:** el agente de pruebas (`apb-qa-exploratory-nav` / `prov-browser-agent`) debe consultar credenciales desde un **repositorio central de secretos** (Azure Key Vault, `GOVERNANCE.md §5`) y capturar/reutilizar `storage_state` (EntraID), para ejecutar sin login manual. En la demo QA-2 (2026-07-02) las introdujo el usuario. Diseñar: provider de secretos + flujo de captura de sesión autenticada + política de custodia de evidencias con datos sensibles. | Plataforma / Ciberseguridad / IA | ⬜ Pendiente (Débora 2026-07-02) |
-| QA3-1 | **Sesión QA-3 — ejecución funcional COMPLETA de TruckCenter.** Bloqueantes detectados en QA-2 E-bis: **F3** (PRE sin datos → sembrar dataset anonimizado RGPD), **F2** (formulario de Alta no carga >45s → investigar/priorizar), acceso de escritura para altas/bajas, 2ª pasada **USER_READ**, **k6** (rendimiento; API LGP ~9,3s F4), **SonarQube/OWASP ZAP** (seguridad), **Playwright** para evidencia visual PNG/traza/vídeo (las capturas del navegador MCP no persisten como fichero), **unitarias** (repo `APB.TRU` + xUnit). Actualizar el AF por **F5** (maestro multiidioma CA/ES/EN). | QA / Plataforma / Ciberseguridad / Dev | ⬜ Pendiente (Débora 2026-07-02) |
+| QA2-1 | **Credenciales centrales para pruebas funcionales:** el agente de pruebas (`apb-qa-exploratory-nav` / `prov-browser-agent`) debe consultar credenciales desde un **repositorio central de secretos** (Azure Key Vault, `GOVERNANCE.md §5`) y capturar/reutilizar `storage_state` (EntraID), para ejecutar sin login manual. En la demo QA-2 (2026-07-02) las introdujo el usuario. **Diseño cubierto en Fase I** (2026-07-03): `TEST_PLAN_STANDARD §9.2` (usuario de ejecución por `AKV://<secret>` o runtime) + `docs/qa/EJECUCION_LOCAL.md` (captura/reutilización de `storageState`). **Pendiente:** poblar el secreto real en AKV y verificar el flujo end-to-end (Plataforma/Ciberseguridad). | Plataforma / Ciberseguridad / IA | 🟡 Diseñado, ejecución pendiente |
+| QA3-1 | **Sesión QA-3 — ejecución funcional COMPLETA de TruckCenter.** Bloqueantes detectados en QA-2 E-bis: **F3** (PRE sin datos → sembrar dataset anonimizado RGPD), **F2** (formulario de Alta no carga >45s → investigar/priorizar), acceso de escritura para altas/bajas, 2ª pasada **USER_READ**, **k6** (rendimiento; API LGP ~9,3s F4), **SonarQube/OWASP ZAP** (seguridad), **Playwright** para evidencia visual PNG/traza/vídeo (las capturas del navegador MCP no persisten como fichero), **unitarias** (repo `APB.TRU` + xUnit). Actualizar el AF por **F5** (maestro multiidioma CA/ES/EN). **Fase I añadió el andamiaje** (aún sin ejecución real): Bloque B13 (4 casos k6, `Pendiente`) y B14 (4 casos xUnit, `Pendiente`) en el ejemplo unificado, provider `prov-azure-qa-runtime-v1.0` (`draft`) para correr Playwright/k6 sin instalar nada local, y destino de ejecución `azure-qa` en `TEST_PLAN_STANDARD §9.1`. | QA / Plataforma / Ciberseguridad / Dev | ⬜ Pendiente (Débora 2026-07-02; andamiaje Fase I 2026-07-03) |
 
 **Estructura mínima de cada runbook:**
 ```markdown
@@ -339,7 +349,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **345 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **347 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 
