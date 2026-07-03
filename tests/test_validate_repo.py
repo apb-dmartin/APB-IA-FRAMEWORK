@@ -871,5 +871,56 @@ class TestUnifiedPlanConservationCheck(unittest.TestCase):
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+class TestAgnosticRootRoutingCheck(unittest.TestCase):
+    """Check #22 (anti-deriva, 2026-07-03): AGENTS.md es la fuente única de reglas,
+    agnóstica de LLM y herramienta (SYSTEM.md §4.3, §10.1); CLAUDE.md y
+    .github/copilot-instructions.md deben existir y remitir a AGENTS.md, nunca
+    duplicar reglas de forma independiente."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_agnostic_routing(self):
+        result = vr.ValidationResult()
+        vr.validate_agnostic_root_routing(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de routing agnóstico.",
+        )
+
+    def test_missing_agents_md_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            result = vr.ValidationResult()
+            vr.validate_agnostic_root_routing(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("AGENTS.md" in m for m in messages),
+                f"Se esperaba error por ausencia de AGENTS.md; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_claude_md_without_pointer_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            (tmp_dir / "AGENTS.md").write_text("# Reglas\n\nContenido agnóstico.\n", encoding="utf-8")
+            (tmp_dir / "CLAUDE.md").write_text("# Reglas duplicadas sin remitir a la fuente\n", encoding="utf-8")
+            github_dir = tmp_dir / ".github"
+            github_dir.mkdir()
+            (github_dir / "copilot-instructions.md").write_text(
+                "Ver AGENTS.md para las reglas.\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_agnostic_root_routing(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("CLAUDE.md" in m and "no referencia AGENTS.md" in m for m in messages),
+                f"Se esperaba error porque CLAUDE.md no remite a AGENTS.md; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

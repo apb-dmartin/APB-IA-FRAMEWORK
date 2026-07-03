@@ -871,3 +871,26 @@ en OneDrive `QA_TruckCenter_evidencias/INFORME_EJECUCION_112.md`). 8 PASS + 8 pa
 **F5** (maestro multiidioma CA/ES/EN ≠ AF). Rendimiento, seguridad, USER_READ y evidencia visual PNG/vídeo →
 **Sesión QA-3** (registrada en FUTURAS). Limitación de entorno: las capturas del navegador MCP no persisten
 como fichero → visual con Playwright en QA-3. **0 datos modificados en PRE.**
+
+**Fase E-ter (2026-07-02):** Débora detectó que la unificación de TruckCenter había **perdido información**
+narrativa (incidencias históricas y más) — error grave, norma nueva "unificar nunca elimina información".
+Restaurado íntegramente + `TEST_PLAN_STANDARD §3.1` (principio de conservación) + check #21 anti-repetición.
+
+**Fase G (2026-07-03):** Débora pidió 4 mejoras más sobre metodología de planes de pruebas: plantilla
+restaurada, **ID canónico append-only** `{APP}-B{NN}-T{NN}` (§3.2, con columna "Legado" para no romper
+trazabilidad con informes ya emitidos), **gobernanza por aplicación** (§6.1, reutiliza `GOVERNANCE.md`),
+**entrega dual Markdown+HTML** (§7.1, script `scripts/generate_test_plan_html.py`, sin CDN/DevExpress, azul
+corporativo + logo APB). Check #21 ampliado (parte c). Commit `29b9799`. Detalle: `PLAN_FASES_COMPLETADAS.md`.
+
+**Fase H (2026-07-03):** Débora corrigió: "el framework debe ser agnóstico al LLM y la herramienta". El
+principio ya estaba declarado (`SYSTEM.md §4.3`) pero el propio `SYSTEM.md §10.1` exigía un routing file raíz
+`AGENTS.md` que **no existía** — el único fichero raíz era `CLAUDE.md`, específico de Claude Code, invirtiendo
+la regla. Creado `AGENTS.md` (fuente única de reglas) + `CLAUDE.md` y `.github/copilot-instructions.md`
+reescritos como ficheros delgados que derivan de él. Débora señaló **GitHub Copilot** como la alternativa
+concreta de "día después" — su punto de entrada ya está cableado de verdad, no solo en el adapter `draft`.
+Check **#22** `validate_agnostic_root_routing` (anti-deriva) + 3 tests. Detalle: `PLAN_FASES_COMPLETADAS.md`.
+
+**Estado al cierre de Fase H:** `validate_repo.py --strict` exit 0 (0 errores, 60 warnings exentos) ·
+**41/41 tests** · 345 componentes (sin cambio — ficheros de routing no son catalogables). Pendiente:
+decidir si pushear la rama `feat/qa2-test-plan-methodology`; provider de VCS alternativo si Débora
+diversifica de GitHub (distinto del punto agnóstico de LLM/herramienta, ya resuelto en Fase H).

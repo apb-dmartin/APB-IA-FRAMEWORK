@@ -486,3 +486,65 @@ retrofitados al Estándar de Prompting (check #18) en la sesión #78+#83.
 
 **Pendiente de gobernanza (no de construcción):** los 7 agentes y sus skills están en `draft` —
 requieren el ciclo de aprobación (validador humano nombrado) para pasar a `approved`.
+
+---
+
+## Fase G — TEST_PLAN_STANDARD v1.2.0: ID canónico + gobernanza por app + entrega dual MD/HTML — ✅ EJECUTADO 2026-07-03
+
+Tras la corrección de conservación íntegra (Fase E-ter), Débora pidió cuatro mejoras adicionales
+sobre la metodología de planes de pruebas, todas ejecutadas y commiteadas (`29b9799`):
+
+- **Plantilla restaurada:** `context/apb/templates/TEST_PLAN.md` reescrita con las 16 secciones
+  del ejemplo canónico (incluidas las que se habían perdido en la unificación original).
+- **ID canónico con crecimiento:** esquema `{APP}-B{NN}-T{NN}` (§3.2 del estándar) — bloque y
+  secuencia append-only, IDs nunca se renumeran ni se reutilizan. Los 112 casos de TruckCenter
+  renumerados con columna "Legado" para no romper la trazabilidad con el informe ya emitido.
+- **Gobernanza por aplicación (§6.1):** reutiliza `GOVERNANCE.md §2.1` (owner QA Lead/Analista
+  Funcional) y §3 (ciclo `draft`→`candidate`→`approved`) — no se creó mecanismo paralelo.
+- **Entrega dual Markdown + HTML (§7.1):** script nuevo `scripts/generate_test_plan_html.py`
+  (sin CDN ni DevExpress) — cabecera azul corporativa + logo APB, acordeón nativo `<details>`,
+  nav lateral. Verificado visualmente vía preview.
+- Check #21 ampliado con la parte (c) (patrón de ID canónico) + 1 test nuevo.
+
+`validate_repo.py --strict` exit 0 · 38/38 tests en ese momento.
+
+---
+
+## Fase H — AGENTS.md: routing raíz agnóstico de LLM y herramienta — ✅ EJECUTADO 2026-07-03
+
+Débora corrigió una respuesta sobre "¿usamos OpenCode?" señalando el punto de fondo: **el
+framework debe ser agnóstico al LLM y a la herramienta** — hoy Claude Code + GitHub, mañana
+puede ser otra cosa. El principio ya estaba declarado (`SYSTEM.md §4.3`, §9, §10, `README.md`
+principio #1) y la arquitectura de `adapters/`+`providers/` ya lo soportaba, pero se encontró
+una grieta concreta que lo contradecía: el propio `SYSTEM.md §10.1` exige un routing file raíz
+`AGENTS.md` del que deriven las vistas por runtime (`CLAUDE.md`, adapters) — pero ese `AGENTS.md`
+no existía; el único fichero raíz era `CLAUDE.md`, específico de Claude Code, invirtiendo la
+regla que el propio estándar exige.
+
+**Ejecutado:**
+
+- **`AGENTS.md`** (nuevo, raíz, 99 líneas): fuente única de las reglas antes duplicadas en
+  `CLAUDE.md` (marcado IA, autonomía nivel 1, sin secretos, proceso de skill nueva, contexto
+  corporativo obligatorio, formato de commits), con lenguaje agnóstico de LLM/herramienta.
+- **`CLAUDE.md`** reescrito como fichero delgado que remite a `AGENTS.md` (Claude Code sigue
+  auto-leyéndolo, pero ya no es la fuente).
+- **`.github/copilot-instructions.md`** (nuevo): el mecanismo real que GitHub Copilot auto-lee
+  en VS Code/Visual Studio — antes solo existía como configuración hipotética dentro del
+  adapter `draft`, ahora está cableado de verdad. Débora señaló explícitamente **GitHub Copilot**
+  como la alternativa concreta de "día después" a registrar (no un VCS distinto).
+- `adapters/claude/adapter-claude-v1.0.md` y `adapters/copilot/adapter-copilot-v1.0.md` → v1.1.0,
+  aclarando que documentan mapeo de *capacidades*, no reglas (que viven en `AGENTS.md`).
+- `SYSTEM.md §4.1/§4.2/§10.1` actualizado: ya no describe un estado aspiracional, describe lo
+  implementado.
+- **Check #22** (`validate_agnostic_root_routing`) en `scripts/validate_repo.py`: `AGENTS.md`
+  debe existir; `CLAUDE.md` y `.github/copilot-instructions.md` deben existir y referenciar
+  `AGENTS.md` (anti-deriva — ninguna vista por runtime puede duplicar reglas de forma
+  independiente). +3 tests en `tests/test_validate_repo.py`.
+
+`generate_catalog.py` sin cambios (345 componentes; los ficheros de routing no son componentes
+catalogables) · `validate_repo.py --strict` exit 0 · **41/41 tests**.
+
+**Pendiente (fuera de esta sesión, registrado como futuro):** `providers/` solo tiene
+`prov-github-v1.0.md` para control de versiones — si Débora diversifica de GitHub como
+proveedor de VCS/CI (no de LLM/herramienta), haría falta un provider equivalente para la
+alternativa elegida.

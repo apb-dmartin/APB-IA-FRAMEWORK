@@ -2,7 +2,7 @@
 id: "adapter-copilot-v1.0"
 name: "GitHub Copilot Adapter"
 description: "Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de GitHub Copilot. Traduce las capacidades del framework al formato de instrucciones y contexto de Copilot."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -15,7 +15,7 @@ adapted_components:
   - "apb-wf-code-review-v1.0"
   - "prov-github-v1.0"
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-07-03"
 ---
 
 # GitHub Copilot Adapter
@@ -25,6 +25,15 @@ review_date: "2026-06-22"
 ## 🎯 Propósito
 
 Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de GitHub Copilot. Traduce las capacidades del framework al formato de instrucciones y contexto de Copilot.
+
+**Punto de entrada real:** `.github/copilot-instructions.md` (auto-leído por GitHub
+Copilot en VS Code/Visual Studio/JetBrains) ya existe en este repo y es un fichero
+delgado que remite a [`AGENTS.md`](../../AGENTS.md) — la fuente única de reglas,
+agnóstica de LLM y herramienta (`SYSTEM.md §4.3`, `§10.1`). Este adapter documenta
+el mapeo de *capacidades* al runtime de Copilot; las *reglas* no viven aquí. Débora
+identificó GitHub Copilot como la alternativa concreta de "día después" si el
+runtime cambia desde Claude Code (sesión 2026-07-03) — este cableado real (no solo
+el adapter en `draft`) es lo que garantiza que ese cambio no requiera reescribir reglas.
 
 ## 🔧 Runtime Soportado
 
@@ -183,6 +192,7 @@ config:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.1.0 | 2026-07-03 | Arquitectura APB | Creado `.github/copilot-instructions.md` real (deriva de `AGENTS.md`, routing file raíz agnóstico, `SYSTEM.md §10.1`); check #22 de `validate_repo.py` verifica que no diverjan. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

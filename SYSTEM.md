@@ -106,16 +106,20 @@ Para la fase inicial del framework (pilotos controlados):
 
 - Modo por defecto: **ReadOnly** para providers de acción.
 - Integración nativa con VS Code y Visual Studio.
-- Consumo de skills mediante `copilot-instructions.md` o referencia a este repositorio.
+- Consumo de skills mediante [`.github/copilot-instructions.md`](../.github/copilot-instructions.md)
+  (ya existe en este repo, no es hipotético — punto de entrada delgado que deriva
+  de `AGENTS.md`, ver §10.1) o referencia a este repositorio.
 
 ### 4.2 Adaptadores Disponibles
 
 | Adaptador | Estado | Descripción |
 |-----------|--------|-------------|
-| `adapters/copilot/` | draft | Instrucciones y contexto para GitHub Copilot. |
-| `adapters/claude/` | draft | Prompts y contexto para Claude (Anthropic). |
+| `adapters/copilot/` | draft | Instrucciones y contexto para GitHub Copilot. Punto de entrada real: `.github/copilot-instructions.md`. |
+| `adapters/claude/` | draft | Prompts y contexto para Claude (Anthropic). Punto de entrada real: `CLAUDE.md`. |
 | `adapters/m365/` | draft | Integración con Microsoft 365 Copilot. |
 | `adapters/rovo/` | draft | Integración con Atlassian Rovo. |
+
+Ambos puntos de entrada reales derivan de `AGENTS.md` (§10.1); ninguno duplica reglas.
 
 ### 4.3 Principio de Agnosticismo
 
@@ -270,7 +274,7 @@ Los agentes son **una capa más del sistema**, no el sistema en sí.
 
 | Subsistema | Función | Materialización en este repo |
 |---|---|---|
-| **Instrucciones** | Reglas no negociables: stack, versiones, restricciones | Routing file `AGENTS.md` (50–200 líneas) + `context/apb/` bajo demanda. Las vistas por runtime (`CLAUDE.md`, adapters) **derivan** de él, nunca al revés |
+| **Instrucciones** | Reglas no negociables: stack, versiones, restricciones | Routing file [`AGENTS.md`](../AGENTS.md) (50–200 líneas) + `context/apb/` bajo demanda. Las vistas por runtime (`CLAUDE.md`, `.github/copilot-instructions.md`, adapters) **derivan** de él, nunca al revés (implementado 2026-07-03, check #22) |
 | **Herramientas** | Acceso controlado a shell, ficheros y testing bajo mínimo privilegio | Scripts en `scripts/` (Python — portable y agnóstico); permisos según autonomy_level |
 | **Entorno** | Estados reproducibles | Manifiestos de dependencias versionados; scaffolds en `repo-scaffold/` |
 | **Estado** | Progreso persistente entre sesiones | `PROGRESS.md` (plantilla en `repo-scaffold/harness-ready/`) — evita la amnesia entre sesiones |

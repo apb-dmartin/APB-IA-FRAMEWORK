@@ -869,6 +869,49 @@ def validate_unified_plan_conservation(repo_path: Path, result: ValidationResult
     result.add(ValidationIssue("INFO", unified_rel, "Conservación íntegra del plan unificado verificada"))
 
 
+def validate_agnostic_root_routing(repo_path: Path, result: ValidationResult):
+    """22. Routing raíz agnóstico de LLM y herramienta (SYSTEM.md §4.3, §10.1).
+
+    Anti-deriva (sesión 2026-07-03, feedback de Debora: 'nuestro framework debe
+    ser agnóstico al LLM y la herramienta'): AGENTS.md es la fuente única de
+    reglas permanentes. Las vistas por runtime (CLAUDE.md, .github/copilot-
+    instructions.md) deben existir y ser ficheros DELGADOS que remitan a
+    AGENTS.md, nunca reglas duplicadas de forma independiente. Si AGENTS.md
+    falta, o una vista no lo referencia, el punto de entrada de esa herramienta
+    puede divergir en silencio de la fuente única — ERROR 'bolígrafo rojo'."""
+    agents_path = repo_path / "AGENTS.md"
+    if not agents_path.exists() or agents_path.stat().st_size == 0:
+        result.add(ValidationIssue(
+            "ERROR", "AGENTS.md",
+            "Falta el routing file raíz agnóstico AGENTS.md (SYSTEM.md §10.1, §4.3). "
+            "Sin él, cada herramienta (Claude Code, GitHub Copilot...) puede acabar "
+            "con sus propias reglas divergentes."
+        ))
+        return  # sin AGENTS.md no hay fuente contra la que comparar las vistas
+
+    runtime_views = {
+        "CLAUDE.md": repo_path / "CLAUDE.md",
+        ".github/copilot-instructions.md": repo_path / ".github" / "copilot-instructions.md",
+    }
+    for rel, path in runtime_views.items():
+        if not path.exists() or path.stat().st_size == 0:
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"Falta el punto de entrada '{rel}' para su herramienta, o está vacío. "
+                "Debe existir como fichero delgado que remita a AGENTS.md (SYSTEM.md §10.1)."
+            ))
+            continue
+        if "AGENTS.md" not in path.read_text(encoding="utf-8"):
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"'{rel}' no referencia AGENTS.md. Las vistas por runtime deben derivar "
+                "de la fuente única de reglas, nunca duplicarlas de forma independiente "
+                "(SYSTEM.md §10.1, riesgo de deriva silenciosa entre herramientas)."
+            ))
+
+    result.add(ValidationIssue("INFO", "AGENTS.md", "Routing raíz agnóstico de LLM/herramienta verificado"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -943,6 +986,7 @@ def main():
     validate_harness_cold_start(repo_path, result)
     validate_test_plan_methodology(repo_path, result)
     validate_unified_plan_conservation(repo_path, result)
+    validate_agnostic_root_routing(repo_path, result)
     validate_catalog(repo_path, result, all_ids)
 
     print()

@@ -1959,3 +1959,16 @@ plan de pruebas y evidencias).
 | `walkinglabs/learn-harness-engineering` | Modelo de Harness Engineering (12 lecciones) — base del punto #83. Insumo de gobernanza + scaffolding + checks de validación, no componente del catálogo | Alta (#83) |
 | Anthropic **cybersecurity skills** | Enriquecer dominio `security` (#79). Verificar solape con `apb-sec-*` y terceros ya presentes (`mukul975/*`, `openai/threat-model`, `garrytan/cso-owasp`) antes de incorporar | Media (#79) |
 | "Fine Skills" (fuente a identificar) | Pendiente de URL/organización exacta de Debora (#79) | A determinar |
+
+## N. Bloque añadido 2026-07-03 — routing agnóstico (pendiente derivado de Fase H)
+
+Ver `PLAN_FASES_COMPLETADAS.md` → "Fase H" para lo ya ejecutado (creación de `AGENTS.md`,
+`.github/copilot-instructions.md`, check #22). Un único pendiente se deriva de esa sesión:
+
+- **Provider de VCS alternativo a GitHub:** hoy `providers/` solo tiene `prov-github-v1.0.md`
+  para control de versiones/repo hosting. Esto es un punto distinto del agnosticismo de
+  LLM/herramienta (ya resuelto vía `AGENTS.md`) — es agnosticismo de **plataforma de código**.
+  Si Débora decide evaluar o migrar a otra plataforma (GitLab, Azure Repos...), haría falta
+  un `prov-<plataforma>-v1.0.md` equivalente antes de depender de esa migración. No construir
+  hasta que Débora indique una plataforma concreta a evaluar — no hay evidencia de que vaya
+  a cambiar de GitHub, solo se deja registrado el gap por si acaso.
