@@ -84,16 +84,16 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 
 ### 1.3 Integración con ARQ Docks
 
-TRU se integra en el portal DOCKS siguiendo directrices ARQ:
-- **Pantallas comunes:** expedientes, eventos, errores, documentos, menú contextual.
-- **WebServices ARQ (7):** `ARQ_APPFASES`, `ARQ_EVENTOS`, `ARQ_MENSAJES`, `ARQ_ERRORES`, `ARQ_LOGIN_CAS`,
-  `ARQ_LOGIN_TOKEN`, `ARQ_FASES`.
-- **Login:** originalmente CAS/LDAP → migrado a **Microsoft EntraID** (2025).
-- **Multiidioma:** idioma predeterminado **catalán**, personalizable por usuario en su perfil.
-- **Precondición global:** si falla una transacción → **ROLLBACK** completo + aviso al usuario, sin
-  reintentos automáticos.
-- **Convención BD:** aunque las columnas se definan en notación mixta, la implementación es siempre en
-  MAYÚSCULAS.
+> TRU se integra en el portal DOCKS siguiendo directrices ARQ.
+
+| Aspecto | Detalle |
+|---|---|
+| **Pantallas comunes** | Expedientes, eventos, errores, documentos, menú contextual. |
+| **WebServices ARQ (7)** | `ARQ_APPFASES` · `ARQ_EVENTOS` · `ARQ_MENSAJES` · `ARQ_ERRORES` · `ARQ_LOGIN_CAS` · `ARQ_LOGIN_TOKEN` · `ARQ_FASES` |
+| **Login** | Originalmente CAS/LDAP → migrado a **Microsoft EntraID** (2025). |
+| **Multiidioma** | Idioma predeterminado **catalán**, personalizable por usuario en su perfil. |
+| **Precondición global** | Si falla una transacción → **ROLLBACK** completo + aviso al usuario, sin reintentos automáticos. |
+| **Convención BD** | Aunque las columnas se definan en notación mixta, la implementación es siempre en MAYÚSCULAS. |
 
 ### 1.4 Modelo de datos (relación de tablas)
 
@@ -200,8 +200,15 @@ estático (SonarQube/ZAP): no requiere rol de aplicación.
 
 ### 1.7 Integraciones
 
-WS ARQ Docks (7 servicios) · WS Listar Usuarios Sòstrat (lupas y terminales) · EntraID SSO · cámaras IKUSI ·
-pipelines Jenkins/GitHub. Precondición global: fallo de transacción → **ROLLBACK** + aviso, sin reintentos.
+| Sistema / Servicio | Uso en TRU |
+|---|---|
+| WS ARQ Docks (7 servicios) | Ver detalle en §1.3 (pantallas comunes, login, auditoría) |
+| WS Listar Usuarios Sòstrat | Lupas de conductores/empresas y desplegable de terminales (§2.2.3, §2.2.5) |
+| EntraID SSO | Autenticación y roles (§1.6) |
+| Cámaras IKUSI | Lectura de matrícula (LPR) para entrada/salida automática (§2.1) |
+| Pipelines Jenkins/GitHub | Build y despliegue (§2.6, §5 Bloque B12) |
+
+**Precondición global:** fallo de transacción → **ROLLBACK** + aviso, sin reintentos.
 
 ---
 
@@ -224,27 +231,47 @@ pipelines Jenkins/GitHub. Precondición global: fallo de transacción → **ROLL
 | `idCamara` | ❌ Ignorado | Cambió de Integer (8 díg.) a Long (17 díg.) — TRANSTE-1522 |
 | Resto de campos | ❌ Ignorado | No se validan ni procesan (TRANSTE-1523) |
 
-**Lógica de negocio — determinación entrada/salida:** `acceso=24 AND carril=90` → **ENTRADA** ·
-`acceso=24 AND carril=91` → **SALIDA**.
+**Lógica de negocio — determinación entrada/salida:**
 
-- **Flujo ENTRADA:** (1) buscar en TRUCK_CENTER registro con misma matrícula sin `HORA_SORTIDA`; (2) si
-  existe → cerrar anterior (`HORA_SORTIDA = now − 1s`, `FASE = FORA DEL PARKING`); (3) crear nuevo
-  (`HORA_ENTRADA = fecha_param`, `MATRICULA_CAMIO = matricula_param`, `FASE = EN EL PARKING`,
-  `CONEXIO_ELECTRICITAT = 0`, `ITV = 0`).
-- **Flujo SALIDA:** (1) buscar registro activo con misma matrícula; (2) si existe → `HORA_SORTIDA =
-  fecha_param`, `FASE = FORA DEL PARKING`.
-- **Matrícula ausente (TRANSTE-1513):** cuando la cámara no detecta matrícula → evento
-  `TRU_CONTROL_PUERTAS_KO` con texto `Control de Acceso OK:Número tarjeta:/Acceso:24/Carril:90/Fecha:29/4/2024 13:14:56/Matricula:NOMATRI`.
-- **Campo idCamara (TRANSTE-1522):** cambio de formato 8 (Integer) → 17 (Long) números; aunque no se usa en
-  lógica de negocio, el JSON lo incluye y se ajustó para que el cambio de tamaño no provoque error de parsing.
+| Condición | Resultado |
+|---|---|
+| `acceso=24 AND carril=90` | **ENTRADA** |
+| `acceso=24 AND carril=91` | **SALIDA** |
+
+**Flujos:**
+
+| Flujo | Paso | Acción |
+|---|---|---|
+| **ENTRADA** | 1 | Buscar en `TRUCK_CENTER` registro con misma matrícula sin `HORA_SORTIDA`. |
+| **ENTRADA** | 2 | Si existe → cerrar anterior (`HORA_SORTIDA = now − 1s`, `FASE = FORA DEL PARKING`). |
+| **ENTRADA** | 3 | Crear nuevo (`HORA_ENTRADA = fecha_param`, `MATRICULA_CAMIO = matricula_param`, `FASE = EN EL PARKING`, `CONEXIO_ELECTRICITAT = 0`, `ITV = 0`). |
+| **SALIDA** | 1 | Buscar registro activo con misma matrícula. |
+| **SALIDA** | 2 | Si existe → `HORA_SORTIDA = fecha_param`, `FASE = FORA DEL PARKING`. |
+
+**Casos particulares:**
+
+| Caso | Detalle |
+|---|---|
+| **Matrícula ausente** (TRANSTE-1513) | Cuando la cámara no detecta matrícula → evento `TRU_CONTROL_PUERTAS_KO` con texto `Control de Acceso OK:Número tarjeta:/Acceso:24/Carril:90/Fecha:29/4/2024 13:14:56/Matricula:NOMATRI`. |
+| **Campo idCamara** (TRANSTE-1522) | Cambio de formato 8 (Integer) → 17 (Long) números; aunque no se usa en lógica de negocio, el JSON lo incluye y se ajustó para que el cambio de tamaño no provoque error de parsing. |
 
 ### 2.2 Aplicación Web (APB.API.TRU)
 
 #### 2.2.1 GRID Principal
 
-**Columnas por defecto (en este orden):** (1) Id del Truck Center · (2) Matrícula Camión · (3) Entrada ·
-(4) Salida · (5) Terminal (Nombre) · (6) Conductor Nombre · (7) Conductor Apellido 1 · (8) Conductor
-Apellido 2 · (9) Empresa Transporte (Razón Social).
+**Columnas por defecto (en este orden):**
+
+| Orden | Columna |
+|---|---|
+| 1 | Id del Truck Center |
+| 2 | Matrícula Camión |
+| 3 | Entrada |
+| 4 | Salida |
+| 5 | Terminal (Nombre) |
+| 6 | Conductor Nombre |
+| 7 | Conductor Apellido 1 |
+| 8 | Conductor Apellido 2 |
+| 9 | Empresa Transporte (Razón Social) |
 
 **Columnas añadibles (Selector de Columnas):**
 
@@ -262,10 +289,15 @@ Apellido 2 · (9) Empresa Transporte (Razón Social).
 | Observaciones | Texto libre |
 | APB_CREADOR / APB_MODIFICADOR / APB_CREAT / APB_MODIFICAT | Auditoría (TRANSTE-1515), filtrables por lupa |
 
-**Características:** ordenación por defecto **más nuevo a más viejo** · **Exportación Excel** de todos los
-campos (defecto + añadibles) · **Botón Refresco** (TRANSTE-1511) · **Acción "Salir del Parking"** (solo con
-registro seleccionado en fase `EN EL PARKING` → `HORA_SORTIDA = now`, `FASE = FORA DEL PARKING`) · todos los
-campos con **filtro por lupa**.
+**Características:**
+
+| Característica | Detalle |
+|---|---|
+| Ordenación por defecto | Más nuevo a más viejo |
+| Exportación Excel | De todos los campos (defecto + añadibles) |
+| Botón Refresco | TRANSTE-1511 |
+| Acción «Salir del Parking» | Solo con registro seleccionado en fase `EN EL PARKING` → `HORA_SORTIDA = now`, `FASE = FORA DEL PARKING` |
+| Filtro por lupa | En todos los campos |
 
 #### 2.2.2 Pantalla de Mantenimiento
 
@@ -405,7 +437,7 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 
 ---
 
-## 5. Matriz unificada de pruebas (112 casos)
+## 5. Matriz unificada de pruebas (120 casos)
 
 > `Prio`: Crítica/Alta/Media. `Tipo`: clasificación de la visión formal (C). Estado inicial: `Pendiente`.
 
@@ -581,6 +613,36 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 | TRU-B12-T05 | TRU-T111 | E2E: Entrada LPR → GRID → Terminal → Salida LPR | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Registro completo con entrada, terminal, conductor, empresa, salida; todos los eventos | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 | TRU-B12-T06 | TRU-T112 | E2E: Alta manual → Modificar → Salir Parking | E2E | Crítica | `MANAGE_TRUCK_CENTER` | Flujo completo manual; eventos creación + modificación + salida | R[AF] · C[Cod] | 2026-07-01 | — | Pendiente |
 
+### Bloque B13 — Rendimiento (k6) (4)
+
+> **Añadido en v1.4 (feedback de Débora):** el plan no incluía pruebas de rendimiento como bloque propio —
+> solo un caso aislado en B06 (T64, comprobación manual de fluidez). Estos 4 casos son el diseño de carga
+> (`prov-k6-v1.0`, `TEST_PLAN_STANDARD §8`); su **ejecución** requiere el destino `azure-qa`
+> (`prov-azure-qa-runtime-v1.0`) o `ci-runner` — **nunca desde el portátil contra PRE/PRO** (§9.1).
+> Bloque nuevo, append-only (§3.2): no reordena ni renumera los bloques B01–B12.
+
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B13-T01 | — | Carga API ControlPuertas (LPR concurrente) | Rendimiento | Crítica | `API_CALL_TRU_CONTROL_PUERTAS` | p95 < 2000 ms, error < 1 % (`prov-k6`, umbral §8) | R[AF] · C[Cod] | 2026-07-03 | — | Pendiente |
+| TRU-B13-T02 | — | Carga consulta GRID Principal con filtros | Rendimiento | Alta | `USER_READ_TRUCK_CENTER` | p95 < 2000 ms, error < 1 % con carga concurrente de lectura | R[AF] · C[Cod] | 2026-07-03 | — | Pendiente |
+| TRU-B13-T03 | — | Estrés alta manual concurrente (Mantenimiento) | Rendimiento | Alta | `MANAGE_TRUCK_CENTER` | Sin bloqueos ni condiciones de carrera al crear en paralelo (regla de duplicados §1.5) | R[AF] · C[Cod] | 2026-07-03 | — | Pendiente |
+| TRU-B13-T04 | — | No-regresión de rendimiento vs. ejecución anterior | Rendimiento | Alta | N/A (comparativa automatizada) | Sin empeoramiento respecto a la baseline (§8); si no hay baseline, ejecutar versión anterior + nueva | R[AF] · C[Cod] | 2026-07-03 | — | Pendiente |
+
+### Bloque B14 — Pruebas Unitarias (xUnit, repo APB.TRU) (4)
+
+> **Añadido en v1.4 (feedback de Débora):** el plan no representaba pruebas unitarias. Requieren acceso al
+> **repo de código `APB.TRU`** (xUnit, .NET) — no disponible en una sesión de navegador — por eso quedan
+> `Pendiente` con nota de bloqueo, en vez de omitidas en silencio (principio de conservación §3.1: ningún
+> tipo de prueba queda fuera del plan, aunque no sea ejecutable hoy). Objetivo de cobertura: **≥ 80 %**
+> (`TEST_PLAN_STANDARD`, tabla de tipos de prueba).
+
+| ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado |
+| ---- | -------- | ------ | ------ | ------ | --- | -------------------- | ------------- | ------- | ---------- | -------- |
+| TRU-B14-T01 | — | Determinación ENTRADA/SALIDA por `acceso`/`carril` | Unitaria | Crítica | N/A (requiere repo APB.TRU) | Devuelve ENTRADA/SALIDA según tabla de condiciones (§2.1) | C[Cod] | 2026-07-03 | — | Pendiente (requiere repo APB.TRU) |
+| TRU-B14-T02 | — | Regla de duplicados (cierre autom. + alta nueva) | Unitaria | Crítica | N/A (requiere repo APB.TRU) | Cierra registro anterior (`now-1s`) y crea el nuevo, sin solapamiento (§1.5) | C[Cod] | 2026-07-03 | — | Pendiente (requiere repo APB.TRU) |
+| TRU-B14-T03 | — | Validación de campos obligatorios de Mantenimiento | Unitaria | Alta | N/A (requiere repo APB.TRU) | Rechaza alta/modificación sin campos obligatorios (§2.2.2) | C[Cod] | 2026-07-03 | — | Pendiente (requiere repo APB.TRU) |
+| TRU-B14-T04 | — | Cobertura de módulo TruckCenter ≥ 80 % | Unitaria | Alta | N/A (requiere repo APB.TRU) | Informe xUnit/coverage ≥ 80 % sobre la lógica de negocio del módulo | C[Cod] | 2026-07-03 | — | Pendiente (requiere repo APB.TRU) |
+
 ---
 
 ## 6. Resumen del plan
@@ -599,20 +661,26 @@ Cambio del literal "Aplicación de Arquitectura APB" a "Truck Center".
 | B10 | Integración WS ARQ | 6 | 0 | 4 | 2 |
 | B11 | Seguridad y Calidad | 6 | 3 | 2 | 1 |
 | B12 | Regresión/Despliegue/E2E | 6 | 4 | 2 | 0 |
-| **TOTAL** | | **112** | **40** | **51** | **21** |
+| B13 | Rendimiento (k6) | 4 | 2 | 2 | 0 |
+| B14 | Pruebas Unitarias (xUnit) | 4 | 2 | 2 | 0 |
+| **TOTAL** | | **120** | **44** | **55** | **21** |
 
-**Bloques canónicos (§3.2, append-only — nunca se renumeran, un bloque nuevo siempre es B13, B14…):**
+**Bloques canónicos (§3.2, append-only — nunca se renumeran, un bloque nuevo siempre es el siguiente número):**
 `B01`=API ControlPuertas · `B02`=GRID Principal · `B03`=Mantenimiento/Alta · `B04`=Mantenimiento/Modif.-Baja ·
 `B05`=Lupas · `B06`=Desplegable Terminales · `B07`=Tabla Maestra Vehículos · `B08`=Autenticación EntraID ·
-`B09`=Eventos de Auditoría · `B10`=Integración WS ARQ · `B11`=Seguridad y Calidad · `B12`=Regresión/Despliegue/E2E.
+`B09`=Eventos de Auditoría · `B10`=Integración WS ARQ · `B11`=Seguridad y Calidad · `B12`=Regresión/Despliegue/E2E ·
+`B13`=Rendimiento (k6) · `B14`=Pruebas Unitarias (xUnit).
 
 **Procedencia (resumen):** 39 casos con respaldo directo en **Jira** (visión A/Rovo, desde 2026-06-30);
 73 añadidos desde el **Análisis Funcional** (visión B/Rovo, desde 2026-07-01); **los 112** validados contra
-**código** por GitHub Copilot (visión C). 0 duplicados.
+**código** por GitHub Copilot (visión C); **8 casos nuevos** (B13/B14, desde 2026-07-03) propuestos para
+cubrir rendimiento y unitarias, validados contra la lógica de negocio descrita en el propio plan (`Cod`).
+0 duplicados.
 
 **Automatización (para Fase de ejecución):** por navegador (Playwright/agéntico) → Bloques 2–10 y E2E
 (T111/T112); por API HTTP → Bloque 1; manual/otra herramienta (SonarQube, revisión) → Bloque 11 parcial y
-despliegue (T107–T110 vía health-check HTTP).
+despliegue (T107–T110 vía health-check HTTP); **por k6 en `azure-qa`/`ci-runner`** → Bloque 13 (§9.1, nunca
+desde el portátil); **por xUnit en el repo `APB.TRU`** (fuera de esta sesión de navegador) → Bloque 14.
 
 ---
 
@@ -694,6 +762,8 @@ con los IDs de este plan. Se muestran ambos: el **ID legado** (numeración plana
 **Bloque B10 — WS ARQ Docks:** ☐ TRU-B10-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
 **Bloque B11 — Seguridad/Calidad:** ☐ TRU-B11-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
 **Bloque B12 — Regresión/Despliegue/E2E:** ☐ TRU-B12-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06
+**Bloque B13 — Rendimiento (k6):** ☐ TRU-B13-T01 ☐ T02 ☐ T03 ☐ T04
+**Bloque B14 — Unitarias (xUnit):** ☐ TRU-B14-T01 ☐ T02 ☐ T03 ☐ T04
 
 ---
 
@@ -747,6 +817,7 @@ MISA-1471, MISA-1434, MISA-1428, MISA-1381, MISA-1346, SOSO-2075
 | Unificado 1.1 | 2026-07-02 | APB AI Framework (IA) | **Restauración de contenido:** se reincorpora TODA la información narrativa de las tres fuentes que se había perdido en 1.0 — §2 Funcionalidad detallada (API, GRID, Mantenimiento, lupas, terminales, eventos, mensajes, errores), §1.4 Modelo de datos con tipos/nulabilidad, §3 Incidencias históricas relevantes, §4 Proyectos futuros, §9 Checklist ejecutable, §10 Plantilla de ejecución, §11 Tickets Jira, §12 Documentos de referencia. Unificar ya no elimina información. |
 | Unificado 1.2 | 2026-07-03 | APB AI Framework (IA) | **Renumeración a ID canónico (§3.2 `TEST_PLAN_STANDARD` v1.2.0):** los 112 casos pasan de numeración plana (`TRU-T01…T112`) a esquema `TRU-B{NN}-T{NN}` (bloque + secuencia, append-only), conservando el **ID legado** en columna propia de la matriz (§5) para no romper la trazabilidad con `INFORME_EJECUCION_112.md`. §7 Mapeo actualizado con ambos IDs. §9 Checklist con IDs canónicos. Resuelve el problema de correlación plan↔informe al crecer el plan (añadir una prueba a un bloque existente ya no exige renumerar las demás). |
 | Unificado 1.3 | 2026-07-03 | APB AI Framework (IA) | **Fase I (`TEST_PLAN_STANDARD` v1.3.0):** §1.6 amplía la matriz de roles con «Bloques que lo requieren» + nota de **usuario de ejecución** (AKV/runtime, sin credenciales en fichero) y **destino de ejecución** (§9.1/§9.2); la matriz de casos (§5) incorpora la columna **«Rol requerido»** con el rol EntraID mínimo por bloque. Sin pérdida de contenido (§3.1): solo se añade información. |
+| Unificado 1.4 | 2026-07-03 | APB AI Framework (IA) | **Feedback de Débora (legibilidad + cobertura de tipos de prueba):** (a) **nuevos Bloques B13 — Rendimiento (k6, 4 casos)** y **B14 — Pruebas Unitarias (xUnit, 4 casos)**, append-only (§3.2) — el plan no representaba estos tipos, solo un caso aislado de fluidez en B06; total **112 → 120 casos**; §6 Resumen, §9 Checklist e Histórico actualizados. (b) **Reformateo a tabla** de secciones que mezclaban información en prosa con puntos, difíciles de leer: §1.3 Integración con ARQ Docks, §1.7 Integraciones, §2.1 lógica de negocio ENTRADA/SALIDA y casos particulares, §2.2.1 columnas por defecto y características del GRID. Sin pérdida de contenido (§3.1): mismo contenido, presentación tabular. |
 
 ## 14. Aprobados del plan (por cambio)
 
@@ -755,6 +826,8 @@ MISA-1471, MISA-1434, MISA-1428, MISA-1381, MISA-1346, SOSO-2075
 | Unificado 1.0 | Creación del plan unificado | _pendiente — QA Lead / Analista Funcional_ | — |
 | Unificado 1.1 | Restauración de contenido íntegro de las fuentes | _pendiente — QA Lead / Analista Funcional_ | — |
 | Unificado 1.2 | Renumeración a ID canónico append-only | _pendiente — QA Lead / Analista Funcional_ | — |
+| Unificado 1.3 | Roles + usuario de ejecución + destino de ejecución | _pendiente — QA Lead / Analista Funcional_ | — |
+| Unificado 1.4 | Bloques B13/B14 (rendimiento/unitarias) + reformateo a tabla | _pendiente — QA Lead / Analista Funcional_ | — |
 
 ---
 

@@ -305,11 +305,11 @@ def generate_html(md_path: Path, out_path: Path):
       color: var(--gris-oscuro-texto); background: var(--gris-fondo);
     }}
     header.apb-header {{
-      background: var(--azul-corporativo); color: #fff; padding: 12px 24px;
+      background: var(--azul-corporativo); color: #fff; padding: 12px 32px;
       display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 10;
     }}
     header.apb-header img {{ height: 32px; }}
-    header.apb-header h1 {{ font-size: 16px; margin: 0; font-weight: 600; }}
+    header.apb-header h1 {{ font-size: 16px; margin: 0; font-weight: 600; color: #fff; }}
     .layout {{ display: flex; min-height: 100vh; }}
     nav.sidebar {{
       width: 280px; min-width: 280px; background: #fff; border-right: 1px solid var(--gris-claro);

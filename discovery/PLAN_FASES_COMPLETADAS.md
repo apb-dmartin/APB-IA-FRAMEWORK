@@ -594,3 +594,22 @@ ambos `draft`) · `validate_repo.py --strict` **exit 0** (0 errores, 60 warnings
 **Pendiente (registrado, fuera de esta sesión):** despliegue real del entorno Azure QA (nombrar
 suscripción/entorno + autorizar) → **QA-3**; ejecución funcional completa de TruckCenter con dataset,
 rendimiento k6 y seguridad SonarQube/OWASP ZAP → **QA-3**.
+
+**Fase I — corrección post-entrega (2026-07-03, feedback de Débora):**
+
+- **Cobertura de tipos de prueba:** el plan carecía de bloques propios de **rendimiento** y **unitarias**
+  (solo un caso aislado de fluidez en B06). Añadidos **Bloque B13 — Rendimiento (k6, 4 casos)** y
+  **Bloque B14 — Pruebas Unitarias (xUnit, repo `APB.TRU`, 4 casos)**, append-only (§3.2). Total del
+  ejemplo: **112 → 120 casos**. Unificado a **v1.4**.
+- **Legibilidad:** varias secciones mezclaban información en un párrafo con separadores «·», difícil de
+  leer (p. ej. §1.3 Integración con ARQ Docks, §1.7 Integraciones, §2.1 lógica ENTRADA/SALIDA, §2.2.1
+  columnas/características del GRID). Reformateadas a **tabla**, mismo contenido (§3.1: sin pérdida).
+- **`scripts/generate_test_plan_html.py`:** el título de la cabecera se renderizaba en gris oscuro sobre
+  fondo azul (el selector global `h1{color}` pisaba el blanco heredado del `header`) — corregido con
+  `color:#fff` explícito en `header.apb-header h1`; padding izquierdo alineado con el del contenido (32px).
+- **Confirmado a Débora:** el informe de ejecución usa la **misma maquetación corporativa** que el plan
+  (mismo script, cabecera azul + logo, menú, acordeones) — es agnóstico al tipo de documento, no una
+  plantilla distinta.
+
+`validate_repo.py --strict` exit 0 · **49/49 tests** (sin cambio de componentes catalogables — es
+contenido de ejemplo y CSS, no un componente nuevo).
