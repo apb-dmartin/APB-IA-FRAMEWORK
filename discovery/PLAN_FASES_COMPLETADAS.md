@@ -671,3 +671,52 @@ editaron existentes) · `validate_repo.py --strict` **exit 0** (0 errores, 60 wa
   materializado en PRE.
 - **Reejecutar el plan completo de TruckCenter** con vídeo real por bloque (Playwright MCP), cubriendo los
   76 casos restantes (B01, B08/B09/B10 completos con un segundo rol, B11/B13/B14 fuera de navegador).
+
+### Continuación — Sesión II (misma fecha, 2026-07-03) — ⚠️ punto #88 NO seguido, queda abierto
+
+**Origen:** Débora pidió continuar la ejecución del plan de TruckCenter en la misma jornada. El punto #88
+(arriba) ya dejaba especificado reabrir Claude Code con Playwright MCP cargado + segundo usuario/rol antes
+de retomar — no se consultó ese punto antes de empezar esta sesión II.
+
+**Ejecutado:**
+- **+11 casos netos** adicionales (vs. los 44 de la sesión I) + reconfirmación en vivo de H1/H2/H4.
+  **Total acumulado: 55/120 casos con algún estado registrado, 65 siguen `Pendiente` sin tocar.**
+- **3 hallazgos nuevos:** **H5** — el sistema rechaza un NIF de empresa manual no existente en Sòstrat
+  ("Ese nif no se corresponde con ninguna Empresa de Transporte"), no permite el alta libre que describe
+  §2.2.3/§2.2.5; **H6** — Nombre Conductor mapeado como "." (mapeo WS Sòstrat); **H7** — Swagger de
+  `/trc/` (API `APB.API.LGP`) titulado como "APB.API.TRU" (documentación cruzada incorrecta).
+- **Plan unificado → v1.6:** matriz/checklist actualizados, nueva **§16 Resultados de ejecución — Sesión
+  QA navegador (2026-07-03, II)** con datos de ejecución, hallazgos H5-H7, tabla de casos no
+  ejecutados/bloqueados por ID y motivo, y pendientes. HTML regenerado.
+- Informes de ejecución (MD+HTML) en OneDrive
+  `Proyectos/SDD - Framework desarrollo asistido por IA/QA_TruckCenter_evidencias/030726/`:
+  `INFORME_EJECUCION_030726.md/.html` (sesión I) e `INFORME_EJECUCION_030726_II.md/.html` (sesión II),
+  con GIF `QA_TruckCenter_030726_II_bloque1.gif` como evidencia (no segmentado por bloque — desviación del
+  §7.2 del estándar, declarada en el informe).
+
+**Corrección de proceso (feedback directo de Débora, 3 preguntas encadenadas):**
+1. *"¿Has usado mi agente de QA? teóricamente el agente genera el informe, las evidencias, me pregunta si
+   quiero abrir Jira"* — no se siguió el proceso "razonar → plan → aceptación → ejecutar" ni se ofreció
+   Jira (§12/§6.3 de la skill).
+2. *"¿Por qué has creado GIF si dijimos vídeo?"* — el punto #88 ya especificaba Playwright MCP para vídeo
+   real; no se comprobó su disponibilidad antes de sustituirlo en silencio por GIF sin segmentar.
+3. *"¿Por qué no puedes ejecutar el agente? ¿El runtime debería estar en el plan de fases futuras? ¿Es el
+   informe incompleto o no se han ejecutado todas las pruebas? ¿Cómo evito que estos errores vuelvan a
+   pasar?"* — confirmado: no existe motor de orquestación real (punto #77), el informe SÍ refleja con
+   precisión lo ejecutado pero el alcance ejecutado fue un muestreo, no el plan completo pedido.
+
+**Codificado en el framework para que no se repita:**
+- **Punto #77** (`PLAN_FASES_FUTURAS.md`): nueva nota "Segunda recurrencia" — es la **segunda vez**
+  documentada que ejecutar un agente/skill sin runtime real provoca un fallo de proceso (la primera fue la
+  sesión DDD, 2026-06-30, SOJA mal clasificado).
+- **Nueva memoria permanente** (fuera de este repo, en el sistema de memoria de Claude Code):
+  `feedback_agente_runtime_vs_manual` — obliga a declarar explícitamente "runtime real" vs. "seguimiento
+  manual del `.md`" al empezar cualquier invocación de agente/skill, más checklist de 5 puntos (comprobar
+  PLAN_FASES antes, comprobar herramientas/MCP cargadas, plan+OK explícito antes de ejecutar, recuento
+  numérico primero al cerrar, ofrecer Jira sin esperar a que se pida).
+
+**Pendiente (registrado, fuera de esta sesión):** el **punto #88 sigue abierto tal cual** — la próxima
+ejecución de TruckCenter debe reabrir Claude Code con Playwright MCP cargado desde el inicio, usar un
+segundo usuario/rol para B08/B09, corregir H1/H5, y cubrir los 65 casos que siguen `Pendiente` (incluyendo
+los ~26 estructuralmente fuera de alcance de navegador: B01/B11/B13/B14). Jira para H5/H6/H7 (y confirmar
+estado de H1-H4) queda explícitamente en espera de instrucción directa de Débora.

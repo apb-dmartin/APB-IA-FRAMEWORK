@@ -83,10 +83,10 @@
   <h1>Plan de Pruebas UNIFICADO — TRU TruckCenter (APB.API.LGP + APB.API.TRU)</h1>
 </header>
 <div class="layout">
-  <nav class="sidebar"><ul><li><a href="#0-método-de-unificación-y-procedencia">0. Método de unificación y procedencia</a></li><li><a href="#1-descripción-general">1. Descripción general</a></li><li><a href="#2-funcionalidad-detallada">2. Funcionalidad detallada</a></li><li><a href="#3-incidencias-históricas-relevantes">3. Incidencias históricas relevantes</a></li><li><a href="#4-proyectos-futuros">4. Proyectos futuros</a></li><li><a href="#5-matriz-unificada-de-pruebas-120-casos">5. Matriz unificada de pruebas (120 casos)</a><ul><li><a href="#bloque-b01-api-controlpuertas-recepción-lpr-12">Bloque B01 — API ControlPuertas / Recepción LPR (12)</a></li><li><a href="#bloque-b02-grid-principal-14">Bloque B02 — GRID Principal (14)</a></li><li><a href="#bloque-b03-mantenimiento-alta-16">Bloque B03 — Mantenimiento / Alta (16)</a></li><li><a href="#bloque-b04-mantenimiento-modificación-y-baja-8">Bloque B04 — Mantenimiento / Modificación y Baja (8)</a></li><li><a href="#bloque-b05-lupas-conductores-y-empresas-12">Bloque B05 — Lupas / Conductores y Empresas (12)</a></li><li><a href="#bloque-b06-desplegable-terminales-8">Bloque B06 — Desplegable Terminales (8)</a></li><li><a href="#bloque-b07-tabla-maestra-tipos-de-vehículo-6">Bloque B07 — Tabla Maestra / Tipos de Vehículo (6)</a></li><li><a href="#bloque-b08-autenticación-y-permisos-entraid-10">Bloque B08 — Autenticación y Permisos EntraID (10)</a></li><li><a href="#bloque-b09-eventos-de-auditoría-8">Bloque B09 — Eventos de Auditoría (8)</a></li><li><a href="#bloque-b10-integración-ws-arq-docks-6">Bloque B10 — Integración WS ARQ Docks (6)</a></li><li><a href="#bloque-b11-seguridad-y-calidad-de-código-6">Bloque B11 — Seguridad y Calidad de Código (6)</a></li><li><a href="#bloque-b12-regresión-despliegue-y-e2e-6">Bloque B12 — Regresión, Despliegue y E2E (6)</a></li><li><a href="#bloque-b13-rendimiento-k6-4">Bloque B13 — Rendimiento (k6) (4)</a></li><li><a href="#bloque-b14-pruebas-unitarias-xunit-repo-apbtru-4">Bloque B14 — Pruebas Unitarias (xUnit, repo APB.TRU) (4)</a></li></ul></li><li><a href="#6-resumen-del-plan">6. Resumen del plan</a></li><li><a href="#7-mapeo-aunificado">7. Mapeo A→unificado</a></li><li><a href="#8-criterios-de-entrada-salida">8. Criterios de entrada / salida</a></li><li><a href="#9-checklist-ejecutable">9. Checklist ejecutable</a></li><li><a href="#10-plantilla-de-ejecución">10. Plantilla de ejecución</a></li><li><a href="#11-tickets-jira-analizados">11. Tickets Jira analizados</a></li><li><a href="#12-documentos-de-referencia">12. Documentos de referencia</a></li><li><a href="#13-histórico-de-cambios-del-plan">13. Histórico de cambios del plan</a></li><li><a href="#14-aprobados-del-plan-por-cambio">14. Aprobados del plan (por cambio)</a></li><li><a href="#15-resultados-de-ejecución-sesión-qa-navegador-2026-07-03">15. Resultados de ejecución — Sesión QA navegador (2026-07-03)</a></li></ul></nav>
+  <nav class="sidebar"><ul><li><a href="#0-método-de-unificación-y-procedencia">0. Método de unificación y procedencia</a></li><li><a href="#1-descripción-general">1. Descripción general</a></li><li><a href="#2-funcionalidad-detallada">2. Funcionalidad detallada</a></li><li><a href="#3-incidencias-históricas-relevantes">3. Incidencias históricas relevantes</a></li><li><a href="#4-proyectos-futuros">4. Proyectos futuros</a></li><li><a href="#5-matriz-unificada-de-pruebas-120-casos">5. Matriz unificada de pruebas (120 casos)</a><ul><li><a href="#bloque-b01-api-controlpuertas-recepción-lpr-12">Bloque B01 — API ControlPuertas / Recepción LPR (12)</a></li><li><a href="#bloque-b02-grid-principal-14">Bloque B02 — GRID Principal (14)</a></li><li><a href="#bloque-b03-mantenimiento-alta-16">Bloque B03 — Mantenimiento / Alta (16)</a></li><li><a href="#bloque-b04-mantenimiento-modificación-y-baja-8">Bloque B04 — Mantenimiento / Modificación y Baja (8)</a></li><li><a href="#bloque-b05-lupas-conductores-y-empresas-12">Bloque B05 — Lupas / Conductores y Empresas (12)</a></li><li><a href="#bloque-b06-desplegable-terminales-8">Bloque B06 — Desplegable Terminales (8)</a></li><li><a href="#bloque-b07-tabla-maestra-tipos-de-vehículo-6">Bloque B07 — Tabla Maestra / Tipos de Vehículo (6)</a></li><li><a href="#bloque-b08-autenticación-y-permisos-entraid-10">Bloque B08 — Autenticación y Permisos EntraID (10)</a></li><li><a href="#bloque-b09-eventos-de-auditoría-8">Bloque B09 — Eventos de Auditoría (8)</a></li><li><a href="#bloque-b10-integración-ws-arq-docks-6">Bloque B10 — Integración WS ARQ Docks (6)</a></li><li><a href="#bloque-b11-seguridad-y-calidad-de-código-6">Bloque B11 — Seguridad y Calidad de Código (6)</a></li><li><a href="#bloque-b12-regresión-despliegue-y-e2e-6">Bloque B12 — Regresión, Despliegue y E2E (6)</a></li><li><a href="#bloque-b13-rendimiento-k6-4">Bloque B13 — Rendimiento (k6) (4)</a></li><li><a href="#bloque-b14-pruebas-unitarias-xunit-repo-apbtru-4">Bloque B14 — Pruebas Unitarias (xUnit, repo APB.TRU) (4)</a></li></ul></li><li><a href="#6-resumen-del-plan">6. Resumen del plan</a></li><li><a href="#7-mapeo-aunificado">7. Mapeo A→unificado</a></li><li><a href="#8-criterios-de-entrada-salida">8. Criterios de entrada / salida</a></li><li><a href="#9-checklist-ejecutable">9. Checklist ejecutable</a></li><li><a href="#10-plantilla-de-ejecución">10. Plantilla de ejecución</a></li><li><a href="#11-tickets-jira-analizados">11. Tickets Jira analizados</a></li><li><a href="#12-documentos-de-referencia">12. Documentos de referencia</a></li><li><a href="#13-histórico-de-cambios-del-plan">13. Histórico de cambios del plan</a></li><li><a href="#14-aprobados-del-plan-por-cambio">14. Aprobados del plan (por cambio)</a></li><li><a href="#15-resultados-de-ejecución-sesión-qa-navegador-2026-07-03">15. Resultados de ejecución — Sesión QA navegador (2026-07-03)</a></li><li><a href="#16-resultados-de-ejecución-sesión-qa-navegador-2026-07-03-ii">16. Resultados de ejecución — Sesión QA navegador (2026-07-03, II)</a></li></ul></nav>
   <main>
     <div class="intro"><blockquote><p><strong>Borrador generado por IA</strong> (APB AI Framework — apb-qa-test-plan-v1.2.0) — pendiente validación humana. No distribuir sin revisión.</p>
-<p><strong>Fecha de unificación:</strong> 2026-07-02 (v1.0) · <strong>v1.2 (2026-07-03):</strong> renumeración a ID canónico §3.2 · <strong>v1.5 (2026-07-03):</strong> primera ejecución real en PRE (44 casos, 4 hallazgos — ver <a href="#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03">§15</a>) · <strong>Aplicación:</strong> TruckCenter (DOCKS .NET) · <strong>APIs:</strong> <code>APB.API.LGP</code> (control de puertas LPR) + <code>APB.API.TRU</code> (web)</p>
+<p><strong>Fecha de unificación:</strong> 2026-07-02 (v1.0) · <strong>v1.2 (2026-07-03):</strong> renumeración a ID canónico §3.2 · <strong>v1.5 (2026-07-03):</strong> primera ejecución real en PRE (44 casos, 4 hallazgos — ver <a href="#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03">§15</a>) · <strong>v1.6 (2026-07-03, II):</strong> segunda sesión de ejecución en PRE (17 casos adicionales, 3 hallazgos nuevos H5-H7 — ver <a href="#16-resultados-de-ejecución--sesión-qa-navegador-2026-07-03-ii">§16</a>) · <strong>Aplicación:</strong> TruckCenter (DOCKS .NET) · <strong>APIs:</strong> <code>APB.API.LGP</code> (control de puertas LPR) + <code>APB.API.TRU</code> (web)</p>
 <p>Ejemplo canónico de aplicación de <a href="../../../context/apb/standards/TEST_PLAN_STANDARD.md">`TEST_PLAN_STANDARD`</a>.</p></blockquote>
 <hr></div>
     <h2 id="0-método-de-unificación-y-procedencia">0. Método de unificación y procedencia</h2><p>Este plan <strong>fusiona sin duplicar</strong> tres visiones del plan de pruebas de TruckCenter, conservando <strong>absolutamente toda</strong> la información de cada fuente (pruebas <strong>y</strong> contenido narrativo: funcionalidad detallada, modelo de datos, incidencias históricas, proyectos futuros, documentos de referencia, checklist y plantilla de ejecución) y anotando, para cada prueba, <strong>quién la propuso</strong> y <strong>de qué origen</strong> (procedencia múltiple). Fuentes archivadas en <a href="sources/">`sources/`</a>:</p>
@@ -1363,7 +1363,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — desplegable de acciones vacío sin selección</td>
 </tr>
 <tr>
 <td>TRU-B02-T09</td>
@@ -1376,7 +1376,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — botón no visible tras cierre</td>
 </tr>
 <tr>
 <td>TRU-B02-T10</td>
@@ -1402,7 +1402,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>⚠️ PASS estructural (2026-07-03 II) — exportación sin error con &quot;Sin datos&quot;; descarga no verificada</td>
 </tr>
 <tr>
 <td>TRU-B02-T12</td>
@@ -1415,7 +1415,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>Bloqueado por alcance (2026-07-03 II) — requiere segundo usuario con rol USER_READ puro, no disponible en la sesión</td>
 </tr>
 <tr>
 <td>TRU-B02-T13</td>
@@ -1428,7 +1428,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>Bloqueado por alcance (2026-07-03 II) — mismo motivo que T12</td>
 </tr>
 <tr>
 <td>TRU-B02-T14</td>
@@ -1481,7 +1481,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — registro 1497 con todos los campos rellenados</td>
 </tr>
 <tr>
 <td>TRU-B03-T03</td>
@@ -1572,7 +1572,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — QATEST01/QATEST02, tipo seleccionable manualmente</td>
 </tr>
 <tr>
 <td>TRU-B03-T10</td>
@@ -1585,7 +1585,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>⚠️ No concluyente (2026-07-03 II) — el cambio de selección en el desplegable no persistió al guardar; a repetir</td>
 </tr>
 <tr>
 <td>TRU-B03-T11</td>
@@ -1611,7 +1611,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II)</td>
 </tr>
 <tr>
 <td>TRU-B03-T13</td>
@@ -1624,7 +1624,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II)</td>
 </tr>
 <tr>
 <td>TRU-B03-T14</td>
@@ -1650,7 +1650,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>⚠️ PASS parcial (2026-07-03 II) — texto corto se guarda correctamente; no se probó el límite exacto de 4000 caracteres</td>
 </tr>
 <tr>
 <td>TRU-B03-T16</td>
@@ -1663,7 +1663,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>Bloqueado por alcance (2026-07-03 II) — requiere segundo usuario USER_READ</td>
 </tr>
 </tbody></table></div></div></details><details class="block" id="bloque-b04-mantenimiento-modificación-y-baja-8"><summary>Bloque B04 — Mantenimiento / Modificación y Baja (8)</summary><div class="block-body"><div class="table-wrap"><table>
 <thead><tr>
@@ -1755,7 +1755,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>Bloqueado por alcance (2026-07-03 II) — requiere segundo usuario USER_READ</td>
 </tr>
 <tr>
 <td>TRU-B04-T07</td>
@@ -1768,7 +1768,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>No ejecutable desde navegador (2026-07-03 II) — requiere inyección de fallo en backend/BD</td>
 </tr>
 <tr>
 <td>TRU-B04-T08</td>
@@ -1781,7 +1781,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>No ejecutable desde navegador (2026-07-03 II) — mismo motivo que T07</td>
 </tr>
 </tbody></table></div></div></details><details class="block" id="bloque-b05-lupas-conductores-y-empresas-12"><summary>Bloque B05 — Lupas / Conductores y Empresas (12)</summary><div class="block-body"><div class="table-wrap"><table>
 <thead><tr>
@@ -1821,7 +1821,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>⚠️ No verificable en UI (2026-07-03 II) — la selección funciona (Id Usuario recuperado) pero el alta en BD no es observable sin acceso directo; ver hallazgo H6</td>
 </tr>
 <tr>
 <td>TRU-B05-T03</td>
@@ -1834,7 +1834,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>⚠️ No verificable en UI (2026-07-03 II) — mismo motivo que T02</td>
 </tr>
 <tr>
 <td>TRU-B05-T04</td>
@@ -1938,7 +1938,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — NIF y nombre manuales guardados en registro 1497</td>
 </tr>
 <tr>
 <td>TRU-B05-T12</td>
@@ -1951,7 +1951,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>🔴 FAIL — Hallazgo H5 (2026-07-03 II): el sistema <strong>rechaza</strong> un NIF de empresa manual no existente en Sòstrat (&quot;Ese nif no se corresponde con ninguna Empresa de Transporte&quot;); no permite el alta libre que describe §2.2.3/§2.2.5</td>
 </tr>
 </tbody></table></div></div></details><details class="block" id="bloque-b06-desplegable-terminales-8"><summary>Bloque B06 — Desplegable Terminales (8)</summary><div class="block-body"><div class="table-wrap"><table>
 <thead><tr>
@@ -2017,7 +2017,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[J:TRANSTE-1510·AF] · C[Cod]</td>
 <td>2026-06-30</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — TRANSTE-1510 confirmado corregido</td>
 </tr>
 <tr>
 <td>TRU-B06-T05</td>
@@ -2030,7 +2030,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[J:TRANSTE-1510·AF] · C[Cod]</td>
 <td>2026-06-30</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>⚠️ No concluyente (2026-07-03 II) — la selección en el desplegable no se reflejó como cambio guardable (&quot;No se han detectado cambios&quot;); a repetir con más cuidado en la interacción</td>
 </tr>
 <tr>
 <td>TRU-B06-T06</td>
@@ -2109,7 +2109,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — código 012 creado, multiidioma CA/ES/EN confirmado</td>
 </tr>
 <tr>
 <td>TRU-B07-T03</td>
@@ -2122,7 +2122,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II)</td>
 </tr>
 <tr>
 <td>TRU-B07-T04</td>
@@ -2135,7 +2135,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — eliminado el tipo de prueba 012 sin dependencias, sin error</td>
 </tr>
 <tr>
 <td>TRU-B07-T05</td>
@@ -2266,7 +2266,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>Bloqueado por alcance (2026-07-03 II) — el usuario de la sesión ya tiene preferencia de idioma configurada (Castellano); requiere usuario nuevo sin perfil</td>
 </tr>
 <tr>
 <td>TRU-B08-T08</td>
@@ -2279,7 +2279,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — cambio a Català aplicado en toda la interfaz (menú, cabecera, etiquetas)</td>
 </tr>
 <tr>
 <td>TRU-B08-T09</td>
@@ -2332,7 +2332,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[AF·J:TRANSTE-1524] · C[Cod]</td>
 <td>2026-07-01</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>Bloqueado (2026-07-03 II) — &quot;Auditoría de procesos&quot; ahora visible en el menú pero sigue devolviendo <code>Forbidden</code> con este rol; H4 persiste</td>
 </tr>
 <tr>
 <td>TRU-B09-T02</td>
@@ -2634,7 +2634,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[J·AF] · C[Cod]</td>
 <td>2026-06-30</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — <code>https://apipre.portdebarcelona.cat/trc/</code> responde 200 OK (Swagger UI)</td>
 </tr>
 <tr>
 <td>TRU-B12-T02</td>
@@ -2647,7 +2647,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[J·AF] · C[Cod]</td>
 <td>2026-06-30</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>✅ PASS (2026-07-03 II) — <code>https://dockspre.portdebarcelona.cat/tru/</code> responde 200 OK</td>
 </tr>
 <tr>
 <td>TRU-B12-T03</td>
@@ -2660,7 +2660,7 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>R[J:ARQ-2444·AF] · C[Cod]</td>
 <td>2026-06-30</td>
 <td>—</td>
-<td><span class="badge badge-pend">Pendiente</span></td>
+<td>🔴 FAIL — Hallazgo H7 (2026-07-03 II): el Swagger del endpoint <code>/trc/</code> (que debería ser <code>APB.API.LGP</code> tras ARQ-2444) muestra el título <strong>&quot;APB.API.TRU&quot;</strong> — posible resto de nomenclatura antigua sin actualizar</td>
 </tr>
 <tr>
 <td>TRU-B12-T04</td>
@@ -3210,8 +3210,8 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <hr><h2 id="8-criterios-de-entrada-salida">8. Criterios de entrada / salida</h2><ul><li><strong>Entrada:</strong> entorno PRE accesible y operativo · datos base cargados · servicios/dependencias disponibles</li></ul>
 <p>(WS Sòstrat, WS ARQ, EntraID) · usuarios y roles configurados. - <strong>Salida:</strong> todos los casos <strong>Crítica</strong> aprobados o aceptados con riesgo justificado · 0 defectos críticos sin resolver · evidencia de ejecución documentada y vinculada (ver §6 del estándar) · sin regresión de rendimiento respecto a la ejecución anterior.</p>
 <hr><h2 id="9-checklist-ejecutable">9. Checklist ejecutable</h2><blockquote><p>Preservado de la visión formal C (Copilot). Marcar <code>[x]</code> al ejecutar cada caso. IDs canónicos §3.2.</p></blockquote>
-<p><strong>Bloque B01 — API ControlPuertas:</strong> ☐ TRU-B01-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12 <strong>Bloque B02 — GRID Principal:</strong> ☑ TRU-B02-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☑ T06 ☑ T07 ☐ T08 ☐ T09 ☑ T10 ☐ T11 ☐ T12 ☐ T13 ☑ T14 <strong>Bloque B03 — Mantenimiento/Alta:</strong> ☑ TRU-B03-T01 ☐ T02 ☑ T03 ☑ T04 ☑ T05 ☑ T06 ☑ T07 ☑ T08 (⚠️ H3) ☐ T09 ☐ T10 ☑ T11 ☐ T12 ☐ T13 ☐ T14 ☐ T15 ☐ T16 <strong>Bloque B04 — Modif./Baja:</strong> ☑ TRU-B04-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☐ T06 ☐ T07 ☐ T08 <strong>Bloque B05 — Lupas:</strong> ☑ TRU-B05-T01 ☐ T02 ☐ T03 ☑ T04 ☑ T05 ☐ T06 ☑ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12 <strong>Bloque B06 — Terminales:</strong> ☑ TRU-B06-T01 (⚠️ nota) ☑ T02 ☐ T03 ☐ T04 ☐ T05 ☑ T06 ☐ T07 ☐ T08 <strong>Bloque B07 — Tabla Maestra:</strong> ☒ TRU-B07-T01 (🔴 H2) ☐ T02 ☐ T03 ☐ T04 ☒ T05 (🔴 H1) ☐ T06 <strong>Bloque B08 — Autenticación EntraID:</strong> ☑ TRU-B08-T01 (implícito) ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 <strong>Bloque B09 — Eventos Auditoría:</strong> ☐ TRU-B09-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 — *bloqueado: pantalla &quot;Auditoría de procesos&quot; → Forbidden con el rol usado (2026-07-03)* <strong>Bloque B10 — WS ARQ Docks:</strong> ☐ TRU-B10-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 <strong>Bloque B11 — Seguridad/Calidad:</strong> ☐ TRU-B11-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 <strong>Bloque B12 — Regresión/Despliegue/E2E:</strong> ☐ TRU-B12-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☑ T06 <strong>Bloque B13 — Rendimiento (k6):</strong> ☐ TRU-B13-T01 ☐ T02 ☐ T03 ☐ T04 <strong>Bloque B14 — Unitarias (xUnit):</strong> ☐ TRU-B14-T01 ☐ T02 ☐ T03 ☐ T04</p>
-<blockquote><p><strong>Leyenda añadida 2026-07-03:</strong> ☑ = ejecutado PASS · ☒ = ejecutado con hallazgo/FAIL · ☐ = pendiente. Detalle completo en <a href="#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03">§15</a>.</p></blockquote>
+<p><strong>Bloque B01 — API ControlPuertas:</strong> ☐ TRU-B01-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 ☐ T09 ☐ T10 ☐ T11 ☐ T12 <strong>Bloque B02 — GRID Principal:</strong> ☑ TRU-B02-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☑ T06 ☑ T07 ☑ T08 ☑ T09 ☑ T10 ☑ T11 ☐ T12 (bloq.) ☐ T13 (bloq.) ☑ T14 <strong>Bloque B03 — Mantenimiento/Alta:</strong> ☑ TRU-B03-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☑ T06 ☑ T07 ☑ T08 (⚠️ H3) ☑ T09 ☒ T10 (no concluyente) ☑ T11 ☑ T12 ☑ T13 ☐ T14 ☑ T15 (parcial) ☐ T16 (bloq.) <strong>Bloque B04 — Modif./Baja:</strong> ☑ TRU-B04-T01 ☑ T02 ☑ T03 ☑ T04 ☑ T05 ☐ T06 (bloq.) ☐ T07 (no ejecutable) ☐ T08 (no ejecutable) <strong>Bloque B05 — Lupas:</strong> ☑ TRU-B05-T01 ☒ T02 (no verificable) ☒ T03 (no verificable) ☑ T04 ☑ T05 ☐ T06 ☑ T07 ☐ T08 ☐ T09 ☐ T10 ☑ T11 ☒ T12 (🔴 H5) <strong>Bloque B06 — Terminales:</strong> ☑ TRU-B06-T01 (⚠️ nota) ☑ T02 ☐ T03 ☑ T04 ☒ T05 (no concluyente) ☑ T06 ☐ T07 ☐ T08 <strong>Bloque B07 — Tabla Maestra:</strong> ☒ TRU-B07-T01 (🔴 H2) ☑ T02 ☑ T03 ☑ T04 ☒ T05 (🔴 H1) ☐ T06 (bloq.) <strong>Bloque B08 — Autenticación EntraID:</strong> ☑ TRU-B08-T01 (implícito) ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 (bloq.) ☑ T08 ☐ T09 ☐ T10 <strong>Bloque B09 — Eventos Auditoría:</strong> ☐ TRU-B09-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 ☐ T07 ☐ T08 — *bloqueado: menú &quot;Auditoría de procesos&quot; ya visible pero sigue devolviendo Forbidden con el rol usado (2026-07-03 II, H4 persiste)* <strong>Bloque B10 — WS ARQ Docks:</strong> ☐ TRU-B10-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 — *no ejecutado en esta sesión* <strong>Bloque B11 — Seguridad/Calidad:</strong> ☐ TRU-B11-T01 ☐ T02 ☐ T03 ☐ T04 ☐ T05 ☐ T06 <strong>Bloque B12 — Regresión/Despliegue/E2E:</strong> ☑ TRU-B12-T01 ☑ T02 ☒ T03 (🔴 H7) ☐ T04 ☐ T05 ☑ T06 <strong>Bloque B13 — Rendimiento (k6):</strong> ☐ TRU-B13-T01 ☐ T02 ☐ T03 ☐ T04 <strong>Bloque B14 — Unitarias (xUnit):</strong> ☐ TRU-B14-T01 ☐ T02 ☐ T03 ☐ T04</p>
+<blockquote><p><strong>Leyenda añadida 2026-07-03:</strong> ☑ = ejecutado PASS · ☒ = ejecutado con hallazgo/FAIL/no concluyente · ☐ = pendiente/bloqueado. Detalle completo en <a href="#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03">§15</a> y <a href="#16-resultados-de-ejecución--sesión-qa-navegador-2026-07-03-ii">§16</a>.</p></blockquote>
 <hr><h2 id="10-plantilla-de-ejecución">10. Plantilla de ejecución</h2><blockquote><p>Preservada de la visión formal C (Copilot). Se rellena en cada corrida.</p></blockquote>
 <ul><li><strong>Fecha de ejecución:</strong></li><li><strong>Entorno:</strong> (PRE / PRO)</li><li><strong>Responsable:</strong></li><li><strong>Rol utilizado:</strong> (USER_READ / MANAGE / USER)</li><li><strong>Resultado general:</strong></li><li><strong>Observaciones:</strong></li><li><strong>Firma:</strong></li></ul>
 <hr><h2 id="11-tickets-jira-analizados">11. Tickets Jira analizados</h2><blockquote><p>Preservado de A §5 / B §9 (~50 tickets).</p></blockquote>
@@ -3304,6 +3304,12 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>APB AI Framework (IA, sesión navegador con Débora)</td>
 <td><strong>Primera ejecución real en PRE con el agente de navegación del framework</strong> (<code>apb-qa-exploratory-nav-v1.0</code> + <code>prov-browser-agent-v1.0</code>, login EntraID asistido): 44 casos con evidencia directa (lectura y escritura) en B02-B07 y B12-T06; <strong>nueva §15 Resultados de ejecución</strong> con 4 hallazgos (H1 crítico — sin integridad referencial al eliminar Tipo de Vehículo; H2 — maestro de tipos desactualizado en AF/plan; H3 — auto-recuperación de tipo no disparada; H4 — pantalla de Auditoría inaccesible con el rol usado); columna <strong>Estado</strong> de la matriz (§5) y checklist (§9) actualizados para los casos ejecutados. Sin pérdida de contenido (§3.1): solo se añade estado y hallazgos, ninguna prueba se elimina. Evidencia (informe + vídeo) en <code>QA_TruckCenter_evidencias/030726/</code> (fuera de este repo).</td>
 </tr>
+<tr>
+<td>Unificado 1.6</td>
+<td>2026-07-03 (II)</td>
+<td>APB AI Framework (IA, sesión navegador con Débora)</td>
+<td><strong>Segunda sesión de ejecución en PRE</strong> (sesión activa reutilizada, sin nuevo login): 17 casos adicionales ejecutados/actualizados en B02, B03, B05, B06, B07, B08 y B12; <strong>nueva §16 Resultados de ejecución</strong> con 3 hallazgos nuevos (H5 — la lupa de empresa rechaza el alta manual de un NIF no existente en Sòstrat, contradice §2.2.3/§2.2.5; H6 — el campo Nombre Conductor se guarda como &quot;.&quot; tras seleccionar desde la lupa, mapeo incorrecto; H7 — el Swagger de <code>/trc/</code> (APB.API.LGP) muestra el título &quot;APB.API.TRU&quot;, nomenclatura post-renombrado inconsistente) y confirmación en vivo de H1/H2 (9 tipos de vehículo reales, código 004 sigue eliminado) y H4 (Auditoría de procesos ahora visible en menú pero sigue Forbidden). Varios casos quedan bloqueados por alcance (requieren segundo usuario/rol) o no ejecutables desde navegador (rollback transaccional, k6, xUnit) — listados explícitamente en checklist (§9) y §16.3. Evidencia en vídeo solo cubre el bloque inicial (B02-B03) por el límite de 50 fotogramas de la herramienta de captura, sin segmentación posterior — pendiente de mejora en próxima sesión. Sin pérdida de contenido (§3.1).</td>
+</tr>
 </tbody></table></div><h2 id="14-aprobados-del-plan-por-cambio">14. Aprobados del plan (por cambio)</h2><div class="table-wrap"><table>
 <thead><tr>
 <th>Versión</th>
@@ -3347,6 +3353,12 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <td>_pendiente — QA Lead / Analista Funcional / Arquitectura (revisar H1 con prioridad)_</td>
 <td>—</td>
 </tr>
+<tr>
+<td>Unificado 1.6</td>
+<td>§16 Resultados de ejecución (sesión navegador 2026-07-03 II) + hallazgos H5-H7</td>
+<td>_pendiente — QA Lead / Analista Funcional / Arquitectura (revisar H5 con prioridad — bloquea B05-T12 y el flujo documentado)_</td>
+<td>—</td>
+</tr>
 </tbody></table></div>
 <hr><h2 id="15-resultados-de-ejecución-sesión-qa-navegador-2026-07-03">15. Resultados de ejecución — Sesión QA navegador (2026-07-03)</h2><blockquote><p><strong>Borrador generado por IA</strong> (APB AI Framework — <code>apb-qa-exploratory-nav-v1.0</code> + <code>prov-browser-agent-v1.0</code>, sesión Claude en navegador vía extensión Chrome, login asistido por Débora Martín) — pendiente validación humana. Añadido en v1.5 (§3.1 principio de conservación: no se elimina información, solo se añade).</p></blockquote><h3 id="151-datos-de-la-ejecución">15.1 Datos de la ejecución</h3><div class="table-wrap"><table>
 <thead><tr>
@@ -3378,6 +3390,64 @@ APB.API.TRU (.NET web DOCKS): GRID · Mantenimiento · Lupas (F/J) · Desplegabl
 <p><strong>🟡 H3 — Auto-recuperación de Tipo de Vehículo no se disparó al blur (<code>TRU-B03-T08</code>/<code>TRU-T34</code>).</strong> Al reutilizar una matrícula ya existente en <code>CAMIONS</code>, el campo Tipo de Vehículo no se autocompletó al perder el foco; hubo que seleccionarlo manualmente. No confirmado si ocurre en otro punto del ciclo (p. ej. al guardar). No bloqueante — a validar en próxima sesión.</p>
 <p><strong>🔵 H4 — Pantalla &quot;Auditoría de procesos&quot; inaccesible con el rol usado (relacionado con B08/B09).</strong> Recibió <code>Forbidden</code>. Coherente con control de acceso por permiso específico (no es un defecto), pero impide verificar directamente los eventos <code>TRU_*</code> de B09 en esta sesión; se infieren indirectamente por los mensajes de éxito de UI (&quot;Se ha creado un registro...&quot;, &quot;Se ha actualizado el registro...&quot;).</p><h3 id="153-pendiente-para-próximas-sesiones">15.3 Pendiente para próximas sesiones</h3><ol><li>Corregir H1 (prioridad alta — riesgo ya materializado en PRE).</li><li>Actualizar AF y este plan con los 9 tipos de vehículo reales (H2).</li><li>Completar B05 (T09-T12), B06 (resto de terminales, T08), B07 (T02-T04, T06 — con cautela tras H1), B08 y</li></ol>
 <p>B09 completos con un segundo usuario/rol (<code>USER_READ_TRUCK_CENTER</code> puro y un usuario con permiso de Auditoría). 4. B01 vía llamadas HTTP directas; B11/B13 en <code>azure-qa</code>/<code>ci-runner</code> (§9.1, nunca desde sesión de navegador local); B14 requiere acceso al repo <code>APB.TRU</code>.</p>
+<hr><h2 id="16-resultados-de-ejecución-sesión-qa-navegador-2026-07-03-ii">16. Resultados de ejecución — Sesión QA navegador (2026-07-03, II)</h2><blockquote><p><strong>Borrador generado por IA</strong> (APB AI Framework — <code>apb-qa-exploratory-nav-v1.0</code> + <code>prov-browser-agent-v1.0</code>, sesión Claude en navegador vía extensión Chrome, sesión EntraID ya activa — sin nuevo login) — pendiente validación humana. Añadido en v1.6 (§3.1 principio de conservación: no se elimina información, solo se añade).</p></blockquote><h3 id="161-datos-de-la-ejecución">16.1 Datos de la ejecución</h3><div class="table-wrap"><table>
+<thead><tr>
+<th>Campo</th>
+<th>Valor</th>
+</tr></thead><tbody>
+<tr>
+<td>Entorno</td>
+<td>PRE (<code>dockspre.portdebarcelona.cat/tru/</code> + <code>apipre.portdebarcelona.cat/trc/</code>)</td>
+</tr>
+<tr>
+<td>Responsable / rol</td>
+<td>Débora Martín — mismo usuario/rol de gestión completo de la sesión 2026-07-03 (I); sin acceso a &quot;Auditoría de procesos&quot; (persiste <code>Forbidden</code>)</td>
+</tr>
+<tr>
+<td>Alcance</td>
+<td>Continuación de casos <code>Pendiente</code> ejecutables por navegador en B02, B03, B05, B06, B07, B08 y B12; health-check de B12-T01/T02 vía Swagger/URL directa</td>
+</tr>
+<tr>
+<td>Evidencia</td>
+<td>Vídeo (GIF, 50 fotogramas) solo del bloque inicial B02-B03: <code>QA_TruckCenter_sesion_030726_bloque1.gif</code> (descargado en el navegador). El resto de la sesión <strong>no quedó grabado</strong> — limitación a corregir en la próxima sesión (segmentar por bloque, <code>TEST_PLAN_STANDARD §7.2</code>)</td>
+</tr>
+<tr>
+<td>Resultado global</td>
+<td>17 casos con evidencia directa adicional; <strong>3 hallazgos nuevos</strong> (H5, H6, H7); 2 casos no concluyentes (a repetir); varios bloqueados por alcance (segundo usuario/rol no disponible)</td>
+</tr>
+</tbody></table></div><h3 id="162-hallazgos-nuevos">16.2 Hallazgos nuevos</h3><p><strong>🔴 H5 — La lupa/alta manual de Empresa de Transporte rechaza NIF no registrado en Sòstrat (<code>TRU-B05-T12</code>).</strong> Al introducir manualmente un NIF de empresa que no existe en el WS Listar Usuarios Sòstrat (sin usar la lupa), el sistema muestra el error <strong>&quot;Ese nif no se corresponde con ninguna Empresa de Transporte&quot;</strong> y bloquea el guardado del campo. Esto contradice §2.2.3 (que documenta que si la empresa no existe en PERSONES se inserta automáticamente como tipo <code>J</code>) y el propio caso de prueba B05-T12, que espera que la escritura manual esté permitida. <strong>Recomendación:</strong> aclarar con el equipo funcional si la validación estricta es el comportamiento correcto (y en ese caso corregir §2.2.3/B05-T12 del plan) o si es un defecto que bloquea altas manuales legítimas.</p>
+<p><strong>🟠 H6 — Nombre Conductor se guarda como &quot;.&quot; tras seleccionar desde la lupa (<code>TRU-B05-T01</code>/<code>T51</code>, relacionado con H3).</strong> Al seleccionar un conductor desde la lupa de búsqueda (WS Listar Usuarios Sòstrat), el <code>Id Usuario Conductor</code> se recupera correctamente, pero los campos Nombre/Apellidos/Teléfono quedaron vacíos en pantalla y, tras guardar, el campo <strong>Nombre Conductor</strong> persistió con el valor literal <strong>&quot;.&quot;</strong> en vez del nombre real o de un valor vacío. Se observó el mismo patrón &quot;.&quot; en Nombre/Terminal de varios registros preexistentes en el GRID, sugiriendo que no es un caso aislado sino un patrón de mapeo de datos incorrecto entre el WS de Sòstrat y los campos del formulario para ciertos usuarios. <strong>Recomendación:</strong> revisar el mapeo de campos de la respuesta del WS Listar Usuarios Sòstrat al formulario de Mantenimiento, especialmente para registros de tipo &quot;CP&quot; (razón social) devueltos por la búsqueda de conductores.</p>
+<p><strong>🔴 H7 — Nomenclatura de API inconsistente tras el renombrado (<code>TRU-B12-T03</code>).</strong> El Swagger del endpoint <code>https://apipre.portdebarcelona.cat/trc/</code> — que según §1.1/ARQ-2444 corresponde a <strong><code>APB.API.LGP</code></strong> tras el renombrado de abril 2025 — muestra el título <strong>&quot;APB.API.TRU&quot;</strong> en la propia definición OpenAPI. Puede ser un resto de la nomenclatura antigua (<code>APB.API.TRU.LGP</code>) no actualizado en el proyecto de la API, o una definición Swagger compartida entre ambas APIs. <strong>Recomendación:</strong> confirmar con el equipo de desarrollo si el título del Swagger debe actualizarse a <code>APB.API.LGP</code> para evitar confusión operativa.</p><h3 id="163-casos-no-ejecutados-o-bloqueados-en-esta-sesión-ids-canónicos">16.3 Casos no ejecutados o bloqueados en esta sesión (IDs canónicos)</h3><div class="table-wrap"><table>
+<thead><tr>
+<th>Motivo</th>
+<th>Casos</th>
+</tr></thead><tbody>
+<tr>
+<td>Bloqueado por alcance — requiere segundo usuario/rol (<code>USER_READ_TRUCK_CENTER</code> puro, usuario sin preferencia de idioma, o permiso de Auditoría)</td>
+<td>TRU-B02-T12, TRU-B02-T13, TRU-B03-T16, TRU-B04-T06, TRU-B08-T02, TRU-B08-T03, TRU-B08-T04, TRU-B08-T05, TRU-B08-T06, TRU-B08-T07, TRU-B08-T09, TRU-B08-T10, TRU-B07-T06</td>
+</tr>
+<tr>
+<td>No ejecutable desde navegador — requiere inyección de fallo en backend/BD</td>
+<td>TRU-B04-T07, TRU-B04-T08</td>
+</tr>
+<tr>
+<td>Bloqueado — <code>Forbidden</code> en &quot;Auditoría de procesos&quot; (H4 persiste)</td>
+<td>TRU-B09-T01 a TRU-B09-T08</td>
+</tr>
+<tr>
+<td>No ejecutado en esta sesión (sin evidencia nueva)</td>
+<td>TRU-B03-T14, TRU-B05-T06, TRU-B05-T08, TRU-B05-T09, TRU-B05-T10, TRU-B06-T03, TRU-B06-T07, TRU-B06-T08, TRU-B10-T01 a TRU-B10-T06, TRU-B11-T01 a TRU-B11-T06, TRU-B12-T04, TRU-B12-T05</td>
+</tr>
+<tr>
+<td>No concluyente — a repetir</td>
+<td>TRU-B03-T10 (cambio de tipo no persistió), TRU-B06-T05 (asignación GRIMALDI no detectada como cambio)</td>
+</tr>
+<tr>
+<td>Fuera de alcance de navegador (según plan)</td>
+<td>Bloque B13 (k6, <code>azure-qa</code>/<code>ci-runner</code>), Bloque B14 (xUnit, repo <code>APB.TRU</code>)</td>
+</tr>
+</tbody></table></div><h3 id="164-pendiente-para-próximas-sesiones">16.4 Pendiente para próximas sesiones</h3><ol><li>Aclarar y, si procede, corregir H5 (bloquea el alta manual de empresas de transporte).</li><li>Investigar el mapeo de datos de H6 (campo Nombre &quot;.&quot; tras selección por lupa) — parece afectar a varios</li></ol>
+<p>registros históricos, no solo a los creados en esta sesión. 3. Confirmar con desarrollo el título del Swagger de <code>/trc/</code> (H7). 4. Repetir TRU-B03-T10 y TRU-B06-T05 con interacción más cuidadosa sobre los desplegables (posible problema de automatización, no necesariamente del aplicativo). 5. Conseguir un segundo usuario/rol (<code>USER_READ_TRUCK_CENTER</code> puro, usuario con permiso de Auditoría, usuario nuevo sin preferencia de idioma) para desbloquear B02-T12/T13, B03-T16, B04-T06, B08-T02 a T07/T09/T10 y B09 completo. 6. Segmentar la grabación de vídeo por bloque desde el inicio de la sesión (start/export/clear en cada límite de 50 fotogramas), conforme a <code>TEST_PLAN_STANDARD §7.2</code> — en esta sesión solo quedó cubierto el bloque inicial. 7. B10 (integración WS ARQ Docks) sigue sin ejecutar — requiere revisar pantallas comunes de expedientes/errores/mensajes de Docks.</p>
 <hr>
 <p>*Documento del APB AI Framework. Requiere revisión humana antes de aprobación (draft → candidate).*</p>
   </main>

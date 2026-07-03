@@ -3,7 +3,8 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-07-03 (Sesión QA TruckCenter — ejecución real en PRE + corrección de metodología de informes + activación Playwright MCP; ver §3)  
+> **Última actualización:** 2026-07-03 (Sesión QA TruckCenter — ejecución real en PRE (sesiones I+II) +
+> corrección de metodología de informes + activación Playwright MCP; ver §3)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
 > **Estado global:** 347 componentes (177 skills APB, 52 third-party, 35 agentes, 34 subagentes,
 > 17 workflows, 21 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
@@ -130,6 +131,20 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
   herramientas Playwright queden disponibles (no se cargan en caliente).
 - Detalle completo → `discovery/PLAN_FASES_FUTURAS.md` puntos #84 (continuación) y #88 (nuevo,
   reejecución pendiente) + `PLAN_FASES_COMPLETADAS.md`.
+
+**Continuación — Sesión II (misma fecha, 2026-07-03) — punto #88 NO seguido, queda abierto:**
+- **+11 casos netos** (plan v1.5 → v1.6). **Total acumulado: 55/120 con estado registrado, 65 `Pendiente`
+  sin tocar.** Reconfirmación en vivo de H1/H2/H4. **3 hallazgos nuevos:** H5 (rechaza NIF de empresa
+  manual no existente en Sòstrat — no permite el alta libre descrita en el AF), H6 (Nombre Conductor
+  mapeado como "." — mapeo WS Sòstrat), H7 (Swagger de `/trc/`, API `APB.API.LGP`, titulado por error como
+  "APB.API.TRU"). **Acción manual pendiente de un desarrollador de TruckCenter/Sòstrat: revisar H5/H6/H7.**
+- **Se saltó el punto #88**: no se reabrió Claude Code (Playwright MCP seguía sin cargar), se reusó GIF de
+  `claude-in-chrome` sin segmentar por bloque (desviación de §7.2, declarada en el informe). **Acción
+  manual pendiente de quien retome la sesión: reabrir Claude Code sobre este repo antes de empezar**, para
+  que Playwright MCP quede disponible desde el inicio.
+- Informes MD+HTML en OneDrive `QA_TruckCenter_evidencias/030726/` (sesión I y II). Detalle completo →
+  `PLAN_FASES_COMPLETADAS.md` (subsección "Continuación — Sesión II") y punto #77 (segunda recurrencia del
+  riesgo de runtime sin motor real, misma causa raíz que la sesión DDD del 2026-06-30).
 
 **Fase I (2026-07-03) — 7 huecos de uso real cubiertos, `TEST_PLAN_STANDARD` v1.2.0 → v1.3.0:**
 - Matriz de roles + usuario de ejecución (AKV ref o runtime, nunca persistido) — §9.2, columna «Rol requerido» en el ejemplo TruckCenter.

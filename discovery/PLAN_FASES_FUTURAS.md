@@ -788,7 +788,7 @@ punto.
 | ~~**Harness**~~ | ~~Harness Engineering agnóstico de LLM: 5 subsistemas, System of Record + ACID, Feature Lists + Pass-State Gating, validación 3 capas, Clean State Handoff. Gobernanza + scaffolding + checks nuevos en `validate_repo.py`~~ | ~~#83~~ | ✅ CERRADA (2026-07-02, sesión combinada con #78) — SYSTEM.md §10 + GOVERNANCE.md §8 + `repo-scaffold/harness-ready/` + check #19 |
 | ~~**Estándar Prompting**~~ | ~~Estándar de estructura de prompt para todos los componentes (razonar→plan→ejecutar, objetivo, autocrítica, qué-NO-hacer, ejemplo E/S, separación SISTEMA/USUARIO) + retrofit + check en validador~~ | ~~#78~~ | ✅ CERRADA (2026-07-02, sesión combinada con #83) — `PROMPTING_STANDARD.md` + 6 plantillas + retrofit 244 componentes + check #18 en ERROR |
 | ~~**QA-2**~~ | ~~Metodología y plantilla de planes de pruebas + navegación agéntica para pruebas funcionales~~ | ~~#82, #84~~ | ✅ CERRADA (2026-07-02) — `TEST_PLAN_STANDARD` + plantilla `TEST_PLAN.md`, skill `apb-qa-test-plan` v1.2.0 (interactiva, procedencia múltiple, degradación de fuentes, ingesta de planes aportados), ejemplo unificado TruckCenter (112 casos sin duplicar), `prov-browser-agent-v1.0` + `apb-qa-exploratory-nav-v1.0` (#84), ejecución real sobre TruckCenter PRE con evidencias, check #20. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
-| **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit) + **despliegue real del entorno Azure QA** (`prov-azure-qa-runtime-v1.0`, diseñado en `draft` en Fase I: nombrar suscripción/entorno + autorizar aprovisionamiento del job efímero con Playwright+k6 + Managed Identity → AKV) + **bucle fallo→PR→Jira real** (`apb-sub-qa-fix-loop-v1.0`, cableado en Fase I). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. **Fase I (2026-07-03) dejó diseñados en `draft`** el provider Azure QA y el subagente fix-loop; QA-3 los **despliega/ejecuta**. ⚠️ **PARCIAL (2026-07-03):** sesión de continuación ejecutó 44/120 casos con escritura real (B02-B07 + E2E T112), 2 hallazgos críticos (H1/H2), y activó Playwright MCP para vídeo real → **punto #88** para el resto (76 casos, despliegue Azure QA, corrección H1). Ver `PLAN_FASES_COMPLETADAS.md` (QA-2 + Fase I + Sesión QA TruckCenter). |
+| **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit) + **despliegue real del entorno Azure QA** (`prov-azure-qa-runtime-v1.0`, diseñado en `draft` en Fase I: nombrar suscripción/entorno + autorizar aprovisionamiento del job efímero con Playwright+k6 + Managed Identity → AKV) + **bucle fallo→PR→Jira real** (`apb-sub-qa-fix-loop-v1.0`, cableado en Fase I). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. **Fase I (2026-07-03) dejó diseñados en `draft`** el provider Azure QA y el subagente fix-loop; QA-3 los **despliega/ejecuta**. ⚠️ **PARCIAL (2026-07-03, dos sesiones):** sesión I ejecutó 44/120 casos con escritura real (B02-B07 + E2E T112), 2 hallazgos críticos (H1/H2). **Sesión II (misma fecha, sin reabrir Claude Code → Playwright MCP no disponible, se usó GIF de `claude-in-chrome` en su lugar)** ejecutó 11 casos netos adicionales + reconfirmó H1/H2/H4 en vivo, con 3 hallazgos nuevos (H5 empresa rechaza NIF manual, H6 Nombre Conductor="." por mapeo WS Sòstrat, H7 Swagger `/trc/` titulado "APB.API.TRU"). **Total acumulado: 55/120 casos con algún estado registrado, 65 siguen `Pendiente` sin tocar** (ver checklist §9 y §16 de `QA_TRU_TruckCenter_UNIFICADO.md` v1.6). → **punto #88** sigue abierto para el resto: reabrir sesión con Playwright MCP cargado desde el inicio, segundo usuario/rol, corrección de H1/H5, y los ~26 casos estructuralmente fuera de alcance de navegador (B01/B11/B13/B14). Ver `PLAN_FASES_COMPLETADAS.md` (QA-2 + Fase I + Sesión QA TruckCenter) y punto #77 (segunda recurrencia del riesgo de runtime, misma fecha). |
 | **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | "Fine Skills" requiere URL de Debora |
 | **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
 
@@ -1469,6 +1469,23 @@ grep "CATALOG.md" README.md
 > calidad real por incumplimiento silencioso de las instrucciones declaradas en el frontmatter
 > de un agente.** Refuerza la prioridad de este punto #77.
 
+> **Segunda recurrencia (Sesión QA TruckCenter, continuación 2026-07-03).** Al pedir Débora "ejecutar el
+> plan de pruebas completo" con `apb-agent-qa-auto-v1.0`/`apb-qa-exploratory-nav-v1.0`, se repitió el
+> mismo patrón que en la sesión DDD: sin motor que invoque el agente, se siguió su `.md` manualmente y se
+> omitieron en silencio varios pasos que el propio documento declara obligatorios — (1) el proceso
+> "razonar → plan → aceptación → ejecutar" (no se presentó el plan de qué IDs concretos se iban a
+> intentar antes de empezar); (2) la oferta explícita de abrir Jira ante hallazgos (§12/§6.3 de la
+> skill); (3) el uso de vídeo real vía Playwright MCP que el propio plan ya había dejado especificado en
+> el **punto #88** para esta sesión (no se consultó `PLAN_FASES_FUTURAS.md` antes de empezar, y se usó
+> GIF de `claude-in-chrome` sin advertirlo). Además, al pedir "el plan completo" solo se ejecutó una
+> muestra (55/120 casos con algún estado, 65 sin tocar) sin decirlo explícitamente hasta que Débora
+> preguntó. **Corrección aplicada:** memoria de feedback permanente
+> `feedback_agente_runtime_vs_manual` (memoria personal de Débora, fuera de este repo) — declarar siempre
+> si se ejecuta con runtime real o solo siguiendo el `.md`, y checklist obligatorio (comprobar
+> `PLAN_FASES_FUTURAS`/`COMPLETADAS` antes, plan explícito con OK, recuento numérico al cierre, oferta de
+> Jira). Refuerza aún más la prioridad de #77: van ya dos incidentes de calidad reales y documentados por
+> la misma causa raíz.
+
 #### Contexto y propuesta recibida
 
 Debora propone una arquitectura híbrida de dos capas para coordinar los agentes del framework:
@@ -1815,6 +1832,16 @@ ejecutados obligatorios por ID, §7.2 vídeo real no GIF), skill `apb-qa-explora
 #24 del validador, y activación real de Playwright MCP (`.mcp.json` de proyecto +
 `prov-playwright-v1.0` v1.1.0) para vídeo nativo en la próxima ejecución. Detalle completo → **punto #88**
 y [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+**Segunda continuación (2026-07-03, misma fecha) — el punto #88 NO se siguió y quedó abierto:** nueva
+sesión ejecutó 11 casos netos adicionales (B02/B03/B05/B06/B07/B08/B12) sin reabrir Claude Code, por lo
+que Playwright MCP no estaba cargado — se usó de nuevo GIF de `claude-in-chrome` sin segmentar por bloque
+(mismo defecto que motivó `TEST_PLAN_STANDARD §7.2`), y no se presentó plan explícito ni se ofreció Jira
+al cerrar. 3 hallazgos nuevos (H5/H6/H7, ver §16 de `QA_TRU_TruckCenter_UNIFICADO.md` v1.6) + H1/H2/H4
+reconfirmados. **Total acumulado: 55/120.** Corrección de proceso: nota añadida en punto #77 (segunda
+recurrencia del riesgo de runtime) + memoria de feedback permanente de Débora
+(`feedback_agente_runtime_vs_manual`, fuera de este repo). El punto #88 **sigue pendiente tal cual** —
+la próxima sesión debe reabrir Claude Code con Playwright MCP cargado antes de empezar.
 
 <details><summary>Análisis original del gap (histórico)</summary>
 
