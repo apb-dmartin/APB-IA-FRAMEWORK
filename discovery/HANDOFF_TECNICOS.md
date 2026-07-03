@@ -300,6 +300,7 @@ Estas tareas no pueden iniciarse sin una decisión o aportación explícita de D
 | 🟡 Media | **Ejemplos de plantillas Word/Excel ofimáticas en uso en APB** | Sesión 13 punto #6 | Este trimestre |
 | 🟡 Media | **Histórico de proyectos: horas reales vs. COSMIC estimadas** | Calibración `apb-disc-cosmic-v1.0` | Este trimestre |
 | 🟠 Baja | **Briefing de procesos de licitación LCSP** | Agentes de licitación (sesión 20, punto #36) | Este trimestre |
+| 🟡 Media | **Pasos concretos del proceso APB de evaluación/migración a Cloud** | Punto #87 (`PLAN_FASES_FUTURAS.md`) — reescritura de `apb-wf-cloud-migration-v1.0` con el proceso real de APB | Cuando Débora lo aporte |
 | 🟠 Baja | **URLs de repositorios externos pendientes de evaluación** | Sesión 19 punto #27 | Este trimestre |
 | 🟠 Baja | **Confirmación disponibilidad Rovo en tenant APB** | Activación `adapter-rovo-v1.0` | Julio 2026 |
 

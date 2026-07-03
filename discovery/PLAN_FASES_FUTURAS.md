@@ -1972,3 +1972,84 @@ Ver `PLAN_FASES_COMPLETADAS.md` → "Fase H" para lo ya ejecutado (creación de 
   un `prov-<plataforma>-v1.0.md` equivalente antes de depender de esa migración. No construir
   hasta que Débora indique una plataforma concreta a evaluar — no hay evidencia de que vaya
   a cambiar de GitHub, solo se deja registrado el gap por si acaso.
+
+---
+
+## O. Bloque añadido 2026-07-03 (Débora) — auditorías de cumplimiento (Design System, calidad) + migración Cloud
+
+### 85. Agente de cumplimiento del Design System (auditoría de app existente + informe + PR opcional)
+
+**Petición de Débora:** "agente que revisa si una aplicación cumple con sistema de diseño, hace
+informe y sugiere correcciones, da opción de preparar PR."
+
+**Distinto del punto #53:** #53 verifica que el agente **generador** de mockups (`apb-agent-ux-mockup-v1.0`)
+use el Design System en tiempo de creación. Este punto #85 es un **auditor a posteriori**: revisa una
+aplicación **ya construida** (código frontend existente, propio o legacy) contra `APB-DESIGN-SYSTEM`
+(tokens, componentes, tipografía, `component-reference.md`, `style-guide.md`), sin importar cómo se generó.
+
+**Comportamiento deseado:**
+1. Escanea el código frontend de la app objetivo (rutas de entrada: repo o carpeta a indicar por Débora/funcional).
+2. Compara contra `APB-DESIGN-SYSTEM` (tokens de color/tipografía/espaciado, componentes React/DevExtreme
+   con wrapper corporativo) — reutiliza como referencia `skills/apb-owned/design/apb-design-frontend-design-system-v1.0.md`
+   y `apb-design-wcag-v1.0` (accesibilidad, incumplimientos WCAG también entran en el informe).
+3. Genera **informe** de incumplimientos (formato corporativo, coherente con el patrón ya construido en
+   `scripts/generate_test_plan_html.py`: cabecera azul, menú, acordeón — reutilizable en vez de reinventar).
+4. Sugiere correcciones concretas por incumplimiento.
+5. **Opción de preparar PR** con las correcciones — reutilizar `apb-dev-pr-doc-v1.0` para la propuesta;
+   nunca merge automático (POLICY_AI_USAGE §6-7, mismo patrón que `apb-sub-qa-fix-loop-v1.0` de Fase I).
+
+**Componentes a crear (draft):** posible `agents/apb-agent-design-compliance-v1.0.md` (o skill si el
+alcance es más acotado — decidir en la sesión) + wiring con `apb-dev-pr-doc-v1.0`.
+
+**Pendiente de Débora:** repo(s)/carpeta(s) concretas a auditar como primer caso de prueba.
+
+---
+
+### 86. Agente de cumplimiento de calidad — Sonar + hallazgos de otros agentes + Jira + PR opcional
+
+**Petición de Débora:** "agente que analiza los incumplimientos de sonar o los detectados por otros
+agentes y sugiere las correcciones. Los incumplimientos pueden estar ya registrados en Jira. Prepara
+pull request con las correcciones de forma opcional."
+
+**Punto de partida ya existente:** `skills/apb-owned/development/apb-dev-sonar-clean-v1.0.md` ya
+analiza hallazgos de SonarQube y sugiere/aplica fixes — **pero solo cubre Sonar como fuente**, no
+comprueba si el hallazgo ya está en Jira (riesgo de duplicar tickets), y no prepara PR.
+
+**Huecos a cubrir (extender la skill a v2.0, o envolverla en un agente si necesita orquestar varias
+fuentes):**
+1. **Multi-fuente:** aceptar hallazgos no solo de Sonar sino de otros agentes/skills del framework
+   (p. ej. `apb-agent-security-architect`, ZAP, el propio #85 de Design System, code review).
+2. **Dedup contra Jira:** antes de proponer una corrección, consultar `prov-jira-software-v1.0` para
+   comprobar si el incumplimiento ya tiene ticket abierto — si existe, referenciarlo en vez de duplicar.
+3. **PR opcional:** reutilizar el mismo patrón `apb-sub-qa-fix-loop-v1.0` (Fase I, 2026-07-03): propone
+   PR vía `apb-dev-pr-doc-v1.0`, anota Jira, nunca mergea sin revisión humana.
+
+**Nota de diseño:** el sub-workflow `apb-sub-qa-fix-loop-v1.0` ya resuelve el patrón genérico
+"hallazgo → PR propuesta → anotación Jira" para el caso de fallos de pruebas; valorar en la sesión si
+este punto #86 puede **reutilizar ese mismo subagente** en vez de construir uno nuevo desde cero
+(cambiaría el trigger de "test falla" a "hallazgo de calidad/Sonar/otro agente", pero el flujo de
+salida — PR + Jira — es el mismo).
+
+**Pendiente de Débora:** ninguna dependencia bloqueante conocida; puede diseñarse en modo `draft` como
+el resto de componentes de esta sesión.
+
+---
+
+### 87. Flujo completo de migración a Cloud con pasos definidos por APB
+
+**Petición de Débora:** "flujo completo para evaluar y ejecutar migración a Cloud con los pasos
+definidos por APB. Yo te indicaré los pasos y tú enriqueces si es necesario."
+
+**Ya existe un workflow genérico:** `workflows/apb-wf-cloud-migration-v1.0.md` — fases y agentes
+(cloud architect, technical architect, security architect, platform engineer, QA, SRE, FinOps,
+governance, release/change manager) con checkpoints humanos, pero con **pasos genéricos de industria**,
+no el proceso concreto que usa APB.
+
+**Acción pendiente:** cuando Débora aporte los pasos concretos definidos por APB (evaluación +
+ejecución de migración a cloud), revisar/reescribir las fases de `apb-wf-cloud-migration-v1.0` para
+que reflejen ese proceso real, enriqueciendo solo donde falte un paso evidente (p. ej. checkpoint de
+aprobación, validación de coste, rollback) sin inventar un proceso paralelo al de APB.
+
+**Pendiente de Débora (bloqueante):** los pasos concretos del proceso de evaluación/migración a Cloud
+de APB. Sin este insumo no se puede iniciar la sesión — es un insumo de tipo "briefing" equivalente a
+los ya listados en `discovery/HANDOFF_TECNICOS.md §10`.
