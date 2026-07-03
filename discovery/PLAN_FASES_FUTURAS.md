@@ -1355,6 +1355,8 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 | Esbozo informe riesgos IA organizativo | Sesión 16 | 🟢 Mes 2-3 |
 | URLs de repos de terceros adicionales | Sesión 19 | 🟢 Mes 2-3 |
 | Email/cola Jira de Arquitectura | Toda la documentación (#52) | 🟢 |
+| Confirmación disponibilidad Rovo en tenant APB | Activación `adapter-rovo-v1.0` | 🟢 Julio 2026 |
+| Pasos concretos del proceso APB de evaluación/migración a Cloud | Punto #87 — reescritura de `apb-wf-cloud-migration-v1.0` | 🟡 Cuando Débora lo aporte |
 
 #### Equipos (tareas técnicas)
 
@@ -1393,7 +1395,9 @@ grep "CATALOG.md" README.md
 # debe mostrar solo "catalog/CATALOG.md", nunca "CATALOG.md" sin prefijo
 ```
 
-> **Referencia:** `discovery/HANDOFF_TECNICOS.md` contiene el detalle por equipo y las decisiones bloqueantes de Débora/Dirección.
+> **Referencia:** `discovery/HANDOFF_TECNICOS.md` contiene las tareas manuales de despliegue/producción
+> (crear suscripción Azure, registrar apps AD, poblar Key Vault, etc.). Las decisiones/insumos
+> bloqueantes de Débora o Dirección viven **solo aquí**, en la tabla de arriba (§I).
 
 
 ---

@@ -7,7 +7,12 @@
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
 > **Estado global:** 347 componentes (177 skills APB, 52 third-party, 35 agentes, 34 subagentes,
 > 17 workflows, 21 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
-> del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
+> del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).  
+> **Alcance de este documento:** solo tareas manuales de despliegue/producción que debe ejecutar
+> una persona (crear una suscripción Azure, registrar una app AD, poblar un secreto en Key Vault,
+> activar una licencia...). Las **decisiones o insumos que Débora/Dirección deben aportar** para
+> poder planificar o construir algo viven en `discovery/PLAN_FASES_FUTURAS.md §I` (Bloqueos de
+> Débora / Dirección), no aquí.
 
 ---
 
@@ -22,8 +27,7 @@
 7. [Seguridad y compliance](#7-seguridad-y-compliance)
 8. [Telemetría](#8-telemetría)
 9. [Documentación pendiente](#9-documentación-pendiente)
-10. [Insumos bloqueantes de Débora](#10-insumos-bloqueantes-de-débora)
-11. [Orden de ejecución recomendado](#11-orden-de-ejecución-recomendado)
+10. [Orden de ejecución recomendado](#10-orden-de-ejecución-recomendado)
 
 ---
 
@@ -287,26 +291,7 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 
 ---
 
-## 10. Insumos bloqueantes de Débora
-
-Estas tareas no pueden iniciarse sin una decisión o aportación explícita de Débora.
-
-| Prioridad | Insumo | Desbloquea | Cuándo se necesita |
-|-----------|--------|-----------|-------------------|
-| ~~🔴 Alta~~ ✅ | ~~**Lista de APIs/servicios APB por dominio de negocio**~~ **RECIBIDA (2026-06-30)** — `API_INVENTORY_APIM.md` | APB-DOMAIN-CATALOG poblado (21 dominios `proposed`) + agentes DDD desbloqueados | Hecho |
-| 🔴 Alta | **Mail oficial de contacto de Arquitectura APB** | Punto #52 — todo el framework | Este mes |
-| 🟡 Media | **Qué componentes aprobar primero + aprobadores por ámbito** | Primer ciclo de aprobación formal | Este mes |
-| 🟡 Media | **Decisión distribución Design System** (npm / submodule / CDN) | DS3 + sesión 22 punto #49 | Este trimestre |
-| 🟡 Media | **Ejemplos de plantillas Word/Excel ofimáticas en uso en APB** | Sesión 13 punto #6 | Este trimestre |
-| 🟡 Media | **Histórico de proyectos: horas reales vs. COSMIC estimadas** | Calibración `apb-disc-cosmic-v1.0` | Este trimestre |
-| 🟠 Baja | **Briefing de procesos de licitación LCSP** | Agentes de licitación (sesión 20, punto #36) | Este trimestre |
-| 🟡 Media | **Pasos concretos del proceso APB de evaluación/migración a Cloud** | Punto #87 (`PLAN_FASES_FUTURAS.md`) — reescritura de `apb-wf-cloud-migration-v1.0` con el proceso real de APB | Cuando Débora lo aporte |
-| 🟠 Baja | **URLs de repositorios externos pendientes de evaluación** | Sesión 19 punto #27 | Este trimestre |
-| 🟠 Baja | **Confirmación disponibilidad Rovo en tenant APB** | Activación `adapter-rovo-v1.0` | Julio 2026 |
-
----
-
-## 11. Orden de ejecución recomendado
+## 10. Orden de ejecución recomendado
 
 ```
 ESTA SEMANA (< 4h, cualquier desarrollador):
@@ -327,12 +312,12 @@ ESTE MES (alta prioridad):
 
 EN PARALELO CON LO ANTERIOR (no bloqueante entre sí):
   ├── Plataforma: P1→P8 (integraciones, 4-8 semanas)
-  └── Débora: aportar insumos de §10
+  └── Débora: aportar insumos — ver `PLAN_FASES_FUTURAS.md §I` (Bloqueos de Débora / Dirección)
 
 CUANDO P3+P4 listos:
   └── Desarrollo: D1→D4 (Forge App)
 
-CUANDO insumos de Débora disponibles:
+CUANDO insumos de Débora disponibles (ver `PLAN_FASES_FUTURAS.md §I`):
   └── DC1→DC3 (APB-DOMAIN-CATALOG primer dominio)
 
 ESTE TRIMESTRE:
