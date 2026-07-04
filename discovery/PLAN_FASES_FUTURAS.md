@@ -1453,9 +1453,9 @@ grep "CATALOG.md" README.md
 
 | ID | Título | Descripción | Prioridad | Notas |
 |----|--------|-------------|-----------|-------|
-| E-F1 | **Agente de Change Management / ITIL** | APB opera con ITIL (P1–P4, L1/L2/L3, CAB, RFC, Problem Management). Ningún agente actual gestiona el proceso de cambio formal. `apb-agent-change-manager-v1.0` cubriría: evaluación de impacto de RFC, informe para CAB, tracking de cambios de emergencia, creación de tickets Jira via `prov-atlassian-v1.0`. | Alta | — |
-| E-F2 | **Agente de Data Governance / RGPD** | Obligación regulatoria: RAT, bases jurídicas, plazos de conservación, DPIA para tratamientos de alto riesgo. `apb-agent-data-governance-v1.0` que audite el estado de estos requisitos y genere el RAT actualizado. | Alta | No es nice-to-have — es requisito legal |
-| E-F3 | **Enriquecimiento FinOps Azure** | 19 providers Azure sin visibilidad de costes de IA. Agente o skill de FinOps que analice Azure Cost Management y proponga optimizaciones. Permite justificar ROI del framework con datos reales. | Media | — |
+| E-F1 | **Agente de Change Management / ITIL** | APB opera con ITIL (P1–P4, L1/L2/L3, CAB, RFC, Problem Management). `apb-agent-change-manager-v1.0` cubriría: evaluación de impacto de RFC, informe para CAB, tracking de cambios de emergencia, tickets Jira. **✅ YA CONSTRUIDO (draft):** `apb-agent-change-manager-v1.0` + `apb-agent-problem-manager-v1.0` creados (Enriq. #56–#76). E-F1 pendiente = solo llevarlo a operativo/approved. | Construido | ✅ Existe (2026-07-04) |
+| E-F2 | **Agente de Data Governance / RGPD** | Obligación regulatoria: RAT, bases jurídicas, plazos de conservación, DPIA. **✅ YA CONSTRUIDO (draft):** `apb-agent-data-governance-v1.0` (+ `apb-gov-dpia-v1.0`, `apb-gov-data-classification-v1.0`, `apb-sub-gov-data-v1.0`) creados (Enriq. #56–#76). Pendiente = operativo/approved + validación DPO. | Construido | ✅ Existe — requisito legal, priorizar aprobación |
+| E-F3 | **Enriquecimiento FinOps Azure** | Visibilidad de costes de IA. **✅ YA CONSTRUIDO (draft):** `apb-agent-finops-v1.0` + skills `apb-plat-finops-*` (alerting/chargeback/reservations) + `apb-sub-finops-azure-v1.0` existen. Pendiente = activar sobre Azure Cost real (datos). | Construido | ✅ Existe (2026-07-04) |
 | E-F4 | **Workflows de licitación / LCSP** | APB sujeto a LCSP. Preparación de pliegos, evaluación de ofertas, gestión de contratos de mantenimiento. Pendiente briefing de Débora. | Media | Bloqueado: briefing de Débora |
 | E-F5 | **Agente de Onboarding de Proyectos Legacy** | `apb-agent-legacy-onboarding-v1.0` que automatice el análisis inicial de un proyecto existente (estructura de código, deuda técnica, APIs no documentadas) y genere el primer borrador del `system-spec.md`. | Media | — |
 
@@ -1543,8 +1543,11 @@ checkpoint + webhook para reanudar workflows pausados tras eventos CI.
 
 **Lo que encaja bien:**
 
-- Azure Service Bus ya está en el stack APB → la coreografía por eventos es coherente. El provider
-  `prov-servicebus-v1.0` ya existe; ampliar a orquestación de agentes es extensión natural.
+- Azure Service Bus ya está en el stack APB → la coreografía por eventos es coherente. El framework
+  ya lo cubre a nivel de **skill** (`apb-plat-azure-servicebus-v1.0`) y **subagente**
+  (`apb-sub-ops-servicebus-v1.0`); **NO existe aún un provider `prov-servicebus-v1.0`** (corrección
+  2026-07-04: el plan lo daba por existente y no lo estaba) — crearlo sería el paso de extensión a
+  orquestación por eventos.
 - CloudEvents + JSON ya están en el stack APB → formato de eventos sin coste adicional.
 - GitHub Actions ya gestiona CI/CD del framework → `repository_dispatch` para disparar CI desde
   agentes es viable y sin dependencias nuevas.
@@ -1601,7 +1604,7 @@ Antes de construir nada, realizar:
    - `apb-orch-multi-agent-v1.0`, `apb-orch-context-handoff-v1.0`, `apb-orch-human-checkpoint-v1.0`
      (ya creadas en Sesión 21). ¿Qué parte del problema ya resuelven?
    - `invoke_agent.py` (esqueleto existente). ¿Hasta dónde llega?
-   - `prov-servicebus-v1.0` (provider existente). ¿Cubre el caso de eventos inter-agente?
+   - `apb-plat-azure-servicebus-v1.0` (skill existente) + `apb-sub-ops-servicebus-v1.0` (subagente existente). **No hay provider `prov-servicebus-v1.0`** (corrección 2026-07-04) — evaluar si crearlo. ¿Cubren el caso de eventos inter-agente?
 
 3. **Definir los contratos de eventos** antes de implementar la capa de coreografía:
    - Esquema CloudEvent por tipo de evento: `code.generated`, `ci.trigger`, `ci.completed`,
@@ -2075,7 +2078,7 @@ apartados (a) y (d) no dependen de esa aprobación y pueden adelantarse.
 
 | Repositorio | Licencia | Uso propuesto |
 |-------------|---------|--------------|
-| `open-telemetry/opentelemetry-python` | Apache 2.0 | Estándar de industria para trazas distribuidas. Compatible con `DefaultAzureCredential`. Permite envío simultáneo a Azure Monitor y otros backends (Grafana, Jaeger). |
+| `open-telemetry/opentelemetry-python` | Apache 2.0 | Estándar de industria para trazas distribuidas. Compatible con `DefaultAzureCredential`. Permite envío simultáneo a Azure Monitor y otros backends (Grafana, Jaeger). **✅ Descriptor creado (2026-07-04):** `prov-otel-v1.0` (`draft`, agnóstico OTLP → Azure Monitor). Falta activación real (Plataforma). |
 
 ### M.5 Design System (gaps BUG-03, tipografía, mantenibilidad)
 

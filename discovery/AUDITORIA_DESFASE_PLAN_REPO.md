@@ -134,4 +134,31 @@ Huecos confirmados por exploración que **no requieren insumo de Débora** y se 
 4. **Parte B:** cubrir los 6 huecos accionables de §6.
 5. **Bloqueos de §5:** se mantienen como insumos pendientes de Débora; no son deuda del repo.
 
+---
+
+## 8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)
+
+La 1ª pasada (§1–§7) fue muestreo dirigido. Esta 2ª pasada leyó `PLAN_FASES_FUTURAS.md`
+**íntegro** (2 261 líneas) para cumplir el encargo *"que no haya nada ya implementado que el
+plan refleje como pendiente"*. Hallazgos adicionales, todos ya corregidos en el plan:
+
+| Ubicación | El plan decía | Realidad en repo | Tipo | Corrección |
+|---|---|---|---|---|
+| §K.2 **E-F1** | Propone crear `apb-agent-change-manager-v1.0` (Change Management/ITIL) | **Existe** (draft) + `apb-agent-problem-manager-v1.0` | DRIFT-plan | Marcado ✅ CONSTRUIDO; pendiente = operativo/approved |
+| §K.2 **E-F2** | Propone crear `apb-agent-data-governance-v1.0` (RGPD/RAT) | **Existe** (draft) + `apb-gov-dpia`, `apb-gov-data-classification`, `apb-sub-gov-data` | DRIFT-plan | Marcado ✅ CONSTRUIDO |
+| §K.2 **E-F3** | Propone "agente o skill FinOps Azure" | **Existe** `apb-agent-finops-v1.0` + skills `apb-plat-finops-*` + `apb-sub-finops-azure` | DRIFT-plan | Marcado ✅ CONSTRUIDO |
+| §77 (L1546, L1604) | «El provider `prov-servicebus-v1.0` **ya existe**» | **NO existe** ese provider; sí la skill `apb-plat-azure-servicebus-v1.0` y el subagente `apb-sub-ops-servicebus-v1.0` | DRIFT-plan (sobre-afirmación) | Corregido: no hay provider; crearlo sería el paso de orquestación |
+| §M.4 | OpenTelemetry como repo candidato a evaluar | Descriptor `prov-otel-v1.0` creado esta sesión | Actualización | Nota añadida |
+
+**Confirmado correctamente pendiente** (verificado inexistente en repo, el plan acierta):
+`capabilities/` (E-T4), `prov-orchestration-engine-v1.0`, `prov-servicebus-v1.0`,
+`apb-agent-orchestrator-v1.0`, `apb-agent-legacy-onboarding-v1.0` (E-F5: existe el *workflow*
+`apb-wf-legacy-onboarding-v1.0` y `apb-dev-legacy-mapper`, pero no el agente). Los 3 skills
+`apb-orch-*` que §77 daba por creados **sí existen** (el plan acertaba).
+
+**Verificado que NO hay más DRIFT-repo:** ningún componente declarado «CERRADA»/creado falta en
+el repo (además el nuevo **check #26** lo vigila de forma continua). El único caso de
+sobre-afirmación era `prov-servicebus-v1.0` en §77 (prosa, no fila CERRADA — por eso el check
+#26 no lo capturaba; corregido a mano).
+
 > Este informe se acompaña de su versión HTML corporativa (`AUDITORIA_DESFASE_PLAN_REPO.html`).

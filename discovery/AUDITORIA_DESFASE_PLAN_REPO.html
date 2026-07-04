@@ -83,7 +83,7 @@
   <h1>Auditoría de desfase Plan ↔ Repositorio</h1>
 </header>
 <div class="layout">
-  <nav class="sidebar"><ul><li><a href="#1-recuento-numérico-primero">1. Recuento numérico primero</a></li><li><a href="#2-hallazgo-central-el-desfase-es-de-madurez-no-de-existencia">2. Hallazgo central: el desfase es de MADUREZ, no de existencia</a></li><li><a href="#3-verificación-de-los-4-frentes-solicitados-sesión-16-21-30-3940">3. Verificación de los 4 frentes solicitados (Sesión 16, 21, #30, #39/#40)</a></li><li><a href="#4-drift-plan-detectado-notas-obsoletas-a-corregir">4. DRIFT-plan detectado (notas obsoletas a corregir)</a></li><li><a href="#5-bloqueado-débora-pendientes-reales-esperando-insumodecisión">5. BLOQUEADO-Débora (pendientes reales esperando insumo/decisión)</a></li><li><a href="#6-accionable-sin-bloqueo-huecos-netos-parte-b">6. ACCIONABLE sin bloqueo → huecos netos (Parte B)</a></li><li><a href="#7-conclusiones-y-acciones">7. Conclusiones y acciones</a></li></ul></nav>
+  <nav class="sidebar"><ul><li><a href="#1-recuento-numérico-primero">1. Recuento numérico primero</a></li><li><a href="#2-hallazgo-central-el-desfase-es-de-madurez-no-de-existencia">2. Hallazgo central: el desfase es de MADUREZ, no de existencia</a></li><li><a href="#3-verificación-de-los-4-frentes-solicitados-sesión-16-21-30-3940">3. Verificación de los 4 frentes solicitados (Sesión 16, 21, #30, #39/#40)</a></li><li><a href="#4-drift-plan-detectado-notas-obsoletas-a-corregir">4. DRIFT-plan detectado (notas obsoletas a corregir)</a></li><li><a href="#5-bloqueado-débora-pendientes-reales-esperando-insumodecisión">5. BLOQUEADO-Débora (pendientes reales esperando insumo/decisión)</a></li><li><a href="#6-accionable-sin-bloqueo-huecos-netos-parte-b">6. ACCIONABLE sin bloqueo → huecos netos (Parte B)</a></li><li><a href="#7-conclusiones-y-acciones">7. Conclusiones y acciones</a></li><li><a href="#8-revisión-exhaustiva-del-plan-completo-2ª-pasada-2026-07-04">8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)</a></li></ul></nav>
   <main>
     <div class="intro"><blockquote><p><strong>Borrador generado por IA</strong> (APB AI Framework — auditoría de reconciliación) — pendiente validación humana por Arquitectura APB. No distribuir sin revisión.</p></blockquote>
 <p><strong>Fecha:</strong> 2026-07-04 · <strong>Repo:</strong> <code>APB-IA-FRAMEWORK</code> (local) · <strong>Fuente de verdad de inventario:</strong> <code>catalog/CATALOG.md</code> (autogenerado) · <strong>Método:</strong> verificación estructural del 100% del catálogo + muestreo dirigido de los entregables que el plan declara «hechos».</p>
@@ -334,6 +334,53 @@
 </tbody></table></div>
 <hr><h2 id="7-conclusiones-y-acciones">7. Conclusiones y acciones</h2><ol><li><strong>El repo NO va por detrás del plan en existencia</strong> (0 DRIFT-repo en el muestreo). El plan va</li></ol>
 <p>por detrás del repo en 3 notas obsoletas (§4) → corregir. 2. <strong>El desfase real es de madurez:</strong> 88,4 % draft, 0 componentes apb-owned aprobados. «CERRADA» sobre-comunica el estado → adoptar vocabulario CONSTRUIDO→VALIDADO→APROBADO en la tabla de sesiones. 3. <strong>Mecanismo anti-repetición:</strong> implementar <strong>check #26</strong> (<code>validate_plan_deliverables_exist</code>) en <code>scripts/validate_repo.py</code> — verifica que los IDs declarados «entregables» en las sesiones CERRADA existen en el repo (ERROR si no) → evita que el desfase #56–#76 vuelva a pasar silenciosamente. (Ver <code>feedback_cierre_sesion</code>: cada error corregido → check anti-repetición.) 4. <strong>Parte B:</strong> cubrir los 6 huecos accionables de §6. 5. <strong>Bloqueos de §5:</strong> se mantienen como insumos pendientes de Débora; no son deuda del repo.</p>
+<hr><h2 id="8-revisión-exhaustiva-del-plan-completo-2ª-pasada-2026-07-04">8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)</h2><p>La 1ª pasada (§1–§7) fue muestreo dirigido. Esta 2ª pasada leyó <code>PLAN_FASES_FUTURAS.md</code> <strong>íntegro</strong> (2 261 líneas) para cumplir el encargo *&quot;que no haya nada ya implementado que el plan refleje como pendiente&quot;*. Hallazgos adicionales, todos ya corregidos en el plan:</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>Ubicación</th>
+<th>El plan decía</th>
+<th>Realidad en repo</th>
+<th>Tipo</th>
+<th>Corrección</th>
+</tr></thead><tbody>
+<tr>
+<td>§K.2 <strong>E-F1</strong></td>
+<td>Propone crear <code>apb-agent-change-manager-v1.0</code> (Change Management/ITIL)</td>
+<td><strong>Existe</strong> (draft) + <code>apb-agent-problem-manager-v1.0</code></td>
+<td>DRIFT-plan</td>
+<td>Marcado ✅ CONSTRUIDO; pendiente = operativo/approved</td>
+</tr>
+<tr>
+<td>§K.2 <strong>E-F2</strong></td>
+<td>Propone crear <code>apb-agent-data-governance-v1.0</code> (RGPD/RAT)</td>
+<td><strong>Existe</strong> (draft) + <code>apb-gov-dpia</code>, <code>apb-gov-data-classification</code>, <code>apb-sub-gov-data</code></td>
+<td>DRIFT-plan</td>
+<td>Marcado ✅ CONSTRUIDO</td>
+</tr>
+<tr>
+<td>§K.2 <strong>E-F3</strong></td>
+<td>Propone &quot;agente o skill FinOps Azure&quot;</td>
+<td><strong>Existe</strong> <code>apb-agent-finops-v1.0</code> + skills <code>apb-plat-finops-*</code> + <code>apb-sub-finops-azure</code></td>
+<td>DRIFT-plan</td>
+<td>Marcado ✅ CONSTRUIDO</td>
+</tr>
+<tr>
+<td>§77 (L1546, L1604)</td>
+<td>«El provider <code>prov-servicebus-v1.0</code> <strong>ya existe</strong>»</td>
+<td><strong>NO existe</strong> ese provider; sí la skill <code>apb-plat-azure-servicebus-v1.0</code> y el subagente <code>apb-sub-ops-servicebus-v1.0</code></td>
+<td>DRIFT-plan (sobre-afirmación)</td>
+<td>Corregido: no hay provider; crearlo sería el paso de orquestación</td>
+</tr>
+<tr>
+<td>§M.4</td>
+<td>OpenTelemetry como repo candidato a evaluar</td>
+<td>Descriptor <code>prov-otel-v1.0</code> creado esta sesión</td>
+<td>Actualización</td>
+<td>Nota añadida</td>
+</tr>
+</tbody></table></div>
+<p><strong>Confirmado correctamente pendiente</strong> (verificado inexistente en repo, el plan acierta): <code>capabilities/</code> (E-T4), <code>prov-orchestration-engine-v1.0</code>, <code>prov-servicebus-v1.0</code>, <code>apb-agent-orchestrator-v1.0</code>, <code>apb-agent-legacy-onboarding-v1.0</code> (E-F5: existe el *workflow* <code>apb-wf-legacy-onboarding-v1.0</code> y <code>apb-dev-legacy-mapper</code>, pero no el agente). Los 3 skills <code>apb-orch-*</code> que §77 daba por creados <strong>sí existen</strong> (el plan acertaba).</p>
+<p><strong>Verificado que NO hay más DRIFT-repo:</strong> ningún componente declarado «CERRADA»/creado falta en el repo (además el nuevo <strong>check #26</strong> lo vigila de forma continua). El único caso de sobre-afirmación era <code>prov-servicebus-v1.0</code> en §77 (prosa, no fila CERRADA — por eso el check</p>
 <blockquote><p>Este informe se acompaña de su versión HTML corporativa (<code>AUDITORIA_DESFASE_PLAN_REPO.html</code>).</p></blockquote>
   </main>
 </div>
