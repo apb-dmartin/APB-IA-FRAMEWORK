@@ -511,6 +511,95 @@ class TestValidateBidirectionalWiring(unittest.TestCase):
             f"No se esperaba ningún WARNING, se obtuvo: {result.warnings}")
 
 
+class TestNoDeprecatedWiring(unittest.TestCase):
+    """Check #25 — validate_no_deprecated_wiring: ningún componente activo
+    puede cablear en frontmatter un componente deprecated/retired (Sesión 19,
+    anti-repetición del caso apb-agent-accessibility-auditor ↔
+    apb-design-wcag-patterns)."""
+
+    AGENT_TPL = textwrap.dedent("""\
+        ---
+        id: "apb-agent-test-v1.0"
+        name: "Test Agent"
+        description: "Agente de prueba"
+        version: "1.0.0"
+        status: "{agent_status}"
+        owner: "test"
+        domain: "development"
+        autonomy_level: 1
+        skills:
+          - "apb-dev-old-v1.0"
+        subagents: []
+        runtime: ["claude"]
+        human_review_points: ["Revisar output"]
+        created_date: "2026-01-01"
+        review_date: "2026-07-01"
+        ---
+        # Test Agent
+        ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+        Generado por APB AI Framework.
+    """)
+
+    SKILL_TPL = textwrap.dedent("""\
+        ---
+        id: "apb-dev-old-v1.0"
+        name: "Old Skill"
+        description: "Skill de prueba"
+        version: "1.0.0"
+        status: "{skill_status}"
+        owner: "test"
+        domain: "development"
+        autonomy_level: 1
+        inputs: ["x"]
+        outputs: ["y"]
+        created_date: "2026-01-01"
+        review_date: "2026-07-01"
+        ---
+        # Old Skill
+        ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+        Generado por APB AI Framework.
+    """)
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.repo = Path(self.tmpdir)
+        (self.repo / "agents").mkdir()
+        (self.repo / "skills" / "apb-owned" / "development").mkdir(parents=True)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _run(self, agent_status, skill_status):
+        (self.repo / "agents" / "apb-agent-test-v1.0.md").write_text(
+            self.AGENT_TPL.format(agent_status=agent_status), encoding="utf-8")
+        (self.repo / "skills" / "apb-owned" / "development" / "apb-dev-old-v1.0.md").write_text(
+            self.SKILL_TPL.format(skill_status=skill_status), encoding="utf-8")
+        result = vr.ValidationResult()
+        vr.validate_no_deprecated_wiring(self.repo, result)
+        return result
+
+    def test_wiring_a_deprecated_da_error(self):
+        """Agente activo que lista una skill deprecated → ERROR check #25."""
+        result = self._run("draft", "deprecated")
+        error_msgs = [i.message for i in result.errors]
+        self.assertTrue(
+            any("apb-dev-old-v1.0" in m and "check #25" in m for m in error_msgs),
+            f"Se esperaba ERROR de wiring deprecado, se obtuvo: {error_msgs}"
+        )
+
+    def test_wiring_a_activa_sin_error(self):
+        """Agente activo que lista una skill draft → sin ERROR."""
+        result = self._run("draft", "draft")
+        self.assertEqual(result.errors, [],
+            f"No se esperaba ningún ERROR, se obtuvo: {result.errors}")
+
+    def test_componente_deprecado_exento(self):
+        """Un agente él mismo deprecated con wiring histórico → sin ERROR."""
+        result = self._run("deprecated", "deprecated")
+        self.assertEqual(result.errors, [],
+            f"El wiring histórico de un deprecated debe quedar exento: {result.errors}")
+
+
 class TestVersionDrift(unittest.TestCase):
     """E-T3: validate_version_drift detecta cuando un agente referencia una
     skill cuya major version es inferior a la última disponible en el repo."""

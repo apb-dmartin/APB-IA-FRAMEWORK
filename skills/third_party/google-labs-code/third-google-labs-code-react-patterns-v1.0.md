@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/google-labs-code/stitch-skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "3f64079d75d025bc5890c73669f27c26a2d80b31"
 ---
 
 # SKILL_DEV_DEVEXPRESS_FRONT — React Component Engineering

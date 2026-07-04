@@ -150,16 +150,17 @@ pendientes históricos), en vez de dejarlos en un cajón sin fecha.
 
 ## Bloque añadido (cierre de Sesión 7 / apertura Sesión 8)
 
-14. **Verificar licencia de Understand-Anything** ❌ **SIGUE PENDIENTE — no
-    resuelto pese a que la Sesión 9 ya cerró.**
-    `third-lum1104-knowledge-graph-v1.0` quedó marcado como bloqueante para
-    producción por licencia no verificada (ver `CONTINUIDAD_PROYECTO.md`
-    §4). Se asignó a Sesión 9 ("resolver al revisar terceros"), pero la
-    Sesión 9 cerró sin que este punto concreto se abordara — fue una
-    omisión real, detectada en revisión post-Sesión QA. Sigue bloqueante
-    para cualquier uso productivo del componente. Requiere acceso directo
-    al repo `Lum1104/Understand-Anything` (o su fork
-    `Egonex-AI/Understand-Anything`) para verificar el archivo LICENSE.
+14. **Verificar licencia de Understand-Anything** ✅ **RESUELTO (Sesión 19,
+    2026-07-04).** Licencia verificada vía API de GitHub sobre
+    `Lum1104/Understand-Anything`: **MIT** (SPDX confirmado), repo activo
+    (~70,7k ⭐, último push 2026-07-03), commit fijado `0e8ad84a`. El stub
+    `third-lum1104-knowledge-graph-v1.0` pasa de `watchlist` a `draft` con
+    `license: MIT` y `source_commit` real; bloqueo de producción por
+    licencia levantado (`CONTINUIDAD_PROYECTO.md §5.14` actualizado).
+    Nota: la decisión previa de Débora de descartar el componente (fila 14
+    de la tabla de mapeo) se tomó con licencia desconocida — puede
+    reevaluarse ahora o mantenerse el descarte; hasta que lo decida, el
+    componente queda en `draft` sin consumidores.
 
 15. **Soporte a incidencias técnicas generalista**
     Agente/skill que ayude a diagnosticar y resolver incidencias técnicas de
@@ -715,7 +716,29 @@ directamente. **Sesión a determinar** — corrección sencilla (reescribir
 que sí está correcta), candidata a tarea trivial dentro de cualquier sesión de mantenimiento,
 o a resolverse junto con la Sesión 13.
 
-### 45. Carpeta `skills/_spec-driven/` de `apb-ai-skills` — sin decisión, solo mencionada
+### 45. Carpeta `skills/_spec-driven/` de `apb-ai-skills` — ✅ RESUELTO (Sesión 19, 2026-07-04)
+
+**Cruce ejecutado con datos (fuente: `apb-ai-skills.zip` original, OneDrive
+`Proyectos/.../Repo GitHub versiones/`):** las 3 skills (`spec-to-api-contract`,
+`spec-to-e2e-flows`, `spec-to-test-plan`) resultaron ser **placeholders
+`[RESERVADO - NO ACTIVO]` sin implementación** — solo describen una intención
+futura ("se activará cuando el proyecto adopte Open Spec Kit"). **No hay
+contenido que fusionar.** Además, lo que prometían ya está cubierto o
+superado por el framework actual:
+- `spec-to-test-plan` → cubierto por `apb-qa-test-plan-v1.0` v1.4.0, que
+  desde Fase I acepta `spec` como fuente funcional autoritativa.
+- `spec-to-e2e-flows` → parcialmente cubierto (`apb-qa-test-auto-v1.0`,
+  `apb-sub-qa-e2e-v1.0`); **idea aprovechable registrada:** trazabilidad
+  automática criterio de aceptación → caso (AC-XXX → TC-XXX) en el nombre
+  del test generado.
+- `spec-to-api-contract` → `apb-arch-api-contract-v1.0` diseña contratos;
+  **idea aprovechable registrada:** generación de tests de contrato (estilo
+  Pact) desde la spec, para que la implementación no se desvíe del diseño.
+**Recomendación aplicada: cerrar sin fusiones** (coherente con la
+deprecación general de `apb-ai-skills`); las 2 ideas quedan anotadas aquí
+como mejoras opcionales de futuras versiones de esas skills APB.
+
+<details><summary>Planteamiento original (histórico)</summary>
 
 **Hallazgo de la Sesión QA, documentado como dato pero nunca convertido en tarea con
 decisión pendiente** (mismo patrón de hueco que el #44). Al auditar `apb-ai-skills.zip` se
@@ -731,6 +754,8 @@ individualmente.
 tratamiento que las 10 ya cruzadas), o se consideran cubiertas por la decisión general de
 deprecar `apb-ai-skills` y no requieren evaluación individual? Sesión a determinar — no
 bloquea nada del plan actual, pero queda abierta hasta que Debora decida el criterio.
+
+</details>
 
 ---
 
@@ -776,7 +801,7 @@ punto.
 | ~~**17**~~ | ~~Observabilidad: dashboards Power BI/Grafana/Prometheus + logging + telemetría de KPIs del framework~~ | ~~#26, #39, #40~~ | ✅ CERRADA — ver punto #46 para pendiente de telemetría en chat |
 | **13** | Cierre de pendientes históricos: guía de uso de agentes, plantillas, mapa Jira, COSMIC, loops, autonomía de agentes, plantilla AGENT.md | #2, #6, #7, #8, #12, #29, #41, #44, #48 | ✅ PARCIAL (2026-06-26, 7/10 puntos): #2 ✅ #7 ✅ #12 ✅ #29 ✅ #41 ✅ #44 ✅ #48 ✅. Bloqueados: #6 (ejemplos Word/Excel de Debora), #8 (horas históricas COSMIC), #52 (email Arquitectura). |
 | ~~**18**~~ | ~~DDD: catálogo corporativo de dominios (Fase 0) + descomposición de monolitos (Fase 1) + spec desde histórico Jira~~ | ~~#11/#38 Fase 0, #38 Fase 1, #37~~ | ✅ CERRADA (Sesión 18, 2026-06-25) — repo apb-domain-catalog creado (github.com/apb-dmartin/APB-DOMAIN-CATALOG), apb-agent-ddd-v1.0 + 5 subagentes (code/db/doc/spec/interview), submodule integrado en APB-IA-FRAMEWORK. Fase 1 (descomposición monolitos) → pendiente sesión futura. |
-| **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | Items de #27 sin URL requieren que Debora las aporte |
+| **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | ✅ **CERRADA (2026-07-04, Sesión 19)** — #45: las 3 skills `_spec-driven` resultaron ser placeholders `[RESERVADO - NO ACTIVO]` sin implementar (verificado en el zip original); nada que fusionar, lo prometido ya lo cubre `apb-qa-test-plan-v1.0` v1.4.0 (input `spec`, Fase I). 2 ideas registradas como mejora futura: trazabilidad AC-XXX→TC-XXX automática y tests de contrato tipo Pact desde plan.md. #27 items: evaluados (ver tabla F). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
 | **20** | Agentes de licitación (LCSP) | #36 | **Pendiente de briefing de Debora** |
 | **14** | Documentación Word por audiencias (arquitectos, devs/analistas, dirección) + mecanismo de actualización de documentación funcional | #23, #32 | ⚠️ PARCIAL (2026-06-27): borradores Markdown disponibles (`docs/guia-funcional.md` y `docs/manual-arquitectura.md`). Pendiente: conversión a .docx + documento de Dirección |
 | ~~**#43**~~ | ~~Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo~~ | ~~#43~~ | ✅ CERRADA (Sesión 23, 2026-06-26) — 129/129 skills apb-owned marcadas con `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`. Estándar canónico: `context/apb/standards/AI_MARKING_STANDARD.md`. Mecanismos preventivos: check #13 en `validate_repo.py` (ERROR si falta la sección), sección en templates `SKILL_APB.md` y `AGENT.md`, `CLAUDE.md` en raíz del repo. |
@@ -789,7 +814,7 @@ punto.
 | ~~**Estándar Prompting**~~ | ~~Estándar de estructura de prompt para todos los componentes (razonar→plan→ejecutar, objetivo, autocrítica, qué-NO-hacer, ejemplo E/S, separación SISTEMA/USUARIO) + retrofit + check en validador~~ | ~~#78~~ | ✅ CERRADA (2026-07-02, sesión combinada con #83) — `PROMPTING_STANDARD.md` + 6 plantillas + retrofit 244 componentes + check #18 en ERROR |
 | ~~**QA-2**~~ | ~~Metodología y plantilla de planes de pruebas + navegación agéntica para pruebas funcionales~~ | ~~#82, #84~~ | ✅ CERRADA (2026-07-02) — `TEST_PLAN_STANDARD` + plantilla `TEST_PLAN.md`, skill `apb-qa-test-plan` v1.2.0 (interactiva, procedencia múltiple, degradación de fuentes, ingesta de planes aportados), ejemplo unificado TruckCenter (112 casos sin duplicar), `prov-browser-agent-v1.0` + `apb-qa-exploratory-nav-v1.0` (#84), ejecución real sobre TruckCenter PRE con evidencias, check #20. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
 | **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit) + **despliegue real del entorno Azure QA** (`prov-azure-qa-runtime-v1.0`, diseñado en `draft` en Fase I: nombrar suscripción/entorno + autorizar aprovisionamiento del job efímero con Playwright+k6 + Managed Identity → AKV) + **bucle fallo→PR→Jira real** (`apb-sub-qa-fix-loop-v1.0`, cableado en Fase I). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. **Fase I (2026-07-03) dejó diseñados en `draft`** el provider Azure QA y el subagente fix-loop; QA-3 los **despliega/ejecuta**. ⚠️ **PARCIAL (2026-07-03, dos sesiones):** sesión I ejecutó 44/120 casos con escritura real (B02-B07 + E2E T112), 2 hallazgos críticos (H1/H2). **Sesión II (misma fecha, sin reabrir Claude Code → Playwright MCP no disponible, se usó GIF de `claude-in-chrome` en su lugar)** ejecutó 11 casos netos adicionales + reconfirmó H1/H2/H4 en vivo, con 3 hallazgos nuevos (H5 empresa rechaza NIF manual, H6 Nombre Conductor="." por mapeo WS Sòstrat, H7 Swagger `/trc/` titulado "APB.API.TRU"). **Total acumulado: 55/120 casos con algún estado registrado, 65 siguen `Pendiente` sin tocar** (ver checklist §9 y §16 de `QA_TRU_TruckCenter_UNIFICADO.md` v1.6). → **punto #88** sigue abierto para el resto: reabrir sesión con Playwright MCP cargado desde el inicio, segundo usuario/rol, corrección de H1/H5, y los ~26 casos estructuralmente fuera de alcance de navegador (B01/B11/B13/B14). Ver `PLAN_FASES_COMPLETADAS.md` (QA-2 + Fase I + Sesión QA TruckCenter) y punto #77 (segunda recurrencia del riesgo de runtime, misma fecha). |
-| **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | "Fine Skills" requiere URL de Debora |
+| **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | ✅ **CERRADA (2026-07-04, Sesión 19)** salvo un único pendiente: **"Fine Skills" sigue requiriendo URL de Débora**. #79: "Anthropic cybersecurity skills" resultó ser `mukul975/Anthropic-Cybersecurity-Skills` (NO es de Anthropic; fuente ya incorporada con 5 skills curadas); el oficial real es `anthropics/defending-code-reference-harness` (Apache 2.0, 6 skills) — **✅ incorporado el mismo día con OK de Débora** como `third-anthropic-defending-code-v1.0` (`draft`, 5 skills de análisis, harness gVisor excluido). MCP Builder: alcance confirmado, cubre Teams/SharePoint vía `custom-api`, sin re-incorporar. #81 Obsidian: evaluado y documentado en M.6 como herramienta de apoyo. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
 | **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
@@ -1219,7 +1244,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | R5 | Wiring skills Enriq. B: capacidades funcionales no invocables desde agentes | 🟡 | Mapeo §C, próxima sesión |
 | R6 | Sin memoria compartida → contexto perdido inter-sesiones | 🟡 | Redis + Cosmos DB (cuando runtime listo) |
 | R7 | Telemetría no instrumentada → KPIs imposibles de medir | 🟡 | Instrumentar `invoke_agent.py` |
-| R8 | 51 skills terceros sin SHA fijado | 🟡 | Política temporal; fijar con acceso de red |
+| R8 | ~~51 skills terceros sin SHA fijado~~ ✅ MITIGADO EN SU MAYORÍA (Sesión 19, 2026-07-04): 48 descriptores fijados a SHA real vía `git ls-remote`; quedan **11** `unverified` con causa documentada (repos de origen movidos/privados/no-GitHub: `hashicorp/terraform-search-import`, `neondatabase/neon-postgres`, `openai/security-threat-model`, `mukul975/cybersecurity-arsenal`, `ccusage`/`ComposioHQ` sin repo concreto, `graphify.net` y `skills.sh` no-GitHub) | 🟢 | Los 11 restantes requieren re-identificar el repo de origen (posibles sucesores detectados: `neondatabase/agent-skills`, `openai/skills`) — confirmar equivalencia de contenido antes de re-apuntar |
 | R9 | SAST/Entra sin validación Ciberseguridad | 🟡 | Revisión Ciber antes de uso |
 | R10 | Sin DAST wrapper → gap de seguridad ofensiva | 🟡 | OWASP ZAP o Trivy wrapper |
 | R11 | Plan ↔ repo desincronizado | 🟡 | Actualizar plan tras cada sesión |
@@ -1238,10 +1263,10 @@ licencia + análisis de seguridad + `source_commit` SHA real.
 | Telemetría automática | **OpenTelemetry Python** | 🔴 | Para instrumentar `invoke_agent.py` |
 | Developer Portal / discoverability | **Backstage** (Spotify) | 🟡 | Catálogo de servicios + componentes APB |
 | DAST / seguridad ofensiva | **OWASP ZAP** / Trivy | 🟡 | Gap de cobertura en seguridad |
-| Contexto enriquecido para LLM | **`context7`** | 🟡 | Mencionado en #27, **nunca evaluado** |
-| Debugging sistemático | **`obra/superpowers` → systematic debugging** | 🟡 | Repo parcialmente incorporado; falta esta skill (#27) |
-| Dev / arquitectura TypeScript | **`mattpocock/*` resto del monorepo** | 🟡 | Solo 2 de ~21 incorporadas (#27) |
-| Diagramación arquitectura | `excalidraw` (MCP) | 🟢 | Complementaría `apb-arch-c4-model` (#27) |
+| Contexto enriquecido para LLM | **`context7`** | 🟡 | ✅ **Evaluado (Sesión 19):** `upstash/context7`, MIT, muy activo (~58,5k ⭐). Es un servidor MCP de documentación actualizada de librerías para LLMs — encaja como **provider/MCP** (patrón `.mcp.json` de proyecto, como Playwright), no como skill. **✅ incorporado el mismo día con OK de Débora** como `prov-context7-v1.0` (`draft`, `provider_type: context`, sin activar — activación real requiere `.mcp.json` de proyecto) |
+| Debugging sistemático | **`obra/superpowers` → systematic debugging** | 🟡 | ✅ **Evaluado (Sesión 19):** confirmada como skill distinta (`skills/systematic-debugging/`, MIT, repo activo) — metodología de 4 fases de causa raíz antes de cualquier fix. No duplica las 2 obra ya incorporadas. **✅ incorporado el mismo día con OK de Débora** como `third-obra-systematic-debugging-v1.0` (`draft`, `development`) |
+| Dev / arquitectura TypeScript | **`mattpocock/*` resto del monorepo** | 🟡 | ✅ **Evaluado (Sesión 19):** el repo se reestructuró (categorías `engineering/`, 16 skills + `productivity/`, `misc/`, `personal/`). Cruce: la mayoría duplica el catálogo (code-review, tdd, domain-modeling, implement, diagnosing-bugs≈systematic-debugging). **2 candidatas con valor no duplicado — ✅ ambas incorporadas el mismo día con OK de Débora:** `third-mattpocock-resolving-merge-conflicts-v1.0` (`development`) y `third-mattpocock-triage-v1.0` (`pm`), ambas `draft`. Nota: las 2 ya incorporadas apuntan a skills renombradas en origen (`grill-prd-issues`→`to-prd`/`to-issues`; `codebase-architecture-analysis`→`improve-codebase-architecture`) — SHA fijado, contenido revisar en próxima actualización |
+| Diagramación arquitectura | `excalidraw` (MCP) | 🟢 | ✅ **Evaluado (Sesión 19):** `excalidraw/excalidraw`, MIT, muy activo (~126,7k ⭐). Herramienta de pizarra/diagramas — como Obsidian (#81), es **herramienta de apoyo**, no componente del catálogo; integración MCP solo si surge caso de uso de `apb-arch-c4-model`. Cierre sin componente |
 | Terraform governance | Ampliar `hashicorp` existente | 🟢 | Ya 2 skills; ampliar a modules y workspaces |
 | `_spec-driven` skills + terceros abiertos §8 | 3 skills `spec-to-*` de `apb-ai-skills` | 🟢 | Sesión 19 + #45 |
 
@@ -1659,26 +1684,37 @@ Antes de construir nada, realizar:
 (10 ejes + 11 prohibiciones). 6 plantillas actualizadas, retrofit completo de 244 componentes,
 check #18 del validador en ERROR. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-### 79. Terceros a verificar/incorporar: MCP Builder, Fine Skills, Anthropic cybersecurity skills
+### 79. Terceros a verificar/incorporar: MCP Builder, Fine Skills, Anthropic cybersecurity skills — ✅ RESUELTO 2/3 (Sesión 19, 2026-07-04)
 
-- **MCP Builder** — **ya incorporado** como `third-anthropic-mcp-builder-v1.0`
-  (Sesión 8). Acción: confirmar que el alcance incorporado cubre lo que
-  Debora espera (¿construir MCPs propios de APB para providers como
-  Teams/SharePoint del #30?), no re-incorporar.
-- **"Fine Skills"** — fuente a identificar con precisión (¿`skills.sh`
-  "fine skills", fine-tuning de skills, u otra fuente?). **Requiere que
-  Debora aporte URL/organización exacta** antes de evaluar (mismo criterio
-  que el bloque #27).
-- **Anthropic cybersecurity skills** — evaluar el conjunto de skills de
-  ciberseguridad de Anthropic para enriquecer el dominio `security` (cruzar
-  con `apb-sec-threat-model-v1.0`, `apb-sec-ens-v1.0`,
-  `apb-sec-risk-analysis-v1.0` y las skills de terceros ya presentes de
-  `mukul975`, `openai/threat-model`, `garrytan/cso-owasp`). Verificar solape
-  antes de incorporar.
+- **MCP Builder** — ✅ **alcance confirmado (Sesión 19):** el wrapper
+  `third-anthropic-mcp-builder-v1.0` ya soporta `target_system: custom-api`,
+  con lo que los MCPs de Teams/SharePoint/mail del #30 quedan cubiertos vía
+  Microsoft Graph API sin re-incorporación. Única mejora futura (cuando se
+  aborde #30): añadir filas explícitas `teams`/`sharepoint`/`mail` a la
+  tabla de sistemas soportados del wrapper. Además su `source_commit` quedó
+  fijado a SHA real (R8).
+- **"Fine Skills"** — ❌ **sigue pendiente: única parte abierta del #79.**
+  Requiere que Debora aporte URL/organización exacta antes de evaluar
+  (mismo criterio que el bloque #27).
+- **Anthropic cybersecurity skills** — ✅ **evaluado (Sesión 19), hallazgo
+  de identidad importante:** el repo llamado "Anthropic-Cybersecurity-Skills"
+  (817 skills, Apache 2.0, mapeo MITRE ATT&CK/NIST CSF/D3FEND) **no es de
+  Anthropic** — es de `mukul975`, la misma fuente ya incorporada al catálogo
+  con 5 skills curadas (`third-mukul-*`); no procede re-incorporar el
+  agregado completo. El candidato **oficial de Anthropic** real es
+  `anthropics/defending-code-reference-harness` (Apache 2.0, SHA `b5b61c8`,
+  6 skills: quickstart/threat-model/vuln-scan/triage/patch/customize +
+  harness autónomo de 7 etapas que requiere sandbox gVisor). Solape:
+  threat-model solapa parcialmente con `apb-sec-threat-model-v1.0` y
+  `third-openai-threat-model-v1.0`; vuln-scan/triage/patch complementan
+  (SAST + triaje + parche, conecta con #86 y con el gap R10/DAST solo
+  parcialmente — es SAST, no DAST). **Recomendación: incorporar un único
+  descriptor `third-anthropic-defending-code-v1.0` (dominio `security`)
+  cubriendo las 6 skills, excluyendo el harness autónomo (sandbox gVisor
+  fuera del stack APB). Pendiente de OK de Débora antes de crear el
+  descriptor (GOVERNANCE §4).**
 
-**Cruce:** bloque #27 (terceros pendientes) y sección M.8. Se añaden como
-filas de referencia en M. **Sesión candidata: Sesión 19** (terceros
-pendientes de §8).
+**Cruce:** bloque #27 (terceros pendientes) y sección M.8.
 
 ### 80. Memoria corporativa del framework (contexto + histórico + aprendizaje continuo + persistencia)
 
@@ -1708,7 +1744,20 @@ no reabrir la elección de herramienta desde cero. **Sesión candidata:**
 ligada a la decisión de runtime (misma que #77 Orquestación) porque la
 memoria compartida depende del motor.
 
-### 81. Obsidian como capa de conocimiento/memoria navegable
+### 81. Obsidian como capa de conocimiento/memoria navegable — ✅ RESUELTO (Sesión 19, 2026-07-04)
+
+**Conclusión de la evaluación:** viable y recomendado como **herramienta de
+apoyo opcional, solo lectura** — abrir el propio repo como vault no requiere
+ninguna transformación (los `.md` ya están enlazados), el graph view y los
+backlinks dan la navegación visual de `depends_on`/`consumed_by` que pedía
+el punto. **No** se registra como componente del catálogo. Salvaguardas:
+(1) no editar desde Obsidian — cualquier edición saltaría el validador/CI,
+la fuente de verdad sigue siendo Git + PR (Principios #4/#6); (2) excluir
+la carpeta `.obsidian/` del repo vía `.gitignore` si algún usuario lo abre
+como vault (configuración personal, no versionable). Documentado en la fila
+M.6. No introduce fuente de verdad paralela. Cierre sin componente nuevo.
+
+<details><summary>Planteamiento original (histórico)</summary>
 
 Evaluar **Obsidian** (vault Markdown local + grafo de enlaces) como:
 - Interfaz humana de navegación sobre la memoria del framework (#80): el
@@ -1723,6 +1772,8 @@ herramientas, no como skills). No es un componente del catálogo sino una
 introduce una fuente de verdad paralela (Principio #4: la fuente de verdad
 técnica es Git; Obsidian es solo proyección de lectura, como Confluence en
 Principio #6). **Sesión candidata: Sesión 19** (junto con #79).
+
+</details>
 
 ### 82. Metodología y plantilla corporativa de planes de pruebas — ✅ EJECUTADO
 (Sesión QA-2, 2026-07-02). `context/apb/standards/TEST_PLAN_STANDARD.md` + plantilla
@@ -2031,7 +2082,7 @@ apartados (a) y (d) no dependen de esa aprobación y pueden adelantarse.
 |-------------|---------|--------------|-------------------|
 | `HKUDS/LightRAG` | Apache 2.0 | RAG + grafos de conocimiento. Memoria episódica entre sesiones (decisiones de arquitectura, lenguaje ubicuo de dominio). Candidato para "memoria corporativa" del framework. | Wrapper existente: `wrap-hkuds-lightrag-v1.0`. Falta desplegar y conectar. |
 | `mem0ai/mem0` | Apache 2.0 | Alternativa más simple a LightRAG. SDK Python con backends PostgreSQL/Redis/Qdrant. Más fácil de operar en Azure. | Wrapper pendiente: `wrap-mem0-v1.0` |
-| Obsidian (`obsidianmd`) | Freemium (app propietaria; vault = Markdown abierto) | Capa **humana** de navegación sobre la memoria del framework (#80/#81): grafo de backlinks sobre el repo Markdown ya enlazado; visualización de `depends_on`/`consumed_by`. **Solo proyección de lectura** — no fuente de verdad (Principio #4/#6). | Herramienta de apoyo, no componente de catálogo |
+| Obsidian (`obsidianmd`) | Freemium (app propietaria; vault = Markdown abierto) | Capa **humana** de navegación sobre la memoria del framework (#80/#81): grafo de backlinks sobre el repo Markdown ya enlazado; visualización de `depends_on`/`consumed_by`. **Solo proyección de lectura** — no fuente de verdad (Principio #4/#6). ✅ **Evaluado (Sesión 19, 2026-07-04): recomendado como herramienta opcional solo-lectura; no editar desde Obsidian (saltaría validador/CI); excluir `.obsidian/` vía `.gitignore` si se abre el repo como vault. Ver #81.** | Herramienta de apoyo, no componente de catálogo |
 
 ### M.7 Contratación pública LCSP (gap E-F4)
 
@@ -2049,8 +2100,8 @@ apartados (a) y (d) no dependen de esa aprobación y pueden adelantarse.
 | `nexu-io/open-design` | Complemento para Design System | Baja |
 | `ComposioHQ/awesome-claude-plugins` | Fuente de discovery de MCPs — no incorporar como componente | Referencia |
 | `walkinglabs/learn-harness-engineering` | Modelo de Harness Engineering (12 lecciones) — base del punto #83. Insumo de gobernanza + scaffolding + checks de validación, no componente del catálogo | Alta (#83) |
-| Anthropic **cybersecurity skills** | Enriquecer dominio `security` (#79). Verificar solape con `apb-sec-*` y terceros ya presentes (`mukul975/*`, `openai/threat-model`, `garrytan/cso-owasp`) antes de incorporar | Media (#79) |
-| "Fine Skills" (fuente a identificar) | Pendiente de URL/organización exacta de Debora (#79) | A determinar |
+| Anthropic **cybersecurity skills** | ✅ **Evaluado (Sesión 19):** el repo "Anthropic-Cybersecurity-Skills" es de `mukul975` (fuente ya incorporada, no re-incorporar). El oficial real es `anthropics/defending-code-reference-harness` (Apache 2.0, 6 skills) — **✅ incorporado (OK de Débora, 2026-07-04)** como `third-anthropic-defending-code-v1.0` (`draft`). Ver #79 | Media (#79) |
+| "Fine Skills" (fuente a identificar) | Pendiente de URL/organización exacta de Debora (#79) — **único resto abierto del #79 tras Sesión 19** | A determinar |
 
 ## N. Bloque añadido 2026-07-03 — routing agnóstico (pendiente derivado de Fase H)
 
@@ -2069,7 +2120,20 @@ Ver `PLAN_FASES_COMPLETADAS.md` → "Fase H" para lo ya ejecutado (creación de 
 
 ## O. Bloque añadido 2026-07-03 (Débora) — auditorías de cumplimiento (Design System, calidad) + migración Cloud
 
-### 85. Agente de cumplimiento del Design System (auditoría de app existente + informe + PR opcional)
+### 85. Agente de cumplimiento del Design System (auditoría de app existente + informe + PR opcional) — ✅ EJECUTADO (Sesión 19, 2026-07-04)
+
+**Creado `agents/apb-agent-design-compliance-v1.0.md`** (`draft`, dominio `design`):
+escanea el frontend objetivo, compara contra `APB-DESIGN-SYSTEM`
+(`apb-design-frontend-design-system-v1.0`) y WCAG 2.1 AA (vía
+`apb-qa-accessibility-v1.0` — **no** la deprecada `apb-design-wcag-v1.0`,
+detección que originó el check #25 del validador), genera informe MD+HTML con
+el patrón de `generate_test_plan_html.py`, y PR opcional vía
+`apb-dev-pr-doc-v1.0` (nunca merge). Encadenable al #86 como fuente de
+hallazgos. Wiring bidireccional aplicado. **Pendiente de Débora (sin cambios):
+repo(s)/carpeta(s) concretas a auditar como primer caso de prueba.**
+Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+<details><summary>Planteamiento original (histórico)</summary>
 
 **Petición de Débora:** "agente que revisa si una aplicación cumple con sistema de diseño, hace
 informe y sugiere correcciones, da opción de preparar PR."
@@ -2095,9 +2159,24 @@ alcance es más acotado — decidir en la sesión) + wiring con `apb-dev-pr-doc-
 
 **Pendiente de Débora:** repo(s)/carpeta(s) concretas a auditar como primer caso de prueba.
 
+</details>
+
 ---
 
-### 86. Agente de cumplimiento de calidad — Sonar + hallazgos de otros agentes + Jira + PR opcional
+### 86. Agente de cumplimiento de calidad — Sonar + hallazgos de otros agentes + Jira + PR opcional — ✅ EJECUTADO (Sesión 19, 2026-07-04)
+
+**Creado `agents/apb-agent-quality-compliance-v1.0.md`** (`draft`, dominio `qa`):
+multi-fuente (Sonar vía `apb-dev-sonar-clean-v1.0` + informes de otros agentes
++ lista del usuario, con procedencia declarada), **dedup obligatorio contra
+Jira** (`prov-jira-software-v1.0`: si el hallazgo ya tiene ticket, se
+referencia, no se duplica), correcciones concretas por hallazgo y **PR
+opcional** tras OK humano reutilizando el patrón de `apb-sub-qa-fix-loop-v1.0`
+vía `apb-dev-pr-doc-v1.0` — sin re-parentar ni duplicar el subagente (decisión
+de la nota de diseño: mismo flujo de salida, distinto trigger). Wiring
+bidireccional aplicado (`consumed_by` en sonar-clean, pr-doc,
+telemetry-emit). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+<details><summary>Planteamiento original (histórico)</summary>
 
 **Petición de Débora:** "agente que analiza los incumplimientos de sonar o los detectados por otros
 agentes y sugiere las correcciones. Los incumplimientos pueden estar ya registrados en Jira. Prepara
@@ -2124,6 +2203,8 @@ salida — PR + Jira — es el mismo).
 
 **Pendiente de Débora:** ninguna dependencia bloqueante conocida; puede diseñarse en modo `draft` como
 el resto de componentes de esta sesión.
+
+</details>
 
 ---
 

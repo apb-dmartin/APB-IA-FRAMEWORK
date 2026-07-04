@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/google/skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "aabe37a010621dbabd33acfe55db645732c964f8"
 ---
 
 # SKILL_PLAT_FINOPS — FinOps & Cost Optimization

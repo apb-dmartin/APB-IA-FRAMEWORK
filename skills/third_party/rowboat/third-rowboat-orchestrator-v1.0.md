@@ -9,8 +9,7 @@ domain: "platform"
 autonomy_level: 1
 source_repo: "https://github.com/rowboatlabs/rowboat"
 source_license: "Apache 2.0"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "6373238ad8fca1cbb0aefd7b69e553c9422d9284"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---

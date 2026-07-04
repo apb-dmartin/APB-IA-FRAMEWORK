@@ -9,8 +9,7 @@ domain: "platform"
 autonomy_level: 1
 source_repo: "https://github.com/Fission-AI/OpenSpec"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "65a7233f36ad022e99cc23115279768b8ca24fb6"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---

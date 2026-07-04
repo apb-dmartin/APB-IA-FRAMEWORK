@@ -25,6 +25,7 @@ depends_on:
 consumed_by:
   - "apb-agent-ux-mockup-v1.0"
   - "apb-sub-dev-devexpress-v1.0"
+  - "apb-agent-design-compliance-v1.0"
 design_system_repo: "https://github.com/apb-dmartin/APB-DESIGN-SYSTEM"
 design_system_submodule: "design-system/"
 artifacts:

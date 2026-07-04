@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 347
+- **Total Components**: 354
 
 ## Component Breakdown
 
@@ -191,11 +191,12 @@
 | `apb-sec-supply-chain-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-supply-chain-v1.0.md` |
 | `apb-sec-threat-model-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-threat-model-v1.0.md` |
 
-### Skills de Terceros (52 total)
+### Skills de Terceros (56 total)
 
 | ID | Fuente | Licencia | Estado | Archivo |
 |---|---|---|---|---|
 | `third-anthropic-business-discovery-v1.0` | https://github.com/anthropics/skills | MIT | approved | `skills/third_party/anthropic/third-anthropic-business-discovery-v1.0.md` |
+| `third-anthropic-defending-code-v1.0` | https://github.com/anthropics/defending-code-reference-harness | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-defending-code-v1.0.md` |
 | `third-anthropic-document-skills-v1.0` | https://github.com/anthropics/skills | Source-available (no open source) — ver THIRD_PARTY_NOTICES.md del repositorio de origen | approved | `skills/third_party/anthropic/third-anthropic-document-skills-v1.0.md` |
 | `third-anthropic-mcp-builder-v1.0` | https://github.com/anthropics/skills/tree/main/mcp-builder | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-mcp-builder-v1.0.md` |
 | `third-anthropic-playwright-v1.0` | https://github.com/anthropics/skills/tree/main/webapp-testing | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-playwright-v1.0.md` |
@@ -218,9 +219,11 @@
 | `third-lambdatest-test-automation-v1.0` | https://github.com/LambdaTest/agent-skills | MIT | approved | `skills/third_party/lambdatest/third-lambdatest-test-automation-v1.0.md` |
 | `third-lidr-agent-demo-v1.0` | https://github.com/LIDR-academy/lidr-agent-demo | MIT | approved | `skills/third_party/lidr/third-lidr-agent-demo-v1.0.md` |
 | `third-lightrag-knowledge-v1.0` | https://github.com/hkuds/lightrag | MIT | approved | `skills/third_party/hkuds-lightrag/third-lightrag-knowledge-v1.0.md` |
-| `third-lum1104-knowledge-graph-v1.0` | ? | ? | watchlist | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` |
+| `third-lum1104-knowledge-graph-v1.0` | ? | ? | draft | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` |
 | `third-mattpocock-codebase-architecture-analysis-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/mattpocock/third-mattpocock-codebase-architecture-analysis-v1.0.md` |
 | `third-mattpocock-grill-prd-issues-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/mattpocock/third-mattpocock-grill-prd-issues-v1.0.md` |
+| `third-mattpocock-resolving-merge-conflicts-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/mattpocock/third-mattpocock-resolving-merge-conflicts-v1.0.md` |
+| `third-mattpocock-triage-v1.0` | https://github.com/mattpocock/skills | MIT | draft | `skills/third_party/mattpocock/third-mattpocock-triage-v1.0.md` |
 | `third-mukul-cloud-security-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | MIT | approved | `skills/third_party/mukul975/third-mukul-cloud-security-v1.0.md` |
 | `third-mukul-cyber-arsenal-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | Apache 2.0 | draft | `skills/third_party/mukul975/third-mukul-cyber-arsenal-v1.0.md` |
 | `third-mukul-cyber-v1.0` | https://github.com/mukul975/Anthropic-Cybersecurity-Skills | MIT | approved | `skills/third_party/mukul975/third-mukul-cyber-v1.0.md` |
@@ -231,6 +234,7 @@
 | `third-neondatabase-db-migration-v1.0` | https://github.com/neondatabase/neon-postgres | MIT | approved | `skills/third_party/neondatabase/third-neondatabase-db-migration-v1.0.md` |
 | `third-nextlevel-ux-v1.0` | https://github.com/nextlevelbuilder/ui-ux-pro-max-skill | MIT | approved | `skills/third_party/nextlevel/third-nextlevel-ux-v1.0.md` |
 | `third-obra-superpowers-method-v1.0` | https://github.com/obra/superpowers | MIT | draft | `skills/third_party/obra/third-obra-superpowers-method-v1.0.md` |
+| `third-obra-systematic-debugging-v1.0` | https://github.com/obra/superpowers | MIT | draft | `skills/third_party/obra/third-obra-systematic-debugging-v1.0.md` |
 | `third-obra-test-driven-development-v1.0` | https://github.com/obra/superpowers | MIT | approved | `skills/third_party/obra/third-obra-test-driven-development-v1.0.md` |
 | `third-openai-threat-model-v1.0` | https://github.com/openai/security-threat-model | MIT | approved | `skills/third_party/openai/third-openai-threat-model-v1.0.md` |
 | `third-openspec-spec-gen-v1.0` | https://github.com/Fission-AI/OpenSpec | MIT | approved | `skills/third_party/openspec/third-openspec-spec-gen-v1.0.md` |
@@ -248,7 +252,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (35 total)
+### Agentes (37 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -263,6 +267,7 @@
 | `apb-agent-data-governance-v1.0` | Data Governance | draft | `agents/apb-agent-data-governance-v1.0.md` |
 | `apb-agent-db-v1.0` | Database Agent | draft | `agents/apb-agent-db-v1.0.md` |
 | `apb-agent-ddd-v1.0` | DDD Domain Discovery Agent | draft | `agents/apb-agent-ddd-v1.0.md` |
+| `apb-agent-design-compliance-v1.0` | Design Compliance Agent | draft | `agents/apb-agent-design-compliance-v1.0.md` |
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents/apb-agent-finops-v1.0.md` |
@@ -277,6 +282,7 @@
 | `apb-agent-pm-v1.0` | Project Management Agent | draft | `agents/apb-agent-pm-v1.0.md` |
 | `apb-agent-problem-manager-v1.0` | Problem Manager | draft | `agents/apb-agent-problem-manager-v1.0.md` |
 | `apb-agent-qa-auto-v1.0` | QA Automation Agent | draft | `agents/apb-agent-qa-auto-v1.0.md` |
+| `apb-agent-quality-compliance-v1.0` | Quality Compliance Agent | draft | `agents/apb-agent-quality-compliance-v1.0.md` |
 | `apb-agent-release-manager-v1.0` | Release Manager Agent | draft | `agents/apb-agent-release-manager-v1.0.md` |
 | `apb-agent-risk-exception-v1.0` | Risk & Exception Agent | draft | `agents/apb-agent-risk-exception-v1.0.md` |
 | `apb-agent-security-architect-v1.0` | Security Architect Agent | draft | `agents/apb-agent-security-architect-v1.0.md` |
@@ -349,7 +355,7 @@
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 | `apb-wf-vendor-procurement-v1.0` | Vendor Procurement LCSP | draft | `workflows/apb-wf-vendor-procurement-v1.0.md` |
 
-### Providers (21 total)
+### Providers (22 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -364,6 +370,7 @@
 | `prov-azure-v1.0` | Provider: Azure MCP | draft | `providers/prov-azure-v1.0.md` |
 | `prov-browser-agent-v1.0` | Provider: Agentic Browser | draft | `providers/prov-browser-agent-v1.0.md` |
 | `prov-confluence-v1.0` | Provider: Atlassian Confluence REST API | draft | `providers/prov-confluence-v1.0.md` |
+| `prov-context7-v1.0` | Provider: Context7 (documentación actualizada para LLMs) | draft | `providers/prov-context7-v1.0.md` |
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
 | `prov-entra-id-v1.0` | Provider: Microsoft Entra ID (Azure Active Directory) | draft | `providers/prov-entra-id-v1.0.md` |
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers/prov-github-v1.0.md` |

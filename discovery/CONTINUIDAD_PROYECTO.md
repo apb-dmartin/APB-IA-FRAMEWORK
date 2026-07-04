@@ -269,10 +269,13 @@ Ver el detalle completo en `discovery/PLAN_FASES_FUTURAS.md`. Resumen:
     skills de frontend (`apb-dev-devexpress-front-v1.0`,
     `third-google-labs-code-react-patterns-v1.0`,
     `apb-dev-frontend-devexpress-events-v1.0`) deben referenciarla.
-14. **Nuevo (Sesión 7):** verificar formalmente la licencia de
-    `Lum1104/Understand-Anything` antes de cualquier uso productivo de
-    `third-lum1104-knowledge-graph-v1.0` — requiere acceso directo al repo
-    de origen, no solo búsqueda web.
+14. ✅ **RESUELTO (Sesión 19, 2026-07-04):** licencia de
+    `Lum1104/Understand-Anything` verificada vía API de GitHub: **MIT**
+    (commit `0e8ad84a`, repo activo). Bloqueo de producción levantado;
+    `third-lum1104-knowledge-graph-v1.0` pasa de `watchlist` a `draft` con
+    `license: MIT` y `source_commit` fijado. Su eventual uso sigue
+    pendiente de decisión de Débora (que en #14 lo había descartado cuando
+    la licencia era desconocida).
 
 ## 6. Gaps de catálogo — resueltos en Sesión 7
 

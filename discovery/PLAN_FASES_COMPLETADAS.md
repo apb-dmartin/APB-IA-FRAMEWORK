@@ -720,3 +720,80 @@ ejecución de TruckCenter debe reabrir Claude Code con Playwright MCP cargado de
 segundo usuario/rol para B08/B09, corregir H1/H5, y cubrir los 65 casos que siguen `Pendiente` (incluyendo
 los ~26 estructuralmente fuera de alcance de navegador: B01/B11/B13/B14). Jira para H5/H6/H7 (y confirmar
 estado de H1-H4) queda explícitamente en espera de instrucción directa de Débora.
+
+---
+
+## Sesión 19 — Terceros (#27/#45/#79/#81/#14/R8) + agentes de auditoría #86 y #85(O) — ✅ EJECUTADO 2026-07-04
+
+**Alcance decidido por Débora en sesión:** de las fases ejecutables propuestas, eligió (1) Sesión 19
+ampliada de terceros y (2) los agentes #86 + #85(O); el primer ciclo de aprobación se sacó de alcance
+explícitamente. Sesión ejecutada como **seguimiento manual de los `.md`, sin runtime real** (declarado al
+inicio, #77 pendiente), con acceso web para verificación de repos/licencias/SHAs.
+
+**Fase A — Terceros (regla GOVERNANCE §4: evaluación aquí, incorporación solo tras OK de Débora):**
+
+- **#79 (2/3 resuelto):** hallazgo de identidad — "Anthropic-Cybersecurity-Skills" es de `mukul975`
+  (fuente **ya incorporada** con 5 skills curadas), no de Anthropic. El oficial real es
+  `anthropics/defending-code-reference-harness` (Apache 2.0, SHA `b5b61c8`, 6 skills:
+  threat-model/vuln-scan/triage/patch/quickstart/customize; harness autónomo requiere gVisor →
+  excluido). Recomendación: descriptor único `third-anthropic-defending-code-v1.0` — **pendiente OK de
+  Débora**. MCP Builder: alcance confirmado (`custom-api` cubre Teams/SharePoint del #30), no
+  re-incorporar. "Fine Skills": sigue pendiente de URL de Débora (único resto abierto).
+- **#27 items abiertos evaluados:** `context7` (MIT, ~58,5k⭐, servidor MCP de documentación → candidato
+  a `prov-context7-v1.0` cuando haya caso de uso); `obra/superpowers systematic-debugging` (skill
+  distinta confirmada, MIT → **candidata a incorporar**, pendiente OK); `mattpocock/skills` resto
+  (repo reestructurado; mayoría duplica catálogo; 2 candidatas: `resolving-merge-conflicts` y `triage`);
+  `excalidraw` (MIT, herramienta de apoyo, cierre sin componente).
+- **#45 resuelto con datos:** las 3 skills `_spec-driven` del zip original de `apb-ai-skills` son
+  **placeholders `[RESERVADO - NO ACTIVO]` sin implementar** — nada que fusionar; lo prometido ya lo
+  cubre `apb-qa-test-plan-v1.0` v1.4.0 (input `spec`, Fase I). 2 ideas registradas (trazabilidad
+  AC→TC automática; tests de contrato Pact desde plan.md).
+- **#81 Obsidian resuelto:** herramienta de apoyo opcional solo-lectura (repo como vault sin
+  transformación); salvaguardas: no editar desde Obsidian, `.obsidian/` al `.gitignore`. Sin componente.
+- **#14 resuelto (omisión de Sesión 9):** licencia de `Lum1104/Understand-Anything` verificada = **MIT**
+  (repo activo, commit `0e8ad84a`). `third-lum1104-knowledge-graph-v1.0`: `watchlist` → `draft`, con
+  `license: MIT` + SHA. Bloqueo de producción levantado; su uso sigue siendo decisión de Débora.
+- **R8 mitigado en su mayoría:** **48 descriptores** de terceros/wrappers fijados a SHA real
+  (`git ls-remote` por repo, script una sola pasada); quedan **11** `unverified` con causa documentada
+  (repos movidos/privados/no-GitHub). Warnings exentos del validador: 60 → **11**.
+
+**Fase B — #86:** creado `agents/apb-agent-quality-compliance-v1.0.md` (`draft`, `qa`): multi-fuente
+(Sonar + agentes + usuario), dedup obligatorio contra Jira antes de proponer, PR opcional con el patrón
+fix-loop vía `apb-dev-pr-doc` (nunca merge). Wiring bidireccional (`consumed_by` añadido a sonar-clean,
+pr-doc, telemetry-emit — incluyendo consumidores preexistentes no declarados: tech-debt, implementer).
+
+**Fase C — #85(O):** creado `agents/apb-agent-design-compliance-v1.0.md` (`draft`, `design`): auditor a
+posteriori contra APB-DESIGN-SYSTEM + WCAG 2.1 AA, informe MD+HTML (patrón `generate_test_plan_html.py`),
+PR opcional, encadenable a #86. **Corrección sobre el diseño original del punto:** se cablea
+`apb-qa-accessibility-v1.0`, no `apb-design-wcag-v1.0` (deprecada 2026-06-30).
+
+**Check #25 (anti-repetición, regla de cierre):** el intento de cablear una skill deprecada en el agente
+nuevo no lo detectaba nada, y el mismo defecto ya existía en `apb-agent-accessibility-auditor-v1.0`
+(consumía `apb-design-wcag-patterns-v1.0`, deprecada — **corregido**). Nueva función
+`validate_no_deprecated_wiring()` en `validate_repo.py`: ERROR si un componente activo cablea
+(`skills`/`subagents`/`agents`/`depends_on`) un componente `deprecated`/`retired`; wiring histórico de
+componentes ellos mismos deprecados queda exento. +3 tests (`TestNoDeprecatedWiring`).
+
+`generate_catalog.py` → **349 componentes** (347 + `apb-agent-quality-compliance-v1.0` +
+`apb-agent-design-compliance-v1.0`) · `validate_repo.py --strict` **exit 0** (0 errores, 11 warnings
+exentos, antes 60) · **55/55 tests**.
+
+**Incorporación aprobada por Débora (mismo día, GOVERNANCE §4) — 5 descriptores creados en `draft`:**
+- `skills/third_party/anthropic/third-anthropic-defending-code-v1.0.md` (Apache 2.0, SHA `b5b61c8`,
+  dominio `security`): 5 skills de análisis defensivo (threat-model/vuln-scan/triage/patch/customize);
+  harness autónomo gVisor **excluido** por decisión de Arquitectura. Requiere validación de Ciberseguridad
+  antes de `candidate`.
+- `skills/third_party/obra/third-obra-systematic-debugging-v1.0.md` (MIT, SHA `84620bd`, `development`):
+  skill standalone de depuración de 4 fases; cross-link al method wrapper para no duplicar.
+- `skills/third_party/mattpocock/third-mattpocock-resolving-merge-conflicts-v1.0.md` (MIT, `development`).
+- `skills/third_party/mattpocock/third-mattpocock-triage-v1.0.md` (MIT, `pm`).
+- `providers/prov-context7-v1.0.md` (MIT, SHA `84620bd`, `provider_type: context`, `read-only`): servidor
+  MCP de documentación actualizada; **`draft` sin activar** — activación real requiere `.mcp.json` de
+  proyecto (norma `feedback_mcp_framework_activacion`).
+
+`generate_catalog.py` → **354 componentes** (349 + 4 skills terceros + 1 provider) · `--strict` **exit 0**
+(0 errores, 11 warnings exentos) · **55/55 tests**.
+
+**Pendiente (registrado, fuera de esta sesión):** URL de "Fine Skills"; repo objetivo del primer caso real
+de #85; re-identificación de los 11 repos sin SHA; decisión sobre reevaluar Understand-Anything ahora que
+la licencia es MIT; validación de Ciberseguridad de `third-anthropic-defending-code` antes de `candidate`.

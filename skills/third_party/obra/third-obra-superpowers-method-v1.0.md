@@ -11,8 +11,7 @@ created_date: "2026-06-21"
 review_date: "2026-06-21"
 source_repo: "https://github.com/obra/superpowers"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "d884ae04edebef577e82ff7c4e143debd0bbec99"
 ---
 
 # SKILL: Superpowers Method (obra Wrapper)

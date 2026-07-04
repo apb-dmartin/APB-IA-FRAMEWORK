@@ -9,8 +9,7 @@ domain: "platform"
 autonomy_level: 1
 source_repo: "https://github.com/hkuds/lightrag"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "2a729d3748fbbfe3f9c87276cf1eb59453a1b16d"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---

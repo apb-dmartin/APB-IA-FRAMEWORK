@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/LambdaTest/agent-skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "54824d6bcca7b85577a07b2b91c4b70552722236"
 ---
 
 # Automatización de Testing para APB

@@ -3,24 +3,20 @@ id: "third-lum1104-knowledge-graph-v1.0"
 name: "Knowledge Graph Builder (Lum1104/Understand-Anything)"
 description: "Skill third-party para construir grafos de conocimiento a partir de documentos no estructurados. Basada en el repo Lum1104/Understand-Anything."
 version: "1.0.0"
-status: "watchlist"
-block_reason: "Licencia no verificada — el repo Lum1104/Understand-Anything no tiene archivo LICENSE confirmado. No usar en producción hasta verificación manual directa."
+status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
 autonomy_level: 1
 source: "https://github.com/Lum1104/Understand-Anything"
-source_commit: "unverified"
-verified_date: "2026-06-30"
-license: "UNVERIFIED"
+source_commit: "0e8ad84a2a5236dca533beef618d71ee3f4568f6"
+license: "MIT"
 created_date: "2026-06-30"
-review_date: "2026-06-30"
+review_date: "2026-07-04"
 ---
 
 # Knowledge Graph Builder (Lum1104/Understand-Anything)
 
 > ⚠️ Borrador generado por IA (APB AI Framework - stub BUG-08) — pendiente validación humana. No distribuir sin revisión.
-
-> ⛔ **BLOQUEADO** — Licencia de la fuente original no verificada. Ver `block_reason` en frontmatter.
 
 ---
 
@@ -28,23 +24,20 @@ review_date: "2026-06-30"
 
 Skill third-party para construir grafos de conocimiento a partir de documentos no estructurados, basada en el repositorio externo `Lum1104/Understand-Anything`.
 
-**Estado:** Bloqueada hasta que el equipo de Arquitectura APB confirme que la licencia del repo fuente permite el uso corporativo.
-
-## 🔒 Bloqueo de licencia
+## ✅ Verificación de licencia (punto #14 — resuelta 2026-07-04)
 
 | Campo | Valor |
 |-------|-------|
 | Repo fuente | `https://github.com/Lum1104/Understand-Anything` |
-| Fork evaluado | `Egonex-AI/Understand-Anything` |
-| Archivo LICENSE | ⚠️ No encontrado / no confirmado |
-| Decisión | Pendiente de revisión manual por Arquitectura APB |
+| Licencia | **MIT** (verificada vía API de GitHub, 2026-07-04) |
+| Commit verificado | `0e8ad84a2a5236dca533beef618d71ee3f4568f6` (2026-07-03) |
+| Estado del repo | Activo, no archivado (~70,7k ⭐) |
+| Uso corporativo interno | ✅ Compatible (MIT permite uso, modificación y derivados) |
 
-## ✅ Acción requerida para desbloqueo
-
-1. Acceder al repo fuente y verificar la existencia y tipo de licencia.
-2. Validar que la licencia permite uso corporativo interno (APB).
-3. Actualizar este archivo: cambiar `status: blocked` → `status: draft`, añadir `license: <tipo>` y `source_commit: <hash>`.
-4. Ejecutar `validate_repo.py --strict` para confirmar que el componente pasa validación.
+El bloqueo de producción por licencia no verificada (Sesión 9 / `CONTINUIDAD_PROYECTO.md §4`)
+queda **levantado**. El componente pasa a `draft` y sigue el ciclo estándar de gobernanza
+(`GOVERNANCE.md §3`) — la decisión previa de Débora de no usarlo (#14 tabla de mapeo) puede
+reevaluarse ahora con la licencia confirmada; hasta entonces permanece en `draft` sin consumo.
 
 ---
 

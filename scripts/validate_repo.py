@@ -519,6 +519,57 @@ def validate_references(repo_path: Path, result: ValidationResult, all_ids: Dict
                         ))
 
 
+def validate_no_deprecated_wiring(repo_path: Path, result: ValidationResult):
+    """Check #25 (Sesión 19, 2026-07-04, anti-repetición): ningún componente
+    activo puede declarar en su wiring de frontmatter ('skills', 'subagents',
+    'agents', 'depends_on') un componente con status 'deprecated' o 'retired'.
+    Origen: al crear apb-agent-design-compliance-v1.0 se estuvo a punto de
+    cablear apb-design-wcag-v1.0 (deprecada, consolidada en
+    apb-qa-accessibility-v1.0) sin que nada lo detectara; el mismo defecto ya
+    existía en apb-agent-accessibility-auditor-v1.0 (corregido esa sesión).
+    Los componentes que están ellos mismos deprecated/retired quedan exentos
+    (su wiring es histórico). 'consumed_by' no se comprueba: que una skill
+    deprecada conserve la lista de sus antiguos consumidores es inocuo."""
+    wiring_fields = ["skills", "subagents", "agents", "depends_on"]
+
+    # Mapa id → status de todos los componentes
+    id_status: Dict[str, str] = {}
+    for folder in COMPONENT_FOLDERS:
+        folder_path = repo_path / folder
+        if not folder_path.exists():
+            continue
+        for fp in iter_component_files(folder_path):
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if found and meta.get("id"):
+                id_status[meta["id"]] = str(meta.get("status", "")).strip().lower()
+
+    for folder in COMPONENT_FOLDERS:
+        folder_path = repo_path / folder
+        if not folder_path.exists():
+            continue
+        for fp in iter_component_files(folder_path):
+            rel_path = str(fp.relative_to(repo_path))
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if not found:
+                continue
+            own_status = str(meta.get("status", "")).strip().lower()
+            if own_status in ("deprecated", "retired"):
+                continue  # wiring histórico de un componente ya retirado
+            for field_name in wiring_fields:
+                refs = meta.get(field_name) or []
+                if isinstance(refs, str):
+                    refs = [refs]
+                for ref_id in refs:
+                    ref_status = id_status.get(ref_id)
+                    if ref_status in ("deprecated", "retired"):
+                        result.add(ValidationIssue(
+                            "ERROR", rel_path,
+                            f"Wiring a componente {ref_status} en '{field_name}': "
+                            f"'{ref_id}'. Sustituir por su reemplazo (ver "
+                            f"'deprecated_reason' de ese componente) — check #25."
+                        ))
+
+
 def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     """Verifica que la relación agente↔subagente sea coherente en ambos
     sentidos: si un agente declara un subagent en su lista 'subagents', ese
@@ -1071,6 +1122,7 @@ def main():
     validate_folder_structure(repo_path, result)
     all_ids = validate_components(repo_path, result)
     validate_references(repo_path, result, all_ids)
+    validate_no_deprecated_wiring(repo_path, result)
     validate_agent_subagent_consistency(repo_path, result, all_ids)
     validate_bidirectional_wiring(repo_path, result)
     validate_version_drift(repo_path, result, all_ids)

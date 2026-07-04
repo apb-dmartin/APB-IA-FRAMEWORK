@@ -9,7 +9,6 @@ domain: "qa"
 autonomy_level: 1
 skills:
   - "apb-qa-accessibility-v1.0"
-  - "apb-design-wcag-patterns-v1.0"
   - "apb-doc-post-mortem-v1.0"
 runtime:
   - "copilot"
@@ -69,8 +68,7 @@ Garantizar que los portales web de APB cumplen con WCAG 2.1 nivel AA y el Real D
 
 | ID | Nombre | Dominio | Autonomía |
 |----|--------|---------|-----------|
-| `apb-qa-accessibility-v1.0` | Auditoría de Accesibilidad WCAG 2.1 AA | qa | Nivel 1 |
-| `apb-design-wcag-patterns-v1.0` | Patrones Accesibles DevExtreme | design | Nivel 1 |
+| `apb-qa-accessibility-v1.0` | Auditoría de Accesibilidad WCAG 2.1 AA (consolidó a `apb-design-wcag-patterns-v1.0`, deprecada 2026-06-30) | qa | Nivel 1 |
 
 ---
 
