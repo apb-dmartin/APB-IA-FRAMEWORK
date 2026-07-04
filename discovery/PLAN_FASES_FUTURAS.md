@@ -837,8 +837,12 @@ punto.
 > Resumen: #85(K)(a)/(d) ejecutado en `APB-DOMAIN-CATALOG` (HTML de consulta + 1er CI de
 > gobernanza del repo + catálogo de referencia); 2/10 SHAs `unverified` de terceros
 > re-identificados con evidencia real (8 documentados como no resolubles hoy); corregida
-> contradicción interna sobre Understand-Anything (L30 vs. detalle #14). Pendiente: push de la
-> rama `feat/carga-inicial-dominios-apim` en `APB-DOMAIN-CATALOG` (sin confirmar).
+> contradicción interna sobre Understand-Anything (L30 vs. detalle #14); **push confirmado y
+> ejecutado en ambos repos**. Además, **#30 MCP Graph completado en la parte no bloqueada**:
+> `@softeria/ms-365-mcp-server` cableado en `.mcp.json` (device-code, sin credenciales, aprobado
+> explícitamente por Débora tras bloqueo de seguridad del clasificador de auto-mode por ser un
+> paquete de terceros no vetado previamente). Solo queda pendiente de Plataforma la app
+> registration Entra ID para el flujo headless/producción.
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
@@ -1223,7 +1227,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | WCAG / Accesibilidad | 🟡 Nueva | accessibility-auditor nuevo; wiring pendiente |
 | LCSP / Licitación | ❌ Pendiente | Bloqueado: briefing de Débora |
 | Descomposición monolitos | ❌ Pendiente | Domain Catalog ya poblado (21 dominios `proposed`); falta aprobación + acceso a código SOSTRAT |
-| M365 / Teams / SharePoint | 🟡 CONSTRUIDO (draft) | `prov-ms365-v1.0` + `prov-entra-id-v1.0` + adapters m365/rovo + OpenAPI/Forge existen. Solo falta activación MCP Graph real (credenciales/tenant — Plataforma). Ver `AUDITORIA_DESFASE_PLAN_REPO.md` |
+| M365 / Teams / SharePoint | 🟡 CONSTRUIDO (draft) | `prov-ms365-v1.0` + `prov-entra-id-v1.0` + adapters m365/rovo + OpenAPI/Forge existen. **MCP Graph cableado en `.mcp.json` (2026-07-04, `@softeria/ms-365-mcp-server`, device-code, aprobado por Débora)** — solo falta activación de app registration Entra ID (credenciales/tenant — Plataforma) para el flujo headless. Ver `AUDITORIA_DESFASE_PLAN_REPO.md` |
 
 #### D.3 QA del framework
 - **Validación solo estructural** (forma del componente), NO funcional (comportamiento).

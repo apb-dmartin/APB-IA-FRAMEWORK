@@ -117,7 +117,7 @@ Huecos confirmados por exploración que **no requieren insumo de Débora** y se 
 | #34 | Gate QA pre-despliegue reutilizable para pipelines de apps APB | `apb-plat-ci-qa-gate-v1.0` (skill) | platform |
 | #33 | Interpretación de planes de ejecución SQL / profiling | `apb-dev-sql-explain-plan-v1.0` (skill) | development |
 | #39/#40 | Instrumentación real OpenTelemetry (diferida en Sesión 17) | `prov-otel-v1.0` (provider) | platform |
-| #30 | Activación MCP Graph en `.mcp.json` + config real en `prov-ms365-v1.0` | (config, **parcialmente** bloqueado por creds M365) | — |
+| #30 | Activación MCP Graph en `.mcp.json` + config real en `prov-ms365-v1.0` | ✅ **Ejecutado 2026-07-04** (`@softeria/ms-365-mcp-server`, device-code, aprobado por Débora) — resto sigue bloqueado por creds M365 | platform |
 
 ---
 
@@ -185,5 +185,23 @@ terceros (`ccusage`, `wrap-mukul-cyber`) con evidencia real de GitHub, y documen
 de por qué los 8 restantes no son resolubles hoy (3 con `source_repo` inexistente/hallucinado,
 5 con origen SaaS sin repositorio Git); corrección de la contradicción L30 sobre
 Understand-Anything.
+
+## 10. Cierre del punto #30 MCP Graph (mismo día, tras push de §9)
+
+Al preguntar Débora "¿hay otras tareas pendientes?" tras los push de §9, se verificó que el
+punto #30 de §6 (tabla ACCIONABLE) — dado por parcialmente cubierto en la sesión de Auditoría
+original — en realidad **nunca se había ejecutado**: `.mcp.json` solo tenía `playwright`, y
+`prov-ms365-v1.0.md` seguía con una mención genérica sin config real. Es el mismo patrón de
+desfase que motiva toda esta auditoría, esta vez cometido por el propio asistente al marcar la
+tarea "completada" prematuramente.
+
+**Corrección:** se identificó `@softeria/ms-365-mcp-server` (paquete npm real, verificado, no
+`@microsoft/graph-mcp-server` que no existe) como servidor MCP de Microsoft Graph. El clasificador
+de seguridad de auto-mode **bloqueó el primer intento de wiring** por tratarse de un paquete de
+terceros elegido por el propio agente sin aprobación previa nombrada — comportamiento correcto:
+se detuvo, se explicó a Débora y se pidió aprobación explícita del paquete concreto antes de
+tocar `.mcp.json`. Con su aprobación, se cableó en modo device-code (sin credenciales) y se
+documentó en `prov-ms365-v1.0.md` la ruta a producción (variables `MS365_MCP_CLIENT_ID` /
+`TENANT_ID` / `KEYVAULT_URL`), pendiente de que Plataforma registre la app en Entra ID.
 
 > Este informe se acompaña de su versión HTML corporativa (`AUDITORIA_DESFASE_PLAN_REPO.html`).

@@ -35,7 +35,9 @@ da falsos negativos en esta workspace (ruta con espacios) → verificar existenc
 4. `apb-dev-sql-explain-plan-v1.0` (development) — interpretación de planes de ejecución SQL + profiling. Amplía #33. → `apb-agent-db-v1.0`.
 5. `prov-otel-v1.0` (provider) — instrumentación OpenTelemetry, cubre el gap diferido en Sesión 17 (#39/#40). → `apb-ops-telemetry-emit-v1.0`.
 
-**Bloqueado (no construido):** activación MCP Graph real de #30 (requiere tenant/credenciales M365 — Plataforma).
+**#30 MCP Graph — inicialmente marcado bloqueado, corregido el mismo día** (ver sesión de
+seguimiento más abajo: la parte no bloqueada de #30 sí se ejecutó, quedando pendiente solo la
+app registration Entra ID de Plataforma).
 
 **Anti-repetición (check #26):** `validate_plan_deliverables_exist` en `scripts/validate_repo.py`
 — verifica que los entregables (IDs con versión) declarados en filas «CERRADA» del plan existen en
@@ -112,9 +114,27 @@ la sesión anterior.
 
 **Cierre:** apéndice §9 añadido a `AUDITORIA_DESFASE_PLAN_REPO.md` (+ HTML regenerado); catálogo
 regenerado, `validate_repo.py --strict` **exit 0 (359 componentes, 10 warnings exentos** — antes
-11, bajó por las 2 re-identificaciones), tests verdes, plan y memoria actualizados. **Sin push**
-en ninguno de los dos repos (`APB-IA-FRAMEWORK` ni `APB-DOMAIN-CATALOG`) — pendiente de
-confirmación explícita de Débora.
+11, bajó por las 2 re-identificaciones), tests verdes, plan y memoria actualizados. **Push
+confirmado y ejecutado** en ambos repos (`APB-IA-FRAMEWORK` commit `b7d2225`,
+`APB-DOMAIN-CATALOG` commit `617ae1f`), ninguno con PR abierto a `main` todavía.
+
+## Cierre del #30 MCP Graph (mismo día, tras el push anterior)
+
+Al preguntar Débora si quedaban más pendientes, se detectó que **#30 nunca se había ejecutado**
+pese a estar marcado como cubierto en la sesión de Auditoría original: `.mcp.json` solo tenía
+`playwright`, sin entrada de Microsoft Graph. Corregido:
+
+- Identificado `@softeria/ms-365-mcp-server` (paquete npm real y verificado) como servidor MCP —
+  no `@microsoft/graph-mcp-server`, que no existe.
+- **El clasificador de seguridad de auto-mode bloqueó el primer intento** de wiring por ser un
+  paquete de terceros elegido por el propio agente sin aprobación nombrada — se detuvo, se
+  explicó el motivo a Débora y se pidió su aprobación explícita del paquete concreto.
+- Con su OK: cableado en `.mcp.json` (`ms365`, modo device-code, sin credenciales) +
+  `prov-ms365-v1.0.md` actualizado con la config real y las variables de entorno para el flujo
+  headless de producción (`MS365_MCP_CLIENT_ID`/`TENANT_ID`/`KEYVAULT_URL`), pendiente de que
+  Plataforma registre la app en Entra ID.
+- Apéndice §10 añadido a `AUDITORIA_DESFASE_PLAN_REPO.md` (+ HTML regenerado). `validate_repo.py
+  --strict` exit 0 (359 componentes).
 
 ---
 
