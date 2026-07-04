@@ -1132,5 +1132,57 @@ class TestExecutionReportEvidenceMethodologyCheck(unittest.TestCase):
             shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
+class TestPlanDeliverablesExist(unittest.TestCase):
+    """Check #26 — validate_plan_deliverables_exist: una fila de sesión marcada
+    CERRADA que declara un entregable (ID con versión) inexistente en el repo →
+    ERROR. Anti-repetición del desfase plan↔repo (auditoría 2026-07-04, R11,
+    precedente #56–#76)."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.repo = Path(self.tmpdir)
+        (self.repo / "discovery").mkdir()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _write_plan(self, body):
+        (self.repo / "discovery" / "PLAN_FASES_FUTURAS.md").write_text(body, encoding="utf-8")
+
+    def test_cerrada_con_entregable_inexistente_da_error(self):
+        self._write_plan("| Sesión X | tema | ✅ CERRADA — `apb-gov-fantasma-v1.0` creado |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {"apb-gov-real-v1.0": "x"})
+        msgs = [i.message for i in result.errors]
+        self.assertTrue(
+            any("apb-gov-fantasma-v1.0" in m and "check #26" in m for m in msgs),
+            f"Se esperaba ERROR de desfase plan↔repo, se obtuvo: {msgs}")
+
+    def test_cerrada_con_entregable_existente_sin_error(self):
+        self._write_plan("| Sesión X | tema | ✅ CERRADA — `apb-gov-real-v1.0` creado |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {"apb-gov-real-v1.0": "x"})
+        self.assertEqual(result.errors, [], f"No se esperaba ERROR: {result.errors}")
+
+    def test_id_con_negacion_cercana_exento(self):
+        self._write_plan("| #59 | tema | ✅ CERRADA — `apb-agent-fantasma-v1.0` NO se creó (decisión) |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {})
+        self.assertEqual(result.errors, [], f"Una negación cercana debe eximir: {result.errors}")
+
+    def test_fila_no_cerrada_ignorada(self):
+        self._write_plan("| Sesión Y | tema | ⚠️ PARCIAL — `apb-gov-fantasma-v1.0` pendiente |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {})
+        self.assertEqual(result.errors, [], f"Una fila no-CERRADA no debe evaluarse: {result.errors}")
+
+    def test_mencion_sin_version_ignorada(self):
+        # 'apb-ai-skills' (repo externo, sin -vX.Y) no es un entregable versionado.
+        self._write_plan("| 17 | tema | ✅ CERRADA — `apb-ai-skills` deprecado |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {})
+        self.assertEqual(result.errors, [], f"Una mención sin versión no debe evaluarse: {result.errors}")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

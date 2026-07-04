@@ -11,6 +11,41 @@
 
 ---
 
+## Sesión Auditoría + Cobertura de Huecos — ✅ EJECUTADA (2026-07-04)
+
+**Encargo de Débora:** (A) auditar todo lo pendiente para detectar el desfase real plan↔repo;
+(B) buscar y cubrir huecos nuevos. Origen: pidió "abordar" Sesión 16/21/#30/#39-40, que resultaron
+**ya construidas** (mi resumen inicial las listó "abiertas" por error — índice de memoria
+desactualizado, corregido).
+
+**Parte A — Auditoría (`discovery/AUDITORIA_DESFASE_PLAN_REPO.md`, MD + HTML corporativo):**
+Verificación estructural del 100% del catálogo + muestreo dirigido de entregables. **Hallazgo
+central: el desfase es de MADUREZ, no de existencia.** Sesiones 15/16/17/21 marcadas «CERRADA»
+entregaron sus componentes, pero **313/359 en `draft`, 0 componentes apb-owned funcionales
+aprobados** (los 37 `approved` = 36 skills de terceros verificadas + `prov-apb-knowledge-v1.0`).
+**0 DRIFT-repo** (≠ precedente #56–#76). Corregidas 2 notas obsoletas (DRIFT-plan): #39/#40 y M365
+(§D.2/§G). Vocabulario de madurez adoptado: **CONSTRUIDO (draft) → VALIDADO (`human_validated_by`
++ prueba real #51) → APROBADO (gobernanza)**. Hallazgo metodológico: el `Glob` con patrón relativo
+da falsos negativos en esta workspace (ruta con espacios) → verificar existencia con `ls`/`grep`.
+
+**Parte B — 5 componentes nuevos (`draft`, cableados bidireccionalmente):**
+1. `apb-ops-incident-analyze-visual-v1.0` (operation) — análisis multimodal de incidencias (capturas/diálogos de error/gráficos de métricas). Cierra hueco #15. → `apb-agent-incident-support-v1.0`.
+2. `apb-qa-markdown-validate-v1.0` (qa) — validación de contenido Markdown (completitud/tono/marcado IA/políticas). Cierra parte de #34. → `apb-agent-qa-auto-v1.0`.
+3. `apb-plat-ci-qa-gate-v1.0` (platform) — gate QA pre-despliegue GO/NO-GO (incluye Markdown desplegado). Cierra resto de #34. → `apb-agent-qa-auto-v1.0`.
+4. `apb-dev-sql-explain-plan-v1.0` (development) — interpretación de planes de ejecución SQL + profiling. Amplía #33. → `apb-agent-db-v1.0`.
+5. `prov-otel-v1.0` (provider) — instrumentación OpenTelemetry, cubre el gap diferido en Sesión 17 (#39/#40). → `apb-ops-telemetry-emit-v1.0`.
+
+**Bloqueado (no construido):** activación MCP Graph real de #30 (requiere tenant/credenciales M365 — Plataforma).
+
+**Anti-repetición (check #26):** `validate_plan_deliverables_exist` en `scripts/validate_repo.py`
+— verifica que los entregables (IDs con versión) declarados en filas «CERRADA» del plan existen en
+el repo; ERROR si no. Evita reincidir en el desfase #56–#76. +5 tests (`TestPlanDeliverablesExist`).
+
+**Cierre:** catálogo regenerado, **`--strict` exit 0 (359 componentes)**, **55/55** tests
+(`test_validate_repo`) + 5/5 (`test_behavior_coverage`), plan y memoria actualizados.
+
+---
+
 ## Sesión QA-2 — ✅ CERRADA (2026-07-02): planes de pruebas (#82) + navegación agéntica (#84)
 
 **Puntos:** #82 (metodología/plantilla de planes de pruebas) + #84 (navegación agéntica).

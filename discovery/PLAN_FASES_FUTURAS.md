@@ -817,6 +817,13 @@ punto.
 | **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | ✅ **CERRADA (2026-07-04, Sesión 19)** salvo un único pendiente: **"Fine Skills" sigue requiriendo URL de Débora**. #79: "Anthropic cybersecurity skills" resultó ser `mukul975/Anthropic-Cybersecurity-Skills` (NO es de Anthropic; fuente ya incorporada con 5 skills curadas); el oficial real es `anthropics/defending-code-reference-harness` (Apache 2.0, 6 skills) — **✅ incorporado el mismo día con OK de Débora** como `third-anthropic-defending-code-v1.0` (`draft`, 5 skills de análisis, harness gVisor excluido). MCP Builder: alcance confirmado, cubre Teams/SharePoint vía `custom-api`, sin re-incorporar. #81 Obsidian: evaluado y documentado en M.6 como herramienta de apoyo. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
 | **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
 
+> **Sesión Auditoría + Cobertura de Huecos ✅ EJECUTADA (2026-07-04)** → registro movido a
+> [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). Resumen: auditoría de desfase plan↔repo
+> (`AUDITORIA_DESFASE_PLAN_REPO.md`; el desfase es de **madurez**, no de existencia — 313/359 draft,
+> 0 apb-owned approved, 0 DRIFT-repo) + 5 componentes nuevos que cubren huecos #15/#33/#34/#39-40 +
+> check #26 anti-desfase. Pendiente derivado: **avanzar draft→approved** (ciclo de gobernanza) y
+> activación MCP Graph #30 (creds/tenant M365, Plataforma).
+
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
 - **#34 (validación QA en despliegues):** aplica a todo — framework y aplicaciones APB. De momento, durante la fase de construcción del framework, no se aplica al propio repo; se diseña de forma que pueda activarse también sobre él en el futuro. Se incluye en Sesión 21 junto con #15 y #33.
@@ -1200,7 +1207,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | WCAG / Accesibilidad | 🟡 Nueva | accessibility-auditor nuevo; wiring pendiente |
 | LCSP / Licitación | ❌ Pendiente | Bloqueado: briefing de Débora |
 | Descomposición monolitos | ❌ Pendiente | Domain Catalog ya poblado (21 dominios `proposed`); falta aprobación + acceso a código SOSTRAT |
-| M365 / Teams / SharePoint | ❌ Pendiente | Adapters existen; integración real pendiente |
+| M365 / Teams / SharePoint | 🟡 CONSTRUIDO (draft) | `prov-ms365-v1.0` + `prov-entra-id-v1.0` + adapters m365/rovo + OpenAPI/Forge existen. Solo falta activación MCP Graph real (credenciales/tenant — Plataforma). Ver `AUDITORIA_DESFASE_PLAN_REPO.md` |
 
 #### D.3 QA del framework
 - **Validación solo estructural** (forma del componente), NO funcional (comportamiento).
@@ -1283,7 +1290,7 @@ licencia + análisis de seguridad + `source_commit` SHA real.
 | Descomposición de monolitos (Fase 1) | #38 F1 | Catálogo ya poblado (21 dominios `proposed`); bloqueado por aprobación + acceso a código SOSTRAT |
 | Spec desde histórico Jira | #37 | Sin sesión asignada |
 | Runtime de orquestación real | #41 | **Bloqueado: decisión arquitectónica Débora/Plataforma** |
-| Dashboards Power BI/Grafana + logs | #39/#40 | Parcial (Sesión 17); falta agente dedicado |
+| Dashboards Power BI/Grafana + logs | #39/#40 | ✅ CONSTRUIDO (draft): `apb-agent-observability-v1.0` + subagentes PowerBI/Grafana + telemetría. Instrumentación real OTel añadida (`prov-otel-v1.0`, 2026-07-04). Falta activación real (Plataforma). Ver `AUDITORIA_DESFASE_PLAN_REPO.md` |
 | Telemetría para usuarios de chat sin commit | #46 | Requiere proxy/wrapper de plataforma |
 | Distribución Design System (npm/submodule/CDN) | #49/Sesión 22 | **Bloqueado: decisión de Débora** |
 | QA del propio framework + prueba real agentes | #50/#51 | Alimenta paso a `approved` |

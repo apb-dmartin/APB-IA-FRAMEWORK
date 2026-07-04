@@ -21,6 +21,7 @@ consumed_by:
   - "apb-agent-design-compliance-v1.0"
 depends_on:
   - prov-azure-monitor-v1.0
+  - prov-otel-v1.0
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 created_date: "2026-06-25"
 review_date: "2026-06-25"

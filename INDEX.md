@@ -18,15 +18,15 @@
 
 | Métrica | Valor |
 |---------|-------|
-| Skills APB | 177 / 177 |
+| Skills APB | 181 / 181 |
 | Skills terceros | 56 / 56 |
 | Agentes | 37 / 37 |
 | Subagentes | 34 / 34 |
 | Workflows | 17 / 17 |
-| Providers | 22 / 22 |
+| Providers | 23 / 23 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **354** |
+| **Total** | **359** |
 
 ---
 
@@ -56,9 +56,9 @@ APB-IA-FRAMEWORK/
 ├── subagents/                  # 34 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
-│   ├── apb-owned/             # 177 skills
+│   ├── apb-owned/             # 181 skills
 │   └── third-party/           # 56 skills
-├── providers/                  # 22 providers
+├── providers/                  # 23 providers
 ├── wrappers/                   # 7 wrappers
 ├── adapters/                   # 4 adaptadores
 │   ├── copilot/
@@ -90,15 +90,15 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Skills APB por Dominio (177)
+## ✅ Skills APB por Dominio (181)
 
 | Dominio | Cantidad | Patrón ID |
 |---------|----------|-----------|
-| development | 27 | `apb-dev-*` |
+| development | 28 | `apb-dev-*` |
 | governance | 20 | `apb-gov-*` |
-| operation | 19 | `apb-ops-*` |
-| platform | 19 | `apb-plat-*` |
-| qa | 19 | `apb-qa-*` |
+| operation | 20 | `apb-ops-*` |
+| platform | 20 | `apb-plat-*` |
+| qa | 20 | `apb-qa-*` |
 | architecture | 16 | `apb-arch-*` |
 | discovery | 16 | `apb-disc-*` |
 | security | 12 | `apb-sec-*` |

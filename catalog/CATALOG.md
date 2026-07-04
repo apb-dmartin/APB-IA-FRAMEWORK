@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 354
+- **Total Components**: 359
 
 ## Component Breakdown
 
-### Skills APB-Owned (177 total)
+### Skills APB-Owned (181 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -55,6 +55,7 @@
 | `apb-dev-review-tl-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-review-tl-v1.0.md` |
 | `apb-dev-simplicity-first-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-simplicity-first-v1.0.md` |
 | `apb-dev-sonar-clean-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sonar-clean-v1.0.md` |
+| `apb-dev-sql-explain-plan-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-explain-plan-v1.0.md` |
 | `apb-dev-sql-fix-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-fix-v1.0.md` |
 | `apb-dev-sql-gen-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-gen-v1.0.md` |
 | `apb-dev-sql-review-v1.0` | development | draft | `skills/apb-owned/development/apb-dev-sql-review-v1.0.md` |
@@ -112,6 +113,7 @@
 | `apb-ops-change-management-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-change-management-v1.0.md` |
 | `apb-ops-debt-remediation-plan-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-debt-remediation-plan-v1.0.md` |
 | `apb-ops-dependency-audit-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-dependency-audit-v1.0.md` |
+| `apb-ops-incident-analyze-visual-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-analyze-visual-v1.0.md` |
 | `apb-ops-incident-diagnose-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-diagnose-v1.0.md` |
 | `apb-ops-incident-escalate-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-escalate-v1.0.md` |
 | `apb-ops-incident-triage-v1.0` | operation | draft | `skills/apb-owned/operation/apb-ops-incident-triage-v1.0.md` |
@@ -130,6 +132,7 @@
 | `apb-orch-human-checkpoint-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-human-checkpoint-v1.0.md` |
 | `apb-orch-multi-agent-v1.0` | orchestration | draft | `skills/apb-owned/orchestration/apb-orch-multi-agent-v1.0.md` |
 | `apb-plat-azure-servicebus-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-azure-servicebus-v1.0.md` |
+| `apb-plat-ci-qa-gate-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-ci-qa-gate-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
 | `apb-plat-db-migration-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-db-migration-v1.0.md` |
@@ -165,6 +168,7 @@
 | `apb-qa-e2e-patterns-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-e2e-patterns-v1.0.md` |
 | `apb-qa-exploratory-nav-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-exploratory-nav-v1.0.md` |
 | `apb-qa-framework-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-framework-v1.0.md` |
+| `apb-qa-markdown-validate-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-markdown-validate-v1.0.md` |
 | `apb-qa-performance-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-performance-v1.0.md` |
 | `apb-qa-pipeline-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-pipeline-v1.0.md` |
 | `apb-qa-post-migration-v1.0` | qa | draft | `skills/apb-owned/qa/apb-qa-post-migration-v1.0.md` |
@@ -355,7 +359,7 @@
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 | `apb-wf-vendor-procurement-v1.0` | Vendor Procurement LCSP | draft | `workflows/apb-wf-vendor-procurement-v1.0.md` |
 
-### Providers (22 total)
+### Providers (23 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -378,6 +382,7 @@
 | `prov-k6-v1.0` | Provider: k6 MCP | draft | `providers/prov-k6-v1.0.md` |
 | `prov-ms-learn-v1.0` | Provider: Microsoft Learn MCP | draft | `providers/prov-ms-learn-v1.0.md` |
 | `prov-ms365-v1.0` | Provider: Microsoft 365 (Graph API) | draft | `providers/prov-ms365-v1.0.md` |
+| `prov-otel-v1.0` | Provider: OpenTelemetry (instrumentación y telemetría) | draft | `providers/prov-otel-v1.0.md` |
 | `prov-playwright-v1.0` | Provider: Playwright MCP | draft | `providers/prov-playwright-v1.0.md` |
 | `prov-sentinel-v1.0` | Provider: Microsoft Sentinel | draft | `providers/prov-sentinel-v1.0.md` |
 | `prov-sonar-v1.0` | Provider: SonarQube MCP | draft | `providers/prov-sonar-v1.0.md` |

@@ -1055,6 +1055,62 @@ def validate_execution_report_evidence_methodology(repo_path: Path, result: Vali
                                "casos no ejecutados, vídeo) verificada"))
 
 
+# IDs de componente citados como entregables en el plan (mismo prefijo que el
+# resto de referencias del repo). Requiere versión (-vX.Y) para no confundir con
+# menciones de familias/repos externos sin versión (p.ej. 'apb-ai-skills').
+PLAN_DELIVERABLE_ID_RE = re.compile(
+    r"`((?:apb|third|prov|wrap|adapter)-[a-z0-9-]+-v\d+\.\d+)`"
+)
+# Marcadores que, cerca del ID, indican que el plan lo declara explícitamente
+# NO entregado (gap documentado o decisión de no crearlo) — no es un desfase.
+PLAN_NEGATION_MARKERS = (
+    "(pendiente)", "(planificado)", "diferido", "no se creó", "no se cre",
+    "sin crear", "no existe", "hipotétic",
+)
+
+
+def validate_plan_deliverables_exist(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+    """26. Reconciliación plan↔repo (2026-07-04, anti-repetición).
+
+    Origen: auditoría de desfase 2026-07-04 (discovery/AUDITORIA_DESFASE_PLAN_REPO.md)
+    + riesgo R11 ya declarado en el propio plan ('Plan ↔ repo desincronizado') +
+    precedente real #56–#76 (el plan afirmaba entregables que hubo que reconciliar
+    a mano). El desfase que este check evita es 'DRIFT-repo': una sesión marcada
+    CERRADA que declara un componente que NO existe en el repo.
+
+    Alcance conservador para no generar falsos positivos: solo filas de tabla
+    (empiezan por '|') de discovery/PLAN_FASES_FUTURAS.md que contienen 'CERRADA',
+    y solo los IDs de componente con versión citados en ellas (entre backticks).
+    Se excluyen los IDs con un marcador de negación cercano (gap documentado o
+    decisión de no crear). Si un ID así declarado no existe en el repo → ERROR
+    'bolígrafo rojo': corrige el plan o crea el componente."""
+    plan_path = repo_path / "discovery" / "PLAN_FASES_FUTURAS.md"
+    if not plan_path.exists():
+        return
+    rel = str(plan_path.relative_to(repo_path))
+    seen: Set[str] = set()
+    for lineno, line in enumerate(plan_path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.lstrip().startswith("|") or "CERRADA" not in line:
+            continue
+        for m in PLAN_DELIVERABLE_ID_RE.finditer(line):
+            comp_id = m.group(1)
+            nearby = line[max(0, m.start() - 40): m.end() + 40].lower()
+            if any(neg in nearby for neg in PLAN_NEGATION_MARKERS):
+                continue
+            if comp_id in all_ids or comp_id in seen:
+                continue
+            seen.add(comp_id)
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"Desfase plan↔repo (check #26): una sesión marcada CERRADA declara el "
+                f"entregable '{comp_id}' pero ese componente no existe en el repo. "
+                f"Corrige la afirmación del plan o crea el componente (ver "
+                f"discovery/AUDITORIA_DESFASE_PLAN_REPO.md).",
+                line=lineno,
+            ))
+    result.add(ValidationIssue("INFO", rel, "Reconciliación plan↔repo (entregables CERRADA) verificada"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -1133,6 +1189,7 @@ def main():
     validate_agnostic_root_routing(repo_path, result)
     validate_execution_and_approval_methodology(repo_path, result)
     validate_execution_report_evidence_methodology(repo_path, result)
+    validate_plan_deliverables_exist(repo_path, result, all_ids)
     validate_catalog(repo_path, result, all_ids)
 
     print()
