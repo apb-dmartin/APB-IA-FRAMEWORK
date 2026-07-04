@@ -83,7 +83,7 @@
   <h1>Auditoría de desfase Plan ↔ Repositorio</h1>
 </header>
 <div class="layout">
-  <nav class="sidebar"><ul><li><a href="#1-recuento-numérico-primero">1. Recuento numérico primero</a></li><li><a href="#2-hallazgo-central-el-desfase-es-de-madurez-no-de-existencia">2. Hallazgo central: el desfase es de MADUREZ, no de existencia</a></li><li><a href="#3-verificación-de-los-4-frentes-solicitados-sesión-16-21-30-3940">3. Verificación de los 4 frentes solicitados (Sesión 16, 21, #30, #39/#40)</a></li><li><a href="#4-drift-plan-detectado-notas-obsoletas-a-corregir">4. DRIFT-plan detectado (notas obsoletas a corregir)</a></li><li><a href="#5-bloqueado-débora-pendientes-reales-esperando-insumodecisión">5. BLOQUEADO-Débora (pendientes reales esperando insumo/decisión)</a></li><li><a href="#6-accionable-sin-bloqueo-huecos-netos-parte-b">6. ACCIONABLE sin bloqueo → huecos netos (Parte B)</a></li><li><a href="#7-conclusiones-y-acciones">7. Conclusiones y acciones</a></li><li><a href="#8-revisión-exhaustiva-del-plan-completo-2ª-pasada-2026-07-04">8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)</a></li></ul></nav>
+  <nav class="sidebar"><ul><li><a href="#1-recuento-numérico-primero">1. Recuento numérico primero</a></li><li><a href="#2-hallazgo-central-el-desfase-es-de-madurez-no-de-existencia">2. Hallazgo central: el desfase es de MADUREZ, no de existencia</a></li><li><a href="#3-verificación-de-los-4-frentes-solicitados-sesión-16-21-30-3940">3. Verificación de los 4 frentes solicitados (Sesión 16, 21, #30, #39/#40)</a></li><li><a href="#4-drift-plan-detectado-notas-obsoletas-a-corregir">4. DRIFT-plan detectado (notas obsoletas a corregir)</a></li><li><a href="#5-bloqueado-débora-pendientes-reales-esperando-insumodecisión">5. BLOQUEADO-Débora (pendientes reales esperando insumo/decisión)</a></li><li><a href="#6-accionable-sin-bloqueo-huecos-netos-parte-b">6. ACCIONABLE sin bloqueo → huecos netos (Parte B)</a></li><li><a href="#7-conclusiones-y-acciones">7. Conclusiones y acciones</a></li><li><a href="#8-revisión-exhaustiva-del-plan-completo-2ª-pasada-2026-07-04">8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)</a></li><li><a href="#9-sesión-de-seguimiento-3ª-pasada-2026-07-04-3-tareas-accionables">9. Sesión de seguimiento (3ª pasada, 2026-07-04) — 3 tareas accionables</a></li></ul></nav>
   <main>
     <div class="intro"><blockquote><p><strong>Borrador generado por IA</strong> (APB AI Framework — auditoría de reconciliación) — pendiente validación humana por Arquitectura APB. No distribuir sin revisión.</p></blockquote>
 <p><strong>Fecha:</strong> 2026-07-04 · <strong>Repo:</strong> <code>APB-IA-FRAMEWORK</code> (local) · <strong>Fuente de verdad de inventario:</strong> <code>catalog/CATALOG.md</code> (autogenerado) · <strong>Método:</strong> verificación estructural del 100% del catálogo + muestreo dirigido de los entregables que el plan declara «hechos».</p>
@@ -380,7 +380,25 @@
 </tr>
 </tbody></table></div>
 <p><strong>Confirmado correctamente pendiente</strong> (verificado inexistente en repo, el plan acierta): <code>capabilities/</code> (E-T4), <code>prov-orchestration-engine-v1.0</code>, <code>prov-servicebus-v1.0</code>, <code>apb-agent-orchestrator-v1.0</code>, <code>apb-agent-legacy-onboarding-v1.0</code> (E-F5: existe el *workflow* <code>apb-wf-legacy-onboarding-v1.0</code> y <code>apb-dev-legacy-mapper</code>, pero no el agente). Los 3 skills <code>apb-orch-*</code> que §77 daba por creados <strong>sí existen</strong> (el plan acertaba).</p>
-<p><strong>Verificado que NO hay más DRIFT-repo:</strong> ningún componente declarado «CERRADA»/creado falta en el repo (además el nuevo <strong>check #26</strong> lo vigila de forma continua). El único caso de sobre-afirmación era <code>prov-servicebus-v1.0</code> en §77 (prosa, no fila CERRADA — por eso el check</p>
+<p><strong>Verificado que NO hay más DRIFT-repo:</strong> ningún componente declarado «CERRADA»/creado falta en el repo (además el nuevo <strong>check #26</strong> lo vigila de forma continua). El único caso de sobre-afirmación era <code>prov-servicebus-v1.0</code> en §77 (prosa, no fila CERRADA — por eso el check</p><h2 id="9-sesión-de-seguimiento-3ª-pasada-2026-07-04-3-tareas-accionables">9. Sesión de seguimiento (3ª pasada, 2026-07-04) — 3 tareas accionables</h2><p>Tras §1–§8, Débora eligió 3 de los 4 puntos ACCIONABLE del §6 (dejando fuera el push de los 2 commits pendientes). Un hallazgo de DRIFT-plan adicional, ya corregido:</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>Ubicación</th>
+<th>El plan decía</th>
+<th>Realidad en repo</th>
+<th>Tipo</th>
+<th>Corrección</th>
+</tr></thead><tbody>
+<tr>
+<td><code>PLAN_FASES_FUTURAS.md</code> L30 (tabla de mapeo, punto #14)</td>
+<td>&quot;✅ Descartado — componente eliminado del repo&quot;</td>
+<td>El componente <strong>existe</strong>, en <code>draft</code>, licencia MIT verificada (Sesión 19) — el detalle del mismo punto #14 más abajo (antes L153) ya decía &quot;RESUELTO&quot;</td>
+<td>DRIFT-plan (contradicción interna dentro del propio fichero)</td>
+<td>L30 corregida para coincidir con el detalle; recomendación de consumidor futuro añadida (no wireada)</td>
+</tr>
+</tbody></table></div>
+<p><strong>Aclaración de ruta (no es un DRIFT, es una confusión resuelta en la propia sesión):</strong> el &quot;submódulo <code>domain-catalog</code>&quot; dentro de <code>APB-IA-FRAMEWORK</code> está anclado a un commit inicial vacío (<code>main</code>, sin los 21 dominios) — el trabajo real de los 21 <code>domain.md</code> vive en el <strong>clon independiente</strong> <code>GitHub-Repos/APB-DOMAIN-CATALOG</code>, rama <code>feat/carga-inicial-dominios-apim</code>, ya empujada a <code>origin</code> pero sin PR mergeado a <code>main</code>. No se contabiliza como DRIFT porque no hay ninguna afirmación del plan que contradiga esto — es una ambigüedad de dónde mirar, aclarada por Débora durante la revisión de este mismo plan de trabajo.</p>
+<p><strong>Trabajo ejecutado esta sesión</strong> (detalle en <code>PLAN_FASES_COMPLETADAS.md</code>): #85(K)(a)/(d) — generador de HTML del catálogo de dominios + primer workflow de CI en <code>APB-DOMAIN-CATALOG</code> + catálogo de referencia de dominios típicos; re-identificación de 2 de 10 SHAs <code>unverified</code> de terceros (<code>ccusage</code>, <code>wrap-mukul-cyber</code>) con evidencia real de GitHub, y documentación explícita de por qué los 8 restantes no son resolubles hoy (3 con <code>source_repo</code> inexistente/hallucinado, 5 con origen SaaS sin repositorio Git); corrección de la contradicción L30 sobre Understand-Anything.</p>
 <blockquote><p>Este informe se acompaña de su versión HTML corporativa (<code>AUDITORIA_DESFASE_PLAN_REPO.html</code>).</p></blockquote>
   </main>
 </div>

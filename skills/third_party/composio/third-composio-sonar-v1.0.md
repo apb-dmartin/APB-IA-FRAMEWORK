@@ -19,6 +19,15 @@ review_date: "2026-06-22"
 
 ---
 
+## ⚠️ Intento de re-identificación de SHA (2026-07-04) — sin resultado
+
+`source_repo` apunta solo a la organización `ComposioHQ`, no a un repositorio concreto. Una
+búsqueda en GitHub de repos de `ComposioHQ` relacionados con SonarQube no encontró ninguno —
+Composio es una plataforma de integraciones (SaaS) y esta skill probablemente se basó en su
+documentación de conectores, no en un repo público. No se fabrica una URL/SHA de sustitución
+(norma "no inventar sin evidencia", `GOVERNANCE.md`). `source_commit` permanece `unverified`.
+**Pendiente:** identificar el repo/documento exacto de Composio que dio origen a esta skill.
+
 ## Descripción
 Integración con SonarQube para análisis estático de código, extracción de métricas de calidad y generación de informes de deuda técnica.
 

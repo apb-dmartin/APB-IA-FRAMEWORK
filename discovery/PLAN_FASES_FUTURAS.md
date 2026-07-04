@@ -27,7 +27,7 @@
 | 11 (DDD + inventario dominios negocio) | ✅ **Unificado con #38 Fase 0** (decisión Debora post-Sesión 9) — mismo artefacto, se resuelve en la sesión de #38, no en 13 |
 | 12 (loops de iteración) | **13** |
 | 13 (guía UI/UX) | ✅ **Documentos recibidos** (ver bloque nuevo abajo) — tratamiento en **Sesión Frontend** |
-| 14 (licencia Understand-Anything) | ✅ **Descartado** — decisión de Debora: no usar `Lum1104/Understand-Anything`. Componente `third-lum1104-knowledge-graph-v1.0.md` eliminado del repo. |
+| 14 (licencia Understand-Anything) | ✅ **RESUELTO (Sesión 19, 2026-07-04)** — licencia de `Lum1104/Understand-Anything` verificada: **MIT**. El bloqueo de producción por licencia desconocida (motivo de la decisión inicial de Débora de no usarlo) queda levantado; `third-lum1104-knowledge-graph-v1.0.md` **existe** en el repo, en `status: draft`, sin `consumed_by` (sin wiring). Uso futuro pendiente de reevaluación de Débora ahora que la licencia está clara — ver detalle más abajo. *(Corregido 2026-07-04: esta fila decía antes "descartado, eliminado del repo", desactualizada frente al detalle del punto #14 más abajo tras la Sesión 19 — quedaban dos afirmaciones contradictorias en el mismo fichero.)* |
 | 15 (soporte incidencias técnicas) | **Sesión 21** |
 | 16 (análisis de riesgos validación Ciber/Arq/QA) | **Sesión 12** (parcial) + **Sesión 16** (pendiente). Sesión 12 construyó `apb-gov-ai-risk-gate-v1.0` — evalúa los 6 riesgos *específicos de uso de IA* de `proyecto.md` §3.5. **El alcance completo del punto #16 queda pendiente para Sesión 16:** informe de análisis de riesgos organizativo (incumplimientos de políticas APB, deuda técnica, ENS nivel alto) con procedimiento de excepciones corporativo, para validación por Ciberseguridad y Arquitectura — informe listo para que un humano decida si acepta el incumplimiento y qué plan de mitigación exige. Requiere: esbozo de contenido del informe que facilitará Debora + procedimiento corporativo de excepciones. |
 | 17 (auditoría Playwright/apb-ai-skills) | ✅ **Sesión QA — CERRADA** (4 fusiones realizadas, apb-ai-skills deprecado) |
@@ -161,6 +161,14 @@ pendientes históricos), en vez de dejarlos en un cajón sin fecha.
     de la tabla de mapeo) se tomó con licencia desconocida — puede
     reevaluarse ahora o mantenerse el descarte; hasta que lo decida, el
     componente queda en `draft` sin consumidores.
+    **Corrección de consistencia (2026-07-04):** la fila 14 de la tabla de
+    mapeo (arriba, línea ~30) seguía diciendo "descartado, eliminado del
+    repo" pese a esta resolución — corregida para que ambas coincidan.
+    **Recomendación (no decisión) para cuando Débora reevalúe el uso:**
+    candidato natural es `apb-agent-ddd-v1.0` / `apb-sub-ddd-interview-v1.0`
+    (construcción de grafos de conocimiento de dominio a partir de
+    documentación no estructurada) — no se cablea aquí, es una decisión de
+    negocio pendiente.
 
 15. **Soporte a incidencias técnicas generalista**
     Agente/skill que ayude a diagnosticar y resolver incidencias técnicas de
@@ -823,6 +831,14 @@ punto.
 > 0 apb-owned approved, 0 DRIFT-repo) + 5 componentes nuevos que cubren huecos #15/#33/#34/#39-40 +
 > check #26 anti-desfase. Pendiente derivado: **avanzar draft→approved** (ciclo de gobernanza) y
 > activación MCP Graph #30 (creds/tenant M365, Plataforma).
+>
+> **Sesión de seguimiento ✅ EJECUTADA (2026-07-04, misma fecha)** — 3 tareas accionables elegidas
+> por Débora → registro movido a [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+> Resumen: #85(K)(a)/(d) ejecutado en `APB-DOMAIN-CATALOG` (HTML de consulta + 1er CI de
+> gobernanza del repo + catálogo de referencia); 2/10 SHAs `unverified` de terceros
+> re-identificados con evidencia real (8 documentados como no resolubles hoy); corregida
+> contradicción interna sobre Understand-Anything (L30 vs. detalle #14). Pendiente: push de la
+> rama `feat/carga-inicial-dominios-apim` en `APB-DOMAIN-CATALOG` (sin confirmar).
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
@@ -1933,7 +1949,20 @@ plan de pruebas y evidencias).
 
 </details>
 
-### 85. Enriquecimiento del catálogo corporativo de dominios (consulta funcional + guía de clasificación)
+### 85. Enriquecimiento del catálogo corporativo de dominios (consulta funcional + guía de clasificación) — (a)/(d) ✅ EJECUTADO (2026-07-04)
+
+> **(a) y (d) ejecutados en `GitHub-Repos/APB-DOMAIN-CATALOG`** (el clon real con los 21
+> `domain.md`, no el submódulo de `main` — ver aclaración de ruta en
+> `AUDITORIA_DESFASE_PLAN_REPO.md §9`): `scaffolding/scripts/generate_domain_catalog_html.py`
+> genera `catalog/DOMAINS.html` (listado + búsqueda/filtro + ficha por dominio) leyendo
+> `domains/*/domain.md` directamente — nunca desde `ddd-discovery/` ni a mano. Añadido además el
+> **primer workflow de CI de este repo** (`.github/workflows/validate.yml`), que ejecuta
+> `validate_catalog.py` (ya existía, sin conectar) + un chequeo `--check` de drift del HTML en
+> cada push/PR a `main` — gobernanza automática, no generación puntual por un agente. Catálogo de
+> referencia en `scaffolding/reference/dominios-tipicos-referencia.md`. Commit local
+> `617ae1f` en la rama `feat/carga-inicial-dominios-apim` — **sin push**, pendiente de que Débora
+> confirme subirlo (igual que el resto de esa rama, aún sin PR a `main`). (b) y (c) siguen
+> pendientes de la aprobación de Arquitectura de los 21 dominios, como estaba previsto.
 
 Ampliar el **catálogo corporativo de dominios de negocio** (repo
 `APB-DOMAIN-CATALOG`, 21 dominios `proposed`, ver #38 Fase 0 y #54) con:

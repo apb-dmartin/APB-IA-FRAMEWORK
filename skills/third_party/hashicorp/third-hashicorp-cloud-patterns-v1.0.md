@@ -17,6 +17,17 @@ verified_date: "2026-06-23"
 
 # Cloud Ready Assessment para APB
 
+## ⚠️ Intento de re-identificación de SHA (2026-07-04) — sin resultado
+
+`hashicorp/terraform-search-import` **no existe** como repositorio en GitHub (404 vía API, tanto
+en la URL del repo como en su listado de commits). "Terraform Search & Import" es el nombre de
+una **funcionalidad de producto** de HCP Terraform (aparece citada en repos de terceros como
+ejemplo de uso), no un repositorio publicado. No se ha podido determinar con evidencia qué
+repositorio real dio origen a este componente — no se fabrica una URL/SHA de sustitución
+(norma "no inventar sin evidencia", `GOVERNANCE.md`). `source_commit` permanece `unverified`.
+**Pendiente:** que el autor original o Débora identifiquen el repo/commit real, o se reconsidere
+el origen citado del componente.
+
 ## Overview
 Evaluación de preparación para cloud de aplicaciones legacy, identificando dependencias on-prem, deuda técnica, y generando plan de modernización con priorización de riesgos y esfuerzo.
 

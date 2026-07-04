@@ -205,7 +205,7 @@
 | `third-anthropic-mcp-builder-v1.0` | https://github.com/anthropics/skills/tree/main/mcp-builder | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-mcp-builder-v1.0.md` |
 | `third-anthropic-playwright-v1.0` | https://github.com/anthropics/skills/tree/main/webapp-testing | Apache 2.0 | draft | `skills/third_party/anthropic/third-anthropic-playwright-v1.0.md` |
 | `third-apollographql-api-design-v1.0` | https://github.com/apollographql/skills | MIT | approved | `skills/third_party/apollographql/third-apollographql-api-design-v1.0.md` |
-| `third-ccusage-analytics-v1.0` | https://github.com/ccusage | MIT | approved | `skills/third_party/ccusage/third-ccusage-analytics-v1.0.md` |
+| `third-ccusage-analytics-v1.0` | https://github.com/ccusage/ccusage | MIT | approved | `skills/third_party/ccusage/third-ccusage-analytics-v1.0.md` |
 | `third-clear-solutions-unit-test-gen-v1.0` | https://github.com/clear-solutions/unit-tests-skills | MIT | approved | `skills/third_party/clear-solutions/third-clear-solutions-unit-test-gen-v1.0.md` |
 | `third-composio-sonar-v1.0` | https://github.com/ComposioHQ | MIT | approved | `skills/third_party/composio/third-composio-sonar-v1.0.md` |
 | `third-davila7-csharp-pro-v1.0` | https://github.com/davila7/claude-code-templates | MIT | draft | `skills/third_party/davila7/third-davila7-csharp-pro-v1.0.md` |

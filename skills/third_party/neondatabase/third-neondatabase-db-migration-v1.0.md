@@ -17,6 +17,17 @@ verified_date: "2026-06-23"
 
 # Migración de Base de Datos para APB
 
+## ⚠️ Intento de re-identificación de SHA (2026-07-04) — parcial
+
+`neondatabase/neon-postgres` **no existe** como repositorio en GitHub (404 vía API). El org
+`neondatabase` sí existe y sí tiene un repo principal `neondatabase/neon` ("Serverless
+Postgres") y uno `neondatabase/agent-skills` ("Agent Skills for Neon Serverless Postgres") que
+podrían ser el origen real, pero no hay evidencia suficiente para saber cuál de los dos (o si
+ninguno) es el que dio origen a este componente — no se fabrica una URL/SHA de sustitución sin
+confirmación (norma "no inventar sin evidencia", `GOVERNANCE.md`). `source_commit` permanece
+`unverified`. **Pendiente:** confirmar con el autor original o Débora cuál repo es el correcto
+antes de corregir `source_repo`.
+
 ## Overview
 Migración de esquemas y datos entre bases de datos (Azure SQL, PostgreSQL, Oracle) con mínimo downtime, integridad garantizada y plan de rollback. Incluye migración de datos históricos, transformación de esquemas y validación post-migración.
 

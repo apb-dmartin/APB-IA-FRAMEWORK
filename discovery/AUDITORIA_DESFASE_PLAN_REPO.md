@@ -161,4 +161,29 @@ el repo (además el nuevo **check #26** lo vigila de forma continua). El único 
 sobre-afirmación era `prov-servicebus-v1.0` en §77 (prosa, no fila CERRADA — por eso el check
 #26 no lo capturaba; corregido a mano).
 
+## 9. Sesión de seguimiento (3ª pasada, 2026-07-04) — 3 tareas accionables
+
+Tras §1–§8, Débora eligió 3 de los 4 puntos ACCIONABLE del §6 (dejando fuera el push de los 2
+commits pendientes). Un hallazgo de DRIFT-plan adicional, ya corregido:
+
+| Ubicación | El plan decía | Realidad en repo | Tipo | Corrección |
+|---|---|---|---|---|
+| `PLAN_FASES_FUTURAS.md` L30 (tabla de mapeo, punto #14) | "✅ Descartado — componente eliminado del repo" | El componente **existe**, en `draft`, licencia MIT verificada (Sesión 19) — el detalle del mismo punto #14 más abajo (antes L153) ya decía "RESUELTO" | DRIFT-plan (contradicción interna dentro del propio fichero) | L30 corregida para coincidir con el detalle; recomendación de consumidor futuro añadida (no wireada) |
+
+**Aclaración de ruta (no es un DRIFT, es una confusión resuelta en la propia sesión):** el
+"submódulo `domain-catalog`" dentro de `APB-IA-FRAMEWORK` está anclado a un commit inicial vacío
+(`main`, sin los 21 dominios) — el trabajo real de los 21 `domain.md` vive en el **clon
+independiente** `GitHub-Repos/APB-DOMAIN-CATALOG`, rama `feat/carga-inicial-dominios-apim`, ya
+empujada a `origin` pero sin PR mergeado a `main`. No se contabiliza como DRIFT porque no hay
+ninguna afirmación del plan que contradiga esto — es una ambigüedad de dónde mirar, aclarada por
+Débora durante la revisión de este mismo plan de trabajo.
+
+**Trabajo ejecutado esta sesión** (detalle en `PLAN_FASES_COMPLETADAS.md`): #85(K)(a)/(d) —
+generador de HTML del catálogo de dominios + primer workflow de CI en `APB-DOMAIN-CATALOG` +
+catálogo de referencia de dominios típicos; re-identificación de 2 de 10 SHAs `unverified` de
+terceros (`ccusage`, `wrap-mukul-cyber`) con evidencia real de GitHub, y documentación explícita
+de por qué los 8 restantes no son resolubles hoy (3 con `source_repo` inexistente/hallucinado,
+5 con origen SaaS sin repositorio Git); corrección de la contradicción L30 sobre
+Understand-Anything.
+
 > Este informe se acompaña de su versión HTML corporativa (`AUDITORIA_DESFASE_PLAN_REPO.html`).

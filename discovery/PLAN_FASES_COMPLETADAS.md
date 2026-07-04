@@ -46,6 +46,78 @@ el repo; ERROR si no. Evita reincidir en el desfase #56–#76. +5 tests (`TestPl
 
 ---
 
+## Sesión de seguimiento (3 tareas accionables) — ✅ EJECUTADA (2026-07-04, misma fecha)
+
+Tras la Sesión Auditoría anterior, Débora preguntó qué más había pendiente sin abordar los 3
+frentes grandes (ciclo de aprobación, QA-3, #77+#80). De los 4 puntos ACCIONABLE sin bloqueo
+(§6 de `AUDITORIA_DESFASE_PLAN_REPO.md`), eligió 3 — dejando fuera el push de los 2 commits de
+la sesión anterior.
+
+**Tarea 1 — #85(K)(a)/(d), en `GitHub-Repos/APB-DOMAIN-CATALOG` (clon real, no el submódulo):**
+- **Aclaración de ruta:** el submódulo `APB-IA-FRAMEWORK/domain-catalog` está anclado a `main` en
+  su commit inicial vacío; los 21 `domains/<nombre>/domain.md` reales viven en el clon
+  independiente `GitHub-Repos/APB-DOMAIN-CATALOG`, rama `feat/carga-inicial-dominios-apim`
+  (2 commits, ya empujada a `origin`, sin PR mergeado a `main`).
+- Nuevo `scaffolding/scripts/generate_domain_catalog_html.py` — genera `catalog/DOMAINS.html`
+  (autocontenido, listado + búsqueda/filtro por nombre/id/estado/equipo + ficha por dominio) leyendo
+  `domains/*/domain.md` directamente. Modo `--check` para detectar drift sin auto-commit.
+  Verificado: genera 21 fichas, filtro probado en navegador (preview), drift provocado
+  deliberadamente y detectado correctamente (exit 1).
+- **Nuevo `.github/workflows/validate.yml`** — primer CI de este repo (antes no tenía ninguno,
+  pese a que `validate_catalog.py` ya existía sin estar conectado). Corre en push/PR a `main`:
+  `validate_catalog.py` + `generate_domain_catalog_html.py --check`. Sin auto-commit (mismo
+  principio que `generate_catalog.py --check` en APB-IA-FRAMEWORK, GOVERNANCE.md: ningún proceso
+  automático modifica un PR sin revisión humana).
+- Nuevo `scaffolding/reference/dominios-tipicos-referencia.md` — catálogos de dominios típicos
+  de empresa genérica y de entorno portuario, con contraste frente a los 21 dominios reales
+  (huecos aparentes señalados, no decididos: Compras, Jurídico, Gobierno de Datos podrían estar
+  diluidos en `dom-corporativo-v1`/`dom-transversal-arq-v1`).
+- Commit local `617ae1f` en `feat/carga-inicial-dominios-apim` (mismo repo/clon). **Sin push** —
+  pendiente de confirmación de Débora, igual que el resto de esa rama.
+- (b)/(c) de #85(K) siguen fuera de alcance (dependen de la aprobación de Arquitectura de los 21
+  dominios).
+
+**Tarea 2 — re-identificación de los 10 SHAs `unverified` de terceros restantes** (en
+`APB-IA-FRAMEWORK`, vía API pública de GitHub):
+- **Resueltos con evidencia real (2):**
+  - `third-ccusage-analytics-v1.0` — `source_repo` solo apuntaba al org sin repo; repo real
+    `ccusage/ccusage`, SHA `f3a8eaba59448a8718a75bb178bd54600020d54e`, MIT confirmado (el
+    clasificador de GitHub lo marca "Other" por un problema de detección, el fichero LICENSE es
+    MIT estándar).
+  - `wrap-mukul-cyber-v1.0` — `mukul975/cybersecurity-arsenal` **no existe**; el repo real es
+    `mukul975/Anthropic-Cybersecurity-Skills` (Apache-2.0, no MIT), SHA
+    `673da1f3b0b7be34ffc9624ef3858fe45f1c3bed` — ya usado correctamente en el descriptor hermano
+    `third-mukul-cyber-arsenal-v1.0.md`, ahora consistentes entre sí.
+- **Documentados como no resolubles hoy (8), sin fabricar SHA/URL de sustitución** (norma "no
+  inventar sin evidencia"):
+  - `third-hashicorp-cloud-patterns-v1.0` — `hashicorp/terraform-search-import` no existe;
+    "Terraform Search & Import" es un nombre de producto de HCP Terraform, no un repo.
+  - `third-openai-threat-model-v1.0` — `openai/security-threat-model` no existe ni aparece en
+    el org `openai`.
+  - `third-neondatabase-db-migration-v1.0` — `neondatabase/neon-postgres` no existe; candidatos
+    plausibles sin confirmar: `neondatabase/neon` o `neondatabase/agent-skills`.
+  - `third-composio-sonar-v1.0` + `wrap-composio-v1.0` — `ComposioHQ` es solo el org; Composio es
+    SaaS, sin repo público de origen identificado.
+  - `third-graphify-visual-v1.0` — `graphify.net` es SaaS propietario, no aplica `source_commit`.
+  - `third-skills-sh-frontend-v1.0` + `wrap-skills-sh-v1.0` — `skills.sh` es una plataforma, no
+    una organización de GitHub; no aplica `source_commit`.
+
+**Tarea 3 — reevaluar Understand-Anything (`third-lum1104-knowledge-graph-v1.0`):**
+- Corregida contradicción interna en `PLAN_FASES_FUTURAS.md`: la fila resumen del punto #14
+  decía "descartado, eliminado del repo" pese a que el detalle del mismo punto (resuelto en
+  Sesión 19) ya decía "licencia MIT confirmada, en `draft`". Ambas partes del fichero ahora
+  coinciden: el componente existe, `draft`, sin consumidores.
+- Recomendación (no decisión) añadida para cuando Débora reevalúe el uso: candidato natural
+  `apb-agent-ddd-v1.0`/`apb-sub-ddd-interview-v1.0`.
+
+**Cierre:** apéndice §9 añadido a `AUDITORIA_DESFASE_PLAN_REPO.md` (+ HTML regenerado); catálogo
+regenerado, `validate_repo.py --strict` **exit 0 (359 componentes, 10 warnings exentos** — antes
+11, bajó por las 2 re-identificaciones), tests verdes, plan y memoria actualizados. **Sin push**
+en ninguno de los dos repos (`APB-IA-FRAMEWORK` ni `APB-DOMAIN-CATALOG`) — pendiente de
+confirmación explícita de Débora.
+
+---
+
 ## Sesión QA-2 — ✅ CERRADA (2026-07-02): planes de pruebas (#82) + navegación agéntica (#84)
 
 **Puntos:** #82 (metodología/plantilla de planes de pruebas) + #84 (navegación agéntica).

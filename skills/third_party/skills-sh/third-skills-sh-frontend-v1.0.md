@@ -19,6 +19,14 @@ review_date: "2026-06-22"
 
 ---
 
+## ⚠️ Verificación de SHA (2026-07-04) — no aplica
+
+`skills.sh` es una plataforma/marketplace de skills (licencia ya registrada como "Propietaria,
+uso interno autorizado"), no un repositorio Git/GitHub — el concepto de `source_commit` no
+aplica a este origen. `wrappers/wrap-skills-sh-v1.0.md` además tiene `source_repo:
+"https://github.com/skills.sh"`, que tampoco es un repo real (skills.sh no es una organización
+de GitHub). Se documenta como **no aplicable** para no reintentar la búsqueda en el futuro.
+
 ## Descripción
 Skill especializada en diseño de interfaces frontend modernas, accesibles y responsivas. Incluye generación de wireframes descriptivos, guías de estilo y recomendaciones de componentes.
 
