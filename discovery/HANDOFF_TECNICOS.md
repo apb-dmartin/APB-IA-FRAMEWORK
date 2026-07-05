@@ -3,11 +3,17 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-06-30 (post KB+SP — knowledge base corporativa + system prompts LLM-agnósticos)  
+> **Última actualización:** 2026-07-03 (Sesión QA TruckCenter — ejecución real en PRE (sesiones I+II) +
+> corrección de metodología de informes + activación Playwright MCP; ver §3)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** 343 componentes (176 skills APB, 52 third-party, 35 agentes, 33 subagentes,
-> 17 workflows, 19 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
-> del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
+> **Estado global:** 347 componentes (177 skills APB, 52 third-party, 35 agentes, 34 subagentes,
+> 17 workflows, 21 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
+> del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).  
+> **Alcance de este documento:** solo tareas manuales de despliegue/producción que debe ejecutar
+> una persona (crear una suscripción Azure, registrar una app AD, poblar un secreto en Key Vault,
+> activar una licencia...). Las **decisiones o insumos que Débora/Dirección deben aportar** para
+> poder planificar o construir algo viven en `discovery/PLAN_FASES_FUTURAS.md §I` (Bloqueos de
+> Débora / Dirección), no aquí.
 
 ---
 
@@ -22,8 +28,7 @@
 7. [Seguridad y compliance](#7-seguridad-y-compliance)
 8. [Telemetría](#8-telemetría)
 9. [Documentación pendiente](#9-documentación-pendiente)
-10. [Insumos bloqueantes de Débora](#10-insumos-bloqueantes-de-débora)
-11. [Orden de ejecución recomendado](#11-orden-de-ejecución-recomendado)
+10. [Orden de ejecución recomendado](#10-orden-de-ejecución-recomendado)
 
 ---
 
@@ -48,7 +53,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 
 ## 2. Ciclo de aprobación — la prioridad de gobernanza
 
-**Situación actual:** 343 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
+**Situación actual:** 345 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
@@ -107,7 +112,49 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-02):** `validate_repo.py --strict` → exit 0. 343 componentes, 0 huérfanos de wiring. 244 componentes conformes al estándar de prompting (check #18 en ERROR).
+**Estado actual (2026-07-03):** `validate_repo.py --strict` → exit 0. 347 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+
+**Sesión QA TruckCenter (2026-07-03) — ejecución real + corrección de metodología:**
+- **Ejecución:** 44/120 casos del plan unificado (v1.4 → v1.5) con escritura real en PRE (B02-B07 + E2E
+  T112), login EntraID asistido por Débora. **2 hallazgos críticos en la app** (H1 sin integridad
+  referencial al eliminar Tipo de Vehículo; H2 maestro de tipos desactualizado) — documentados en el plan
+  §15 y en `PLAN_FASES_COMPLETADAS.md`. **Acción manual pendiente de un desarrollador de TruckCenter (no
+  IA, fuera de este framework): corregir H1 en el repo `APB.TRU`** (validación de integridad referencial
+  antes de eliminar un tipo de vehículo en uso) — el defecto ya está materializado en PRE.
+- **Corrección de metodología:** `TEST_PLAN_STANDARD` v1.3.0 → v1.4.0 (§5.15 casos no ejecutados
+  obligatorios por ID, §7.2 vídeo real no GIF), skill `apb-qa-exploratory-nav` v1.0.0 → v1.1.0, check #24
+  nuevo (+3 tests).
+- **Playwright MCP activado:** `.mcp.json` de **proyecto** (raíz del repo, pendiente de confirmar commit)
+  con el servidor oficial `@playwright/mcp`; `providers/prov-playwright-v1.0.md` v1.0.0 → v1.1.0 con la
+  configuración real (sustituye el placeholder `local://playwright`). **Acción manual pendiente de
+  cualquiera que retome esta sesión: reiniciar/reabrir Claude Code sobre el repo** para que las
+  herramientas Playwright queden disponibles (no se cargan en caliente).
+- Detalle completo → `discovery/PLAN_FASES_FUTURAS.md` puntos #84 (continuación) y #88 (nuevo,
+  reejecución pendiente) + `PLAN_FASES_COMPLETADAS.md`.
+
+**Continuación — Sesión II (misma fecha, 2026-07-03) — punto #88 NO seguido, queda abierto:**
+- **+11 casos netos** (plan v1.5 → v1.6). **Total acumulado: 55/120 con estado registrado, 65 `Pendiente`
+  sin tocar.** Reconfirmación en vivo de H1/H2/H4. **3 hallazgos nuevos:** H5 (rechaza NIF de empresa
+  manual no existente en Sòstrat — no permite el alta libre descrita en el AF), H6 (Nombre Conductor
+  mapeado como "." — mapeo WS Sòstrat), H7 (Swagger de `/trc/`, API `APB.API.LGP`, titulado por error como
+  "APB.API.TRU"). **Acción manual pendiente de un desarrollador de TruckCenter/Sòstrat: revisar H5/H6/H7.**
+- **Se saltó el punto #88**: no se reabrió Claude Code (Playwright MCP seguía sin cargar), se reusó GIF de
+  `claude-in-chrome` sin segmentar por bloque (desviación de §7.2, declarada en el informe). **Acción
+  manual pendiente de quien retome la sesión: reabrir Claude Code sobre este repo antes de empezar**, para
+  que Playwright MCP quede disponible desde el inicio.
+- Informes MD+HTML en OneDrive `QA_TruckCenter_evidencias/030726/` (sesión I y II). Detalle completo →
+  `PLAN_FASES_COMPLETADAS.md` (subsección "Continuación — Sesión II") y punto #77 (segunda recurrencia del
+  riesgo de runtime sin motor real, misma causa raíz que la sesión DDD del 2026-06-30).
+
+**Fase I (2026-07-03) — 7 huecos de uso real cubiertos, `TEST_PLAN_STANDARD` v1.2.0 → v1.3.0:**
+- Matriz de roles + usuario de ejecución (AKV ref o runtime, nunca persistido) — §9.2, columna «Rol requerido» en el ejemplo TruckCenter.
+- Acta de aprobación del informe de resultados (Analista Funcional + Desarrollador; persistida en `.md` y en Jira, no firma criptográfica) — §6.2.
+- Destino de ejecución `local` / `ci-runner` / `azure-qa` con matriz de decisión — §9.1; guía `docs/qa/EJECUCION_LOCAL.md` (nueva).
+- Spec SDD como fuente autoritativa de primer nivel en el plan de pruebas — §1.
+- Nuevo subagente `subagents/apb-sub-qa-fix-loop-v1.0.md` (`draft`): fallo → propone PR → anota Jira; nunca mergea.
+- Nuevo provider `providers/prov-azure-qa-runtime-v1.0.md` (`draft`): entorno de ejecución efímero en Azure QA (Playwright + k6 preinstalados, Managed Identity → AKV) para no requerir instalación local.
+- Ejemplo TruckCenter ampliado a 120 casos (**B13 Rendimiento k6** + **B14 Unitarias xUnit**, nuevos, append-only); secciones en prosa reformateadas a tabla (ARQ Docks, Integraciones, flujos ENTRADA/SALIDA, columnas GRID).
+- Nota de desviación menor: el provider Azure QA **no** se registró en `SYSTEM.md §4.2` — esa tabla es solo de `adapters/`, no de `providers/`. Sin acción pendiente al respecto.
 
 ---
 
@@ -263,6 +310,8 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 | DOC6 | Guía de "Primera skill / Primer agente" para onboarding rápido | Nuevos contribuidores | ⬜ Pendiente |
 | DOC7 | Documentar deprecación `apb-ai-skills` en README del framework | Todos | ⬜ Pendiente |
 | DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 343 componentes (sesiones 15-23 no registradas) | IA / Arquitectura APB | ⬜ Pendiente |
+| QA2-1 | **Credenciales centrales para pruebas funcionales:** el agente de pruebas (`apb-qa-exploratory-nav` / `prov-browser-agent`) debe consultar credenciales desde un **repositorio central de secretos** (Azure Key Vault, `GOVERNANCE.md §5`) y capturar/reutilizar `storage_state` (EntraID), para ejecutar sin login manual. En la demo QA-2 (2026-07-02) las introdujo el usuario. **Diseño cubierto en Fase I** (2026-07-03): `TEST_PLAN_STANDARD §9.2` (usuario de ejecución por `AKV://<secret>` o runtime) + `docs/qa/EJECUCION_LOCAL.md` (captura/reutilización de `storageState`). **Pendiente:** poblar el secreto real en AKV y verificar el flujo end-to-end (Plataforma/Ciberseguridad). | Plataforma / Ciberseguridad / IA | 🟡 Diseñado, ejecución pendiente |
+| QA3-1 | **Sesión QA-3 — ejecución funcional COMPLETA de TruckCenter.** Bloqueantes detectados en QA-2 E-bis: **F3** (PRE sin datos → sembrar dataset anonimizado RGPD), **F2** (formulario de Alta no carga >45s → investigar/priorizar), acceso de escritura para altas/bajas, 2ª pasada **USER_READ**, **k6** (rendimiento; API LGP ~9,3s F4), **SonarQube/OWASP ZAP** (seguridad), **Playwright** para evidencia visual PNG/traza/vídeo (las capturas del navegador MCP no persisten como fichero), **unitarias** (repo `APB.TRU` + xUnit). Actualizar el AF por **F5** (maestro multiidioma CA/ES/EN). **Fase I añadió el andamiaje** (aún sin ejecución real): Bloque B13 (4 casos k6, `Pendiente`) y B14 (4 casos xUnit, `Pendiente`) en el ejemplo unificado, provider `prov-azure-qa-runtime-v1.0` (`draft`) para correr Playwright/k6 sin instalar nada local, y destino de ejecución `azure-qa` en `TEST_PLAN_STANDARD §9.1`. | QA / Plataforma / Ciberseguridad / Dev | ⬜ Pendiente (Débora 2026-07-02; andamiaje Fase I 2026-07-03) |
 
 **Estructura mínima de cada runbook:**
 ```markdown
@@ -275,25 +324,7 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 
 ---
 
-## 10. Insumos bloqueantes de Débora
-
-Estas tareas no pueden iniciarse sin una decisión o aportación explícita de Débora.
-
-| Prioridad | Insumo | Desbloquea | Cuándo se necesita |
-|-----------|--------|-----------|-------------------|
-| ~~🔴 Alta~~ ✅ | ~~**Lista de APIs/servicios APB por dominio de negocio**~~ **RECIBIDA (2026-06-30)** — `API_INVENTORY_APIM.md` | APB-DOMAIN-CATALOG poblado (21 dominios `proposed`) + agentes DDD desbloqueados | Hecho |
-| 🔴 Alta | **Mail oficial de contacto de Arquitectura APB** | Punto #52 — todo el framework | Este mes |
-| 🟡 Media | **Qué componentes aprobar primero + aprobadores por ámbito** | Primer ciclo de aprobación formal | Este mes |
-| 🟡 Media | **Decisión distribución Design System** (npm / submodule / CDN) | DS3 + sesión 22 punto #49 | Este trimestre |
-| 🟡 Media | **Ejemplos de plantillas Word/Excel ofimáticas en uso en APB** | Sesión 13 punto #6 | Este trimestre |
-| 🟡 Media | **Histórico de proyectos: horas reales vs. COSMIC estimadas** | Calibración `apb-disc-cosmic-v1.0` | Este trimestre |
-| 🟠 Baja | **Briefing de procesos de licitación LCSP** | Agentes de licitación (sesión 20, punto #36) | Este trimestre |
-| 🟠 Baja | **URLs de repositorios externos pendientes de evaluación** | Sesión 19 punto #27 | Este trimestre |
-| 🟠 Baja | **Confirmación disponibilidad Rovo en tenant APB** | Activación `adapter-rovo-v1.0` | Julio 2026 |
-
----
-
-## 11. Orden de ejecución recomendado
+## 10. Orden de ejecución recomendado
 
 ```
 ESTA SEMANA (< 4h, cualquier desarrollador):
@@ -314,12 +345,12 @@ ESTE MES (alta prioridad):
 
 EN PARALELO CON LO ANTERIOR (no bloqueante entre sí):
   ├── Plataforma: P1→P8 (integraciones, 4-8 semanas)
-  └── Débora: aportar insumos de §10
+  └── Débora: aportar insumos — ver `PLAN_FASES_FUTURAS.md §I` (Bloqueos de Débora / Dirección)
 
 CUANDO P3+P4 listos:
   └── Desarrollo: D1→D4 (Forge App)
 
-CUANDO insumos de Débora disponibles:
+CUANDO insumos de Débora disponibles (ver `PLAN_FASES_FUTURAS.md §I`):
   └── DC1→DC3 (APB-DOMAIN-CATALOG primer dominio)
 
 ESTE TRIMESTRE:
@@ -337,7 +368,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **343 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **347 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 

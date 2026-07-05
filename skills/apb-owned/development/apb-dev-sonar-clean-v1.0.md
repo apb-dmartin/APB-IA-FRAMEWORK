@@ -8,7 +8,11 @@ owner: "QA / Desarrollo <arquitectura@portdebarcelona.cat>"
 domain: "development"
 autonomy_level: 2
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-07-04"
+consumed_by:
+  - "apb-agent-quality-compliance-v1.0"
+  - "apb-agent-tech-debt-v1.0"
+  - "apb-agent-implementer-v1.0"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 

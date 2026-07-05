@@ -6,16 +6,25 @@ version: "1.0.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
-wraps: "mukul975/cybersecurity-arsenal"
-source_repo: "https://github.com/mukul975/cybersecurity-arsenal"
-source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+wraps: "mukul975/Anthropic-Cybersecurity-Skills"
+source_repo: "https://github.com/mukul975/Anthropic-Cybersecurity-Skills"
+source_license: "Apache-2.0"
+source_commit: "673da1f3b0b7be34ffc9624ef3858fe45f1c3bed"
+verified_date: "2026-07-04"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---
 
 # wrap-mukul-cyber-v1.0
+
+## ✅ Verificación de fuente (re-identificación de SHA, 2026-07-04)
+
+`mukul975/cybersecurity-arsenal` **no existe** como repositorio en GitHub (404 confirmado vía
+API). El repo real del mismo autor es `mukul975/Anthropic-Cybersecurity-Skills` (817 skills,
+licencia **Apache-2.0**, no MIT como constaba antes) — coincide con el ya usado en el
+descriptor hermano `skills/third_party/mukul975/third-mukul-cyber-arsenal-v1.0.md`, que ya
+tenía el repo y el commit correctos. `source_repo`/`source_license`/`source_commit`
+corregidos en este fichero para quedar consistentes con ese descriptor.
 
 ## Purpose
 Adapta el skill de ciberseguridad de mukul975 al stack tecnologico APB (Azure, .NET, Service Bus, CloudEvents), filtrando controles relevantes y anadiendo validacion ENS (Esquema Nacional de Seguridad).

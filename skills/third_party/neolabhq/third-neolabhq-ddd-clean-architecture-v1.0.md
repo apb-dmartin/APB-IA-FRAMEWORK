@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/NeoLabHQ/context-engineering-kit"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "f66e4193906b9aeabf3c66c8f3c87a0670640006"
 ---
 
 # SKILL_DEV_CODE_BASE — Code Quality Foundations

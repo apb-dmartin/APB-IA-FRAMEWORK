@@ -2,7 +2,7 @@
 id: "adapter-claude-v1.0"
 name: "Claude (Anthropic) Adapter"
 description: "Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de Claude (Anthropic). Soporta Claude Code, Claude Desktop, y API de Anthropic."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -16,7 +16,7 @@ adapted_components:
   - "apb-wf-sdd-full-v1.0"
   - "prov-azure-v1.0"
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-07-03"
 ---
 
 # Claude (Anthropic) Adapter
@@ -26,6 +26,11 @@ review_date: "2026-06-22"
 ## 🎯 Propósito
 
 Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de Claude (Anthropic). Soporta Claude Code, Claude Desktop, y API de Anthropic.
+
+**Punto de entrada real:** `CLAUDE.md` (raíz del repo, auto-leído por Claude Code) es
+un fichero delgado que remite a [`AGENTS.md`](../../AGENTS.md) — la fuente única de
+reglas, agnóstica de LLM y herramienta (`SYSTEM.md §4.3`, `§10.1`). Este adapter
+documenta el mapeo de *capacidades* al runtime de Claude; las *reglas* no viven aquí.
 
 ## 🔧 Runtime Soportado
 
@@ -195,6 +200,7 @@ config:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.1.0 | 2026-07-03 | Arquitectura APB | Aclarado que `CLAUDE.md` deriva de `AGENTS.md` (routing file raíz agnóstico, `SYSTEM.md §10.1`); check #22 de `validate_repo.py` verifica que no diverjan. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

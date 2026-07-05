@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/softaworks/agent-toolkit"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "3027f20f3181758385a1bb8c022d4041dfb4de84"
 ---
 
 # Plan de Pruebas para APB

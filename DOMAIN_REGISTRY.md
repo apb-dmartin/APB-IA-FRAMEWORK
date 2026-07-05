@@ -10,14 +10,14 @@
 
 | ID | Nombre | Skills | Color |
 |----|--------|--------|-------|
-| `dev` | Development | 27 | 🔵 |
-| `qa` | Quality Assurance | 18 | 🟢 |
+| `dev` | Development | 28 | 🔵 |
+| `qa` | Quality Assurance | 20 | 🟢 |
 | `arch` | Architecture | 16 | 🟣 |
 | `disc` | Discovery | 16 | 🟡 |
-| `plat` | Platform | 19 | 🟠 |
+| `plat` | Platform | 20 | 🟠 |
 | `sec` | Security | 12 | 🔴 |
 | `gov` | Governance | 20 | ⚫ |
-| `ops` | Operation | 19 | 🔵 |
+| `ops` | Operation | 20 | 🔵 |
 | `doc` | Documentation | 11 | ⚪ |
 | `orch` | Orchestration | 3 | 🟤 |
 | `pm` | Project Management | 11 | 🟢 |

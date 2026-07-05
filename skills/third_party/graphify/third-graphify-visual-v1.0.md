@@ -19,6 +19,14 @@ review_date: "2026-06-22"
 
 ---
 
+## ⚠️ Verificación de SHA (2026-07-04) — no aplica
+
+`graphify.net` es un producto SaaS propietario (licencia ya registrada como "Propietaria
+(evaluación)"), no un repositorio Git/GitHub — el concepto de `source_commit` no aplica a este
+origen. Se deja `source_commit: "unverified"` documentado como **no aplicable** en lugar de
+pendiente de resolución, para que la próxima sesión no reintente una búsqueda de repo que no
+existe.
+
 ## Descripción
 Generación de grafos de conocimiento visuales a partir de documentación, código y especificaciones. Visualización interactiva de relaciones entre componentes.
 

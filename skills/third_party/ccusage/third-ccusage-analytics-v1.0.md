@@ -7,10 +7,10 @@ status: "approved"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
 autonomy_level: 1
-source_repo: "https://github.com/ccusage"
+source_repo: "https://github.com/ccusage/ccusage"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "f3a8eaba59448a8718a75bb178bd54600020d54e"
+verified_date: "2026-07-04"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---
@@ -18,6 +18,14 @@ review_date: "2026-06-22"
 # Skill: Claude Code Usage Analytics (ccusage)
 
 ---
+
+## ✅ Re-identificación de SHA (2026-07-04)
+
+`source_repo` solo apuntaba al org `https://github.com/ccusage` sin repo — el repo real es
+`ccusage/ccusage` (proyecto transferido a una org con el mismo nombre; herramienta real
+`npx ccusage`). Licencia MIT confirmada por el contenido del fichero `LICENSE` (el clasificador
+automático de GitHub lo marca como "Other/NOASSERTION" por un problema de detección, no porque
+el texto no sea MIT). `source_commit` fijado al último commit del repo verificado el 2026-07-04.
 
 ## Descripción
 Análisis de uso y costes de Claude Code con métricas de productividad, identificación de patrones de uso y recomendaciones de optimización.

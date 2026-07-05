@@ -11,8 +11,7 @@ created_date: "2026-06-21"
 review_date: "2026-06-21"
 source_repo: "https://github.com/anthropics/skills/tree/main/mcp-builder"
 source_license: "Apache 2.0"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "9d2f1ae187231d8199c64b5b762e1bdf2244733d"
 ---
 
 # SKILL: MCP Builder (Anthropic Wrapper)

@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/hashicorp/agent-skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "339a113935812ad75c6ff90d418b739a021826d1"
 ---
 
 # SKILL_PLAT_TERRAFORM — Infrastructure as Code with Terraform

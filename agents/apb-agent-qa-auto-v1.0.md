@@ -25,11 +25,15 @@ skills:
   - "apb-qa-accessibility-v1.0"
   - "apb-qa-e2e-patterns-v1.0"
   - "apb-qa-verification-before-completion-v1.0"
+  - "apb-qa-exploratory-nav-v1.0"
+  - "apb-qa-markdown-validate-v1.0"
+  - "apb-plat-ci-qa-gate-v1.0"
 subagents:
   - "apb-sub-qa-unit-v1.0"
   - "apb-sub-qa-e2e-v1.0"
   - "apb-sub-qa-security-v1.0"
   - "apb-sub-qa-performance-v1.0"
+  - "apb-sub-qa-fix-loop-v1.0"
 runtime:
   - "copilot"
   - "claude"

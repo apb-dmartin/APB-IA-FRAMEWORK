@@ -11,6 +11,7 @@ skills:
   - "apb-dev-sql-gen-v1.0"
   - "apb-dev-sql-review-v1.0"
   - "apb-dev-sql-fix-v1.0"
+  - "apb-dev-sql-explain-plan-v1.0"
 subagents:
   - "apb-sub-dev-sql-v1.0"
 runtime:

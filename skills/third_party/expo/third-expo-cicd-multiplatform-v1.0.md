@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/expo/skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "1f9951197dc6acff61c4f0f19521fa0e62c33e51"
 ---
 
 # SKILL_PLAT_CICD — Continuous Integration & Delivery

@@ -17,6 +17,16 @@ verified_date: "2026-06-23"
 
 # Threat Modeling STRIDE para APB
 
+## ⚠️ Intento de re-identificación de SHA (2026-07-04) — sin resultado
+
+`openai/security-threat-model` **no existe** como repositorio en GitHub (404 vía API) ni aparece
+en una búsqueda de repos del org `openai` por esos términos. No se ha podido determinar con
+evidencia qué repositorio real dio origen a este componente — no se fabrica una URL/SHA de
+sustitución (norma "no inventar sin evidencia", `GOVERNANCE.md`). `source_commit` permanece
+`unverified`. **Pendiente:** que el autor original o Débora identifiquen el repo/commit real, o
+se reconsidere el origen citado del componente (la metodología STRIDE en sí es genérica y no
+depende de este repo para ser válida).
+
 ## Overview
 Análisis de amenazas estructurado mediante metodología STRIDE, adaptado al Esquema Nacional de Seguridad (ENS) y al contexto de la Administración Pública de las Barcelona (APB). Identifica amenazas potenciales en arquitecturas propuestas y genera un modelo de amenazas documentado con controles mitigadores.
 

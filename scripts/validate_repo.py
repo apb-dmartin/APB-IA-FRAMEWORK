@@ -519,6 +519,57 @@ def validate_references(repo_path: Path, result: ValidationResult, all_ids: Dict
                         ))
 
 
+def validate_no_deprecated_wiring(repo_path: Path, result: ValidationResult):
+    """Check #25 (Sesión 19, 2026-07-04, anti-repetición): ningún componente
+    activo puede declarar en su wiring de frontmatter ('skills', 'subagents',
+    'agents', 'depends_on') un componente con status 'deprecated' o 'retired'.
+    Origen: al crear apb-agent-design-compliance-v1.0 se estuvo a punto de
+    cablear apb-design-wcag-v1.0 (deprecada, consolidada en
+    apb-qa-accessibility-v1.0) sin que nada lo detectara; el mismo defecto ya
+    existía en apb-agent-accessibility-auditor-v1.0 (corregido esa sesión).
+    Los componentes que están ellos mismos deprecated/retired quedan exentos
+    (su wiring es histórico). 'consumed_by' no se comprueba: que una skill
+    deprecada conserve la lista de sus antiguos consumidores es inocuo."""
+    wiring_fields = ["skills", "subagents", "agents", "depends_on"]
+
+    # Mapa id → status de todos los componentes
+    id_status: Dict[str, str] = {}
+    for folder in COMPONENT_FOLDERS:
+        folder_path = repo_path / folder
+        if not folder_path.exists():
+            continue
+        for fp in iter_component_files(folder_path):
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if found and meta.get("id"):
+                id_status[meta["id"]] = str(meta.get("status", "")).strip().lower()
+
+    for folder in COMPONENT_FOLDERS:
+        folder_path = repo_path / folder
+        if not folder_path.exists():
+            continue
+        for fp in iter_component_files(folder_path):
+            rel_path = str(fp.relative_to(repo_path))
+            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+            if not found:
+                continue
+            own_status = str(meta.get("status", "")).strip().lower()
+            if own_status in ("deprecated", "retired"):
+                continue  # wiring histórico de un componente ya retirado
+            for field_name in wiring_fields:
+                refs = meta.get(field_name) or []
+                if isinstance(refs, str):
+                    refs = [refs]
+                for ref_id in refs:
+                    ref_status = id_status.get(ref_id)
+                    if ref_status in ("deprecated", "retired"):
+                        result.add(ValidationIssue(
+                            "ERROR", rel_path,
+                            f"Wiring a componente {ref_status} en '{field_name}': "
+                            f"'{ref_id}'. Sustituir por su reemplazo (ver "
+                            f"'deprecated_reason' de ese componente) — check #25."
+                        ))
+
+
 def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     """Verifica que la relación agente↔subagente sea coherente en ambos
     sentidos: si un agente declara un subagent en su lista 'subagents', ese
@@ -772,6 +823,294 @@ def validate_harness_cold_start(repo_path: Path, result: ValidationResult):
     result.add(ValidationIssue("INFO", "SYSTEM.md", "Harness / Cold-Start verificado"))
 
 
+def validate_test_plan_methodology(repo_path: Path, result: ValidationResult):
+    """20. Metodología de planes de pruebas (punto #82, sesión QA-2 2026-07-02).
+
+    Toda skill apb-owned de plan de pruebas (id contiene 'test-plan') debe
+    referenciar el estándar corporativo TEST_PLAN_STANDARD, para que la
+    metodología (orden de fuentes, procedencia múltiple, secciones obligatorias,
+    gobernanza, no-regresión) no derive en silencio. Mensaje 'bolígrafo rojo'."""
+    standard_rel = "context/apb/standards/TEST_PLAN_STANDARD.md"
+    standard_path = repo_path / standard_rel
+
+    qa_folder = repo_path / "skills" / "apb-owned" / "qa"
+    if not qa_folder.exists():
+        return
+    referencing = []
+    for fp in iter_component_files(qa_folder):
+        meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        if not found:
+            continue
+        cid = str(meta.get("id", ""))
+        if "test-plan" not in cid:
+            continue
+        referencing.append(cid)
+        body = fp.read_text(encoding="utf-8")
+        if "TEST_PLAN_STANDARD" not in body:
+            result.add(ValidationIssue(
+                "ERROR", str(fp.relative_to(repo_path)),
+                "Skill de plan de pruebas sin referencia a 'TEST_PLAN_STANDARD'. "
+                f"Añadir el enlace al estándar ({standard_rel}) en el cuerpo (punto #82)."
+            ))
+
+    # Si hay skills que lo referencian, el estándar debe existir
+    if referencing and not standard_path.exists():
+        result.add(ValidationIssue(
+            "ERROR", standard_rel,
+            "Falta el estándar TEST_PLAN_STANDARD.md referenciado por las skills de "
+            "plan de pruebas. Restaurarlo (punto #82, sesión QA-2)."
+        ))
+    result.add(ValidationIssue("INFO", standard_rel, "Metodología de planes de pruebas verificada"))
+
+
+def validate_unified_plan_conservation(repo_path: Path, result: ValidationResult):
+    """21. Conservación íntegra al unificar planes de pruebas (TEST_PLAN_STANDARD §3.1).
+
+    Anti-repetición del error 2026-07-02: unificar debe conservar TODO el contenido
+    de las fuentes (pruebas Y narrativa), no resumir. Se verifica sobre el ejemplo
+    canónico QA_TRU_TruckCenter_UNIFICADO.md que:
+      (a) referencia cada fuente archivada en docs/qa/examples/sources/, y
+      (b) contiene los encabezados narrativos obligatorios que las fuentes aportan.
+    La pérdida silenciosa de un bloque es un defecto bloqueante → ERROR 'bolígrafo rojo'."""
+    examples_dir = repo_path / "docs" / "qa" / "examples"
+    unified = examples_dir / "QA_TRU_TruckCenter_UNIFICADO.md"
+    sources_dir = examples_dir / "sources"
+    if not unified.exists():
+        return  # sin ejemplo canónico no hay nada que verificar
+    unified_rel = str(unified.relative_to(repo_path))
+    body = unified.read_text(encoding="utf-8")
+
+    # (a) cada fuente archivada debe estar referenciada por su nombre en el unificado
+    if sources_dir.exists():
+        for src in sorted(sources_dir.glob("*.md")):
+            if src.name not in body:
+                result.add(ValidationIssue(
+                    "ERROR", unified_rel,
+                    f"El plan unificado no referencia la fuente archivada '{src.name}'. "
+                    "Unificar debe conservar la trazabilidad de todas las fuentes "
+                    "(TEST_PLAN_STANDARD §3.1 — conservación íntegra)."
+                ))
+
+    # (b) encabezados narrativos obligatorios (pérdida silenciosa = defecto bloqueante)
+    required_sections = [
+        "Incidencias históricas",
+        "Proyectos futuros",
+        "Modelo de datos",
+        "Funcionalidad detallada",
+        "Documentos de referencia",
+    ]
+    lowered = body.lower()
+    for section in required_sections:
+        if section.lower() not in lowered:
+            result.add(ValidationIssue(
+                "ERROR", unified_rel,
+                f"El plan unificado ha perdido la sección '{section}'. Unificar NUNCA "
+                "elimina información (TEST_PLAN_STANDARD §3.1). Reincorpórela desde las fuentes."
+            ))
+
+    # (c) esquema de ID canónico {APP}-B{NN}-T{NN} (TEST_PLAN_STANDARD §3.2, anti-repetición 2026-07-03)
+    canonical_ids = re.findall(r"\bTRU-B\d{2}-T\d{2}\b", body)
+    if not canonical_ids:
+        result.add(ValidationIssue(
+            "ERROR", unified_rel,
+            "El plan unificado no usa el esquema de ID canónico 'TRU-B{NN}-T{NN}' "
+            "(TEST_PLAN_STANDARD §3.2). No derivar de vuelta a numeración plana sin bloque."
+        ))
+
+    result.add(ValidationIssue("INFO", unified_rel, "Conservación íntegra del plan unificado verificada"))
+
+
+def validate_agnostic_root_routing(repo_path: Path, result: ValidationResult):
+    """22. Routing raíz agnóstico de LLM y herramienta (SYSTEM.md §4.3, §10.1).
+
+    Anti-deriva (sesión 2026-07-03, feedback de Debora: 'nuestro framework debe
+    ser agnóstico al LLM y la herramienta'): AGENTS.md es la fuente única de
+    reglas permanentes. Las vistas por runtime (CLAUDE.md, .github/copilot-
+    instructions.md) deben existir y ser ficheros DELGADOS que remitan a
+    AGENTS.md, nunca reglas duplicadas de forma independiente. Si AGENTS.md
+    falta, o una vista no lo referencia, el punto de entrada de esa herramienta
+    puede divergir en silencio de la fuente única — ERROR 'bolígrafo rojo'."""
+    agents_path = repo_path / "AGENTS.md"
+    if not agents_path.exists() or agents_path.stat().st_size == 0:
+        result.add(ValidationIssue(
+            "ERROR", "AGENTS.md",
+            "Falta el routing file raíz agnóstico AGENTS.md (SYSTEM.md §10.1, §4.3). "
+            "Sin él, cada herramienta (Claude Code, GitHub Copilot...) puede acabar "
+            "con sus propias reglas divergentes."
+        ))
+        return  # sin AGENTS.md no hay fuente contra la que comparar las vistas
+
+    runtime_views = {
+        "CLAUDE.md": repo_path / "CLAUDE.md",
+        ".github/copilot-instructions.md": repo_path / ".github" / "copilot-instructions.md",
+    }
+    for rel, path in runtime_views.items():
+        if not path.exists() or path.stat().st_size == 0:
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"Falta el punto de entrada '{rel}' para su herramienta, o está vacío. "
+                "Debe existir como fichero delgado que remita a AGENTS.md (SYSTEM.md §10.1)."
+            ))
+            continue
+        if "AGENTS.md" not in path.read_text(encoding="utf-8"):
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"'{rel}' no referencia AGENTS.md. Las vistas por runtime deben derivar "
+                "de la fuente única de reglas, nunca duplicarlas de forma independiente "
+                "(SYSTEM.md §10.1, riesgo de deriva silenciosa entre herramientas)."
+            ))
+
+    result.add(ValidationIssue("INFO", "AGENTS.md", "Routing raíz agnóstico de LLM/herramienta verificado"))
+
+
+def validate_execution_and_approval_methodology(repo_path: Path, result: ValidationResult):
+    """23. Roles + usuario de ejecución + destino + aprobación del informe
+    (TEST_PLAN_STANDARD v1.3.0, Fase I, 2026-07-03).
+
+    Anti-deriva: las secciones obligatorias de la Fase I no deben perderse en
+    silencio ni de la plantilla, ni del estándar, ni del ejemplo canónico:
+      - Estándar: «Roles de usuario y usuario de ejecución», «Aprobación del
+        informe», «Destino de ejecución».
+      - Plantilla: columna «Rol requerido», «Acta de aprobación», «Usuario de
+        ejecución».
+      - Ejemplo canónico: columna «Rol requerido» en la matriz de casos.
+    Si falta alguno → ERROR 'bolígrafo rojo'."""
+    standard = repo_path / "context" / "apb" / "standards" / "TEST_PLAN_STANDARD.md"
+    template = repo_path / "context" / "apb" / "templates" / "TEST_PLAN.md"
+    unified = repo_path / "docs" / "qa" / "examples" / "QA_TRU_TruckCenter_UNIFICADO.md"
+
+    checks = [
+        (standard, [
+            "Roles de usuario y usuario de ejecución",
+            "Aprobación del informe",
+            "Destino de ejecución",
+        ]),
+        (template, [
+            "Rol requerido",
+            "Acta de aprobación",
+            "Usuario de ejecución",
+        ]),
+        (unified, [
+            "Rol requerido",
+        ]),
+    ]
+    for path, needles in checks:
+        if not path.exists():
+            continue  # su ausencia la cubren otros checks (#82/#21)
+        rel = str(path.relative_to(repo_path))
+        body = path.read_text(encoding="utf-8")
+        for needle in needles:
+            if needle not in body:
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"Falta el elemento obligatorio de Fase I '{needle}' "
+                    f"(TEST_PLAN_STANDARD v1.3.0 §6.2/§9.1/§9.2). No debe derivar en silencio."
+                ))
+    result.add(ValidationIssue("INFO", "context/apb/standards/TEST_PLAN_STANDARD.md",
+                               "Metodología de roles/ejecución/aprobación (Fase I) verificada"))
+
+
+def validate_execution_report_evidence_methodology(repo_path: Path, result: ValidationResult):
+    """24. Informe de ejecución: entrega dual + casos no ejecutados + evidencia vídeo
+    (TEST_PLAN_STANDARD v1.4.0 §5.15/§7.1/§7.2, 2026-07-03).
+
+    Anti-repetición del error 2026-07-03: se generó un informe de ejecución de QA
+    (TruckCenter) solo en '.md' (sin '.html' corporativo), sin listar por ID los
+    casos NO ejecutados (solo un recuento agregado), y con un GIF presentado como
+    evidencia de sesión completa sin verificar su cobertura real (tope de
+    fotogramas de la herramienta de captura). El informe en sí vive en el repo de
+    cada aplicación (fuera de este repo, TEST_PLAN_STANDARD §7), así que este
+    check no puede inspeccionar informes concretos de apps — verifica que las
+    fuentes normativas del framework (estándar + skill de navegación exploratoria)
+    no pierdan en silencio estas tres obligaciones, que es lo que falló esta vez."""
+    standard = repo_path / "context" / "apb" / "standards" / "TEST_PLAN_STANDARD.md"
+    exploratory_skill = repo_path / "skills" / "apb-owned" / "qa" / "apb-qa-exploratory-nav-v1.0.md"
+
+    checks = [
+        (standard, [
+            "Casos NO ejecutados",
+            "vídeo real",
+            "Nunca solo",
+        ]),
+        (exploratory_skill, [
+            "Casos NO ejecutados",
+            "HTML",
+        ]),
+    ]
+    for path, needles in checks:
+        if not path.exists():
+            continue  # su ausencia la cubren otros checks (#82/#20)
+        rel = str(path.relative_to(repo_path))
+        body = path.read_text(encoding="utf-8")
+        for needle in needles:
+            if needle not in body:
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"Falta el elemento obligatorio de evidencia de ejecución '{needle}' "
+                    f"(TEST_PLAN_STANDARD v1.4.0 §5.15/§7.1/§7.2). No debe derivar en silencio "
+                    "— un informe sin esto vuelve a ser incompleto como el del 2026-07-03."
+                ))
+    result.add(ValidationIssue("INFO", "context/apb/standards/TEST_PLAN_STANDARD.md",
+                               "Metodología de evidencia de informes de ejecución (entrega dual, "
+                               "casos no ejecutados, vídeo) verificada"))
+
+
+# IDs de componente citados como entregables en el plan (mismo prefijo que el
+# resto de referencias del repo). Requiere versión (-vX.Y) para no confundir con
+# menciones de familias/repos externos sin versión (p.ej. 'apb-ai-skills').
+PLAN_DELIVERABLE_ID_RE = re.compile(
+    r"`((?:apb|third|prov|wrap|adapter)-[a-z0-9-]+-v\d+\.\d+)`"
+)
+# Marcadores que, cerca del ID, indican que el plan lo declara explícitamente
+# NO entregado (gap documentado o decisión de no crearlo) — no es un desfase.
+PLAN_NEGATION_MARKERS = (
+    "(pendiente)", "(planificado)", "diferido", "no se creó", "no se cre",
+    "sin crear", "no existe", "hipotétic",
+)
+
+
+def validate_plan_deliverables_exist(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+    """26. Reconciliación plan↔repo (2026-07-04, anti-repetición).
+
+    Origen: auditoría de desfase 2026-07-04 (discovery/AUDITORIA_DESFASE_PLAN_REPO.md)
+    + riesgo R11 ya declarado en el propio plan ('Plan ↔ repo desincronizado') +
+    precedente real #56–#76 (el plan afirmaba entregables que hubo que reconciliar
+    a mano). El desfase que este check evita es 'DRIFT-repo': una sesión marcada
+    CERRADA que declara un componente que NO existe en el repo.
+
+    Alcance conservador para no generar falsos positivos: solo filas de tabla
+    (empiezan por '|') de discovery/PLAN_FASES_FUTURAS.md que contienen 'CERRADA',
+    y solo los IDs de componente con versión citados en ellas (entre backticks).
+    Se excluyen los IDs con un marcador de negación cercano (gap documentado o
+    decisión de no crear). Si un ID así declarado no existe en el repo → ERROR
+    'bolígrafo rojo': corrige el plan o crea el componente."""
+    plan_path = repo_path / "discovery" / "PLAN_FASES_FUTURAS.md"
+    if not plan_path.exists():
+        return
+    rel = str(plan_path.relative_to(repo_path))
+    seen: Set[str] = set()
+    for lineno, line in enumerate(plan_path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.lstrip().startswith("|") or "CERRADA" not in line:
+            continue
+        for m in PLAN_DELIVERABLE_ID_RE.finditer(line):
+            comp_id = m.group(1)
+            nearby = line[max(0, m.start() - 40): m.end() + 40].lower()
+            if any(neg in nearby for neg in PLAN_NEGATION_MARKERS):
+                continue
+            if comp_id in all_ids or comp_id in seen:
+                continue
+            seen.add(comp_id)
+            result.add(ValidationIssue(
+                "ERROR", rel,
+                f"Desfase plan↔repo (check #26): una sesión marcada CERRADA declara el "
+                f"entregable '{comp_id}' pero ese componente no existe en el repo. "
+                f"Corrige la afirmación del plan o crea el componente (ver "
+                f"discovery/AUDITORIA_DESFASE_PLAN_REPO.md).",
+                line=lineno,
+            ))
+    result.add(ValidationIssue("INFO", rel, "Reconciliación plan↔repo (entregables CERRADA) verificada"))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -839,11 +1178,18 @@ def main():
     validate_folder_structure(repo_path, result)
     all_ids = validate_components(repo_path, result)
     validate_references(repo_path, result, all_ids)
+    validate_no_deprecated_wiring(repo_path, result)
     validate_agent_subagent_consistency(repo_path, result, all_ids)
     validate_bidirectional_wiring(repo_path, result)
     validate_version_drift(repo_path, result, all_ids)
     validate_no_circular_dependencies(repo_path, result)
     validate_harness_cold_start(repo_path, result)
+    validate_test_plan_methodology(repo_path, result)
+    validate_unified_plan_conservation(repo_path, result)
+    validate_agnostic_root_routing(repo_path, result)
+    validate_execution_and_approval_methodology(repo_path, result)
+    validate_execution_report_evidence_methodology(repo_path, result)
+    validate_plan_deliverables_exist(repo_path, result, all_ids)
     validate_catalog(repo_path, result, all_ids)
 
     print()

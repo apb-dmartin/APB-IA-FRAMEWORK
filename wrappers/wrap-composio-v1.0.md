@@ -17,6 +17,13 @@ review_date: "2026-06-22"
 
 # Composio
 
+## ⚠️ Intento de re-identificación de SHA (2026-07-04) — sin resultado
+
+Mismo hallazgo que `third-composio-sonar-v1.0.md`: `ComposioHQ` es solo la organización, sin
+repositorio concreto identificado, y Composio es una plataforma SaaS de integraciones — no hay
+evidencia de un repo público origen. `source_commit` permanece `unverified`, sin fabricar un
+valor de sustitución (`GOVERNANCE.md`).
+
 ## Descripción
 Wrapper para integrar herramientas Composio con los MCP corporativos del APB AI Framework. Filtra permisos, gestiona autenticación y adapta formatos de salida.
 

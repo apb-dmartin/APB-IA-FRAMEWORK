@@ -11,8 +11,7 @@ created_date: "2026-06-21"
 review_date: "2026-06-21"
 source_repo: "https://github.com/mukul975/Anthropic-Cybersecurity-Skills"
 source_license: "Apache 2.0"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "673da1f3b0b7be34ffc9624ef3858fe45f1c3bed"
 ---
 
 # SKILL: Cybersecurity Arsenal (Mukul Wrapper)

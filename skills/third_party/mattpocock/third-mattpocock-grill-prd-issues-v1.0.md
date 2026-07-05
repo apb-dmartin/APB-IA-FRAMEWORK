@@ -9,8 +9,7 @@ domain: "discovery"
 autonomy_level: 1
 source_repo: "https://github.com/mattpocock/skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-24"
+source_commit: "272f99b22574f50e4266791c86b9302682970e23"
 created_date: "2026-06-24"
 review_date: "2026-06-24"
 ---

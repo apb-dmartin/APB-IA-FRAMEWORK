@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="Generado_Por_IA" content="Si">
+<title>Auditoría de desfase Plan ↔ Repositorio</title>
+<style>
+    :root {
+      --azul-corporativo: #046DB2;
+      --azul-corporativo-hover: #035A95;
+      --gris-oscuro-texto: #3C495A;
+      --gris-medio: #7A8DA4;
+      --gris-claro: #D5DBE5;
+      --gris-muy-claro: #E3E9F4;
+      --gris-fondo: #F7F9FC;
+      --blanco: #FFFFFF;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      color: var(--gris-oscuro-texto); background: var(--gris-fondo);
+    }
+    header.apb-header {
+      background: var(--azul-corporativo); color: #fff; padding: 12px 32px;
+      display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 10;
+    }
+    header.apb-header img { height: 32px; }
+    header.apb-header h1 { font-size: 16px; margin: 0; font-weight: 600; color: #fff; }
+    .layout { display: flex; min-height: 100vh; }
+    nav.sidebar {
+      width: 280px; min-width: 280px; background: #fff; border-right: 1px solid var(--gris-claro);
+      padding: 16px; overflow-y: auto; max-height: calc(100vh - 56px); position: sticky; top: 56px;
+      align-self: flex-start;
+    }
+    nav.sidebar > ul { list-style: none; margin: 0; padding: 0; }
+    nav.sidebar ul ul { list-style: none; margin: 2px 0 8px 12px; padding: 0; }
+    nav.sidebar li { margin: 4px 0; font-size: 13px; }
+    nav.sidebar a { color: var(--gris-oscuro-texto); text-decoration: none; }
+    nav.sidebar a:hover { color: var(--azul-corporativo); text-decoration: underline; }
+    main { flex: 1; padding: 24px 32px; max-width: 1100px; }
+    h1, h2, h3, h4 { color: var(--gris-oscuro-texto); }
+    h2 { border-bottom: 2px solid var(--azul-corporativo); padding-bottom: 6px; margin-top: 36px; }
+    h3 { margin-top: 24px; }
+    details.block {
+      background: #fff; border: 1px solid var(--gris-claro); border-radius: 6px;
+      margin: 12px 0; padding: 0;
+    }
+    details.block > summary {
+      cursor: pointer; padding: 10px 16px; font-weight: 600; color: #fff;
+      background: var(--azul-corporativo); border-radius: 6px 6px 0 0; list-style: none;
+    }
+    details.block[open] > summary { border-radius: 6px 6px 0 0; }
+    details.block > summary::-webkit-details-marker { display: none; }
+    details.block > summary::before { content: "▸ "; }
+    details.block[open] > summary::before { content: "▾ "; }
+    .block-body { padding: 12px 16px; }
+    .table-wrap { overflow-x: auto; margin: 12px 0; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th, td { border: 1px solid var(--gris-claro); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--gris-muy-claro); color: var(--gris-oscuro-texto); }
+    tr:nth-child(even) td { background: #FAFBFD; }
+    blockquote {
+      border-left: 4px solid var(--azul-corporativo); background: var(--gris-muy-claro);
+      margin: 12px 0; padding: 8px 16px; color: var(--gris-medio); font-size: 13px;
+    }
+    .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .badge-ok { background: #DCF3E4; color: #1B7A3D; }
+    .badge-ko { background: #FBE0E0; color: #B12A2A; }
+    .badge-warn { background: #FCEFD3; color: #8A6100; }
+    .badge-pend { background: var(--gris-muy-claro); color: var(--gris-oscuro-texto); }
+    code { background: var(--gris-muy-claro); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+    pre { background: #2b2b2b; color: #eee; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: transparent; color: inherit; }
+    footer.apb-footer {
+      text-align: center; font-size: 11px; color: var(--gris-medio); padding: 24px;
+    }
+    </style>
+</head>
+<body>
+<header class="apb-header">
+  <img src="assets/logo-horizontal-blanco.png" alt="Port de Barcelona">
+  <h1>Auditoría de desfase Plan ↔ Repositorio</h1>
+</header>
+<div class="layout">
+  <nav class="sidebar"><ul><li><a href="#1-recuento-numérico-primero">1. Recuento numérico primero</a></li><li><a href="#2-hallazgo-central-el-desfase-es-de-madurez-no-de-existencia">2. Hallazgo central: el desfase es de MADUREZ, no de existencia</a></li><li><a href="#3-verificación-de-los-4-frentes-solicitados-sesión-16-21-30-3940">3. Verificación de los 4 frentes solicitados (Sesión 16, 21, #30, #39/#40)</a></li><li><a href="#4-drift-plan-detectado-notas-obsoletas-a-corregir">4. DRIFT-plan detectado (notas obsoletas a corregir)</a></li><li><a href="#5-bloqueado-débora-pendientes-reales-esperando-insumodecisión">5. BLOQUEADO-Débora (pendientes reales esperando insumo/decisión)</a></li><li><a href="#6-accionable-sin-bloqueo-huecos-netos-parte-b">6. ACCIONABLE sin bloqueo → huecos netos (Parte B)</a></li><li><a href="#7-conclusiones-y-acciones">7. Conclusiones y acciones</a></li><li><a href="#8-revisión-exhaustiva-del-plan-completo-2ª-pasada-2026-07-04">8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)</a></li><li><a href="#9-sesión-de-seguimiento-3ª-pasada-2026-07-04-3-tareas-accionables">9. Sesión de seguimiento (3ª pasada, 2026-07-04) — 3 tareas accionables</a></li><li><a href="#10-cierre-del-punto-30-mcp-graph-mismo-día-tras-push-de-9">10. Cierre del punto #30 MCP Graph (mismo día, tras push de §9)</a></li></ul></nav>
+  <main>
+    <div class="intro"><blockquote><p><strong>Borrador generado por IA</strong> (APB AI Framework — auditoría de reconciliación) — pendiente validación humana por Arquitectura APB. No distribuir sin revisión.</p></blockquote>
+<p><strong>Fecha:</strong> 2026-07-04 · <strong>Repo:</strong> <code>APB-IA-FRAMEWORK</code> (local) · <strong>Fuente de verdad de inventario:</strong> <code>catalog/CATALOG.md</code> (autogenerado) · <strong>Método:</strong> verificación estructural del 100% del catálogo + muestreo dirigido de los entregables que el plan declara «hechos».</p>
+<p>Este informe responde al encargo de Débora: *analizar, para todo lo pendiente, si realmente está hecho en el repo local, identificando el desfase entre lo realizado y lo que indica <code>PLAN_FASES_FUTURAS.md</code>.*</p>
+<hr></div>
+    <h2 id="1-recuento-numérico-primero">1. Recuento numérico primero</h2><h3 id="11-inventario-por-estado-354-componentes">1.1 Inventario por estado (354 componentes)</h3><div class="table-wrap"><table>
+<thead><tr>
+<th>Estado</th>
+<th>Nº</th>
+<th>%</th>
+<th>Lectura</th>
+</tr></thead><tbody>
+<tr>
+<td><code>draft</code></td>
+<td>313</td>
+<td>88,4 %</td>
+<td>Construido, sin validar</td>
+</tr>
+<tr>
+<td><code>approved</code></td>
+<td>37</td>
+<td>10,5 %</td>
+<td><strong>36 son skills de terceros</strong> (aprobación de *verificación de fuente*, GOVERNANCE §4.2) <strong>+ 1 provider</strong> (<code>prov-apb-knowledge-v1.0</code>)</td>
+</tr>
+<tr>
+<td><code>deprecated</code></td>
+<td>4</td>
+<td>1,1 %</td>
+<td><code>apb-design-wcag-v1.0</code>, <code>apb-design-wcag-patterns-v1.0</code>, <code>apb-dev-api-design-v1.0</code>, +1</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>354</strong></td>
+<td>100 %</td>
+<td></td>
+</tr>
+</tbody></table></div>
+<p><strong>Dato clave:</strong> de los 37 <code>approved</code>, <strong>ninguno es un componente apb-owned funcional</strong> (agente, subagente, workflow o skill APB). Los 37 son terceros verificados + 1 provider de conocimiento. → <strong>0 agentes/skills/workflows propios aprobados formalmente.</strong></p><h3 id="12-desfases-por-categoría">1.2 Desfases por categoría</h3><div class="table-wrap"><table>
+<thead><tr>
+<th>Categoría</th>
+<th>Nº aprox.</th>
+<th>Significado</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>OK</strong> (plan ↔ repo coinciden)</td>
+<td>mayoría</td>
+<td>El componente existe y su estado coincide con lo que el plan implica</td>
+</tr>
+<tr>
+<td><strong>DRIFT-plan</strong> (construido, pero plan/memoria lo pinta pendiente/parcial)</td>
+<td>3 notas</td>
+<td>Notas obsoletas dentro del propio plan + índice de memoria</td>
+</tr>
+<tr>
+<td><strong>DRIFT-repo</strong> (plan dice hecho, no está en repo)</td>
+<td><strong>0</strong></td>
+<td>No detectado en el muestreo (≠ precedente #56–#76)</td>
+</tr>
+<tr>
+<td><strong>DRAFT-only</strong> (existe, sin validar)</td>
+<td>313</td>
+<td>El desfase de fondo: «CERRADA» ≠ «operativo»</td>
+</tr>
+<tr>
+<td><strong>BLOQUEADO-Débora</strong> (pendiente real, espera insumo)</td>
+<td>12</td>
+<td>Ver §5</td>
+</tr>
+<tr>
+<td><strong>ACCIONABLE</strong> (pendiente sin bloqueo → huecos netos)</td>
+<td>6</td>
+<td>Ver §6 → Parte B</td>
+</tr>
+</tbody></table></div>
+<hr><h2 id="2-hallazgo-central-el-desfase-es-de-madurez-no-de-existencia">2. Hallazgo central: el desfase es de MADUREZ, no de existencia</h2><p>La tabla de sesiones de <code>PLAN_FASES_FUTURAS.md</code> marca ✅ <strong>CERRADA</strong> las Sesiones 15, 16, 17 y 21 (entre otras). La verificación confirma que <strong>los entregables existen</strong> — pero <strong>todos en <code>status: draft</code>, sin <code>human_validated_by</code>, sin prueba real registrada</strong>.</p>
+<p>«Sesión cerrada» en el plan significa hoy <strong>«componentes construidos y validados estructuralmente»</strong>, NO «operativos / aprobados / probados en ejecución real». El propio repo ya lo reconoce (<code>PLAN_FASES_FUTURAS.md</code> §D.5, riesgos R3 y R11), pero la <strong>tabla de sesiones no lo matiza</strong>, lo que induce a leer «CERRADA» como «terminado y en uso».</p>
+<p><strong>Recomendación:</strong> introducir un vocabulario de madurez explícito y aplicarlo a la tabla de sesiones:</p>
+<blockquote><p><strong>CONSTRUIDO</strong> (draft, validación estructural) → <strong>VALIDADO</strong> (<code>human_validated_by</code> nombrado + prueba real registrada, #51) → <strong>APROBADO</strong> (ciclo de gobernanza, 2 aprobadores, GOVERNANCE §2).</p></blockquote>
+<p>Con este vocabulario, las 4 sesiones auditadas están en <strong>CONSTRUIDO</strong>, no en un estado terminal.</p>
+<hr><h2 id="3-verificación-de-los-4-frentes-solicitados-sesión-16-21-30-3940">3. Verificación de los 4 frentes solicitados (Sesión 16, 21, #30, #39/#40)</h2><p>Todos <strong>existen</strong> en el repo. Todos en <strong>draft</strong>.</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>Frente</th>
+<th>Entregable(s) verificado(s)</th>
+<th>Estado</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Sesión 16</strong> — informe riesgos organizativo</td>
+<td><code>skills/apb-owned/governance/apb-gov-org-risk-report-v1.0.md</code> (v1.2.0; ENS/ISO 27001/NIST/OWASP/RGPD/LCSP/WCAG; recomendación APROBAR/CONDICIONES/DENEGAR). Consumido por <code>apb-agent-compliance-audit-v1.0</code>. Apoyado por <code>apb-gov-ai-risk-gate-v1.0</code> (6 riesgos IA) y <code>apb-sec-risk-analysis-v1.0</code> (ISO 27005/MAGERIT)</td>
+<td>draft</td>
+</tr>
+<tr>
+<td><strong>Sesión 21</strong> — #15/#33/#34</td>
+<td>#15: <code>apb-agent-incident-support-v1.0</code> + skills <code>apb-ops-incident-triage/diagnose/escalate</code> + <code>apb-wf-incident-l1-v1.0</code>. #33: <code>apb-agent-db-v1.0</code> + <code>apb-dev-sql-gen/review/fix-v1.0</code> + <code>apb-sub-dev-sql-v1.0</code>. #34: <code>apb-agent-qa-auto-v1.0</code> + <code>apb-wf-qa-evidence-v1.0</code> + <code>apb-sub-qa-fix-loop-v1.0</code> + CI <code>validate.yml</code></td>
+<td>draft</td>
+</tr>
+<tr>
+<td><strong>#30 Microsoft</strong></td>
+<td><code>providers/prov-ms365-v1.0.md</code> (Teams/Mail/SharePoint vía Graph) + <code>prov-entra-id-v1.0</code> + <code>openapi/apb-framework-api.yaml</code> + <code>openapi/ai-plugin.json</code> + <code>forge/manifest.yml</code> + <code>docs/rovo-getting-started.md</code> + <code>adapters/m365/adapter-m365-copilot-v1.0.md</code> + <code>adapters/rovo/adapter-rovo-v1.0.md</code></td>
+<td>draft</td>
+</tr>
+<tr>
+<td><strong>#39/#40 dashboards+logs</strong></td>
+<td><code>apb-agent-observability-v1.0</code> + <code>apb-sub-obs-powerbi-v1.0</code> + <code>apb-sub-obs-grafana-v1.0</code> + <code>apb-ops-observability-v1.0</code> + <code>apb-ops-telemetry-emit-v1.0</code> + <code>scripts/emit_telemetry.py</code> + <code>prov-azure-monitor-v1.0</code></td>
+<td>draft</td>
+</tr>
+</tbody></table></div>
+<p><strong>Corrección a notas previas:</strong> el adapter de M365 Copilot y el de Rovo <strong>existen</strong> (<code>adapter-m365-copilot-v1.0.md</code>, <code>adapter-rovo-v1.0.md</code>); NO son directorios vacíos. La nota del plan §D.2 («M365 ❌ Pendiente») y §G línea 1286 («#39/#40 falta agente dedicado») son <strong>obsoletas</strong> (DRIFT-plan).</p>
+<hr><h2 id="4-drift-plan-detectado-notas-obsoletas-a-corregir">4. DRIFT-plan detectado (notas obsoletas a corregir)</h2><div class="table-wrap"><table>
+<thead><tr>
+<th>Ubicación</th>
+<th>Dice</th>
+<th>Realidad</th>
+<th>Acción</th>
+</tr></thead><tbody>
+<tr>
+<td><code>PLAN_FASES_FUTURAS.md</code> §G (~L1286)</td>
+<td>«#39/#40 Dashboards — Parcial (Sesión 17); <strong>falta agente dedicado</strong>»</td>
+<td><code>apb-agent-observability-v1.0</code> existe (+2 subagentes)</td>
+<td>Actualizar a CONSTRUIDO (draft)</td>
+</tr>
+<tr>
+<td><code>PLAN_FASES_FUTURAS.md</code> §D.2 (~L1203)</td>
+<td>«M365/Teams/SharePoint ❌ Pendiente; integración real pendiente»</td>
+<td>Provider + adapter + OpenAPI/Forge existen; solo falta <strong>activación MCP real</strong> (creds)</td>
+<td>Reclasificar a CONSTRUIDO; el resto es BLOQUEADO-creds</td>
+</tr>
+<tr>
+<td>Memoria (<code>MEMORY.md</code> índice + resumen inicial de sesión)</td>
+<td>Sesión 16/21 y #30/#39-40 «abiertas»</td>
+<td>Cerradas (CONSTRUIDO) desde 2026-06-26/29</td>
+<td>Actualizar índice de memoria</td>
+</tr>
+</tbody></table></div>
+<p><strong>Nota metodológica:</strong> la herramienta <code>Glob</code> con patrón relativo (p. ej. <code>docs/informe-direccion.md</code>, <code>adapters/**/*.md</code>) devuelve <strong>falsos negativos</strong> en esta workspace (ruta con espacios / directorio de trabajo adicional). La verificación fiable de existencia se hizo con <code>ls</code>/<code>grep</code>. Futuras auditorías deben usar <code>ls</code>/<code>grep</code>, no <code>Glob</code> relativo, para no reportar DRIFT-repo inexistentes.</p>
+<hr><h2 id="5-bloqueado-débora-pendientes-reales-esperando-insumodecisión">5. BLOQUEADO-Débora (pendientes reales esperando insumo/decisión)</h2><p>Estos NO son desfases del repo: son trabajo que no puede avanzar sin una entrada tuya. Solo se tabulan (consolidado de §G/§I del plan, reconciliado):</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>#</th>
+<th>Pendiente</th>
+<th>Insumo que falta</th>
+</tr></thead><tbody>
+<tr>
+<td>#38 F1</td>
+<td>Aprobación Domain Catalog + descomposición monolitos</td>
+<td>Aprobación Arquitectura + acceso a código SOSTRAT</td>
+</tr>
+<tr>
+<td>#77/#41</td>
+<td>Runtime de orquestación</td>
+<td>Decisión Azure AI Foundry vs. SDK (Débora/Plataforma)</td>
+</tr>
+<tr>
+<td>#49</td>
+<td>Distribución Design System</td>
+<td>npm / submodule / CDN (decisión Débora)</td>
+</tr>
+<tr>
+<td>#6/#14</td>
+<td>Plantillas Word/Excel + conversión .docx</td>
+<td>Ejemplos ofimáticos de Débora</td>
+</tr>
+<tr>
+<td>#8</td>
+<td>Calibración COSMIC</td>
+<td>Horas históricas reales</td>
+</tr>
+<tr>
+<td>#20/#36</td>
+<td>Agentes licitación LCSP</td>
+<td>Briefing de Débora</td>
+</tr>
+<tr>
+<td>#52</td>
+<td>Email Arquitectura → cola Jira</td>
+<td>Dirección/cola de Jira</td>
+</tr>
+<tr>
+<td>#79</td>
+<td>«Fine Skills» (terceros)</td>
+<td>URL/organización exacta</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>11 SHAs terceros <code>unverified</code></td>
+<td>Re-identificar repos de origen</td>
+</tr>
+<tr>
+<td>GOV</td>
+<td>Primer ciclo de aprobación</td>
+<td>Aprobadores por ámbito + lote inicial (Débora ya sugirió: 5 workflows)</td>
+</tr>
+<tr>
+<td>#46</td>
+<td>Telemetría usuarios de chat</td>
+<td>Decisión proxy/wrapper de plataforma</td>
+</tr>
+<tr>
+<td>Rovo</td>
+<td>Activación <code>adapter-rovo-v1.0</code></td>
+<td>Tenant Atlassian con Rovo (previsto jul-2026)</td>
+</tr>
+</tbody></table></div>
+<hr><h2 id="6-accionable-sin-bloqueo-huecos-netos-parte-b">6. ACCIONABLE sin bloqueo → huecos netos (Parte B)</h2><p>Huecos confirmados por exploración que <strong>no requieren insumo de Débora</strong> y se pueden cubrir ya:</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th># plan</th>
+<th>Hueco</th>
+<th>Componente propuesto</th>
+<th>Dominio</th>
+</tr></thead><tbody>
+<tr>
+<td>#15</td>
+<td>Análisis multimodal de incidencias (capturas / diálogos de error / gráficos de métricas) — hoy solo texto/logs</td>
+<td><code>apb-ops-incident-analyze-visual-v1.0</code> (skill)</td>
+<td>operation</td>
+</tr>
+<tr>
+<td>#34</td>
+<td>Validación de <strong>contenido</strong> Markdown (más allá del YAML estructural)</td>
+<td><code>apb-qa-markdown-validate-v1.0</code> (skill)</td>
+<td>qa</td>
+</tr>
+<tr>
+<td>#34</td>
+<td>Gate QA pre-despliegue reutilizable para pipelines de apps APB</td>
+<td><code>apb-plat-ci-qa-gate-v1.0</code> (skill)</td>
+<td>platform</td>
+</tr>
+<tr>
+<td>#33</td>
+<td>Interpretación de planes de ejecución SQL / profiling</td>
+<td><code>apb-dev-sql-explain-plan-v1.0</code> (skill)</td>
+<td>development</td>
+</tr>
+<tr>
+<td>#39/#40</td>
+<td>Instrumentación real OpenTelemetry (diferida en Sesión 17)</td>
+<td><code>prov-otel-v1.0</code> (provider)</td>
+<td>platform</td>
+</tr>
+<tr>
+<td>#30</td>
+<td>Activación MCP Graph en <code>.mcp.json</code> + config real en <code>prov-ms365-v1.0</code></td>
+<td>✅ <strong>Ejecutado 2026-07-04</strong> (<code>@softeria/ms-365-mcp-server</code>, device-code, aprobado por Débora) — resto sigue bloqueado por creds M365</td>
+<td>platform</td>
+</tr>
+</tbody></table></div>
+<hr><h2 id="7-conclusiones-y-acciones">7. Conclusiones y acciones</h2><ol><li><strong>El repo NO va por detrás del plan en existencia</strong> (0 DRIFT-repo en el muestreo). El plan va</li></ol>
+<p>por detrás del repo en 3 notas obsoletas (§4) → corregir. 2. <strong>El desfase real es de madurez:</strong> 88,4 % draft, 0 componentes apb-owned aprobados. «CERRADA» sobre-comunica el estado → adoptar vocabulario CONSTRUIDO→VALIDADO→APROBADO en la tabla de sesiones. 3. <strong>Mecanismo anti-repetición:</strong> implementar <strong>check #26</strong> (<code>validate_plan_deliverables_exist</code>) en <code>scripts/validate_repo.py</code> — verifica que los IDs declarados «entregables» en las sesiones CERRADA existen en el repo (ERROR si no) → evita que el desfase #56–#76 vuelva a pasar silenciosamente. (Ver <code>feedback_cierre_sesion</code>: cada error corregido → check anti-repetición.) 4. <strong>Parte B:</strong> cubrir los 6 huecos accionables de §6. 5. <strong>Bloqueos de §5:</strong> se mantienen como insumos pendientes de Débora; no son deuda del repo.</p>
+<hr><h2 id="8-revisión-exhaustiva-del-plan-completo-2ª-pasada-2026-07-04">8. Revisión exhaustiva del plan completo (2ª pasada, 2026-07-04)</h2><p>La 1ª pasada (§1–§7) fue muestreo dirigido. Esta 2ª pasada leyó <code>PLAN_FASES_FUTURAS.md</code> <strong>íntegro</strong> (2 261 líneas) para cumplir el encargo *&quot;que no haya nada ya implementado que el plan refleje como pendiente&quot;*. Hallazgos adicionales, todos ya corregidos en el plan:</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>Ubicación</th>
+<th>El plan decía</th>
+<th>Realidad en repo</th>
+<th>Tipo</th>
+<th>Corrección</th>
+</tr></thead><tbody>
+<tr>
+<td>§K.2 <strong>E-F1</strong></td>
+<td>Propone crear <code>apb-agent-change-manager-v1.0</code> (Change Management/ITIL)</td>
+<td><strong>Existe</strong> (draft) + <code>apb-agent-problem-manager-v1.0</code></td>
+<td>DRIFT-plan</td>
+<td>Marcado ✅ CONSTRUIDO; pendiente = operativo/approved</td>
+</tr>
+<tr>
+<td>§K.2 <strong>E-F2</strong></td>
+<td>Propone crear <code>apb-agent-data-governance-v1.0</code> (RGPD/RAT)</td>
+<td><strong>Existe</strong> (draft) + <code>apb-gov-dpia</code>, <code>apb-gov-data-classification</code>, <code>apb-sub-gov-data</code></td>
+<td>DRIFT-plan</td>
+<td>Marcado ✅ CONSTRUIDO</td>
+</tr>
+<tr>
+<td>§K.2 <strong>E-F3</strong></td>
+<td>Propone &quot;agente o skill FinOps Azure&quot;</td>
+<td><strong>Existe</strong> <code>apb-agent-finops-v1.0</code> + skills <code>apb-plat-finops-*</code> + <code>apb-sub-finops-azure</code></td>
+<td>DRIFT-plan</td>
+<td>Marcado ✅ CONSTRUIDO</td>
+</tr>
+<tr>
+<td>§77 (L1546, L1604)</td>
+<td>«El provider <code>prov-servicebus-v1.0</code> <strong>ya existe</strong>»</td>
+<td><strong>NO existe</strong> ese provider; sí la skill <code>apb-plat-azure-servicebus-v1.0</code> y el subagente <code>apb-sub-ops-servicebus-v1.0</code></td>
+<td>DRIFT-plan (sobre-afirmación)</td>
+<td>Corregido: no hay provider; crearlo sería el paso de orquestación</td>
+</tr>
+<tr>
+<td>§M.4</td>
+<td>OpenTelemetry como repo candidato a evaluar</td>
+<td>Descriptor <code>prov-otel-v1.0</code> creado esta sesión</td>
+<td>Actualización</td>
+<td>Nota añadida</td>
+</tr>
+</tbody></table></div>
+<p><strong>Confirmado correctamente pendiente</strong> (verificado inexistente en repo, el plan acierta): <code>capabilities/</code> (E-T4), <code>prov-orchestration-engine-v1.0</code>, <code>prov-servicebus-v1.0</code>, <code>apb-agent-orchestrator-v1.0</code>, <code>apb-agent-legacy-onboarding-v1.0</code> (E-F5: existe el *workflow* <code>apb-wf-legacy-onboarding-v1.0</code> y <code>apb-dev-legacy-mapper</code>, pero no el agente). Los 3 skills <code>apb-orch-*</code> que §77 daba por creados <strong>sí existen</strong> (el plan acertaba).</p>
+<p><strong>Verificado que NO hay más DRIFT-repo:</strong> ningún componente declarado «CERRADA»/creado falta en el repo (además el nuevo <strong>check #26</strong> lo vigila de forma continua). El único caso de sobre-afirmación era <code>prov-servicebus-v1.0</code> en §77 (prosa, no fila CERRADA — por eso el check</p><h2 id="9-sesión-de-seguimiento-3ª-pasada-2026-07-04-3-tareas-accionables">9. Sesión de seguimiento (3ª pasada, 2026-07-04) — 3 tareas accionables</h2><p>Tras §1–§8, Débora eligió 3 de los 4 puntos ACCIONABLE del §6 (dejando fuera el push de los 2 commits pendientes). Un hallazgo de DRIFT-plan adicional, ya corregido:</p>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>Ubicación</th>
+<th>El plan decía</th>
+<th>Realidad en repo</th>
+<th>Tipo</th>
+<th>Corrección</th>
+</tr></thead><tbody>
+<tr>
+<td><code>PLAN_FASES_FUTURAS.md</code> L30 (tabla de mapeo, punto #14)</td>
+<td>&quot;✅ Descartado — componente eliminado del repo&quot;</td>
+<td>El componente <strong>existe</strong>, en <code>draft</code>, licencia MIT verificada (Sesión 19) — el detalle del mismo punto #14 más abajo (antes L153) ya decía &quot;RESUELTO&quot;</td>
+<td>DRIFT-plan (contradicción interna dentro del propio fichero)</td>
+<td>L30 corregida para coincidir con el detalle; recomendación de consumidor futuro añadida (no wireada)</td>
+</tr>
+</tbody></table></div>
+<p><strong>Aclaración de ruta (no es un DRIFT, es una confusión resuelta en la propia sesión):</strong> el &quot;submódulo <code>domain-catalog</code>&quot; dentro de <code>APB-IA-FRAMEWORK</code> está anclado a un commit inicial vacío (<code>main</code>, sin los 21 dominios) — el trabajo real de los 21 <code>domain.md</code> vive en el <strong>clon independiente</strong> <code>GitHub-Repos/APB-DOMAIN-CATALOG</code>, rama <code>feat/carga-inicial-dominios-apim</code>, ya empujada a <code>origin</code> pero sin PR mergeado a <code>main</code>. No se contabiliza como DRIFT porque no hay ninguna afirmación del plan que contradiga esto — es una ambigüedad de dónde mirar, aclarada por Débora durante la revisión de este mismo plan de trabajo.</p>
+<p><strong>Trabajo ejecutado esta sesión</strong> (detalle en <code>PLAN_FASES_COMPLETADAS.md</code>): #85(K)(a)/(d) — generador de HTML del catálogo de dominios + primer workflow de CI en <code>APB-DOMAIN-CATALOG</code> + catálogo de referencia de dominios típicos; re-identificación de 2 de 10 SHAs <code>unverified</code> de terceros (<code>ccusage</code>, <code>wrap-mukul-cyber</code>) con evidencia real de GitHub, y documentación explícita de por qué los 8 restantes no son resolubles hoy (3 con <code>source_repo</code> inexistente/hallucinado, 5 con origen SaaS sin repositorio Git); corrección de la contradicción L30 sobre Understand-Anything.</p><h2 id="10-cierre-del-punto-30-mcp-graph-mismo-día-tras-push-de-9">10. Cierre del punto #30 MCP Graph (mismo día, tras push de §9)</h2><p>Al preguntar Débora &quot;¿hay otras tareas pendientes?&quot; tras los push de §9, se verificó que el punto #30 de §6 (tabla ACCIONABLE) — dado por parcialmente cubierto en la sesión de Auditoría original — en realidad <strong>nunca se había ejecutado</strong>: <code>.mcp.json</code> solo tenía <code>playwright</code>, y <code>prov-ms365-v1.0.md</code> seguía con una mención genérica sin config real. Es el mismo patrón de desfase que motiva toda esta auditoría, esta vez cometido por el propio asistente al marcar la tarea &quot;completada&quot; prematuramente.</p>
+<p><strong>Corrección:</strong> se identificó <code>@softeria/ms-365-mcp-server</code> (paquete npm real, verificado, no <code>@microsoft/graph-mcp-server</code> que no existe) como servidor MCP de Microsoft Graph. El clasificador de seguridad de auto-mode <strong>bloqueó el primer intento de wiring</strong> por tratarse de un paquete de terceros elegido por el propio agente sin aprobación previa nombrada — comportamiento correcto: se detuvo, se explicó a Débora y se pidió aprobación explícita del paquete concreto antes de tocar <code>.mcp.json</code>. Con su aprobación, se cableó en modo device-code (sin credenciales) y se documentó en <code>prov-ms365-v1.0.md</code> la ruta a producción (variables <code>MS365_MCP_CLIENT_ID</code> / <code>TENANT_ID</code> / <code>KEYVAULT_URL</code>), pendiente de que Plataforma registre la app en Entra ID.</p>
+<blockquote><p>Este informe se acompaña de su versión HTML corporativa (<code>AUDITORIA_DESFASE_PLAN_REPO.html</code>).</p></blockquote>
+  </main>
+</div>
+<footer class="apb-footer">
+  Generado por IA (APB AI Framework) — pendiente de validación humana. No distribuir sin revisión.
+</footer>
+</body>
+</html>

@@ -17,6 +17,12 @@ review_date: "2026-06-22"
 
 # skills.sh
 
+## ⚠️ Verificación de SHA (2026-07-04) — no aplica
+
+Mismo hallazgo que `third-skills-sh-frontend-v1.0.md`: `skills.sh` es una plataforma/marketplace,
+no un repositorio Git — `source_repo: "https://github.com/skills.sh"` no corresponde a una
+organización de GitHub real. `source_commit` documentado como **no aplicable**.
+
 ## Descripción
 Wrapper para gestionar la integración de skills de skills.sh con el APB AI Framework. Gestiona suscripción, valida uso interno y adapta skills propietarias al ecosistema APB.
 

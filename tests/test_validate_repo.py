@@ -511,6 +511,95 @@ class TestValidateBidirectionalWiring(unittest.TestCase):
             f"No se esperaba ningún WARNING, se obtuvo: {result.warnings}")
 
 
+class TestNoDeprecatedWiring(unittest.TestCase):
+    """Check #25 — validate_no_deprecated_wiring: ningún componente activo
+    puede cablear en frontmatter un componente deprecated/retired (Sesión 19,
+    anti-repetición del caso apb-agent-accessibility-auditor ↔
+    apb-design-wcag-patterns)."""
+
+    AGENT_TPL = textwrap.dedent("""\
+        ---
+        id: "apb-agent-test-v1.0"
+        name: "Test Agent"
+        description: "Agente de prueba"
+        version: "1.0.0"
+        status: "{agent_status}"
+        owner: "test"
+        domain: "development"
+        autonomy_level: 1
+        skills:
+          - "apb-dev-old-v1.0"
+        subagents: []
+        runtime: ["claude"]
+        human_review_points: ["Revisar output"]
+        created_date: "2026-01-01"
+        review_date: "2026-07-01"
+        ---
+        # Test Agent
+        ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+        Generado por APB AI Framework.
+    """)
+
+    SKILL_TPL = textwrap.dedent("""\
+        ---
+        id: "apb-dev-old-v1.0"
+        name: "Old Skill"
+        description: "Skill de prueba"
+        version: "1.0.0"
+        status: "{skill_status}"
+        owner: "test"
+        domain: "development"
+        autonomy_level: 1
+        inputs: ["x"]
+        outputs: ["y"]
+        created_date: "2026-01-01"
+        review_date: "2026-07-01"
+        ---
+        # Old Skill
+        ## Marcado IA obligatorio (POLICY_AI_USAGE §6)
+        Generado por APB AI Framework.
+    """)
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.repo = Path(self.tmpdir)
+        (self.repo / "agents").mkdir()
+        (self.repo / "skills" / "apb-owned" / "development").mkdir(parents=True)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _run(self, agent_status, skill_status):
+        (self.repo / "agents" / "apb-agent-test-v1.0.md").write_text(
+            self.AGENT_TPL.format(agent_status=agent_status), encoding="utf-8")
+        (self.repo / "skills" / "apb-owned" / "development" / "apb-dev-old-v1.0.md").write_text(
+            self.SKILL_TPL.format(skill_status=skill_status), encoding="utf-8")
+        result = vr.ValidationResult()
+        vr.validate_no_deprecated_wiring(self.repo, result)
+        return result
+
+    def test_wiring_a_deprecated_da_error(self):
+        """Agente activo que lista una skill deprecated → ERROR check #25."""
+        result = self._run("draft", "deprecated")
+        error_msgs = [i.message for i in result.errors]
+        self.assertTrue(
+            any("apb-dev-old-v1.0" in m and "check #25" in m for m in error_msgs),
+            f"Se esperaba ERROR de wiring deprecado, se obtuvo: {error_msgs}"
+        )
+
+    def test_wiring_a_activa_sin_error(self):
+        """Agente activo que lista una skill draft → sin ERROR."""
+        result = self._run("draft", "draft")
+        self.assertEqual(result.errors, [],
+            f"No se esperaba ningún ERROR, se obtuvo: {result.errors}")
+
+    def test_componente_deprecado_exento(self):
+        """Un agente él mismo deprecated con wiring histórico → sin ERROR."""
+        result = self._run("deprecated", "deprecated")
+        self.assertEqual(result.errors, [],
+            f"El wiring histórico de un deprecated debe quedar exento: {result.errors}")
+
+
 class TestVersionDrift(unittest.TestCase):
     """E-T3: validate_version_drift detecta cuando un agente referencia una
     skill cuya major version es inferior a la última disponible en el repo."""
@@ -768,6 +857,331 @@ class TestHarnessColdStartCheck(unittest.TestCase):
             )
         finally:
             shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+class TestTestPlanMethodologyCheck(unittest.TestCase):
+    """Punto #82 (sesión QA-2): toda skill de plan de pruebas debe referenciar
+    TEST_PLAN_STANDARD (check #20, anti-deriva de la metodología)."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_methodology(self):
+        result = vr.ValidationResult()
+        vr.validate_test_plan_methodology(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de metodología de planes de pruebas.",
+        )
+
+    def test_test_plan_skill_without_standard_reference_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            qa = tmp_dir / "skills" / "apb-owned" / "qa"
+            qa.mkdir(parents=True)
+            (qa / "apb-qa-test-plan-vX.md").write_text(
+                "---\n"
+                'id: "apb-qa-test-plan-vX"\n'
+                'name: "Fixture"\n'
+                'status: "draft"\n'
+                "---\n\n"
+                "# Skill sin referencia al estándar.\n",
+                encoding="utf-8",
+            )
+            result = vr.ValidationResult()
+            vr.validate_test_plan_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("TEST_PLAN_STANDARD" in m for m in messages),
+                f"Se esperaba error por falta de referencia al estándar; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+class TestUnifiedPlanConservationCheck(unittest.TestCase):
+    """Check #21 (anti-repetición, 2026-07-02): unificar planes de pruebas debe
+    conservar TODO el contenido de las fuentes (pruebas Y narrativa), no resumir
+    (TEST_PLAN_STANDARD §3.1). La pérdida silenciosa de una sección es ERROR."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_conserves_unified_plan(self):
+        result = vr.ValidationResult()
+        vr.validate_unified_plan_conservation(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El plan unificado real debe conservar todas las fuentes y secciones narrativas.",
+        )
+
+    def test_missing_narrative_section_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            examples = tmp_dir / "docs" / "qa" / "examples"
+            (examples / "sources").mkdir(parents=True)
+            # Unificado al que le falta la sección "Incidencias históricas"
+            (examples / "QA_TRU_TruckCenter_UNIFICADO.md").write_text(
+                "# Unificado\n\n## Modelo de datos\n\n## Funcionalidad detallada\n\n"
+                "## Proyectos futuros\n\n## Documentos de referencia\n",
+                encoding="utf-8",
+            )
+            result = vr.ValidationResult()
+            vr.validate_unified_plan_conservation(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Incidencias históricas" in m for m in messages),
+                f"Se esperaba error por sección narrativa perdida; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_missing_canonical_id_scheme_is_flagged(self):
+        """Anti-repetición (2026-07-03): si el unificado vuelve a numeración plana sin
+        bloque (p. ej. TRU-T01), sin ningún TRU-B{NN}-T{NN}, el check #21 debe marcarlo."""
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            examples = tmp_dir / "docs" / "qa" / "examples"
+            (examples / "sources").mkdir(parents=True)
+            (examples / "QA_TRU_TruckCenter_UNIFICADO.md").write_text(
+                "# Unificado\n\n## Incidencias históricas\n\n## Modelo de datos\n\n"
+                "## Funcionalidad detallada\n\n## Proyectos futuros\n\n## Documentos de referencia\n\n"
+                "| ID | Caso |\n|----|------|\n| TRU-T01 | Ejemplo |\n",
+                encoding="utf-8",
+            )
+            result = vr.ValidationResult()
+            vr.validate_unified_plan_conservation(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("ID canónico" in m for m in messages),
+                f"Se esperaba error por ausencia de esquema de ID canónico; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+class TestAgnosticRootRoutingCheck(unittest.TestCase):
+    """Check #22 (anti-deriva, 2026-07-03): AGENTS.md es la fuente única de reglas,
+    agnóstica de LLM y herramienta (SYSTEM.md §4.3, §10.1); CLAUDE.md y
+    .github/copilot-instructions.md deben existir y remitir a AGENTS.md, nunca
+    duplicar reglas de forma independiente."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_agnostic_routing(self):
+        result = vr.ValidationResult()
+        vr.validate_agnostic_root_routing(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de routing agnóstico.",
+        )
+
+    def test_missing_agents_md_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            result = vr.ValidationResult()
+            vr.validate_agnostic_root_routing(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("AGENTS.md" in m for m in messages),
+                f"Se esperaba error por ausencia de AGENTS.md; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_claude_md_without_pointer_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            (tmp_dir / "AGENTS.md").write_text("# Reglas\n\nContenido agnóstico.\n", encoding="utf-8")
+            (tmp_dir / "CLAUDE.md").write_text("# Reglas duplicadas sin remitir a la fuente\n", encoding="utf-8")
+            github_dir = tmp_dir / ".github"
+            github_dir.mkdir()
+            (github_dir / "copilot-instructions.md").write_text(
+                "Ver AGENTS.md para las reglas.\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_agnostic_root_routing(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("CLAUDE.md" in m and "no referencia AGENTS.md" in m for m in messages),
+                f"Se esperaba error porque CLAUDE.md no remite a AGENTS.md; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+class TestExecutionApprovalMethodologyCheck(unittest.TestCase):
+    """Check #23 (Fase I, 2026-07-03): roles + usuario de ejecución + destino +
+    acta de aprobación del informe (TEST_PLAN_STANDARD v1.3.0) no deben derivar
+    en silencio de la plantilla, el estándar ni el ejemplo canónico."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_execution_approval(self):
+        result = vr.ValidationResult()
+        vr.validate_execution_and_approval_methodology(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de roles/ejecución/aprobación (Fase I).",
+        )
+
+    def test_template_without_acta_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            std = tmp_dir / "context" / "apb" / "standards"
+            tpl = tmp_dir / "context" / "apb" / "templates"
+            std.mkdir(parents=True)
+            tpl.mkdir(parents=True)
+            # estándar completo
+            (std / "TEST_PLAN_STANDARD.md").write_text(
+                "Roles de usuario y usuario de ejecución\nAprobación del informe\nDestino de ejecución\n",
+                encoding="utf-8",
+            )
+            # plantilla a la que le falta el «Acta de aprobación»
+            (tpl / "TEST_PLAN.md").write_text(
+                "Rol requerido\nUsuario de ejecución\n(sin acta)\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_and_approval_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Acta de aprobación" in m for m in messages),
+                f"Se esperaba error por falta del «Acta de aprobación» en la plantilla; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_standard_without_execution_target_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            std = tmp_dir / "context" / "apb" / "standards"
+            std.mkdir(parents=True)
+            # estándar al que le falta «Destino de ejecución»
+            (std / "TEST_PLAN_STANDARD.md").write_text(
+                "Roles de usuario y usuario de ejecución\nAprobación del informe\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_and_approval_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Destino de ejecución" in m for m in messages),
+                f"Se esperaba error por falta de «Destino de ejecución»; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+class TestExecutionReportEvidenceMethodologyCheck(unittest.TestCase):
+    """Check #24 (2026-07-03): entrega dual + casos no ejecutados + evidencia
+    vídeo del informe de ejecución (TEST_PLAN_STANDARD v1.4.0) no deben derivar
+    en silencio del estándar ni de la skill de navegación exploratoria.
+
+    Anti-repetición del error real: un informe de ejecución de QA (TruckCenter,
+    2026-07-03) se generó solo en '.md', sin listar por ID los casos NO
+    ejecutados, y con un GIF presentado sin verificar su cobertura."""
+
+    def setUp(self):
+        self.repo = Path(__file__).resolve().parent.parent
+
+    def test_real_repo_passes_execution_report_evidence(self):
+        result = vr.ValidationResult()
+        vr.validate_execution_report_evidence_methodology(self.repo, result)
+        self.assertEqual(
+            [], [i.message for i in result.errors],
+            "El repo real debe pasar el check de evidencia de informes de ejecución.",
+        )
+
+    def test_standard_without_no_ejecutados_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            std = tmp_dir / "context" / "apb" / "standards"
+            std.mkdir(parents=True)
+            # estándar al que le falta "Casos NO ejecutados"
+            (std / "TEST_PLAN_STANDARD.md").write_text(
+                "vídeo real\nNunca solo en el informe\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_report_evidence_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("Casos NO ejecutados" in m for m in messages),
+                f"Se esperaba error por falta de 'Casos NO ejecutados'; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    def test_skill_without_html_is_flagged(self):
+        tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_"))
+        try:
+            qa = tmp_dir / "skills" / "apb-owned" / "qa"
+            qa.mkdir(parents=True)
+            # skill de navegación exploratoria a la que le falta mención de HTML
+            (qa / "apb-qa-exploratory-nav-v1.0.md").write_text(
+                "Formato de Salida: Markdown con Casos NO ejecutados\n", encoding="utf-8"
+            )
+            result = vr.ValidationResult()
+            vr.validate_execution_report_evidence_methodology(tmp_dir, result)
+            messages = [i.message for i in result.errors]
+            self.assertTrue(
+                any("HTML" in m for m in messages),
+                f"Se esperaba error por falta de 'HTML'; errores: {messages}",
+            )
+        finally:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+class TestPlanDeliverablesExist(unittest.TestCase):
+    """Check #26 — validate_plan_deliverables_exist: una fila de sesión marcada
+    CERRADA que declara un entregable (ID con versión) inexistente en el repo →
+    ERROR. Anti-repetición del desfase plan↔repo (auditoría 2026-07-04, R11,
+    precedente #56–#76)."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.repo = Path(self.tmpdir)
+        (self.repo / "discovery").mkdir()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _write_plan(self, body):
+        (self.repo / "discovery" / "PLAN_FASES_FUTURAS.md").write_text(body, encoding="utf-8")
+
+    def test_cerrada_con_entregable_inexistente_da_error(self):
+        self._write_plan("| Sesión X | tema | ✅ CERRADA — `apb-gov-fantasma-v1.0` creado |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {"apb-gov-real-v1.0": "x"})
+        msgs = [i.message for i in result.errors]
+        self.assertTrue(
+            any("apb-gov-fantasma-v1.0" in m and "check #26" in m for m in msgs),
+            f"Se esperaba ERROR de desfase plan↔repo, se obtuvo: {msgs}")
+
+    def test_cerrada_con_entregable_existente_sin_error(self):
+        self._write_plan("| Sesión X | tema | ✅ CERRADA — `apb-gov-real-v1.0` creado |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {"apb-gov-real-v1.0": "x"})
+        self.assertEqual(result.errors, [], f"No se esperaba ERROR: {result.errors}")
+
+    def test_id_con_negacion_cercana_exento(self):
+        self._write_plan("| #59 | tema | ✅ CERRADA — `apb-agent-fantasma-v1.0` NO se creó (decisión) |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {})
+        self.assertEqual(result.errors, [], f"Una negación cercana debe eximir: {result.errors}")
+
+    def test_fila_no_cerrada_ignorada(self):
+        self._write_plan("| Sesión Y | tema | ⚠️ PARCIAL — `apb-gov-fantasma-v1.0` pendiente |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {})
+        self.assertEqual(result.errors, [], f"Una fila no-CERRADA no debe evaluarse: {result.errors}")
+
+    def test_mencion_sin_version_ignorada(self):
+        # 'apb-ai-skills' (repo externo, sin -vX.Y) no es un entregable versionado.
+        self._write_plan("| 17 | tema | ✅ CERRADA — `apb-ai-skills` deprecado |\n")
+        result = vr.ValidationResult()
+        vr.validate_plan_deliverables_exist(self.repo, result, {})
+        self.assertEqual(result.errors, [], f"Una mención sin versión no debe evaluarse: {result.errors}")
 
 
 if __name__ == "__main__":

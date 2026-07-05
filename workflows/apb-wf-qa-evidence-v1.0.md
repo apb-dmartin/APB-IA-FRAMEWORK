@@ -15,6 +15,7 @@ agents:
 skills:
   - "apb-qa-performance-v1.0"
   - "apb-qa-accessibility-v1.0"
+  - "apb-qa-exploratory-nav-v1.0"
 human_checkpoints:
   - "Validación humana antes de cada fase crítica del workflow"
 created_date: "2026-06-20"
@@ -156,6 +157,15 @@ graph TD
 | Fase 7: Decisión de Release | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
 
 > **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
+
+## 🔁 Bucle de corrección tras fallo de pruebas (fallo → PR → Jira)
+
+Cuando una o más pruebas fallan en las Fases 2–4 (o el informe se aprueba «con reservas»), se invoca el
+subagente reutilizable `apb-sub-qa-fix-loop-v1.0` (`TEST_PLAN_STANDARD §6.3`): **propone un PR con las
+correcciones** (documentado con `apb-dev-pr-doc-v1.0`) y **anota el ticket Jira** correspondiente (vía
+`prov-jira-software-v1.0`) con el enlace al PR y la evidencia del fallo. El subagente **propone; nunca
+mergea** — la aprobación y la integración son humanas (`POLICY_AI_USAGE §6-7`). La autorización del
+**informe de resultados** (Analista Funcional + Desarrollador) sigue el acta de `TEST_PLAN_STANDARD §6.2`.
 
 ## 📝 Ejemplo de Ejecución
 

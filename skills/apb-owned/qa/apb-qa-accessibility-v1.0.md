@@ -9,6 +9,8 @@ domain: "qa"
 autonomy_level: 1
 created_date: "2026-06-29"
 review_date: "2026-12-29"
+consumed_by:
+  - "apb-agent-design-compliance-v1.0"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
 

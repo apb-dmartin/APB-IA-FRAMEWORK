@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/sigridjineth/hello-ansible-skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "3062baada51d4fb2279334a7e8bf3e7d02347fde"
 ---
 
 # SKILL_PLAT_ANSIBLE — Automation & Configuration Management

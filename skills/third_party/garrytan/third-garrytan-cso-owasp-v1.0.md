@@ -11,8 +11,7 @@ review_date: "2026-06-22"
 autonomy_level: 1
 source_repo: "https://github.com/garrytan/gstack"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "11de390be1be6849eb9a15f91ff4922dd16c589a"
 ---
 
 # Requisitos OWASP para APB

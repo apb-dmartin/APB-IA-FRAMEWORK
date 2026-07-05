@@ -2,15 +2,19 @@
 id: "apb-qa-test-plan-v1.0"
 name: "Test Plan Generator"
 description: "Genera planes de pruebas estructurados a partir de especificaciones, historias de usuario o requisitos, con trazabilidad LCSP/ENS/RGPD/WCAG 2.1 AA cuando el proyecto lo requiere. Incluye casos de prueba, criterios de aceptación, datos de prueba, estimaciones y asignación de responsables."
-version: "1.1.0"
+version: "1.4.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 1
 created_date: "2026-06-20"
-review_date: "2026-06-24"
+review_date: "2026-07-03"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "apb-plat-doc-to-markdown-v1.0"  # Normaliza planes aportados por el usuario (cualquier formato)
+  - "apb-plat-deliver-artifact-v1.0"  # Resuelve destino/formato de entrega del plan (Markdown+HTML obligatorios)
+  - "prov-akv-v1.0"  # Usuario de ejecución por referencia (AKV://<secret>), nunca credenciales en fichero
+  - "apb-disc-spec-gen-v1.0"  # Spec SDD como fuente funcional autoritativa cuando el plan nace de un flujo SDD
 
 ---
 
@@ -22,12 +26,47 @@ depends_on:
 > Debora: fusionar e incorporar a `APB-IA-FRAMEWORK`, sin mantener duplicado en el repo de
 > origen.
 
+> **Ampliación v1.2.0 (Sesión QA-2, 2026-07-02):** esta skill implementa ahora el
+> [`TEST_PLAN_STANDARD`](../../../context/apb/standards/TEST_PLAN_STANDARD.md): orden de fuentes con
+> degradación, **ingesta de planes aportados por el usuario en cualquier formato**, unificación sin
+> duplicados con **procedencia múltiple** por prueba, detección de plan previo con actualización
+> incremental, secciones de gobernanza (histórico, aprobados, enlace a evidencias/Jira) y no-regresión de
+> rendimiento. Plantilla: [`TEST_PLAN.md`](../../../context/apb/templates/TEST_PLAN.md). Ejemplo canónico:
+> [`QA_TRU_TruckCenter_UNIFICADO.md`](../../../docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md).
+> **La skill es interactiva: pregunta al usuario por los inputs que falten en lugar de asumirlos.**
+
+> **Ampliación v1.3.0 (Sesión QA-2, continuación 2026-07-03):** todo caso de prueba se identifica con el
+> **esquema de ID canónico** [`TEST_PLAN_STANDARD §3.2`](../../../context/apb/standards/TEST_PLAN_STANDARD.md)
+> — `{APP}-B{NN}-T{NN}` (bloque + secuencia, ambos **append-only**): añadir una prueba a un bloque existente
+> nunca renumera las demás. El plan tiene un **owner de gobernanza por aplicación** (§6.1). El plan (y su
+> informe de ejecución) se entregan siempre en **Markdown + HTML** (§7.1: cabecera azul + logo APB, nav
+> lateral, acordeón por bloque — `scripts/generate_test_plan_html.py`), resolviendo el destino final con
+> `apb-plat-deliver-artifact-v1.0`.
+
+> **Ampliación v1.4.0 (Sesión QA-2, Fase I, 2026-07-03):** cubre 7 huecos de uso real
+> ([`TEST_PLAN_STANDARD v1.3.0`](../../../context/apb/standards/TEST_PLAN_STANDARD.md)): **(1)** define los
+> **roles de usuario** necesarios y el **rol requerido por caso**, y resuelve el **usuario de ejecución** por
+> referencia **AKV** (`prov-akv-v1.0`) o aportado en runtime — **nunca credenciales en fichero** (§9.2);
+> **(2)** declara el **destino de ejecución** `local`/`ci-runner`/`azure-qa` y, en `local`, **guía la
+> instalación** de Playwright/k6 ([`docs/qa/EJECUCION_LOCAL.md`](../../../docs/qa/EJECUCION_LOCAL.md), §9.1/§9.3);
+> **(3)** acepta la **spec SDD** como fuente funcional autoritativa (§1) cuando el plan nace de
+> `apb-wf-sdd-full`; **(4)** el informe de ejecución lleva **Acta de aprobación** (Funcional + Desarrollador,
+> §6.2) y, ante fallos, dispara el bucle **fallo → PR → Jira** (`apb-sub-qa-fix-loop-v1.0`, §6.3).
+
 # SKILL: Test Plan Generator
 
 ## 1. Responsabilidad
 
 Esta skill:
 - Genera planes de pruebas completos a partir de specs, historias Jira o requisitos.
+- **Ingiere planes de pruebas aportados por el usuario** en cualquier formato (Markdown, Word, Excel,
+  PDF…), normalizándolos con `apb-plat-doc-to-markdown-v1.0`, y los funde conservando **todas** las pruebas.
+- **Unifica sin duplicados** varias visiones del mismo plan (Jira/Rovo, documentación/AF, código/Copilot,
+  aportadas por usuario) por **intención de la prueba**, con **procedencia múltiple** (herramienta + origen).
+- **Detecta plan previo** y actualiza **incrementalmente desde su fecha** (no regenera desde cero).
+- Aplica el **orden de fuentes con degradación**: si Jira/AF faltan o están obsoletos, se apoya en el código
+  y marca la confianza real, sin inventar respaldo funcional.
+- Verifica **no-regresión de rendimiento** (cruce con `prov-k6-v1.0`).
 - Define casos de prueba con precondiciones, pasos, datos de entrada y resultados esperados.
 - Clasifica pruebas por tipo: unitarias, integración, sistema, regresión, rendimiento, seguridad, accesibilidad.
 - Asigna prioridad y severidad a cada caso de prueba.
@@ -51,6 +90,16 @@ Esta skill:
 | `ens_level` | enum | No | Nivel ENS aplicable: `alto`, `medio`, `no_aplica`. Activa la sección de marco normativo si no es `no_aplica`. |
 | `processes_personal_data` | bool | No | Si el sistema procesa datos personales (RGPD). Activa la verificación de anonimización de fixtures en la sección de datos de prueba. |
 | `contractual_context` | bool | No | Si el plan se usará como documento contractual de licitación. Activa el formato de archivo en expediente (sección 12bis). |
+| `provided_plans` | list[file_path] | No | Uno o varios planes de pruebas aportados por el usuario, en **cualquier formato**. Se normalizan a Markdown (`apb-plat-doc-to-markdown-v1.0`) y se funden conservando todas sus pruebas. |
+| `sources` | list | No | Fuentes a usar y su estado: p. ej. `rovo` (Jira+AF), `github-copilot` (código), `usuario`. Cada una con `disponible`/`obsoleta`. Default: preguntar al usuario. |
+| `previous_plan` | file_path | No | Plan de pruebas anterior de la app. Si se aporta, se hace **actualización incremental** desde su fecha, no regeneración. |
+| `app_repo` | string | No | Repo de la aplicación donde se guardarán plan y resultados (el framework guarda solo estándar/plantilla/ejemplo). |
+| `performance_baseline` | file_path / ref | No | Resultado de rendimiento anterior para la verificación de no-regresión. Si no existe, se ejecuta sobre versión anterior + nueva. |
+| `evidence_destination` | enum | No | Destino de evidencias de ejecución: `zip`, `jira`, `ambos`. Default: preguntar al usuario. |
+| `spec` | file_path / ref | No | Especificación SDD (`apb-disc-spec-gen-v1.0`). Si el plan nace de un flujo SDD es **input obligatorio** y **fuente funcional autoritativa** (§1): los casos derivan de sus criterios de aceptación. |
+| `test_roles` | list | No | Roles de usuario necesarios para las pruebas (nombre + alcance). Alimenta la matriz de roles (§9.2) y la columna «Rol requerido» por caso. Default: preguntar / inferir de la app. |
+| `execution_user_source` | enum | No | Origen del usuario concreto de ejecución: `akv-ref` (`AKV://<secret>`, vía `prov-akv-v1.0`) o `interactive` (login asistido en runtime → `storageState`). **Nunca** se persiste la credencial. Default: preguntar. |
+| `execution_target` | enum | No | Dónde se ejecuta: `local` (PC del usuario, guiado), `ci-runner` (pipeline), `azure-qa` (`prov-azure-qa-runtime-v1.0`, sin instalar nada). §9.1. Default: preguntar. |
 
 ## 3. Outputs
 
@@ -62,6 +111,9 @@ Esta skill:
 | `traceability_matrix` | markdown | Matriz de trazabilidad: requisito → caso de prueba → resultado |
 | `effort_estimate` | markdown | Estimación de esfuerzo por tipo de prueba y fase |
 | `normative_framework` | markdown | Tabla de marco normativo aplicable (solo si `ens_level` o `processes_personal_data` activos) |
+| `unified_plan` | markdown + html | Plan **unificado sin duplicados** con **ID canónico** (`{APP}-B{NN}-T{NN}`, §3.2), columnas de **procedencia** (herramienta + origen), «Desde» y «OK func.», secciones fijas + gobernanza, y tabla de mapeo de numeraciones de origen. Conforme a `TEST_PLAN.md`. **Se entrega siempre en ambos formatos** (§7.1). |
+| `provenance_map` | markdown | Trazabilidad por prueba: qué fuente(s) la propusieron y de qué origen (Jira/documentación/código/usuario). |
+| `test_plan_html` | html | Versión HTML autocontenida del plan (cabecera azul + logo, nav lateral, acordeón por bloque), generada con `scripts/generate_test_plan_html.py`. |
 
 ## 4. Dependencias
 
@@ -176,15 +228,46 @@ Cada caso debe tener:
 - Criterio de bloqueo de release: 0 Críticos, 0 Altos sin resolver
 
 ## Instrucciones
-1. Analiza los requisitos proporcionados.
-2. Identifica escenarios de prueba principales y alternativos.
-3. Genera casos de prueba con cobertura completa.
-4. Clasifica por tipo y prioridad.
-5. Estima esfuerzo en horas/días por tipo.
-6. Genera matriz de trazabilidad.
-7. Propone estrategia de datos de prueba.
-8. Si `ens_level` o `processes_personal_data` están activos, genera la sección de marco
-   normativo con la tabla LCSP/ENS/RGPD/WCAG.
+0. **Pregunta primero (interactivo).** Antes de generar, si faltan inputs relevantes, PREGUNTA al usuario:
+   ¿aporta planes de pruebas propios y en qué formato? ¿hay una **spec SDD** de origen? ¿qué fuentes hay y
+   están vigentes u obsoletas (Jira/AF/código)? ¿existe un plan previo? ¿repo destino de resultados?
+   ¿qué **roles de usuario** hacen falta y cuál es el **usuario de ejecución** (referencia AKV o lo aporta
+   en runtime)? ¿**destino de ejecución** (`local`/`ci-runner`/`azure-qa`)? ¿destino de evidencias
+   (zip/jira/ambos)? **No asumas**; si algo es ambiguo, consúltalo.
+0bis. **Roles y usuario de ejecución (§9.2).** Construye la **matriz de roles** y asigna a cada caso su
+   **«Rol requerido»**. Resuelve el usuario de ejecución por `execution_user_source`: `akv-ref` →
+   referencia `AKV://<secret>` (`prov-akv-v1.0`); `interactive` → login asistido → `storageState`.
+   **NUNCA** escribas usuario/contraseña/token/`storageState` con secretos en el plan, el informe ni ningún
+   fichero; solo la referencia simbólica (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
+0ter. **Destino de ejecución (§9.1).** Registra `execution_target`. Si es `local` y falta tooling
+   (Node/Playwright/k6), **NO falles**: guía la instalación paso a paso remitiendo a
+   `docs/qa/EJECUCION_LOCAL.md`. La carga **k6 nunca** se lanza desde el portátil contra infra compartida
+   (→ `ci-runner`/`azure-qa`).
+1. **Ingiere y normaliza** los `provided_plans` (cualquier formato → Markdown vía `apb-plat-doc-to-markdown-v1.0`).
+2. **Orden de fuentes con degradación:** usuario → **spec SDD** → Rovo (Jira+AF) → Copilot (código). En
+   flujo SDD la **spec manda** como fuente funcional autoritativa (§1): deriva los casos de sus criterios de
+   aceptación y traza cada caso a su criterio. Si Jira/AF faltan o están obsoletos, apóyate en el código y
+   **marca la confianza/origen real**; nunca inventes respaldo funcional.
+3. **Unifica sin duplicados** por intención de la prueba; asigna procedencia **múltiple** (herramienta + origen)
+   y una columna «Desde»; publica tabla de mapeo si había varias numeraciones.
+3bis. **Asigna ID canónico** `{APP}-B{NN}-T{NN}` (§3.2, append-only) a cada caso. Si el plan migra desde una
+   numeración plana previa, conserva el ID anterior en columna «Legado» — nunca renumeres pruebas existentes.
+4. Si hay `previous_plan`, **actualiza incrementalmente** desde su fecha (no regeneres): las pruebas nuevas
+   se añaden al **final de la secuencia de su bloque** (nunca insertadas en medio ni renumerando otras).
+5. Analiza requisitos, identifica escenarios (principales y alternativos), genera casos con cobertura completa.
+6. Clasifica por **Tipo** y **Prioridad**; genera matriz de trazabilidad; propone estrategia de datos.
+7. Rellena las **secciones obligatorias** del `TEST_PLAN_STANDARD` (arquitectura topológica, modelo de datos,
+   histórico, aprobados por cambio, enlace bidireccional plan↔evidencias↔Jira).
+8. Evalúa **no-regresión de rendimiento** (consulta resultado anterior o ejecuta versión anterior + nueva; cruce `prov-k6`).
+9. Si `ens_level` o `processes_personal_data` están activos, genera la sección de marco normativo (LCSP/ENS/RGPD/WCAG).
+10. Guarda plan y resultados en el `app_repo`; el framework solo conserva estándar/plantilla/ejemplo.
+11. **Genera siempre la versión HTML** del plan (`scripts/generate_test_plan_html.py`) junto a la Markdown
+    (§7.1); invoca `apb-plat-deliver-artifact-v1.0` para resolver formato adicional y destino final.
+12. **Informe de ejecución:** al reportar resultados, incluye el **Acta de aprobación** (§6.2) con las filas
+    Analista Funcional + Desarrollador **vacías** (las firma una persona; el agente **no** se autoaprueba).
+    Persiste la decisión en el `.md` y refléjala en Jira (`prov-jira-software-v1.0`). Si hay pruebas en fallo
+    o el informe se aprueba «con reservas», dispara el bucle **fallo → PR → Jira** vía
+    `apb-sub-qa-fix-loop-v1.0` (§6.3): **propone** el PR, nunca lo mergea.
 
 ## Restricciones
 - No uses datos reales de producción sin anonimización.
@@ -308,6 +391,9 @@ Cada caso debe tener:
 |---------|-------|-------|--------|
 | 1.0.0-draft | 2026-06-20 | QA Gobierno APB | Creación inicial |
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Fusión con `apb-test-plan-lcsp` (apb-ai-skills): marco normativo LCSP/ENS/RGPD/WCAG, tabla de criterios de éxito cuantificados, contexto contractual de licitación |
+| 1.2.0 | 2026-07-02 | APB AI Framework (Sesión QA-2) | Implementa `TEST_PLAN_STANDARD`: ingesta de planes aportados (cualquier formato), unificación sin duplicados con procedencia múltiple, orden de fuentes con degradación, detección de plan previo + actualización incremental, secciones de gobernanza, no-regresión de rendimiento, skill interactiva. Inputs: `provided_plans`, `sources`, `previous_plan`, `app_repo`, `performance_baseline`, `evidence_destination`. `depends_on` += `apb-plat-doc-to-markdown-v1.0` |
+| 1.3.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, continuación) | Adopta el **ID canónico** `{APP}-B{NN}-T{NN}` (`TEST_PLAN_STANDARD §3.2`, append-only, con columna «Legado» en migraciones). Declara **gobernanza por aplicación** (§6.1). Entrega el plan siempre en **Markdown + HTML** (§7.1, `scripts/generate_test_plan_html.py`), delegando destino final en `apb-plat-deliver-artifact-v1.0` (añadido a `depends_on`). |
+| 1.4.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, Fase I) | Implementa `TEST_PLAN_STANDARD v1.3.0`: inputs `spec` (fuente SDD autoritativa), `test_roles`, `execution_user_source` (AKV/runtime), `execution_target` (`local`/`ci-runner`/`azure-qa`). Matriz de roles + «Rol requerido» por caso; usuario de ejecución por referencia AKV o runtime (nunca en fichero). Guía de instalación local si falta tooling. **Acta de aprobación del informe** (§6.2) y bucle **fallo → PR → Jira** (`apb-sub-qa-fix-loop-v1.0`, §6.3). `depends_on` += `prov-akv-v1.0`, `apb-disc-spec-gen-v1.0`. |
 
 > **Generado por IA:** Claude (Anthropic), Sesión QA del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
@@ -319,7 +405,15 @@ Cada caso debe tener:
 
 | Input | Si falta o es ambiguo | Bloquea ejecución |
 |-------|-----------------------|-------------------|
-| *(Sin inputs declarados)* | No aplica | No |
+| `requirements` / `provided_plans` | Preguntar al usuario si aporta plan propio (y formato) o de qué requisitos partir | Sí, hasta obtener al menos una fuente |
+| `sources` | Preguntar qué fuentes hay y si están vigentes u obsoletas (Jira/AF/código) | No — degrada a las disponibles marcando confianza |
+| `previous_plan` | Preguntar si existe plan anterior (para actualización incremental) | No |
+| `app_repo` | Preguntar dónde guardar plan y resultados | No — avisa que se entregan sin ubicación fija |
+| `evidence_destination` | Preguntar destino de evidencias (zip/jira/ambos) | No — por defecto zip |
+| `spec` | Preguntar si el plan nace de un flujo SDD (spec = fuente autoritativa) | No — pero si es SDD, sí |
+| `test_roles` | Preguntar qué roles hacen falta; inferir de la app si no | No — se marca por caso al ejecutar |
+| `execution_user_source` | Preguntar: AKV por referencia o aportado en runtime; **nunca hardcodear** | Sí para ejecución funcional |
+| `execution_target` | Preguntar `local`/`ci-runner`/`azure-qa`; si `local` sin tooling, guiar instalación | No — por defecto preguntar |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

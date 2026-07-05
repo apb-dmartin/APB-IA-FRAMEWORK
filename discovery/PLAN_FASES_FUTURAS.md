@@ -27,7 +27,7 @@
 | 11 (DDD + inventario dominios negocio) | ✅ **Unificado con #38 Fase 0** (decisión Debora post-Sesión 9) — mismo artefacto, se resuelve en la sesión de #38, no en 13 |
 | 12 (loops de iteración) | **13** |
 | 13 (guía UI/UX) | ✅ **Documentos recibidos** (ver bloque nuevo abajo) — tratamiento en **Sesión Frontend** |
-| 14 (licencia Understand-Anything) | ✅ **Descartado** — decisión de Debora: no usar `Lum1104/Understand-Anything`. Componente `third-lum1104-knowledge-graph-v1.0.md` eliminado del repo. |
+| 14 (licencia Understand-Anything) | ✅ **RESUELTO (Sesión 19, 2026-07-04)** — licencia de `Lum1104/Understand-Anything` verificada: **MIT**. El bloqueo de producción por licencia desconocida (motivo de la decisión inicial de Débora de no usarlo) queda levantado; `third-lum1104-knowledge-graph-v1.0.md` **existe** en el repo, en `status: draft`, sin `consumed_by` (sin wiring). Uso futuro pendiente de reevaluación de Débora ahora que la licencia está clara — ver detalle más abajo. *(Corregido 2026-07-04: esta fila decía antes "descartado, eliminado del repo", desactualizada frente al detalle del punto #14 más abajo tras la Sesión 19 — quedaban dos afirmaciones contradictorias en el mismo fichero.)* |
 | 15 (soporte incidencias técnicas) | **Sesión 21** |
 | 16 (análisis de riesgos validación Ciber/Arq/QA) | **Sesión 12** (parcial) + **Sesión 16** (pendiente). Sesión 12 construyó `apb-gov-ai-risk-gate-v1.0` — evalúa los 6 riesgos *específicos de uso de IA* de `proyecto.md` §3.5. **El alcance completo del punto #16 queda pendiente para Sesión 16:** informe de análisis de riesgos organizativo (incumplimientos de políticas APB, deuda técnica, ENS nivel alto) con procedimiento de excepciones corporativo, para validación por Ciberseguridad y Arquitectura — informe listo para que un humano decida si acepta el incumplimiento y qué plan de mitigación exige. Requiere: esbozo de contenido del informe que facilitará Debora + procedimiento corporativo de excepciones. |
 | 17 (auditoría Playwright/apb-ai-skills) | ✅ **Sesión QA — CERRADA** (4 fusiones realizadas, apb-ai-skills deprecado) |
@@ -150,16 +150,25 @@ pendientes históricos), en vez de dejarlos en un cajón sin fecha.
 
 ## Bloque añadido (cierre de Sesión 7 / apertura Sesión 8)
 
-14. **Verificar licencia de Understand-Anything** ❌ **SIGUE PENDIENTE — no
-    resuelto pese a que la Sesión 9 ya cerró.**
-    `third-lum1104-knowledge-graph-v1.0` quedó marcado como bloqueante para
-    producción por licencia no verificada (ver `CONTINUIDAD_PROYECTO.md`
-    §4). Se asignó a Sesión 9 ("resolver al revisar terceros"), pero la
-    Sesión 9 cerró sin que este punto concreto se abordara — fue una
-    omisión real, detectada en revisión post-Sesión QA. Sigue bloqueante
-    para cualquier uso productivo del componente. Requiere acceso directo
-    al repo `Lum1104/Understand-Anything` (o su fork
-    `Egonex-AI/Understand-Anything`) para verificar el archivo LICENSE.
+14. **Verificar licencia de Understand-Anything** ✅ **RESUELTO (Sesión 19,
+    2026-07-04).** Licencia verificada vía API de GitHub sobre
+    `Lum1104/Understand-Anything`: **MIT** (SPDX confirmado), repo activo
+    (~70,7k ⭐, último push 2026-07-03), commit fijado `0e8ad84a`. El stub
+    `third-lum1104-knowledge-graph-v1.0` pasa de `watchlist` a `draft` con
+    `license: MIT` y `source_commit` real; bloqueo de producción por
+    licencia levantado (`CONTINUIDAD_PROYECTO.md §5.14` actualizado).
+    Nota: la decisión previa de Débora de descartar el componente (fila 14
+    de la tabla de mapeo) se tomó con licencia desconocida — puede
+    reevaluarse ahora o mantenerse el descarte; hasta que lo decida, el
+    componente queda en `draft` sin consumidores.
+    **Corrección de consistencia (2026-07-04):** la fila 14 de la tabla de
+    mapeo (arriba, línea ~30) seguía diciendo "descartado, eliminado del
+    repo" pese a esta resolución — corregida para que ambas coincidan.
+    **Recomendación (no decisión) para cuando Débora reevalúe el uso:**
+    candidato natural es `apb-agent-ddd-v1.0` / `apb-sub-ddd-interview-v1.0`
+    (construcción de grafos de conocimiento de dominio a partir de
+    documentación no estructurada) — no se cablea aquí, es una decisión de
+    negocio pendiente.
 
 15. **Soporte a incidencias técnicas generalista**
     Agente/skill que ayude a diagnosticar y resolver incidencias técnicas de
@@ -715,7 +724,29 @@ directamente. **Sesión a determinar** — corrección sencilla (reescribir
 que sí está correcta), candidata a tarea trivial dentro de cualquier sesión de mantenimiento,
 o a resolverse junto con la Sesión 13.
 
-### 45. Carpeta `skills/_spec-driven/` de `apb-ai-skills` — sin decisión, solo mencionada
+### 45. Carpeta `skills/_spec-driven/` de `apb-ai-skills` — ✅ RESUELTO (Sesión 19, 2026-07-04)
+
+**Cruce ejecutado con datos (fuente: `apb-ai-skills.zip` original, OneDrive
+`Proyectos/.../Repo GitHub versiones/`):** las 3 skills (`spec-to-api-contract`,
+`spec-to-e2e-flows`, `spec-to-test-plan`) resultaron ser **placeholders
+`[RESERVADO - NO ACTIVO]` sin implementación** — solo describen una intención
+futura ("se activará cuando el proyecto adopte Open Spec Kit"). **No hay
+contenido que fusionar.** Además, lo que prometían ya está cubierto o
+superado por el framework actual:
+- `spec-to-test-plan` → cubierto por `apb-qa-test-plan-v1.0` v1.4.0, que
+  desde Fase I acepta `spec` como fuente funcional autoritativa.
+- `spec-to-e2e-flows` → parcialmente cubierto (`apb-qa-test-auto-v1.0`,
+  `apb-sub-qa-e2e-v1.0`); **idea aprovechable registrada:** trazabilidad
+  automática criterio de aceptación → caso (AC-XXX → TC-XXX) en el nombre
+  del test generado.
+- `spec-to-api-contract` → `apb-arch-api-contract-v1.0` diseña contratos;
+  **idea aprovechable registrada:** generación de tests de contrato (estilo
+  Pact) desde la spec, para que la implementación no se desvíe del diseño.
+**Recomendación aplicada: cerrar sin fusiones** (coherente con la
+deprecación general de `apb-ai-skills`); las 2 ideas quedan anotadas aquí
+como mejoras opcionales de futuras versiones de esas skills APB.
+
+<details><summary>Planteamiento original (histórico)</summary>
 
 **Hallazgo de la Sesión QA, documentado como dato pero nunca convertido en tarea con
 decisión pendiente** (mismo patrón de hueco que el #44). Al auditar `apb-ai-skills.zip` se
@@ -731,6 +762,8 @@ individualmente.
 tratamiento que las 10 ya cruzadas), o se consideran cubiertas por la decisión general de
 deprecar `apb-ai-skills` y no requieren evaluación individual? Sesión a determinar — no
 bloquea nada del plan actual, pero queda abierta hasta que Debora decida el criterio.
+
+</details>
 
 ---
 
@@ -776,7 +809,7 @@ punto.
 | ~~**17**~~ | ~~Observabilidad: dashboards Power BI/Grafana/Prometheus + logging + telemetría de KPIs del framework~~ | ~~#26, #39, #40~~ | ✅ CERRADA — ver punto #46 para pendiente de telemetría en chat |
 | **13** | Cierre de pendientes históricos: guía de uso de agentes, plantillas, mapa Jira, COSMIC, loops, autonomía de agentes, plantilla AGENT.md | #2, #6, #7, #8, #12, #29, #41, #44, #48 | ✅ PARCIAL (2026-06-26, 7/10 puntos): #2 ✅ #7 ✅ #12 ✅ #29 ✅ #41 ✅ #44 ✅ #48 ✅. Bloqueados: #6 (ejemplos Word/Excel de Debora), #8 (horas históricas COSMIC), #52 (email Arquitectura). |
 | ~~**18**~~ | ~~DDD: catálogo corporativo de dominios (Fase 0) + descomposición de monolitos (Fase 1) + spec desde histórico Jira~~ | ~~#11/#38 Fase 0, #38 Fase 1, #37~~ | ✅ CERRADA (Sesión 18, 2026-06-25) — repo apb-domain-catalog creado (github.com/apb-dmartin/APB-DOMAIN-CATALOG), apb-agent-ddd-v1.0 + 5 subagentes (code/db/doc/spec/interview), submodule integrado en APB-IA-FRAMEWORK. Fase 1 (descomposición monolitos) → pendiente sesión futura. |
-| **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | Items de #27 sin URL requieren que Debora las aporte |
+| **19** | Terceros pendientes de §8 + evaluación `_spec-driven` de `apb-ai-skills` | #27 (items abiertos), #45 | ✅ **CERRADA (2026-07-04, Sesión 19)** — #45: las 3 skills `_spec-driven` resultaron ser placeholders `[RESERVADO - NO ACTIVO]` sin implementar (verificado en el zip original); nada que fusionar, lo prometido ya lo cubre `apb-qa-test-plan-v1.0` v1.4.0 (input `spec`, Fase I). 2 ideas registradas como mejora futura: trazabilidad AC-XXX→TC-XXX automática y tests de contrato tipo Pact desde plan.md. #27 items: evaluados (ver tabla F). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
 | **20** | Agentes de licitación (LCSP) | #36 | **Pendiente de briefing de Debora** |
 | **14** | Documentación Word por audiencias (arquitectos, devs/analistas, dirección) + mecanismo de actualización de documentación funcional | #23, #32 | ⚠️ PARCIAL (2026-06-27): borradores Markdown disponibles (`docs/guia-funcional.md` y `docs/manual-arquitectura.md`). Pendiente: conversión a .docx + documento de Dirección |
 | ~~**#43**~~ | ~~Aplicación retroactiva "Generado por IA + Validado por humano" a todo el catálogo~~ | ~~#43~~ | ✅ CERRADA (Sesión 23, 2026-06-26) — 129/129 skills apb-owned marcadas con `## Marcado IA obligatorio (POLICY_AI_USAGE §6)`. Estándar canónico: `context/apb/standards/AI_MARKING_STANDARD.md`. Mecanismos preventivos: check #13 en `validate_repo.py` (ERROR si falta la sección), sección en templates `SKILL_APB.md` y `AGENT.md`, `CLAUDE.md` en raíz del repo. |
@@ -787,9 +820,29 @@ punto.
 | ~~**Sesión 18 cont. (#54)**~~ | ~~Entrevista portuaria + verificación de dominio + actualización repo dominios~~ | ~~#54~~ | ✅ CERRADA (2026-06-26) — `apb-sub-ddd-interview-v1.0` v1.3.0: (A) Banco A portuario (buques, escalas, consignatario, GISPEM, PORTIC…); (B) Banco B corporativo (RRHH, viajes, contratación LCSP, adm. electrónica, finanzas, jurídico); (C) Fase 1-INT integración entre sistemas (flujo de datos, trigger, frecuencia, fallo, patrón ACL/Published Language/Shared Kernel/event-driven); (D) Fase 1-EVO evolutivos (revisión de lo existente, clasifica en extensión/nuevo BC/deuda técnica/breaking change); Fase 5 verificación APB-DOMAIN-CATALOG; Fase 6 generación artefacto `domain.md`. |
 | ~~**Harness**~~ | ~~Harness Engineering agnóstico de LLM: 5 subsistemas, System of Record + ACID, Feature Lists + Pass-State Gating, validación 3 capas, Clean State Handoff. Gobernanza + scaffolding + checks nuevos en `validate_repo.py`~~ | ~~#83~~ | ✅ CERRADA (2026-07-02, sesión combinada con #78) — SYSTEM.md §10 + GOVERNANCE.md §8 + `repo-scaffold/harness-ready/` + check #19 |
 | ~~**Estándar Prompting**~~ | ~~Estándar de estructura de prompt para todos los componentes (razonar→plan→ejecutar, objetivo, autocrítica, qué-NO-hacer, ejemplo E/S, separación SISTEMA/USUARIO) + retrofit + check en validador~~ | ~~#78~~ | ✅ CERRADA (2026-07-02, sesión combinada con #83) — `PROMPTING_STANDARD.md` + 6 plantillas + retrofit 244 componentes + check #18 en ERROR |
-| **QA-2** | Metodología y plantilla de planes de pruebas (Rovo→Copilot, trazabilidad, histórico, gobernanza, no-regresión rendimiento) + navegación agéntica para pruebas funcionales | #82, #84 | **Bloqueante: ejemplo real + planes preliminares de Debora** |
-| **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | "Fine Skills" requiere URL de Debora |
+| ~~**QA-2**~~ | ~~Metodología y plantilla de planes de pruebas + navegación agéntica para pruebas funcionales~~ | ~~#82, #84~~ | ✅ CERRADA (2026-07-02) — `TEST_PLAN_STANDARD` + plantilla `TEST_PLAN.md`, skill `apb-qa-test-plan` v1.2.0 (interactiva, procedencia múltiple, degradación de fuentes, ingesta de planes aportados), ejemplo unificado TruckCenter (112 casos sin duplicar), `prov-browser-agent-v1.0` + `apb-qa-exploratory-nav-v1.0` (#84), ejecución real sobre TruckCenter PRE con evidencias, check #20. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
+| **QA-3** | Ejecución funcional COMPLETA de TruckCenter (y patrón para otras apps): **datos de prueba sembrados y anonimizados** (RGPD) + acceso de escritura para flujos de alta/baja/modificación + 2ª pasada **USER_READ** + **rendimiento (k6)** + **seguridad (SonarQube/OWASP ZAP)** + **evidencia visual PNG/traza/vídeo con Playwright** (escribe ficheros reales) + **unitarias** (repo `APB.TRU` + xUnit) + **despliegue real del entorno Azure QA** (`prov-azure-qa-runtime-v1.0`, diseñado en `draft` en Fase I: nombrar suscripción/entorno + autorizar aprovisionamiento del job efímero con Playwright+k6 + Managed Identity → AKV) + **bucle fallo→PR→Jira real** (`apb-sub-qa-fix-loop-v1.0`, cableado en Fase I). | #82/#84 (ejecución) | **Bloqueantes detectados en QA-2 E-bis (2026-07-02):** F3 PRE sin datos; F2 formulario de Alta no carga (>45s); requiere dataset + autorización de carga/escaneo. **Fase I (2026-07-03) dejó diseñados en `draft`** el provider Azure QA y el subagente fix-loop; QA-3 los **despliega/ejecuta**. ⚠️ **PARCIAL (2026-07-03, dos sesiones):** sesión I ejecutó 44/120 casos con escritura real (B02-B07 + E2E T112), 2 hallazgos críticos (H1/H2). **Sesión II (misma fecha, sin reabrir Claude Code → Playwright MCP no disponible, se usó GIF de `claude-in-chrome` en su lugar)** ejecutó 11 casos netos adicionales + reconfirmó H1/H2/H4 en vivo, con 3 hallazgos nuevos (H5 empresa rechaza NIF manual, H6 Nombre Conductor="." por mapeo WS Sòstrat, H7 Swagger `/trc/` titulado "APB.API.TRU"). **Total acumulado: 55/120 casos con algún estado registrado, 65 siguen `Pendiente` sin tocar** (ver checklist §9 y §16 de `QA_TRU_TruckCenter_UNIFICADO.md` v1.6). → **punto #88** sigue abierto para el resto: reabrir sesión con Playwright MCP cargado desde el inicio, segundo usuario/rol, corrección de H1/H5, y los ~26 casos estructuralmente fuera de alcance de navegador (B01/B11/B13/B14). Ver `PLAN_FASES_COMPLETADAS.md` (QA-2 + Fase I + Sesión QA TruckCenter) y punto #77 (segunda recurrencia del riesgo de runtime, misma fecha). |
+| **19 (ampliada)** | Terceros #79 (MCP Builder alcance, cybersecurity skills, "Fine Skills") + Obsidian como capa de navegación | #79, #81 | ✅ **CERRADA (2026-07-04, Sesión 19)** salvo un único pendiente: **"Fine Skills" sigue requiriendo URL de Débora**. #79: "Anthropic cybersecurity skills" resultó ser `mukul975/Anthropic-Cybersecurity-Skills` (NO es de Anthropic; fuente ya incorporada con 5 skills curadas); el oficial real es `anthropics/defending-code-reference-harness` (Apache 2.0, 6 skills) — **✅ incorporado el mismo día con OK de Débora** como `third-anthropic-defending-code-v1.0` (`draft`, 5 skills de análisis, harness gVisor excluido). MCP Builder: alcance confirmado, cubre Teams/SharePoint vía `custom-api`, sin re-incorporar. #81 Obsidian: evaluado y documentado en M.6 como herramienta de apoyo. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). |
 | **Memoria/Runtime** | Memoria corporativa del framework (contexto/histórico/aprendizaje/persistencia): arquitectura Git+`PROGRESS.md` base + LightRAG/mem0 semántica | #80 | Ligada a decisión de runtime (misma que #77) |
+
+> **Sesión Auditoría + Cobertura de Huecos ✅ EJECUTADA (2026-07-04)** → registro movido a
+> [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md). Resumen: auditoría de desfase plan↔repo
+> (`AUDITORIA_DESFASE_PLAN_REPO.md`; el desfase es de **madurez**, no de existencia — 313/359 draft,
+> 0 apb-owned approved, 0 DRIFT-repo) + 5 componentes nuevos que cubren huecos #15/#33/#34/#39-40 +
+> check #26 anti-desfase. Pendiente derivado: **avanzar draft→approved** (ciclo de gobernanza) y
+> activación MCP Graph #30 (creds/tenant M365, Plataforma).
+>
+> **Sesión de seguimiento ✅ EJECUTADA (2026-07-04, misma fecha)** — 3 tareas accionables elegidas
+> por Débora → registro movido a [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+> Resumen: #85(K)(a)/(d) ejecutado en `APB-DOMAIN-CATALOG` (HTML de consulta + 1er CI de
+> gobernanza del repo + catálogo de referencia); 2/10 SHAs `unverified` de terceros
+> re-identificados con evidencia real (8 documentados como no resolubles hoy); corregida
+> contradicción interna sobre Understand-Anything (L30 vs. detalle #14); **push confirmado y
+> ejecutado en ambos repos**. Además, **#30 MCP Graph completado en la parte no bloqueada**:
+> `@softeria/ms-365-mcp-server` cableado en `.mcp.json` (device-code, sin credenciales, aprobado
+> explícitamente por Débora tras bloqueo de seguridad del clasificador de auto-mode por ser un
+> paquete de terceros no vetado previamente). Solo queda pendiente de Plataforma la app
+> registration Entra ID para el flujo headless/producción.
 
 ### Decisiones tomadas sobre puntos pendientes (2026-06-24)
 
@@ -1174,7 +1227,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | WCAG / Accesibilidad | 🟡 Nueva | accessibility-auditor nuevo; wiring pendiente |
 | LCSP / Licitación | ❌ Pendiente | Bloqueado: briefing de Débora |
 | Descomposición monolitos | ❌ Pendiente | Domain Catalog ya poblado (21 dominios `proposed`); falta aprobación + acceso a código SOSTRAT |
-| M365 / Teams / SharePoint | ❌ Pendiente | Adapters existen; integración real pendiente |
+| M365 / Teams / SharePoint | 🟡 CONSTRUIDO (draft) | `prov-ms365-v1.0` + `prov-entra-id-v1.0` + adapters m365/rovo + OpenAPI/Forge existen. **MCP Graph cableado en `.mcp.json` (2026-07-04, `@softeria/ms-365-mcp-server`, device-code, aprobado por Débora)** — solo falta activación de app registration Entra ID (credenciales/tenant — Plataforma) para el flujo headless. Ver `AUDITORIA_DESFASE_PLAN_REPO.md` |
 
 #### D.3 QA del framework
 - **Validación solo estructural** (forma del componente), NO funcional (comportamiento).
@@ -1218,7 +1271,7 @@ Extraído de los puntos #68–#72 del plan. Las skills existen en el repo pero a
 | R5 | Wiring skills Enriq. B: capacidades funcionales no invocables desde agentes | 🟡 | Mapeo §C, próxima sesión |
 | R6 | Sin memoria compartida → contexto perdido inter-sesiones | 🟡 | Redis + Cosmos DB (cuando runtime listo) |
 | R7 | Telemetría no instrumentada → KPIs imposibles de medir | 🟡 | Instrumentar `invoke_agent.py` |
-| R8 | 51 skills terceros sin SHA fijado | 🟡 | Política temporal; fijar con acceso de red |
+| R8 | ~~51 skills terceros sin SHA fijado~~ ✅ MITIGADO EN SU MAYORÍA (Sesión 19, 2026-07-04): 48 descriptores fijados a SHA real vía `git ls-remote`; quedan **11** `unverified` con causa documentada (repos de origen movidos/privados/no-GitHub: `hashicorp/terraform-search-import`, `neondatabase/neon-postgres`, `openai/security-threat-model`, `mukul975/cybersecurity-arsenal`, `ccusage`/`ComposioHQ` sin repo concreto, `graphify.net` y `skills.sh` no-GitHub) | 🟢 | Los 11 restantes requieren re-identificar el repo de origen (posibles sucesores detectados: `neondatabase/agent-skills`, `openai/skills`) — confirmar equivalencia de contenido antes de re-apuntar |
 | R9 | SAST/Entra sin validación Ciberseguridad | 🟡 | Revisión Ciber antes de uso |
 | R10 | Sin DAST wrapper → gap de seguridad ofensiva | 🟡 | OWASP ZAP o Trivy wrapper |
 | R11 | Plan ↔ repo desincronizado | 🟡 | Actualizar plan tras cada sesión |
@@ -1237,10 +1290,10 @@ licencia + análisis de seguridad + `source_commit` SHA real.
 | Telemetría automática | **OpenTelemetry Python** | 🔴 | Para instrumentar `invoke_agent.py` |
 | Developer Portal / discoverability | **Backstage** (Spotify) | 🟡 | Catálogo de servicios + componentes APB |
 | DAST / seguridad ofensiva | **OWASP ZAP** / Trivy | 🟡 | Gap de cobertura en seguridad |
-| Contexto enriquecido para LLM | **`context7`** | 🟡 | Mencionado en #27, **nunca evaluado** |
-| Debugging sistemático | **`obra/superpowers` → systematic debugging** | 🟡 | Repo parcialmente incorporado; falta esta skill (#27) |
-| Dev / arquitectura TypeScript | **`mattpocock/*` resto del monorepo** | 🟡 | Solo 2 de ~21 incorporadas (#27) |
-| Diagramación arquitectura | `excalidraw` (MCP) | 🟢 | Complementaría `apb-arch-c4-model` (#27) |
+| Contexto enriquecido para LLM | **`context7`** | 🟡 | ✅ **Evaluado (Sesión 19):** `upstash/context7`, MIT, muy activo (~58,5k ⭐). Es un servidor MCP de documentación actualizada de librerías para LLMs — encaja como **provider/MCP** (patrón `.mcp.json` de proyecto, como Playwright), no como skill. **✅ incorporado el mismo día con OK de Débora** como `prov-context7-v1.0` (`draft`, `provider_type: context`, sin activar — activación real requiere `.mcp.json` de proyecto) |
+| Debugging sistemático | **`obra/superpowers` → systematic debugging** | 🟡 | ✅ **Evaluado (Sesión 19):** confirmada como skill distinta (`skills/systematic-debugging/`, MIT, repo activo) — metodología de 4 fases de causa raíz antes de cualquier fix. No duplica las 2 obra ya incorporadas. **✅ incorporado el mismo día con OK de Débora** como `third-obra-systematic-debugging-v1.0` (`draft`, `development`) |
+| Dev / arquitectura TypeScript | **`mattpocock/*` resto del monorepo** | 🟡 | ✅ **Evaluado (Sesión 19):** el repo se reestructuró (categorías `engineering/`, 16 skills + `productivity/`, `misc/`, `personal/`). Cruce: la mayoría duplica el catálogo (code-review, tdd, domain-modeling, implement, diagnosing-bugs≈systematic-debugging). **2 candidatas con valor no duplicado — ✅ ambas incorporadas el mismo día con OK de Débora:** `third-mattpocock-resolving-merge-conflicts-v1.0` (`development`) y `third-mattpocock-triage-v1.0` (`pm`), ambas `draft`. Nota: las 2 ya incorporadas apuntan a skills renombradas en origen (`grill-prd-issues`→`to-prd`/`to-issues`; `codebase-architecture-analysis`→`improve-codebase-architecture`) — SHA fijado, contenido revisar en próxima actualización |
+| Diagramación arquitectura | `excalidraw` (MCP) | 🟢 | ✅ **Evaluado (Sesión 19):** `excalidraw/excalidraw`, MIT, muy activo (~126,7k ⭐). Herramienta de pizarra/diagramas. **Decisión de Débora (2026-07-04): incorporar como MCP en una fase futura** (no en esta sesión) — candidato a `prov-excalidraw-v1.0` cuando se aborde, ligado a caso de uso de `apb-arch-c4-model` / skills de arquitectura. Registrado como pendiente en M.8. |
 | Terraform governance | Ampliar `hashicorp` existente | 🟢 | Ya 2 skills; ampliar a modules y workspaces |
 | `_spec-driven` skills + terceros abiertos §8 | 3 skills `spec-to-*` de `apb-ai-skills` | 🟢 | Sesión 19 + #45 |
 
@@ -1257,7 +1310,7 @@ licencia + análisis de seguridad + `source_commit` SHA real.
 | Descomposición de monolitos (Fase 1) | #38 F1 | Catálogo ya poblado (21 dominios `proposed`); bloqueado por aprobación + acceso a código SOSTRAT |
 | Spec desde histórico Jira | #37 | Sin sesión asignada |
 | Runtime de orquestación real | #41 | **Bloqueado: decisión arquitectónica Débora/Plataforma** |
-| Dashboards Power BI/Grafana + logs | #39/#40 | Parcial (Sesión 17); falta agente dedicado |
+| Dashboards Power BI/Grafana + logs | #39/#40 | ✅ CONSTRUIDO (draft): `apb-agent-observability-v1.0` + subagentes PowerBI/Grafana + telemetría. Instrumentación real OTel añadida (`prov-otel-v1.0`, 2026-07-04). Falta activación real (Plataforma). Ver `AUDITORIA_DESFASE_PLAN_REPO.md` |
 | Telemetría para usuarios de chat sin commit | #46 | Requiere proxy/wrapper de plataforma |
 | Distribución Design System (npm/submodule/CDN) | #49/Sesión 22 | **Bloqueado: decisión de Débora** |
 | QA del propio framework + prueba real agentes | #50/#51 | Alimenta paso a `approved` |
@@ -1354,6 +1407,8 @@ Commit: `d62c6b1`. 24 ficheros, 284 inserciones. Resultado: `--strict` exit 0, 5
 | Esbozo informe riesgos IA organizativo | Sesión 16 | 🟢 Mes 2-3 |
 | URLs de repos de terceros adicionales | Sesión 19 | 🟢 Mes 2-3 |
 | Email/cola Jira de Arquitectura | Toda la documentación (#52) | 🟢 |
+| Confirmación disponibilidad Rovo en tenant APB | Activación `adapter-rovo-v1.0` | 🟢 Julio 2026 |
+| Pasos concretos del proceso APB de evaluación/migración a Cloud | Punto #87 — reescritura de `apb-wf-cloud-migration-v1.0` | 🟡 Cuando Débora lo aporte |
 
 #### Equipos (tareas técnicas)
 
@@ -1392,7 +1447,9 @@ grep "CATALOG.md" README.md
 # debe mostrar solo "catalog/CATALOG.md", nunca "CATALOG.md" sin prefijo
 ```
 
-> **Referencia:** `discovery/HANDOFF_TECNICOS.md` contiene el detalle por equipo y las decisiones bloqueantes de Débora/Dirección.
+> **Referencia:** `discovery/HANDOFF_TECNICOS.md` contiene las tareas manuales de despliegue/producción
+> (crear suscripción Azure, registrar apps AD, poblar Key Vault, etc.). Las decisiones/insumos
+> bloqueantes de Débora o Dirección viven **solo aquí**, en la tabla de arriba (§I).
 
 
 ---
@@ -1416,9 +1473,9 @@ grep "CATALOG.md" README.md
 
 | ID | Título | Descripción | Prioridad | Notas |
 |----|--------|-------------|-----------|-------|
-| E-F1 | **Agente de Change Management / ITIL** | APB opera con ITIL (P1–P4, L1/L2/L3, CAB, RFC, Problem Management). Ningún agente actual gestiona el proceso de cambio formal. `apb-agent-change-manager-v1.0` cubriría: evaluación de impacto de RFC, informe para CAB, tracking de cambios de emergencia, creación de tickets Jira via `prov-atlassian-v1.0`. | Alta | — |
-| E-F2 | **Agente de Data Governance / RGPD** | Obligación regulatoria: RAT, bases jurídicas, plazos de conservación, DPIA para tratamientos de alto riesgo. `apb-agent-data-governance-v1.0` que audite el estado de estos requisitos y genere el RAT actualizado. | Alta | No es nice-to-have — es requisito legal |
-| E-F3 | **Enriquecimiento FinOps Azure** | 19 providers Azure sin visibilidad de costes de IA. Agente o skill de FinOps que analice Azure Cost Management y proponga optimizaciones. Permite justificar ROI del framework con datos reales. | Media | — |
+| E-F1 | **Agente de Change Management / ITIL** | APB opera con ITIL (P1–P4, L1/L2/L3, CAB, RFC, Problem Management). `apb-agent-change-manager-v1.0` cubriría: evaluación de impacto de RFC, informe para CAB, tracking de cambios de emergencia, tickets Jira. **✅ YA CONSTRUIDO (draft):** `apb-agent-change-manager-v1.0` + `apb-agent-problem-manager-v1.0` creados (Enriq. #56–#76). E-F1 pendiente = solo llevarlo a operativo/approved. | Construido | ✅ Existe (2026-07-04) |
+| E-F2 | **Agente de Data Governance / RGPD** | Obligación regulatoria: RAT, bases jurídicas, plazos de conservación, DPIA. **✅ YA CONSTRUIDO (draft):** `apb-agent-data-governance-v1.0` (+ `apb-gov-dpia-v1.0`, `apb-gov-data-classification-v1.0`, `apb-sub-gov-data-v1.0`) creados (Enriq. #56–#76). Pendiente = operativo/approved + validación DPO. | Construido | ✅ Existe — requisito legal, priorizar aprobación |
+| E-F3 | **Enriquecimiento FinOps Azure** | Visibilidad de costes de IA. **✅ YA CONSTRUIDO (draft):** `apb-agent-finops-v1.0` + skills `apb-plat-finops-*` (alerting/chargeback/reservations) + `apb-sub-finops-azure-v1.0` existen. Pendiente = activar sobre Azure Cost real (datos). | Construido | ✅ Existe (2026-07-04) |
 | E-F4 | **Workflows de licitación / LCSP** | APB sujeto a LCSP. Preparación de pliegos, evaluación de ofertas, gestión de contratos de mantenimiento. Pendiente briefing de Débora. | Media | Bloqueado: briefing de Débora |
 | E-F5 | **Agente de Onboarding de Proyectos Legacy** | `apb-agent-legacy-onboarding-v1.0` que automatice el análisis inicial de un proyecto existente (estructura de código, deuda técnica, APIs no documentadas) y genere el primer borrador del `system-spec.md`. | Media | — |
 
@@ -1464,6 +1521,23 @@ grep "CATALOG.md" README.md
 > calidad real por incumplimiento silencioso de las instrucciones declaradas en el frontmatter
 > de un agente.** Refuerza la prioridad de este punto #77.
 
+> **Segunda recurrencia (Sesión QA TruckCenter, continuación 2026-07-03).** Al pedir Débora "ejecutar el
+> plan de pruebas completo" con `apb-agent-qa-auto-v1.0`/`apb-qa-exploratory-nav-v1.0`, se repitió el
+> mismo patrón que en la sesión DDD: sin motor que invoque el agente, se siguió su `.md` manualmente y se
+> omitieron en silencio varios pasos que el propio documento declara obligatorios — (1) el proceso
+> "razonar → plan → aceptación → ejecutar" (no se presentó el plan de qué IDs concretos se iban a
+> intentar antes de empezar); (2) la oferta explícita de abrir Jira ante hallazgos (§12/§6.3 de la
+> skill); (3) el uso de vídeo real vía Playwright MCP que el propio plan ya había dejado especificado en
+> el **punto #88** para esta sesión (no se consultó `PLAN_FASES_FUTURAS.md` antes de empezar, y se usó
+> GIF de `claude-in-chrome` sin advertirlo). Además, al pedir "el plan completo" solo se ejecutó una
+> muestra (55/120 casos con algún estado, 65 sin tocar) sin decirlo explícitamente hasta que Débora
+> preguntó. **Corrección aplicada:** memoria de feedback permanente
+> `feedback_agente_runtime_vs_manual` (memoria personal de Débora, fuera de este repo) — declarar siempre
+> si se ejecuta con runtime real o solo siguiendo el `.md`, y checklist obligatorio (comprobar
+> `PLAN_FASES_FUTURAS`/`COMPLETADAS` antes, plan explícito con OK, recuento numérico al cierre, oferta de
+> Jira). Refuerza aún más la prioridad de #77: van ya dos incidentes de calidad reales y documentados por
+> la misma causa raíz.
+
 #### Contexto y propuesta recibida
 
 Debora propone una arquitectura híbrida de dos capas para coordinar los agentes del framework:
@@ -1489,8 +1563,11 @@ checkpoint + webhook para reanudar workflows pausados tras eventos CI.
 
 **Lo que encaja bien:**
 
-- Azure Service Bus ya está en el stack APB → la coreografía por eventos es coherente. El provider
-  `prov-servicebus-v1.0` ya existe; ampliar a orquestación de agentes es extensión natural.
+- Azure Service Bus ya está en el stack APB → la coreografía por eventos es coherente. El framework
+  ya lo cubre a nivel de **skill** (`apb-plat-azure-servicebus-v1.0`) y **subagente**
+  (`apb-sub-ops-servicebus-v1.0`); **NO existe aún un provider `prov-servicebus-v1.0`** (corrección
+  2026-07-04: el plan lo daba por existente y no lo estaba) — crearlo sería el paso de extensión a
+  orquestación por eventos.
 - CloudEvents + JSON ya están en el stack APB → formato de eventos sin coste adicional.
 - GitHub Actions ya gestiona CI/CD del framework → `repository_dispatch` para disparar CI desde
   agentes es viable y sin dependencias nuevas.
@@ -1547,7 +1624,7 @@ Antes de construir nada, realizar:
    - `apb-orch-multi-agent-v1.0`, `apb-orch-context-handoff-v1.0`, `apb-orch-human-checkpoint-v1.0`
      (ya creadas en Sesión 21). ¿Qué parte del problema ya resuelven?
    - `invoke_agent.py` (esqueleto existente). ¿Hasta dónde llega?
-   - `prov-servicebus-v1.0` (provider existente). ¿Cubre el caso de eventos inter-agente?
+   - `apb-plat-azure-servicebus-v1.0` (skill existente) + `apb-sub-ops-servicebus-v1.0` (subagente existente). **No hay provider `prov-servicebus-v1.0`** (corrección 2026-07-04) — evaluar si crearlo. ¿Cubren el caso de eventos inter-agente?
 
 3. **Definir los contratos de eventos** antes de implementar la capa de coreografía:
    - Esquema CloudEvent por tipo de evento: `code.generated`, `ci.trigger`, `ci.completed`,
@@ -1637,26 +1714,37 @@ Antes de construir nada, realizar:
 (10 ejes + 11 prohibiciones). 6 plantillas actualizadas, retrofit completo de 244 componentes,
 check #18 del validador en ERROR. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-### 79. Terceros a verificar/incorporar: MCP Builder, Fine Skills, Anthropic cybersecurity skills
+### 79. Terceros a verificar/incorporar: MCP Builder, Fine Skills, Anthropic cybersecurity skills — ✅ RESUELTO 2/3 (Sesión 19, 2026-07-04)
 
-- **MCP Builder** — **ya incorporado** como `third-anthropic-mcp-builder-v1.0`
-  (Sesión 8). Acción: confirmar que el alcance incorporado cubre lo que
-  Debora espera (¿construir MCPs propios de APB para providers como
-  Teams/SharePoint del #30?), no re-incorporar.
-- **"Fine Skills"** — fuente a identificar con precisión (¿`skills.sh`
-  "fine skills", fine-tuning de skills, u otra fuente?). **Requiere que
-  Debora aporte URL/organización exacta** antes de evaluar (mismo criterio
-  que el bloque #27).
-- **Anthropic cybersecurity skills** — evaluar el conjunto de skills de
-  ciberseguridad de Anthropic para enriquecer el dominio `security` (cruzar
-  con `apb-sec-threat-model-v1.0`, `apb-sec-ens-v1.0`,
-  `apb-sec-risk-analysis-v1.0` y las skills de terceros ya presentes de
-  `mukul975`, `openai/threat-model`, `garrytan/cso-owasp`). Verificar solape
-  antes de incorporar.
+- **MCP Builder** — ✅ **alcance confirmado (Sesión 19):** el wrapper
+  `third-anthropic-mcp-builder-v1.0` ya soporta `target_system: custom-api`,
+  con lo que los MCPs de Teams/SharePoint/mail del #30 quedan cubiertos vía
+  Microsoft Graph API sin re-incorporación. Única mejora futura (cuando se
+  aborde #30): añadir filas explícitas `teams`/`sharepoint`/`mail` a la
+  tabla de sistemas soportados del wrapper. Además su `source_commit` quedó
+  fijado a SHA real (R8).
+- **"Fine Skills"** — ❌ **sigue pendiente: única parte abierta del #79.**
+  Requiere que Debora aporte URL/organización exacta antes de evaluar
+  (mismo criterio que el bloque #27).
+- **Anthropic cybersecurity skills** — ✅ **evaluado (Sesión 19), hallazgo
+  de identidad importante:** el repo llamado "Anthropic-Cybersecurity-Skills"
+  (817 skills, Apache 2.0, mapeo MITRE ATT&CK/NIST CSF/D3FEND) **no es de
+  Anthropic** — es de `mukul975`, la misma fuente ya incorporada al catálogo
+  con 5 skills curadas (`third-mukul-*`); no procede re-incorporar el
+  agregado completo. El candidato **oficial de Anthropic** real es
+  `anthropics/defending-code-reference-harness` (Apache 2.0, SHA `b5b61c8`,
+  6 skills: quickstart/threat-model/vuln-scan/triage/patch/customize +
+  harness autónomo de 7 etapas que requiere sandbox gVisor). Solape:
+  threat-model solapa parcialmente con `apb-sec-threat-model-v1.0` y
+  `third-openai-threat-model-v1.0`; vuln-scan/triage/patch complementan
+  (SAST + triaje + parche, conecta con #86 y con el gap R10/DAST solo
+  parcialmente — es SAST, no DAST). **Recomendación: incorporar un único
+  descriptor `third-anthropic-defending-code-v1.0` (dominio `security`)
+  cubriendo las 6 skills, excluyendo el harness autónomo (sandbox gVisor
+  fuera del stack APB). Pendiente de OK de Débora antes de crear el
+  descriptor (GOVERNANCE §4).**
 
-**Cruce:** bloque #27 (terceros pendientes) y sección M.8. Se añaden como
-filas de referencia en M. **Sesión candidata: Sesión 19** (terceros
-pendientes de §8).
+**Cruce:** bloque #27 (terceros pendientes) y sección M.8.
 
 ### 80. Memoria corporativa del framework (contexto + histórico + aprendizaje continuo + persistencia)
 
@@ -1686,7 +1774,20 @@ no reabrir la elección de herramienta desde cero. **Sesión candidata:**
 ligada a la decisión de runtime (misma que #77 Orquestación) porque la
 memoria compartida depende del motor.
 
-### 81. Obsidian como capa de conocimiento/memoria navegable
+### 81. Obsidian como capa de conocimiento/memoria navegable — ✅ RESUELTO (Sesión 19, 2026-07-04)
+
+**Conclusión de la evaluación:** viable y recomendado como **herramienta de
+apoyo opcional, solo lectura** — abrir el propio repo como vault no requiere
+ninguna transformación (los `.md` ya están enlazados), el graph view y los
+backlinks dan la navegación visual de `depends_on`/`consumed_by` que pedía
+el punto. **No** se registra como componente del catálogo. Salvaguardas:
+(1) no editar desde Obsidian — cualquier edición saltaría el validador/CI,
+la fuente de verdad sigue siendo Git + PR (Principios #4/#6); (2) excluir
+la carpeta `.obsidian/` del repo vía `.gitignore` si algún usuario lo abre
+como vault (configuración personal, no versionable). Documentado en la fila
+M.6. No introduce fuente de verdad paralela. Cierre sin componente nuevo.
+
+<details><summary>Planteamiento original (histórico)</summary>
 
 Evaluar **Obsidian** (vault Markdown local + grafo de enlaces) como:
 - Interfaz humana de navegación sobre la memoria del framework (#80): el
@@ -1702,7 +1803,25 @@ introduce una fuente de verdad paralela (Principio #4: la fuente de verdad
 técnica es Git; Obsidian es solo proyección de lectura, como Confluence en
 Principio #6). **Sesión candidata: Sesión 19** (junto con #79).
 
-### 82. Metodología y plantilla corporativa de planes de pruebas
+</details>
+
+### 82. Metodología y plantilla corporativa de planes de pruebas — ✅ EJECUTADO
+(Sesión QA-2, 2026-07-02). `context/apb/standards/TEST_PLAN_STANDARD.md` + plantilla
+`context/apb/templates/TEST_PLAN.md` + skill `apb-qa-test-plan-v1.0` v1.2.0 (interactiva; orden de
+fuentes con degradación; **ingesta de planes aportados por el usuario en cualquier formato** vía
+`apb-plat-doc-to-markdown`; unificación sin duplicados con **procedencia múltiple**; detección de plan
+previo + actualización incremental; secciones de gobernanza; no-regresión de rendimiento). Ejemplo
+canónico: `docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md` (112 casos sin duplicar) + fuentes en
+`docs/qa/examples/sources/`. Check #20 en el validador. Detalle en
+[`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+> **Pendiente derivado (nuevo, Débora 2026-07-02):** el agente de pruebas funcionales debe poder
+> **consultar credenciales desde un repositorio central** (encaja con Azure Key Vault, `GOVERNANCE.md §5`)
+> para ejecutar de forma autónoma sin que el usuario introduzca credenciales cada vez. En la demo de QA-2
+> las introdujo el usuario (login EntraID asistido). Diseñar el mecanismo (provider de secretos + captura y
+> reutilización de `storage_state`). Ver HANDOFF.
+
+<details><summary>Requisitos originales (histórico)</summary>
 
 Elevar el plan de pruebas de "artefacto que genera una skill" a **proceso
 gobernado con plantilla, histórico y trazabilidad**. Requisitos:
@@ -1767,6 +1886,8 @@ plan previo) + define la plantilla de resultados esperados + gobernanza.
 plantilla (g) y los **planes preliminares** (i). **Sesión candidata:**
 Sesión QA-2 propia (el volumen lo justifica).
 
+</details>
+
 ### 83. Harness Engineering agnóstico de LLM — ✅ EJECUTADO
 (Sesión #78+#83, 2026-07-02). Normativa permanente: `SYSTEM.md §10` (5 subsistemas, ACID,
 routing files, WIP=1, Feature Lists) + `GOVERNANCE.md §8` (Pass-State Gating, 3 capas,
@@ -1774,7 +1895,36 @@ Clean State Handoff). Scaffolding en `repo-scaffold/harness-ready/` (AGENTS/PROG
 Check #19 del validador (Cold-Start Test). Fuera de alcance aquí: OTel §83.7 (→ Sesión 17) y
 arquitectura de 3 agentes ejecutable (→ #77). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
 
-### 84. Navegación agéntica para pruebas funcionales (gap detectado)
+### 84. Navegación agéntica para pruebas funcionales — ✅ EJECUTADO
+(Sesión QA-2, 2026-07-02). `providers/prov-browser-agent-v1.0.md` (provider de acción agnóstico:
+abrir URL, observar pantalla/DOM, decidir siguiente paso, rellenar, aseverar, capturar evidencia;
+implementaciones de referencia Playwright MCP / claude-in-chrome / computer-use) + skill
+`apb-qa-exploratory-nav-v1.0` (frontera exploratorio vs scriptado; cableada a `apb-agent-qa-auto` y
+`apb-wf-qa-evidence`). **Ejecución real demostrada** sobre TruckCenter PRE (login EntraID asistido, rol
+MANAGE): 4 casos PASS (TRU-T77/T26/T15/T16), 1 no evaluable, 2 hallazgos; evidencias empaquetadas (ZIP)
+y camino Jira definido. Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+**Continuación (2026-07-03) — ejecución a mayor escala + corrección de metodología:** nueva sesión con
+Débora ejecutando **44 de los 120 casos** del plan unificado v1.4 (lectura y escritura real en PRE,
+bloques B02-B07 + E2E T112), con **2 hallazgos críticos** en la app (H1 sin integridad referencial al
+eliminar Tipo de Vehículo; H2 maestro de tipos desactualizado en el AF/plan) documentados en el propio
+plan (§15, → v1.5). Corrección de metodología derivada: `TEST_PLAN_STANDARD` → v1.4.0 (§5.15 casos no
+ejecutados obligatorios por ID, §7.2 vídeo real no GIF), skill `apb-qa-exploratory-nav` → v1.1.0, check
+#24 del validador, y activación real de Playwright MCP (`.mcp.json` de proyecto +
+`prov-playwright-v1.0` v1.1.0) para vídeo nativo en la próxima ejecución. Detalle completo → **punto #88**
+y [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+**Segunda continuación (2026-07-03, misma fecha) — el punto #88 NO se siguió y quedó abierto:** nueva
+sesión ejecutó 11 casos netos adicionales (B02/B03/B05/B06/B07/B08/B12) sin reabrir Claude Code, por lo
+que Playwright MCP no estaba cargado — se usó de nuevo GIF de `claude-in-chrome` sin segmentar por bloque
+(mismo defecto que motivó `TEST_PLAN_STANDARD §7.2`), y no se presentó plan explícito ni se ofreció Jira
+al cerrar. 3 hallazgos nuevos (H5/H6/H7, ver §16 de `QA_TRU_TruckCenter_UNIFICADO.md` v1.6) + H1/H2/H4
+reconfirmados. **Total acumulado: 55/120.** Corrección de proceso: nota añadida en punto #77 (segunda
+recurrencia del riesgo de runtime) + memoria de feedback permanente de Débora
+(`feedback_agente_runtime_vs_manual`, fuera de este repo). El punto #88 **sigue pendiente tal cual** —
+la próxima sesión debe reabrir Claude Code con Playwright MCP cargado antes de empezar.
+
+<details><summary>Análisis original del gap (histórico)</summary>
 
 **Origen:** pregunta de Debora (2026-07-02) — "¿el framework puede abrir un
 navegador para pruebas funcionales?". Respuesta: **parcial**. Existe
@@ -1800,6 +1950,72 @@ principio agnóstico de LLM del #83). Definir la frontera: exploratorio para
 descubrimiento/QA manual asistido; scriptado para regresión reproducible en
 CI. **Sesión candidata:** Sesión QA-2 (junto con #82, comparten insumo de
 plan de pruebas y evidencias).
+
+</details>
+
+### 85. Enriquecimiento del catálogo corporativo de dominios (consulta funcional + guía de clasificación) — (a)/(d) ✅ EJECUTADO (2026-07-04)
+
+> **(a) y (d) ejecutados en `GitHub-Repos/APB-DOMAIN-CATALOG`** (el clon real con los 21
+> `domain.md`, no el submódulo de `main` — ver aclaración de ruta en
+> `AUDITORIA_DESFASE_PLAN_REPO.md §9`): `scaffolding/scripts/generate_domain_catalog_html.py`
+> genera `catalog/DOMAINS.html` (listado + búsqueda/filtro + ficha por dominio) leyendo
+> `domains/*/domain.md` directamente — nunca desde `ddd-discovery/` ni a mano. Añadido además el
+> **primer workflow de CI de este repo** (`.github/workflows/validate.yml`), que ejecuta
+> `validate_catalog.py` (ya existía, sin conectar) + un chequeo `--check` de drift del HTML en
+> cada push/PR a `main` — gobernanza automática, no generación puntual por un agente. Catálogo de
+> referencia en `scaffolding/reference/dominios-tipicos-referencia.md`. Commit local
+> `617ae1f` en la rama `feat/carga-inicial-dominios-apim` — **sin push**, pendiente de que Débora
+> confirme subirlo (igual que el resto de esa rama, aún sin PR a `main`). (b) y (c) siguen
+> pendientes de la aprobación de Arquitectura de los 21 dominios, como estaba previsto.
+
+Ampliar el **catálogo corporativo de dominios de negocio** (repo
+`APB-DOMAIN-CATALOG`, 21 dominios `proposed`, ver #38 Fase 0 y #54) con:
+
+**a) Vista HTML de consulta para perfiles funcionales.** Generar un HTML
+navegable (autocontenido) para que **personas funcionales, no técnicas**,
+puedan consultar el catálogo sin abrir el repo ni leer Markdown/YAML:
+listado de dominios, búsqueda/filtro, ficha por dominio. Debe generarse
+**automáticamente** desde los `domain.md`/artefactos del catálogo (no
+mantenerse a mano) — candidato a extender
+`scaffolding/scripts/validate_catalog.py` o un `generate_catalog_html.py`
+nuevo en el repo del catálogo. Cruce con #81 (Obsidian) como alternativa de
+navegación, pero el HTML es para **usuarios sin herramientas**, no para
+arquitectos.
+
+**b) Descripción detallada por dominio.** Cada dominio debe documentar de
+forma estructurada y homogénea:
+- **Descripción detallada** (qué es, propósito de negocio).
+- **Tipo de elementos** que lo componen.
+- **Datos** que gestiona.
+- **Actividades** que abarca.
+Formalizar estos campos como **obligatorios** en la plantilla del catálogo
+(`bounded-context-template.md` / `domain.md`).
+
+**c) Guía de clasificación para nuevos análisis.** Orientación explícita —
+usable tanto por un humano como por `apb-agent-ddd-v1.0` /
+`apb-sub-ddd-interview-v1.0` — sobre **cómo decidir, ante un dominio nuevo
+detectado en un análisis, si es independiente o debe incorporarse a uno
+existente** (criterios de frontera: acoplamiento de datos, lenguaje ubicuo
+compartido, propiedad/gobernanza, actividades solapadas). Cruce directo con
+el "mecanismo anti-duplicación de dominios" (#11) y con la Fase 1-EVO de
+`apb-sub-ddd-interview-v1.0` (extensión / nuevo BC / deuda técnica).
+
+**d) Análisis de referencia de dominios típicos.** Elaborar dos catálogos de
+referencia que sirvan de base y contraste al inventario APB:
+- **Dominios típicos de una empresa** (genéricos: RRHH, finanzas, compras,
+  jurídico, IT, CRM, adm. electrónica…).
+- **Dominios típicos de un entorno portuario** (buques/escalas,
+  consignatarios, atraques, mercancías, aduana/PIF/EQV, GIS portuario,
+  concesiones, seguridad marítima, PORTIC/comunidad portuaria…).
+Útil para validar que el inventario APB no tiene huecos y para acelerar el
+onboarding de dominios en nuevos análisis.
+
+**Cruces (no duplicar):** #38 Fase 0 (catálogo poblado), #54 (banco de
+entrevista portuario A + corporativo B — ya contiene mucho material de (d)),
+#11 (anti-duplicación de dominios), M.2 (`ddd-crew/context-mapping`).
+**Sesión candidata:** ampliación de la línea DDD (Sesión 18 cont. / DDD Fase
+BC), tras la aprobación de Arquitectura de los 21 dominios `proposed`. Los
+apartados (a) y (d) no dependen de esa aprobación y pueden adelantarse.
 
 ---
 
@@ -1895,7 +2111,7 @@ plan de pruebas y evidencias).
 
 | Repositorio | Licencia | Uso propuesto |
 |-------------|---------|--------------|
-| `open-telemetry/opentelemetry-python` | Apache 2.0 | Estándar de industria para trazas distribuidas. Compatible con `DefaultAzureCredential`. Permite envío simultáneo a Azure Monitor y otros backends (Grafana, Jaeger). |
+| `open-telemetry/opentelemetry-python` | Apache 2.0 | Estándar de industria para trazas distribuidas. Compatible con `DefaultAzureCredential`. Permite envío simultáneo a Azure Monitor y otros backends (Grafana, Jaeger). **✅ Descriptor creado (2026-07-04):** `prov-otel-v1.0` (`draft`, agnóstico OTLP → Azure Monitor). Falta activación real (Plataforma). |
 
 ### M.5 Design System (gaps BUG-03, tipografía, mantenibilidad)
 
@@ -1909,7 +2125,7 @@ plan de pruebas y evidencias).
 |-------------|---------|--------------|-------------------|
 | `HKUDS/LightRAG` | Apache 2.0 | RAG + grafos de conocimiento. Memoria episódica entre sesiones (decisiones de arquitectura, lenguaje ubicuo de dominio). Candidato para "memoria corporativa" del framework. | Wrapper existente: `wrap-hkuds-lightrag-v1.0`. Falta desplegar y conectar. |
 | `mem0ai/mem0` | Apache 2.0 | Alternativa más simple a LightRAG. SDK Python con backends PostgreSQL/Redis/Qdrant. Más fácil de operar en Azure. | Wrapper pendiente: `wrap-mem0-v1.0` |
-| Obsidian (`obsidianmd`) | Freemium (app propietaria; vault = Markdown abierto) | Capa **humana** de navegación sobre la memoria del framework (#80/#81): grafo de backlinks sobre el repo Markdown ya enlazado; visualización de `depends_on`/`consumed_by`. **Solo proyección de lectura** — no fuente de verdad (Principio #4/#6). | Herramienta de apoyo, no componente de catálogo |
+| Obsidian (`obsidianmd`) | Freemium (app propietaria; vault = Markdown abierto) | Capa **humana** de navegación sobre la memoria del framework (#80/#81): grafo de backlinks sobre el repo Markdown ya enlazado; visualización de `depends_on`/`consumed_by`. **Solo proyección de lectura** — no fuente de verdad (Principio #4/#6). ✅ **Evaluado (Sesión 19, 2026-07-04): recomendado como herramienta opcional solo-lectura; no editar desde Obsidian (saltaría validador/CI); excluir `.obsidian/` vía `.gitignore` si se abre el repo como vault. Ver #81.** | Herramienta de apoyo, no componente de catálogo |
 
 ### M.7 Contratación pública LCSP (gap E-F4)
 
@@ -1927,5 +2143,155 @@ plan de pruebas y evidencias).
 | `nexu-io/open-design` | Complemento para Design System | Baja |
 | `ComposioHQ/awesome-claude-plugins` | Fuente de discovery de MCPs — no incorporar como componente | Referencia |
 | `walkinglabs/learn-harness-engineering` | Modelo de Harness Engineering (12 lecciones) — base del punto #83. Insumo de gobernanza + scaffolding + checks de validación, no componente del catálogo | Alta (#83) |
-| Anthropic **cybersecurity skills** | Enriquecer dominio `security` (#79). Verificar solape con `apb-sec-*` y terceros ya presentes (`mukul975/*`, `openai/threat-model`, `garrytan/cso-owasp`) antes de incorporar | Media (#79) |
-| "Fine Skills" (fuente a identificar) | Pendiente de URL/organización exacta de Debora (#79) | A determinar |
+| Anthropic **cybersecurity skills** | ✅ **Evaluado (Sesión 19):** el repo "Anthropic-Cybersecurity-Skills" es de `mukul975` (fuente ya incorporada, no re-incorporar). El oficial real es `anthropics/defending-code-reference-harness` (Apache 2.0, 6 skills) — **✅ incorporado (OK de Débora, 2026-07-04)** como `third-anthropic-defending-code-v1.0` (`draft`). Ver #79 | Media (#79) |
+| "Fine Skills" (fuente a identificar) | Pendiente de URL/organización exacta de Debora (#79) — **único resto abierto del #79 tras Sesión 19** | A determinar |
+| `excalidraw/excalidraw` (MIT) | ✅ **Evaluado (Sesión 19).** **Decisión de Débora (2026-07-04): incorporar como MCP en fase futura** → `prov-excalidraw-v1.0` (pizarra/diagramas para skills de arquitectura, complemento de `apb-arch-c4-model`). No incorporado en esta sesión; ligado a caso de uso concreto. | Media — fase futura |
+
+## N. Bloque añadido 2026-07-03 — routing agnóstico (pendiente derivado de Fase H)
+
+Ver `PLAN_FASES_COMPLETADAS.md` → "Fase H" para lo ya ejecutado (creación de `AGENTS.md`,
+`.github/copilot-instructions.md`, check #22). Un único pendiente se deriva de esa sesión:
+
+- **Provider de VCS alternativo a GitHub:** hoy `providers/` solo tiene `prov-github-v1.0.md`
+  para control de versiones/repo hosting. Esto es un punto distinto del agnosticismo de
+  LLM/herramienta (ya resuelto vía `AGENTS.md`) — es agnosticismo de **plataforma de código**.
+  Si Débora decide evaluar o migrar a otra plataforma (GitLab, Azure Repos...), haría falta
+  un `prov-<plataforma>-v1.0.md` equivalente antes de depender de esa migración. No construir
+  hasta que Débora indique una plataforma concreta a evaluar — no hay evidencia de que vaya
+  a cambiar de GitHub, solo se deja registrado el gap por si acaso.
+
+---
+
+## O. Bloque añadido 2026-07-03 (Débora) — auditorías de cumplimiento (Design System, calidad) + migración Cloud
+
+### 85. Agente de cumplimiento del Design System (auditoría de app existente + informe + PR opcional) — ✅ EJECUTADO (Sesión 19, 2026-07-04)
+
+**Creado `agents/apb-agent-design-compliance-v1.0.md`** (`draft`, dominio `design`):
+escanea el frontend objetivo, compara contra `APB-DESIGN-SYSTEM`
+(`apb-design-frontend-design-system-v1.0`) y WCAG 2.1 AA (vía
+`apb-qa-accessibility-v1.0` — **no** la deprecada `apb-design-wcag-v1.0`,
+detección que originó el check #25 del validador), genera informe MD+HTML con
+el patrón de `generate_test_plan_html.py`, y PR opcional vía
+`apb-dev-pr-doc-v1.0` (nunca merge). Encadenable al #86 como fuente de
+hallazgos. Wiring bidireccional aplicado. **Pendiente de Débora (sin cambios):
+repo(s)/carpeta(s) concretas a auditar como primer caso de prueba.**
+Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+<details><summary>Planteamiento original (histórico)</summary>
+
+**Petición de Débora:** "agente que revisa si una aplicación cumple con sistema de diseño, hace
+informe y sugiere correcciones, da opción de preparar PR."
+
+**Distinto del punto #53:** #53 verifica que el agente **generador** de mockups (`apb-agent-ux-mockup-v1.0`)
+use el Design System en tiempo de creación. Este punto #85 es un **auditor a posteriori**: revisa una
+aplicación **ya construida** (código frontend existente, propio o legacy) contra `APB-DESIGN-SYSTEM`
+(tokens, componentes, tipografía, `component-reference.md`, `style-guide.md`), sin importar cómo se generó.
+
+**Comportamiento deseado:**
+1. Escanea el código frontend de la app objetivo (rutas de entrada: repo o carpeta a indicar por Débora/funcional).
+2. Compara contra `APB-DESIGN-SYSTEM` (tokens de color/tipografía/espaciado, componentes React/DevExtreme
+   con wrapper corporativo) — reutiliza como referencia `skills/apb-owned/design/apb-design-frontend-design-system-v1.0.md`
+   y `apb-design-wcag-v1.0` (accesibilidad, incumplimientos WCAG también entran en el informe).
+3. Genera **informe** de incumplimientos (formato corporativo, coherente con el patrón ya construido en
+   `scripts/generate_test_plan_html.py`: cabecera azul, menú, acordeón — reutilizable en vez de reinventar).
+4. Sugiere correcciones concretas por incumplimiento.
+5. **Opción de preparar PR** con las correcciones — reutilizar `apb-dev-pr-doc-v1.0` para la propuesta;
+   nunca merge automático (POLICY_AI_USAGE §6-7, mismo patrón que `apb-sub-qa-fix-loop-v1.0` de Fase I).
+
+**Componentes a crear (draft):** posible `agents/apb-agent-design-compliance-v1.0.md` (o skill si el
+alcance es más acotado — decidir en la sesión) + wiring con `apb-dev-pr-doc-v1.0`.
+
+**Pendiente de Débora:** repo(s)/carpeta(s) concretas a auditar como primer caso de prueba.
+
+</details>
+
+---
+
+### 86. Agente de cumplimiento de calidad — Sonar + hallazgos de otros agentes + Jira + PR opcional — ✅ EJECUTADO (Sesión 19, 2026-07-04)
+
+**Creado `agents/apb-agent-quality-compliance-v1.0.md`** (`draft`, dominio `qa`):
+multi-fuente (Sonar vía `apb-dev-sonar-clean-v1.0` + informes de otros agentes
++ lista del usuario, con procedencia declarada), **dedup obligatorio contra
+Jira** (`prov-jira-software-v1.0`: si el hallazgo ya tiene ticket, se
+referencia, no se duplica), correcciones concretas por hallazgo y **PR
+opcional** tras OK humano reutilizando el patrón de `apb-sub-qa-fix-loop-v1.0`
+vía `apb-dev-pr-doc-v1.0` — sin re-parentar ni duplicar el subagente (decisión
+de la nota de diseño: mismo flujo de salida, distinto trigger). Wiring
+bidireccional aplicado (`consumed_by` en sonar-clean, pr-doc,
+telemetry-emit). Detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md).
+
+<details><summary>Planteamiento original (histórico)</summary>
+
+**Petición de Débora:** "agente que analiza los incumplimientos de sonar o los detectados por otros
+agentes y sugiere las correcciones. Los incumplimientos pueden estar ya registrados en Jira. Prepara
+pull request con las correcciones de forma opcional."
+
+**Punto de partida ya existente:** `skills/apb-owned/development/apb-dev-sonar-clean-v1.0.md` ya
+analiza hallazgos de SonarQube y sugiere/aplica fixes — **pero solo cubre Sonar como fuente**, no
+comprueba si el hallazgo ya está en Jira (riesgo de duplicar tickets), y no prepara PR.
+
+**Huecos a cubrir (extender la skill a v2.0, o envolverla en un agente si necesita orquestar varias
+fuentes):**
+1. **Multi-fuente:** aceptar hallazgos no solo de Sonar sino de otros agentes/skills del framework
+   (p. ej. `apb-agent-security-architect`, ZAP, el propio #85 de Design System, code review).
+2. **Dedup contra Jira:** antes de proponer una corrección, consultar `prov-jira-software-v1.0` para
+   comprobar si el incumplimiento ya tiene ticket abierto — si existe, referenciarlo en vez de duplicar.
+3. **PR opcional:** reutilizar el mismo patrón `apb-sub-qa-fix-loop-v1.0` (Fase I, 2026-07-03): propone
+   PR vía `apb-dev-pr-doc-v1.0`, anota Jira, nunca mergea sin revisión humana.
+
+**Nota de diseño:** el sub-workflow `apb-sub-qa-fix-loop-v1.0` ya resuelve el patrón genérico
+"hallazgo → PR propuesta → anotación Jira" para el caso de fallos de pruebas; valorar en la sesión si
+este punto #86 puede **reutilizar ese mismo subagente** en vez de construir uno nuevo desde cero
+(cambiaría el trigger de "test falla" a "hallazgo de calidad/Sonar/otro agente", pero el flujo de
+salida — PR + Jira — es el mismo).
+
+**Pendiente de Débora:** ninguna dependencia bloqueante conocida; puede diseñarse en modo `draft` como
+el resto de componentes de esta sesión.
+
+</details>
+
+---
+
+### 87. Flujo completo de migración a Cloud con pasos definidos por APB
+
+**Petición de Débora:** "flujo completo para evaluar y ejecutar migración a Cloud con los pasos
+definidos por APB. Yo te indicaré los pasos y tú enriqueces si es necesario."
+
+**Ya existe un workflow genérico:** `workflows/apb-wf-cloud-migration-v1.0.md` — fases y agentes
+(cloud architect, technical architect, security architect, platform engineer, QA, SRE, FinOps,
+governance, release/change manager) con checkpoints humanos, pero con **pasos genéricos de industria**,
+no el proceso concreto que usa APB.
+
+**Acción pendiente:** cuando Débora aporte los pasos concretos definidos por APB (evaluación +
+ejecución de migración a cloud), revisar/reescribir las fases de `apb-wf-cloud-migration-v1.0` para
+que reflejen ese proceso real, enriqueciendo solo donde falte un paso evidente (p. ej. checkpoint de
+aprobación, validación de coste, rollback) sin inventar un proceso paralelo al de APB.
+
+**Pendiente de Débora (bloqueante):** los pasos concretos del proceso de evaluación/migración a Cloud
+de APB. Sin este insumo no se puede iniciar la sesión — es un insumo de tipo "briefing" equivalente a
+los ya listados en `discovery/HANDOFF_TECNICOS.md §10`.
+
+### 88. Reejecución completa del plan TruckCenter con vídeo real (Playwright MCP) + corrección de H1
+
+**Origen:** continuación del punto #84 (sesión QA TruckCenter, 2026-07-03). Tras ejecutar 44/120 casos con
+2 hallazgos críticos (H1/H2 en Tabla Maestra de Vehículos) y corregir la metodología de informes
+(`TEST_PLAN_STANDARD` v1.4.0, ver #84), quedan pendientes:
+
+1. **Reiniciar/reabrir Claude Code sobre el repo** para que el servidor Playwright MCP (recién registrado
+   en `.mcp.json` de proyecto) quede disponible como herramienta — no se carga en caliente dentro de una
+   sesión ya iniciada.
+2. **Confirmar el commit** de `.mcp.json` + `providers/prov-playwright-v1.0.md` v1.1.0 (pendiente de OK de
+   Débora, hecho en la sesión anterior sin commitear aún).
+3. **Corregir H1 en TruckCenter** (repo de la app, fuera de este framework): añadir validación de
+   integridad referencial antes de permitir eliminar un Tipo de Vehículo en uso. Prioridad alta — el
+   defecto ya está materializado en PRE (tipo "Cisterna" eliminado con 4 expedientes huérfanos).
+4. **Reejecutar el plan completo de TruckCenter** (120 casos) con vídeo real por bloque vía Playwright MCP:
+   los 76 casos restantes de la sesión anterior (B01 vía API, B08/B09/B10 completos con un segundo
+   usuario/rol — incluido uno con permiso de "Auditoría de procesos", B02-B07 exhaustivo) + B11 (SonarQube/
+   ZAP)/B13 (k6, en `azure-qa`/`ci-runner`, nunca portátil)/B14 (xUnit, repo `APB.TRU`) según corresponda a
+   cada herramienta (plan §6).
+
+**Bloqueantes:** (1) y (2) son de esta misma máquina/sesión (no requieren a Débora salvo el OK de commit);
+(3) requiere acceso al repo `APB.TRU` (fuera del framework); (4) requiere login EntraID asistido de Débora
+de nuevo, igual que en la sesión anterior. **Sesión candidata:** continuación directa de QA-2/#84, no
+sesión nueva — mismo hilo de trabajo.

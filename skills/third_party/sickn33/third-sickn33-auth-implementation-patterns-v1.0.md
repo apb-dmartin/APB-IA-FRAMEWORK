@@ -9,8 +9,7 @@ domain: "security"
 autonomy_level: 1
 source_repo: "https://github.com/sickn33/antigravity-awesome-skills"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-24"
+source_commit: "163d190fda40aacad32034bdf0a6d9988f35719b"
 created_date: "2026-06-24"
 review_date: "2026-06-24"
 ---

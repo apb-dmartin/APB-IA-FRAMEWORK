@@ -28,7 +28,37 @@ Proveedor unificado para los tres servicios Microsoft 365 de uso más frecuente 
 
 Todos los servicios se acceden mediante **Microsoft Graph API v1.0** con autenticación OAuth 2.0 (Client Credentials para operaciones de sistema; Delegated para operaciones en nombre del usuario).
 
-El provider soporta **MCP de Microsoft Graph** (`@microsoft/graph-mcp-server` o equivalente aprobado por Arquitectura APB) cuando el runtime del agente lo permita, evitando llamadas HTTP directas en ese caso.
+El provider soporta **MCP de Microsoft Graph** cuando el runtime del agente lo permita, evitando llamadas HTTP directas en ese caso.
+
+### Activación MCP (2026-07-04, aprobado por Débora)
+
+Servidor elegido: **`@softeria/ms-365-mcp-server`** (paquete npm real y publicado, verificado —
+no `@microsoft/graph-mcp-server`, que no existe bajo ese nombre). Cableado en el `.mcp.json` del
+proyecto (norma [[feedback_mcp_framework_activacion]]):
+
+```json
+"ms365": {
+  "command": "npx",
+  "args": ["-y", "@softeria/ms-365-mcp-server", "--org-mode"]
+}
+```
+
+`--org-mode` habilita las funciones de organización necesarias para APB (Teams & Chats,
+SharePoint Sites, Shared Mailboxes) frente al modo personal por defecto. **Autenticación por
+device-code** (interactiva, sin credenciales en config) — no requiere secretos para empezar a
+usarse. Para despliegue headless/producción con Client Credentials, el propio servidor soporta:
+
+| Variable de entorno | Uso |
+|---|---|
+| `MS365_MCP_CLIENT_ID` | Client ID de la app registrada en Entra ID |
+| `MS365_MCP_CLIENT_SECRET` | Secreto de la app (o certificado) |
+| `MS365_MCP_TENANT_ID` | Tenant ID de APB |
+| `MS365_MCP_KEYVAULT_URL` | Endpoint de Azure Key Vault — el propio servidor soporta leer secretos de AKV nativamente |
+
+**Pendiente (bloqueado, Plataforma):** registrar la app en Entra ID del tenant M365 de APB y
+fijar `MS365_MCP_CLIENT_ID`/`TENANT_ID`/`MS365_MCP_KEYVAULT_URL` reales — hasta entonces, el modo
+device-code interactivo es el único operativo. Repo del servidor:
+`https://github.com/Softeria/ms-365-mcp-server`.
 
 ---
 
@@ -57,7 +87,7 @@ El provider soporta **MCP de Microsoft Graph** (`@microsoft/graph-mcp-server` o 
   ],
   "rate_limit": "10000 req/10min",
   "timeout_ms": 30000,
-  "mcp_server": "optional — @microsoft/graph-mcp-server si disponible en runtime"
+  "mcp_server": "@softeria/ms-365-mcp-server (--org-mode) — cableado en .mcp.json del proyecto, device-code por defecto"
 }
 ```
 

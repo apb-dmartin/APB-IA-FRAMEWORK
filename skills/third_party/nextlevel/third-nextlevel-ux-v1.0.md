@@ -9,8 +9,7 @@ domain: "platform"
 autonomy_level: 1
 source_repo: "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
 source_license: "MIT"
-source_commit: "unverified"
-verified_date: "2026-06-23"
+source_commit: "4baa399d00da806f83ed93652172f66943205153"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
 ---

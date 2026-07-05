@@ -11,6 +11,7 @@ skills:
   - "apb-ops-incident-triage-v1.0"
   - "apb-ops-incident-diagnose-v1.0"
   - "apb-ops-incident-escalate-v1.0"
+  - "apb-ops-incident-analyze-visual-v1.0"
   - "apb-plat-ms-notify-v1.0"
 subagents:
   - "apb-sub-ops-aca-v1.0"

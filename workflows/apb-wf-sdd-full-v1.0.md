@@ -109,9 +109,14 @@ graph TD
 - Preparación de pull requests
 
 ### Fase 6: Testing y QA
-- Ejecución de plan de pruebas
-- Tests unitarios, integración y E2E
-- Validación post-implementación
+- **Generación del plan de pruebas tomando la spec como input** — la `system-spec.md` de la Fase 2 es la
+  **fuente funcional autoritativa** (`TEST_PLAN_STANDARD §1`): cada caso deriva y traza a un **criterio de
+  aceptación** de la spec. La skill `apb-qa-test-plan-v1.0` recibe `spec` como input en este flujo.
+- Ejecución de plan de pruebas (destino `local` / `ci-runner` / `azure-qa`, `TEST_PLAN_STANDARD §9.1`).
+- Tests unitarios, integración y E2E.
+- **Si una prueba falla → bucle de corrección** `apb-sub-qa-fix-loop-v1.0` (`§6.3`): propone un PR con la
+  corrección (contrastada contra la spec) y anota el ticket Jira; **propone, no mergea**.
+- Validación post-implementación y **acta de aprobación del informe** (Funcional + Desarrollador, `§6.2`).
 
 ### Fase 7: Gobierno y Release
 - Validación de cumplimiento arquitectónico

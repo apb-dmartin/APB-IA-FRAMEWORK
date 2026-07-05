@@ -269,10 +269,13 @@ Ver el detalle completo en `discovery/PLAN_FASES_FUTURAS.md`. Resumen:
     skills de frontend (`apb-dev-devexpress-front-v1.0`,
     `third-google-labs-code-react-patterns-v1.0`,
     `apb-dev-frontend-devexpress-events-v1.0`) deben referenciarla.
-14. **Nuevo (Sesión 7):** verificar formalmente la licencia de
-    `Lum1104/Understand-Anything` antes de cualquier uso productivo de
-    `third-lum1104-knowledge-graph-v1.0` — requiere acceso directo al repo
-    de origen, no solo búsqueda web.
+14. ✅ **RESUELTO (Sesión 19, 2026-07-04):** licencia de
+    `Lum1104/Understand-Anything` verificada vía API de GitHub: **MIT**
+    (commit `0e8ad84a`, repo activo). Bloqueo de producción levantado;
+    `third-lum1104-knowledge-graph-v1.0` pasa de `watchlist` a `draft` con
+    `license: MIT` y `source_commit` fijado. Su eventual uso sigue
+    pendiente de decisión de Débora (que en #14 lo había descartado cuando
+    la licencia era desconocida).
 
 ## 6. Gaps de catálogo — resueltos en Sesión 7
 
@@ -836,3 +839,78 @@ exit 0 (0 errores, 60 warnings exentos). Tests 38/38.
 
 **Inventario al cierre:** 343 componentes (sin cambios en número — estándar + harness, no
 nuevos componentes).
+
+## 23. Sesión QA-2 — Planes de pruebas (#82) + Navegación agéntica (#84) (2026-07-02, cerrada)
+
+**Contexto:** Débora eligió el bloque QA. Aportó 3 visiones del plan de pruebas de TruckCenter
+(Rovo/Jira, Rovo/Jira+AF, Copilot/código) y pidió unificarlas sin duplicar con trazabilidad de
+procedencia; además exigió **ejecución funcional real** con evidencias descargables o a Jira, skill
+interactiva, degradación de fuentes, procedencia múltiple e ingesta de planes aportados en cualquier formato.
+
+**Ejecutado:**
+- **`context/apb/standards/TEST_PLAN_STANDARD.md`** + plantilla **`context/apb/templates/TEST_PLAN.md`**.
+- **`apb-qa-test-plan-v1.0` → v1.2.0** (interactiva; ingesta de planes aportados vía
+  `apb-plat-doc-to-markdown`; procedencia múltiple; degradación de fuentes; plan previo incremental;
+  no-regresión rendimiento).
+- **`docs/qa/examples/QA_TRU_TruckCenter_UNIFICADO.md`** (112 casos sin duplicar, procedencia por prueba,
+  mapeo A→unificado) + fuentes en `docs/qa/examples/sources/`.
+- **#84:** `providers/prov-browser-agent-v1.0.md` + `skills/apb-owned/qa/apb-qa-exploratory-nav-v1.0.md`,
+  cableados a `apb-agent-qa-auto-v1.0` y `apb-wf-qa-evidence-v1.0`.
+- **Ejecución real** sobre TruckCenter PRE (EntraID asistido, rol MANAGE): 4 PASS, 1 no evaluable, 2 hallazgos;
+  evidencias en ZIP (informe MD+HTML+log); 0 datos modificados.
+- **Validador:** check **#20** `validate_test_plan_methodology` + 2 tests → 40/40 suite.
+
+**Resultado:** `validate_repo.py --strict` exit 0 (0 errores, 60 warnings exentos). Tests 40/40.
+
+**Inventario al cierre:** **345 componentes** (+2: `prov-browser-agent-v1.0`, `apb-qa-exploratory-nav-v1.0`).
+
+**Pendiente derivado (Débora):** el agente de pruebas funcionales debe **consultar credenciales desde un
+repositorio central** (Azure Key Vault, `GOVERNANCE.md §5`) + captura/reutilización de `storage_state` para
+ejecutar sin login manual. Ver HANDOFF.
+
+**Continuación E-bis (2026-07-02):** ejecución ampliada para cubrir los 112 casos en **solo lectura** (informe
+en OneDrive `QA_TruckCenter_evidencias/INFORME_EJECUCION_112.md`). 8 PASS + 8 parciales (MANAGE). Hallazgos:
+**F2** (form Alta no carga >45s), **F3** (PRE sin datos → ~45 casos no evaluables), **F4** (API LGP ~9,3s),
+**F5** (maestro multiidioma CA/ES/EN ≠ AF). Rendimiento, seguridad, USER_READ y evidencia visual PNG/vídeo →
+**Sesión QA-3** (registrada en FUTURAS). Limitación de entorno: las capturas del navegador MCP no persisten
+como fichero → visual con Playwright en QA-3. **0 datos modificados en PRE.**
+
+**Fase E-ter (2026-07-02):** Débora detectó que la unificación de TruckCenter había **perdido información**
+narrativa (incidencias históricas y más) — error grave, norma nueva "unificar nunca elimina información".
+Restaurado íntegramente + `TEST_PLAN_STANDARD §3.1` (principio de conservación) + check #21 anti-repetición.
+
+**Fase G (2026-07-03):** Débora pidió 4 mejoras más sobre metodología de planes de pruebas: plantilla
+restaurada, **ID canónico append-only** `{APP}-B{NN}-T{NN}` (§3.2, con columna "Legado" para no romper
+trazabilidad con informes ya emitidos), **gobernanza por aplicación** (§6.1, reutiliza `GOVERNANCE.md`),
+**entrega dual Markdown+HTML** (§7.1, script `scripts/generate_test_plan_html.py`, sin CDN/DevExpress, azul
+corporativo + logo APB). Check #21 ampliado (parte c). Commit `29b9799`. Detalle: `PLAN_FASES_COMPLETADAS.md`.
+
+**Fase H (2026-07-03):** Débora corrigió: "el framework debe ser agnóstico al LLM y la herramienta". El
+principio ya estaba declarado (`SYSTEM.md §4.3`) pero el propio `SYSTEM.md §10.1` exigía un routing file raíz
+`AGENTS.md` que **no existía** — el único fichero raíz era `CLAUDE.md`, específico de Claude Code, invirtiendo
+la regla. Creado `AGENTS.md` (fuente única de reglas) + `CLAUDE.md` y `.github/copilot-instructions.md`
+reescritos como ficheros delgados que derivan de él. Débora señaló **GitHub Copilot** como la alternativa
+concreta de "día después" — su punto de entrada ya está cableado de verdad, no solo en el adapter `draft`.
+Check **#22** `validate_agnostic_root_routing` (anti-deriva) + 3 tests. Detalle: `PLAN_FASES_COMPLETADAS.md`.
+
+**Estado al cierre de Fase H:** `validate_repo.py --strict` exit 0 (0 errores, 60 warnings exentos) ·
+**41/41 tests** · 345 componentes (sin cambio — ficheros de routing no son catalogables). Pendiente:
+decidir si pushear la rama `feat/qa2-test-plan-methodology`; provider de VCS alternativo si Débora
+diversifica de GitHub (distinto del punto agnóstico de LLM/herramienta, ya resuelto en Fase H).
+
+**Fase I (2026-07-03):** Débora aportó 7 huecos de la metodología de planes de pruebas frente a un uso
+real. Cubiertos en `TEST_PLAN_STANDARD` v1.3.0 y skill `apb-qa-test-plan` v1.4.0: **(1)** matriz de roles +
+columna «Rol requerido» por caso, usuario de ejecución por **AKV** o runtime (nunca en fichero, §9.2);
+**(2)** informe corporativo (HTML con badges de estado); **(3)** **Acta de aprobación del informe**
+(Funcional + Desarrollador, persistida en `.md` **y** Jira, §6.2 — decisión: se aprueba el *informe*, no el
+PR); **(4)** destino de ejecución `local`/`ci-runner`/`azure-qa` (§9.1, k6 nunca desde el portátil);
+**(5)** guía `docs/qa/EJECUCION_LOCAL.md` + instalación asistida; **(6)** `spec` SDD como fuente
+autoritativa (§1) + nuevo subagente **`apb-sub-qa-fix-loop-v1.0`** (fallo→PR→Jira, propone sin mergear),
+cableado en `apb-wf-qa-evidence` y `apb-wf-sdd-full`; **(7)** nuevo provider **`prov-azure-qa-runtime-v1.0`**
+(`draft`) para ejecución en la suscripción QA de Azure sin instalar nada. Check **#23**
+`validate_execution_and_approval_methodology` + 3 tests. Detalle: `PLAN_FASES_COMPLETADAS.md`.
+
+**Estado al cierre de Fase I:** `validate_repo.py --strict` exit 0 (0 errores, 60 warnings exentos) ·
+**49/49 tests** · **347 componentes** (345 + subagente fix-loop + provider Azure QA, ambos `draft`).
+Pendiente: decidir si pushear la rama `feat/qa2-test-plan-methodology`; **QA-3** (despliegue real del
+entorno Azure QA + ejecución funcional completa con dataset, k6 y SonarQube/OWASP ZAP).
