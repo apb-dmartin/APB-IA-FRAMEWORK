@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 359
+- **Total Components**: 361
 
 ## Component Breakdown
 
-### Skills APB-Owned (181 total)
+### Skills APB-Owned (182 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -135,6 +135,7 @@
 | `apb-plat-ci-qa-gate-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-ci-qa-gate-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
+| `apb-plat-dashboards-generator-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-dashboards-generator-v1.0.md` |
 | `apb-plat-db-migration-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-db-migration-v1.0.md` |
 | `apb-plat-deliver-artifact-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deliver-artifact-v1.0.md` |
 | `apb-plat-deployment-finish-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deployment-finish-v1.0.md` |
@@ -298,10 +299,11 @@
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
 | `apb-agent-vendor-manager-v1.0` | Vendor Manager | draft | `agents/apb-agent-vendor-manager-v1.0.md` |
 
-### Subagentes (34 total)
+### Subagentes (35 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
+| `apb-sub-dashboard-discovery-v1.0` | Dashboard Discovery & Reuse Analysis | draft | `subagents/apb-sub-dashboard-discovery-v1.0.md` |
 | `apb-sub-ddd-code-v1.0` | DDD Code Analysis Subagent | draft | `subagents/apb-sub-ddd-code-v1.0.md` |
 | `apb-sub-ddd-db-v1.0` | DDD Database Schema Analysis Subagent | draft | `subagents/apb-sub-ddd-db-v1.0.md` |
 | `apb-sub-ddd-doc-v1.0` | DDD Documentation Analysis Subagent | draft | `subagents/apb-sub-ddd-doc-v1.0.md` |

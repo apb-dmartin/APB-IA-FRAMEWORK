@@ -3,7 +3,7 @@
 > **ID:** `apb-index-v1.0`
 > **Versión:** 1.0.0
 > **Estado:** draft
-> **Fecha de actualización:** 2026-07-05
+> **Fecha de actualización:** 2026-07-06
 > **Framework:** APB AI v1.0.0-draft
 
 ---
@@ -18,15 +18,15 @@
 
 | Métrica | Valor |
 |---------|-------|
-| Skills APB | 181 / 181 |
+| Skills APB | 182 / 182 |
 | Skills terceros | 56 / 56 |
 | Agentes | 37 / 37 |
-| Subagentes | 34 / 34 |
+| Subagentes | 35 / 35 |
 | Workflows | 17 / 17 |
 | Providers | 23 / 23 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **359** |
+| **Total** | **361** |
 
 ---
 
@@ -53,10 +53,10 @@ APB-IA-FRAMEWORK/
 ├── INDEX.md
 ├── DOMAIN_REGISTRY.md
 ├── agents/                     # 37 agentes
-├── subagents/                  # 34 subagentes
+├── subagents/                  # 35 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
-│   ├── apb-owned/             # 181 skills
+│   ├── apb-owned/             # 182 skills
 │   └── third-party/           # 56 skills
 ├── providers/                  # 23 providers
 ├── wrappers/                   # 7 wrappers
@@ -90,14 +90,14 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Skills APB por Dominio (181)
+## ✅ Skills APB por Dominio (182)
 
 | Dominio | Cantidad | Patrón ID |
 |---------|----------|-----------|
 | development | 28 | `apb-dev-*` |
+| platform | 21 | `apb-plat-*` |
 | governance | 20 | `apb-gov-*` |
 | operation | 20 | `apb-ops-*` |
-| platform | 20 | `apb-plat-*` |
 | qa | 20 | `apb-qa-*` |
 | architecture | 16 | `apb-arch-*` |
 | discovery | 16 | `apb-disc-*` |

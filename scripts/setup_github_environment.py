@@ -42,6 +42,10 @@ import json
 from pathlib import Path
 from typing import List, Dict, Any
 
+# Forzar UTF-8 en Windows
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+
 try:
     from github import Github, GithubException
     HAS_PYGITHUB = True

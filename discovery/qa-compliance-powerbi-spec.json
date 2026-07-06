@@ -1,0 +1,503 @@
+{
+  "name": "QA Compliance Dashboard",
+  "displayName": "QA Compliance — Sonar + Dependabot + Jira",
+  "description": "Executive dashboard for QA compliance monitoring across APB applications. Tracks test coverage, bugs, dependencies, and resolution time.",
+  "version": "1.0.0",
+  "created": "2026-07-06",
+  "audience": ["QA Lead", "DevOps", "Architecture Review Board"],
+  "pages": [
+    {
+      "name": "Overview",
+      "displayName": "Overview",
+      "visualizations": [
+        {
+          "name": "CoverageTrend",
+          "type": "LineChart",
+          "title": "Test Coverage % — Last 90 Days Trend",
+          "subtitle": "Target: 85% (green), Warning: 80% (yellow), Critical: <70% (red)",
+          "dataFields": {
+            "values": "AVG(Coverage%)",
+            "category": "Date (daily)",
+            "legend": "Application"
+          },
+          "thresholds": [
+            {
+              "value": 85,
+              "color": "green",
+              "label": "Target"
+            },
+            {
+              "value": 80,
+              "color": "yellow",
+              "label": "Warning"
+            },
+            {
+              "value": 70,
+              "color": "red",
+              "label": "Critical"
+            }
+          ]
+        },
+        {
+          "name": "BugsBySeverity",
+          "type": "StackedBarChart",
+          "title": "Bugs by Severity (High + Critical)",
+          "subtitle": "Current sprint vs. 30-day average",
+          "dataFields": {
+            "values": "COUNT(BugID)",
+            "category": "Application",
+            "legend": "Severity"
+          }
+        },
+        {
+          "name": "DependabotAlerts",
+          "type": "Table",
+          "title": "Dependabot Open Vulnerabilities",
+          "subtitle": "High + Critical only; action required",
+          "columns": [
+            {
+              "name": "Application",
+              "type": "string"
+            },
+            {
+              "name": "Dependency",
+              "type": "string"
+            },
+            {
+              "name": "Severity",
+              "type": "enum",
+              "values": ["Critical", "High"]
+            },
+            {
+              "name": "OpenedDate",
+              "type": "date",
+              "format": "yyyy-MM-dd"
+            },
+            {
+              "name": "DaysOpen",
+              "type": "integer"
+            }
+          ]
+        },
+        {
+          "name": "ResolutionTime",
+          "type": "BarChart",
+          "title": "Mean Time to Close — Bug Detection → Closure",
+          "subtitle": "By application and team",
+          "dataFields": {
+            "values": "AVG(DaysToClose)",
+            "category": "Application",
+            "legend": "Team"
+          }
+        }
+      ]
+    },
+    {
+      "name": "By Environment",
+      "displayName": "Metrics by Environment (DEV/PRE/PROD)",
+      "slicers": [
+        {
+          "name": "EnvironmentSlicer",
+          "field": "Environment",
+          "type": "Dropdown",
+          "default": ["PRE"],
+          "options": ["DEV", "PRE", "PROD"]
+        },
+        {
+          "name": "TeamSlicer",
+          "field": "Team",
+          "type": "MultiSelect",
+          "default": [],
+          "options": "unique(Team)"
+        }
+      ],
+      "visualizations": [
+        {
+          "name": "CoverageByEnv",
+          "type": "ScatterChart",
+          "title": "Coverage vs. Bug Count (filtered by env/team)",
+          "dataFields": {
+            "xAxis": "Coverage%",
+            "yAxis": "BugCount",
+            "size": "AppSize",
+            "legend": "Application"
+          }
+        },
+        {
+          "name": "ComplianceMatrix",
+          "type": "Table",
+          "title": "Compliance Checklist (by app/env)",
+          "columns": [
+            {
+              "name": "Application",
+              "type": "string"
+            },
+            {
+              "name": "Environment",
+              "type": "enum"
+            },
+            {
+              "name": "CoverageCompliant (≥80%)",
+              "type": "boolean"
+            },
+            {
+              "name": "BugsCompliant (<5)",
+              "type": "boolean"
+            },
+            {
+              "name": "DependabotCompliant (0 critical)",
+              "type": "boolean"
+            },
+            {
+              "name": "ResolutionSLA (<7 days avg)",
+              "type": "boolean"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Deployments",
+      "displayName": "Deployment Readiness",
+      "subtitle": "Pre-deployment quality gates",
+      "visualizations": [
+        {
+          "name": "DeploymentReadiness",
+          "type": "Table",
+          "title": "Ready for Deploy? Quality Gates Check",
+          "columns": [
+            {
+              "name": "Application",
+              "type": "string"
+            },
+            {
+              "name": "LastDeploy",
+              "type": "datetime"
+            },
+            {
+              "name": "CoveragePass",
+              "type": "boolean",
+              "rule": "Coverage% >= 80"
+            },
+            {
+              "name": "BugsPass",
+              "type": "boolean",
+              "rule": "BugCount < 5"
+            },
+            {
+              "name": "VulnerabilityPass",
+              "type": "boolean",
+              "rule": "CriticalVulnerabilities == 0"
+            },
+            {
+              "name": "ReadyToDeploy",
+              "type": "boolean",
+              "rule": "ALL([CoveragePass], [BugsPass], [VulnerabilityPass])"
+            }
+          ]
+        },
+        {
+          "name": "DeploymentTimeline",
+          "type": "TimelineChart",
+          "title": "Deployment History & Compliance Trend",
+          "dataFields": {
+            "dates": "DeploymentDate",
+            "values": "Coverage%",
+            "markers": "IssuesFound"
+          }
+        }
+      ]
+    }
+  ],
+  "dataModel": {
+    "tables": [
+      {
+        "name": "Sonar",
+        "source": "https://sonar.apb.internal/api/measures/search_history?component=",
+        "importFrequency": "daily",
+        "refreshTime": "02:00 UTC",
+        "columns": [
+          {
+            "name": "ApplicationKey",
+            "type": "string",
+            "description": "Sonar project key (e.g., 'apb.api.sms')"
+          },
+          {
+            "name": "CoveragePct",
+            "type": "decimal",
+            "description": "Line coverage (%)"
+          },
+          {
+            "name": "BugCount",
+            "type": "integer"
+          },
+          {
+            "name": "BugCountHigh",
+            "type": "integer"
+          },
+          {
+            "name": "BugCountCritical",
+            "type": "integer"
+          },
+          {
+            "name": "VulnerabilityCount",
+            "type": "integer"
+          },
+          {
+            "name": "CodeSmellCount",
+            "type": "integer"
+          },
+          {
+            "name": "TechnicalDebtDays",
+            "type": "decimal",
+            "description": "Technical debt in days (Sonar metric)"
+          },
+          {
+            "name": "MeasuredDate",
+            "type": "date"
+          }
+        ]
+      },
+      {
+        "name": "Dependabot",
+        "source": "GitHub GraphQL API: repository(owner: 'portdebarcelona').vulnerabilityAlerts",
+        "importFrequency": "daily",
+        "refreshTime": "02:15 UTC",
+        "columns": [
+          {
+            "name": "Repository",
+            "type": "string"
+          },
+          {
+            "name": "Dependency",
+            "type": "string"
+          },
+          {
+            "name": "CurrentVersion",
+            "type": "string"
+          },
+          {
+            "name": "VulnerabilityVersion",
+            "type": "string"
+          },
+          {
+            "name": "Severity",
+            "type": "enum",
+            "values": ["Critical", "High", "Medium", "Low"]
+          },
+          {
+            "name": "CVEID",
+            "type": "string"
+          },
+          {
+            "name": "CreatedAt",
+            "type": "datetime"
+          },
+          {
+            "name": "State",
+            "type": "enum",
+            "values": ["open", "dismissed", "fixed"]
+          }
+        ]
+      },
+      {
+        "name": "Jira",
+        "source": "Jira REST API: /rest/api/3/issues?jql=project in (...) AND issuetype = 'Bug'",
+        "importFrequency": "hourly",
+        "refreshTime": "every 60 minutes",
+        "columns": [
+          {
+            "name": "IssueKey",
+            "type": "string",
+            "example": "SMS-1234"
+          },
+          {
+            "name": "Title",
+            "type": "string"
+          },
+          {
+            "name": "Component",
+            "type": "string",
+            "description": "Jira component (links to Application)"
+          },
+          {
+            "name": "Severity",
+            "type": "enum",
+            "values": ["Critical", "High", "Medium", "Low"]
+          },
+          {
+            "name": "CreatedDate",
+            "type": "datetime"
+          },
+          {
+            "name": "ClosedDate",
+            "type": "datetime"
+          },
+          {
+            "name": "Status",
+            "type": "enum",
+            "values": ["Open", "In Progress", "In Review", "Closed"]
+          }
+        ]
+      },
+      {
+        "name": "Applications",
+        "source": "Manual lookup table",
+        "columns": [
+          {
+            "name": "ApplicationID",
+            "type": "string",
+            "examples": ["APB.API.SMS", "APB.TRU", "ARGOS"]
+          },
+          {
+            "name": "ApplicationName",
+            "type": "string"
+          },
+          {
+            "name": "Team",
+            "type": "string",
+            "values": ["QA", "DevOps", "Platform", "Security"]
+          },
+          {
+            "name": "Environment",
+            "type": "enum",
+            "values": ["DEV", "PRE", "PROD"]
+          },
+          {
+            "name": "SonarProjectKey",
+            "type": "string",
+            "description": "Link to Sonar table"
+          },
+          {
+            "name": "GitHubRepository",
+            "type": "string",
+            "description": "Link to Dependabot"
+          },
+          {
+            "name": "JiraProject",
+            "type": "string",
+            "description": "Link to Jira issues"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "from": "Sonar.ApplicationKey",
+        "to": "Applications.SonarProjectKey",
+        "type": "many-to-one"
+      },
+      {
+        "from": "Dependabot.Repository",
+        "to": "Applications.GitHubRepository",
+        "type": "many-to-one"
+      },
+      {
+        "from": "Jira.Component",
+        "to": "Applications.ApplicationID",
+        "type": "many-to-one"
+      }
+    ]
+  },
+  "calculatedColumns": [
+    {
+      "name": "DaysToClose",
+      "table": "Jira",
+      "formula": "IF(ISBLANK([ClosedDate]), DATEDIFF(TODAY(), [CreatedDate], DAY), DATEDIFF([CreatedDate], [ClosedDate], DAY))",
+      "description": "Number of days from bug creation to closure"
+    },
+    {
+      "name": "CoverageCompliant",
+      "table": "Sonar",
+      "formula": "[CoveragePct] >= 80",
+      "description": "Boolean: coverage meets 80% target"
+    },
+    {
+      "name": "BugsCompliant",
+      "table": "Sonar",
+      "formula": "[BugCountHigh] + [BugCountCritical] < 5",
+      "description": "Boolean: high+critical bugs below threshold"
+    }
+  ],
+  "measures": [
+    {
+      "name": "AvgCoverage",
+      "table": "Sonar",
+      "formula": "AVERAGE(Sonar[CoveragePct])",
+      "format": "0.00%"
+    },
+    {
+      "name": "TotalBugs",
+      "table": "Sonar",
+      "formula": "SUMX(Sonar, Sonar[BugCountHigh] + Sonar[BugCountCritical])"
+    },
+    {
+      "name": "OpenVulnerabilities",
+      "table": "Dependabot",
+      "formula": "COUNTIF(Dependabot[State], 'open')"
+    },
+    {
+      "name": "MeanTimeToClose",
+      "table": "Jira",
+      "formula": "AVERAGE(Jira[DaysToClose])",
+      "format": "0.0 \\\\d\\\\a\\\\y\\\\s"
+    },
+    {
+      "name": "ComplianceScore",
+      "table": "Applications",
+      "formula": "COUNTIF([CoverageCompliant] AND [BugsCompliant] AND [VulnerabilityCompliant]) / COUNTA(Applications[ApplicationID]) * 100",
+      "description": "Percentage of applications passing all quality gates",
+      "format": "0.0%"
+    }
+  ],
+  "alerts": [
+    {
+      "name": "CoverageDrop",
+      "rule": "AvgCoverage < 80%",
+      "severity": "High",
+      "frequency": "daily",
+      "notification": "QA Lead email"
+    },
+    {
+      "name": "CriticalVulnerability",
+      "rule": "OpenVulnerabilities > 0",
+      "severity": "Critical",
+      "frequency": "immediate",
+      "notification": "Security team + DevOps"
+    },
+    {
+      "name": "BugResolutionDelay",
+      "rule": "MeanTimeToClose > 7 days",
+      "severity": "Medium",
+      "frequency": "weekly",
+      "notification": "QA Lead"
+    }
+  ],
+  "deploymentChecklist": [
+    {
+      "check": "Test Coverage ≥ 80%",
+      "metric": "AvgCoverage",
+      "pass_if": "> 80",
+      "critical": true
+    },
+    {
+      "check": "High/Critical Bugs < 5",
+      "metric": "TotalBugs",
+      "pass_if": "< 5",
+      "critical": true
+    },
+    {
+      "check": "No Open Critical Vulnerabilities",
+      "metric": "OpenVulnerabilities",
+      "filter": "Severity='Critical'",
+      "pass_if": "== 0",
+      "critical": true
+    },
+    {
+      "check": "Mean Resolution Time < 7 days",
+      "metric": "MeanTimeToClose",
+      "pass_if": "< 7",
+      "critical": false
+    }
+  ]
+}
