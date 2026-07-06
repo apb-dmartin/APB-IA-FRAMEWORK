@@ -56,7 +56,7 @@ graph TD
 | Orden | Agente | Rol | Skills Utilizadas |
 |-------|--------|-----|-------------------|
 | 1 | Security Architect | Clasificación y plan | apb-qa-security-v1.0 (planificado), apb-sec-threat-model |
-| 2 | Tech Debt | Registro en backlog | `prov-jira-software-v1.0` |
+| 2 | Tech Debt | Registro en backlog | `prov-atlassian-v1.0` |
 | 3 | Platform Engineer | Aplicación del patch | `apb-plat-cicd`, `apb-plat-docker` |
 | 4 | QA Automation | Verificación post-patch | apb-qa-unit-v1.0 (planificado), apb-qa-security-v1.0 (planificado) |
 
@@ -95,7 +95,7 @@ graph TD
 - El CISO puede autorizar una excepción temporal con fecha de resolución comprometida (máximo 30 días para High, 7 días para Critical)
 
 ### Fase 4 — Registro en Backlog
-- Agente: Tech Debt (vía `prov-jira-software-v1.0`)
+- Agente: Tech Debt (vía `prov-atlassian-v1.0`)
 - Crear issue en Jira Software con: CVE/finding ID, CVSS, componente, plan de remediación, SLA
 - Prioridad Jira mapeada a severidad CVSS: Critical → Highest, High → High, Medium → Medium, Low → Low
 - Etiquetar con `ia-generado`, `security`, `patch-required`

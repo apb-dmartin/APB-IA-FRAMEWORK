@@ -2,7 +2,7 @@
 id: "apb-agent-observability-v1.0"
 name: "Observability Agent"
 description: "Agente de observabilidad de primera vez. A partir de una necesidad de monitorización en lenguaje natural, define KPIs, busca plantillas de comunidad (Power BI Community, Grafana Dashboards) y genera todos los artefactos necesarios para implantar un dashboard por primera vez en Power BI, Grafana o Prometheus. Avisa si los datos requeridos no están disponibles en la fuente especificada. En una segunda fase propone la instrumentación de logging necesaria para cubrir los gaps detectados. Agnóstico de fuente de datos: Sonar, VMware, Azure Monitor, bases de datos APB, IA framework, etc."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "operation"
@@ -30,6 +30,7 @@ created_date: "2026-06-25"
 review_date: "2026-06-25"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-azure-monitor-v1.0"  # Telemetría del propio framework IA (APBFrameworkTelemetry_CL)
 
 ---
 
@@ -247,6 +248,7 @@ VMware, con alertas para umbrales críticos. Fuente: vCenter (Prometheus exporte
 | Versión | Fecha | Autor | Cambio |
 |---|---|---|---|
 | 1.0.0 | 2026-06-25 | Arquitectura APB / Claude Code | Creación inicial — Sesión 17 (puntos #26, #39, #40) |
+| 1.0.1 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente↔skill/provider) | Añadida `prov-azure-monitor-v1.0` a `depends_on:` — el Prompt de Sistema ya lo usaba como fuente de datos de telemetría del framework, pero no estaba declarado |
 
 ---
 

@@ -20,7 +20,7 @@
 | `ops` | Operation | 20 | 🔵 |
 | `doc` | Documentation | 11 | ⚪ |
 | `orch` | Orchestration | 3 | 🟤 |
-| `pm` | Project Management | 11 | 🟢 |
+| `pm` | Project Management | 12 | 🟢 |
 | `design` | Design & UX | 4 | 🎨 |
 
 ---

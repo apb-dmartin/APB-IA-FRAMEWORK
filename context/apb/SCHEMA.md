@@ -1,10 +1,10 @@
 # SCHEMA.md — Esquema de Metadatos del APB AI Framework
 
 > **ID:** `apb-schema-v1.0`
-> **Versión:** 1.0.0
+> **Versión:** 1.1.0
 > **Estado:** draft
 > **Propietario:** Arquitectura APB
-> **Fecha:** 2026-06-22
+> **Fecha:** 2026-07-06
 
 ---
 
@@ -75,6 +75,18 @@ de este repositorio.
 |---|---|---|---|
 | `parent_agent` | string | Sí | ID del agente que lo especializa. |
 | `specialty` | string | Sí | Tecnología o contexto concreto (.NET, Django, Azure...). |
+| `skills` | list[string] | Condicional | IDs de skills que usa. **Obligatorio si el Prompt de Sistema del subagente invoca alguna** — si no invoca ninguna, se omite el campo. |
+| `depends_on` | list[string] | Condicional | IDs de providers (o skills) de los que depende (contexto corporativo, telemetría, etc.). Misma condición que `skills`. |
+
+> **Regla de cierre (añadida 2026-07-06, formalización a petición de Débora):**
+> ningún subagente puede nombrar una skill o provider real por su ID en el
+> Prompt de Sistema sin declararlo en `skills:`/`depends_on:`. Antes de esta
+> versión, `skills`/`depends_on` eran una convención informal en subagentes
+> (sin respaldo en este schema); una auditoría (2026-07-06) encontró 2
+> subagentes que usaban una skill/provider real sin declararla porque el campo
+> no era obligatorio ni verificado. `validate_repo.py` check #28 hace cumplir
+> esta regla automáticamente en cada validación — ver también check #27 para
+> el caso específico de `PROCEDURE_*` nombrados sin ruta literal.
 
 ### 3.4 Workflow
 | Campo | Tipo | Obligatorio | Descripción |

@@ -18,7 +18,7 @@
 
 | Métrica | Valor |
 |---------|-------|
-| Skills APB | 182 / 182 |
+| Skills APB | 183 / 183 |
 | Skills terceros | 56 / 56 |
 | Agentes | 38 / 38 |
 | Subagentes | 35 / 35 |
@@ -26,7 +26,7 @@
 | Providers | 23 / 23 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **362** |
+| **Total** | **363** |
 
 ---
 
@@ -56,7 +56,7 @@ APB-IA-FRAMEWORK/
 ├── subagents/                  # 35 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
-│   ├── apb-owned/             # 182 skills
+│   ├── apb-owned/             # 183 skills
 │   └── third-party/           # 56 skills
 ├── providers/                  # 23 providers
 ├── wrappers/                   # 7 wrappers
@@ -90,7 +90,7 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Skills APB por Dominio (182)
+## ✅ Skills APB por Dominio (183)
 
 | Dominio | Cantidad | Patrón ID |
 |---------|----------|-----------|
@@ -101,9 +101,9 @@ APB-IA-FRAMEWORK/
 | qa | 20 | `apb-qa-*` |
 | architecture | 16 | `apb-arch-*` |
 | discovery | 16 | `apb-disc-*` |
+| pm | 12 | `apb-pm-*` |
 | security | 12 | `apb-sec-*` |
 | documentation | 11 | `apb-doc-*` |
-| pm | 11 | `apb-pm-*` |
 | design | 4 | `apb-design-*` |
 | orchestration | 3 | `apb-orch-*` |
 

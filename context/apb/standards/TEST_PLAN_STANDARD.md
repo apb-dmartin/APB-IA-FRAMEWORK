@@ -246,7 +246,7 @@ necesita un responsable a lo largo del tiempo, no solo en su versión inicial.
   1. En el **`.md`** del informe (fuente de verdad, versionada en el repo de la app) — el acta rellena
      queda en el propio documento y su cambio entra en el histórico.
   2. En el **ticket Jira** vinculado — la decisión se refleja como comentario y/o transición de estado vía
-     [`prov-jira-software-v1.0`](../../../providers/prov-jira-software-v1.0.md), enlazando al informe.
+     [`prov-atlassian-v1.0`](../../../providers/prov-atlassian-v1.0.md), enlazando al informe.
 - **Mecanismo:** un *sign-off* controlado y auditable (nombre + rol + fecha + decisión). **No exige firma
   criptográfica**; si en el futuro se requiere firma digital certificada, se añade sin cambiar este acta.
 - **Regla de dos ojos:** el agente **nunca** autoaprueba su propio informe (coherente con `SYSTEM.md §2.1`
@@ -261,7 +261,7 @@ informe: se **propone la corrección** y se deja traza en Jira.
 
 - Lo orquesta el sub-workflow [`apb-sub-qa-fix-loop-v1.0`](../../../subagents/apb-sub-qa-fix-loop-v1.0.md):
   **test FALLA → propone un PR con las correcciones** (vía `apb-dev-pr-doc-v1.0`) **→ anota el ticket Jira**
-  correspondiente (vía `prov-jira-software-v1.0`) con el enlace al PR y la evidencia del fallo.
+  correspondiente (vía `prov-atlassian-v1.0`) con el enlace al PR y la evidencia del fallo.
 - **Autonomía:** el bucle **propone** el PR; **nunca lo mergea**. La aprobación y el merge son humanos
   (`POLICY_AI_USAGE §6-7`). En flujo SDD, la corrección se contrasta contra la **spec** (§1) origen del caso.
 

@@ -3298,3 +3298,176 @@ de nuevo, igual que en la sesión anterior. **Sesión candidata:** continuación
 sesión nueva — mismo hilo de trabajo.
 
 </details>
+
+---
+
+### 89. Auditoría de cableado agente/subagente↔skill/provider + 2 checks nuevos en `validate_repo.py` — ✅ EJECUTADO (Sesión 26, 2026-07-06)
+
+**Origen:** Débora detectó que el informe de riesgos `INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md`
+citaba `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` en la cabecera pero no aplicaba su contenido real
+(ticket maestro JSM §8.7, justificación de negocio §9.1, flujo de 3 aprobaciones §9.3, tabla de
+plazos §10) — mientras que `PROCEDURE_RISK_EVALUATION`, citado en el mismo prompt con un paso
+"Aplica" explícito, sí se aplicó a fondo. Pidió revisar si el mismo patrón de fallo se repetía en
+otros agentes/skills y que se implementara un mecanismo permanente para que no se repitiera.
+
+**Ejecutado:**
+1. **Causa raíz corregida en `apb-gov-org-risk-report-v1.0`** (v1.3.0 → v1.4.0): rutas literales a
+   ambos procedimientos + paso 7 nuevo (checklist de 4 puntos) en el Prompt de Sistema + 2 preguntas
+   nuevas en la entrevista de contexto.
+2. **`validate_repo.py` check #27:** ningún `PROCEDURE_*` puede nombrarse en un componente sin su
+   ruta literal en el mismo fichero. Corregidos `apb-plat-ci-qa-gate-v1.0` (v1.0.1) y una instancia
+   nueva detectada en caliente al escribir la corrección de `apb-agent-risk-exception-v1.0` (v1.1.0,
+   que además ganó una sección "Relación con otros componentes" aclarando que no tiene asignada
+   `apb-gov-org-risk-report-v1.0` — el informe ARQ-3684 se había atribuido al agente equivocado).
+3. **Auditoría manual de los 38 agentes + 35 subagentes** (script ad-hoc comparando IDs mencionados
+   en el bloque "Prompt de Sistema" contra `skills:`/`depends_on:` declarados, excluyendo referencias
+   cruzadas legítimas entre agentes/subagentes — confirmado empíricamente que esas SÍ son mayoría
+   falsos positivos). **6 gaps reales** corregidos: `apb-agent-business-analyst-v1.0` (v1.0.1,
+   `apb-qa-anonymize-v1.0`), `apb-agent-compliance-audit-v1.0` (v1.2.0, `apb-plat-doc-to-markdown-v1.0`
+   + `prov-atlassian-v1.0` + `prov-ms365-v1.0`), `apb-agent-finops-v1.0` (v1.0.1, `prov-azure-cost-v1.0`
+   — y nota "Gap conocido" corregida, el provider ya existe desde el 29/6), `apb-agent-observability-v1.0`
+   (v1.0.1, `prov-azure-monitor-v1.0`), y los subagentes `apb-sub-ops-azure-v1.0`/`apb-sub-obs-powerbi-v1.0`
+   (v1.0.1 ambos).
+4. **`validate_repo.py` check #28:** generaliza el #27 a cualquier skill/provider (no solo
+   `PROCEDURE_*`) usado en el Prompt de Sistema de un agente o subagente sin declarar. Excluye
+   deliberadamente menciones de tipo `agent`/`subagent`.
+5. **`SCHEMA.md` v1.0.0 → v1.1.0:** formaliza `skills`/`depends_on` como campos condicionales de
+   `Subagent` (§3.3) — antes eran convención informal sin respaldo en el schema; el check #28 ahora
+   escanea también `subagents/`.
+
+**Verificación:** `validate_repo.py --strict` → 0 errores en cada paso · 60/60 tests · catálogo
+regenerado sin huecos.
+
+**Informe ARQ-3684 corregido a v3** (ver `discovery/examples/INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md`):
+atribución de agente corregida, ticket maestro JSM y justificación de negocio marcados
+explícitamente como pendientes de confirmar (sin inventarlos), flujo de 3+1 aprobaciones y tabla de
+plazos aplicados.
+
+**Pendiente de Débora:** ninguna — cerrado en la misma sesión.
+
+---
+
+### 90. Agente de soporte técnico para analistas funcionales — ✅ EJECUTADO (Sesión 26, 2026-07-06)
+
+Petición original y decisiones de diseño documentadas en
+[`PLAN_FASES_FUTURAS.md`](PLAN_FASES_FUTURAS.md) (fila marcada `✅ CREADO`). Resumen:
+
+**Creado `agents/apb-agent-functional-technical-support-v1.0.md`** (reescritura del borrador previo,
+que no seguía las convenciones del repo: `review_date: pending` inválido, campos de frontmatter
+inexistentes en el schema `agents:`/`created_by`, Prompt de Sistema como prosa suelta) + skill nueva
+`skills/apb-owned/pm/apb-pm-jira-estimation-review-v1.0.md` (dominio `pm`) que sustituye la
+dependencia inadecuada de `apb-dev-code-review-v1.0` (revisión de código C#/.NET ya escrito, no
+estimación a partir de la descripción de un ticket).
+
+**Decisiones de Débora incorporadas:** búsqueda de precedentes híbrida (Jira en vivo siempre +
+catálogo del repo `discovery/ESTIMATION_REFERENCES.md` como referencia rápida a partir de ≥20
+entradas por categoría); unidad de estimación en **horas** (no story points); acceso a Jira vía
+`prov-jira-software-v1.0` (REST API específica de Jira Software, no MCP ni Rovo —
+`search_issues`/JQL más preciso que `prov-atlassian-v1.0` para este caso, ver punto #91); regla de
+contrapropuesta al superar el **+25%** de la media de precedentes comparables, con argumentos
+citados (no dispara por infra-estimación, solo se reporta como observación).
+
+**Verificación:** `validate_repo.py --strict` → 0 errores · 60/60 tests · catálogo regenerado
+(183 skills `apb-owned`, +1).
+
+**Pendiente:** acceso real a histórico Jira (`HANDOFF_TECNICOS.md` ACC1) — el componente ya es
+operativo, falta el aprovisionamiento de credenciales para probarlo en runtime real. La
+reconciliación de `prov-atlassian-v1.0`/`prov-jira-software-v1.0` marcada aquí se resolvió en la
+misma sesión — ver punto #91.
+
+---
+
+### 91. Reconciliación de providers Atlassian (`prov-atlassian-v1.0` / `prov-jira-software-v1.0`) — ✅ EJECUTADO (Sesión 26, 2026-07-06)
+
+**Origen:** al crear #90, se detectó que `prov-atlassian-v1.0` se llamaba *"Provider: Atlassian
+Rovo MCP"* pero su contenido documentado siempre fue una integración REST CRUD genérica — sin
+relación real con el protocolo MCP ni con Rovo. Esto generaba una duplicidad confusa con
+`prov-jira-software-v1.0` (también REST, específico de Jira Software con JQL/`search_issues` mejor
+documentado). Débora pidió la reconciliación explícitamente.
+
+**Hallazgo adicional durante la investigación:** existe `adapters/rovo/adapter-rovo-v1.0.md`
+(Sesión 15, 2026-06-24) que documenta la integración *real* de Rovo — búsqueda semántica, Rovo
+Agents expuestos en Jira/Confluence vía Forge App — como componente **aparte**, pendiente de
+activación en el tenant Atlassian de APB (previsto julio 2026, ver `HANDOFF_TECNICOS.md §4`). Ni
+`prov-atlassian-v1.0` ni `prov-jira-software-v1.0` usan MCP ni Rovo como transporte — ambos son
+REST puro. La afirmación "acceso vía conector MCP de Atlassian (Rovo)" que se había escrito en el
+punto #90 (skill, agente y entradas de `PLAN_FASES_FUTURAS.md`/`CONTINUIDAD_PROYECTO.md`) era
+incorrecta y se corrigió en todos esos ficheros en esta misma sesión.
+
+**Ejecutado:**
+1. **Renombrado `prov-atlassian-v1.0`** de "Atlassian Rovo MCP" a "Atlassian REST API (JSM +
+   Confluence + Compass)" (v1.1.0) — su alcance se acota explícitamente a Jira Service Management,
+   Confluence y Compass (no Jira Software/backlog, competencia de `prov-jira-software-v1.0`).
+2. **Tabla de diferenciación** añadida a ambos providers (`prov-atlassian-v1.0` §"Diferencia con
+   otros componentes Atlassian"; nota espejo en `prov-jira-software-v1.0`, v1.1.0) distinguiendo los
+   3 componentes relacionados: `prov-atlassian-v1.0` (JSM/Confluence/Compass), `prov-jira-software-v1.0`
+   (Jira Software/JQL) y `adapter-rovo-v1.0` (capa de IA, pendiente de activación).
+3. **Corregidas las 3 afirmaciones erróneas sobre MCP/Rovo** introducidas en el punto #90:
+   `apb-pm-jira-estimation-review-v1.0` (v1.0.1), `apb-agent-functional-technical-support-v1.0`
+   (changelog), `PLAN_FASES_FUTURAS.md:74` y `CONTINUIDAD_PROYECTO.md` (Sesión 26).
+
+**Alcance deliberadamente NO cubierto en este punto:** no se fusionó ni deprecó ninguno de los dos
+providers en este momento de la sesión — ambos tenían consumidores reales activos y fusionarlos
+habría significado tocar ~15 ficheros más sin que hubiera (todavía) un defecto funcional real.
+**Superado más adelante en la misma sesión:** Débora pidió explícitamente la fusión — ver punto #92.
+
+**Verificación:** `validate_repo.py --strict` → 0 errores · 60/60 tests.
+
+**Pendiente de Débora:** ninguna en este punto — la fusión real se ejecutó a continuación, #92.
+
+---
+
+### 92. Fusión real de `prov-jira-software-v1.0` en `prov-atlassian-v1.0` + revisión de `adapter-rovo-v1.0` — ✅ EJECUTADO (Sesión 26, 2026-07-06)
+
+**Petición de Débora:** "fusiona los providers. también asegúrate que el adapter para rovo es
+correcto. necesitamos el mcp de atlassian + rovo?" — tras el punto #91, que solo había
+diferenciado sin fusionar.
+
+**Ejecutado:**
+1. **`prov-atlassian-v1.0` → v2.0.0:** absorbe todas las acciones de `prov-jira-software-v1.0`
+   (`get_issue`, `search_issues`/JQL, `add_to_sprint`, `link_issues`, `get_backlog`, `get_sprint`,
+   etc.). `prov-jira-software-v1.0` marcado `status: deprecated` con `deprecated_reason` (patrón
+   ya usado en el repo, p. ej. `apb-design-wcag-patterns-v1.0`) — el check #25 de
+   `validate_repo.py` bloquea automáticamente cualquier wiring nuevo hacia él.
+2. **Hallazgo durante la fusión, no detectado en #91:** `prov-atlassian-v1.0` v2.0.0 incluía
+   también una tabla de acciones de Confluence — duplicando sin necesidad `prov-confluence-v1.0`,
+   un tercer provider ya existente (2026-06-29) con acciones mucho más completas (`move_page`,
+   `delete_page`, `get_space`, `attach_file`, etc.). Corregido en v2.1.0: `prov-atlassian-v1.0`
+   queda acotado a Jira (Software + JSM) + Compass ligero; Confluence se delega enteramente en
+   `prov-confluence-v1.0`, con tabla de relación explícita entre los 3 componentes.
+3. **10 ficheros consumidores actualizados** (`depends_on` frontmatter + prosa): 3 con wiring
+   formal detectado automáticamente por el check #25 al deprecar
+   (`apb-pm-jira-estimation-review-v1.0`, `apb-agent-quality-compliance-v1.0`,
+   `apb-sub-qa-fix-loop-v1.0`) + 7 con mención solo en prosa
+   (`TEST_PLAN_STANDARD.md`, `TEST_PLAN.md`, `apb-qa-test-plan-v1.0.md`,
+   `third-mattpocock-triage-v1.0.md`, y los workflows `apb-wf-problem-management-v1.0`,
+   `apb-wf-qa-evidence-v1.0`, `apb-wf-security-patch-v1.0`).
+4. **`adapter-rovo-v1.0` revisado y corregido (v1.1.0):** su tabla de diferenciación citaba a
+   `prov-atlassian-v1.0` cubriendo Confluence (ya no cierto tras la corrección del punto 2);
+   añadido `prov-confluence-v1.0` a `adapted_components` y como credencial correcta para las
+   llamadas Rovo sobre Confluence (antes decía, incorrectamente, que todo usaba el token de
+   `prov-atlassian-v1.0`). El resto del adapter (Forge App, Rovo Agents expuestos, límites,
+   activación pendiente julio 2026) ya era correcto.
+5. **`adapter-claude-v1.0` corregido (v1.2.0):** tenía un hueco real — Azure/GitHub/Sonar
+   aparecían mapeados a MCP explícitamente, Atlassian no aparecía en absoluto. Añadido como
+   "⚠️ Parcial" (REST directo, sin conector MCP de Atlassian confirmado en este runtime a fecha
+   2026-07-06) en vez de darlo por hecho.
+
+**Respuesta a "¿necesitamos el MCP de Atlassian + Rovo?":** son dos cosas distintas que no
+compiten entre sí. (a) **MCP de Atlassian** — mecanismo de transporte (framework → Atlassian)
+que sustituiría el REST directo actual de `prov-atlassian-v1.0`/`prov-confluence-v1.0` si el
+tenant APB expone un servidor MCP; no se ha podido confirmar su disponibilidad concreta en este
+entorno de sesión (sin conector instalado, búsqueda en el registro MCP sin resultados) — queda
+anotado como "⚠️ Parcial" en `adapter-claude-v1.0` hasta confirmarlo. (b) **Rovo** —
+`adapter-rovo-v1.0`, capa de IA de Atlassian con dos direcciones: framework invocando búsqueda
+semántica/análisis de Rovo, y agentes del framework expuestos dentro de Jira/Confluence como
+Rovo Agents (Forge App) — un propósito totalmente distinto al de mover datos CRUD, pendiente de
+activación en APB (julio 2026). Ambos son necesarios si se activan: no son alternativas entre
+sí, cubren direcciones de integración diferentes.
+
+**Verificación:** `validate_repo.py --strict` → 0 errores (incluye 1 gap documentado
+`prov-compass-v1.0`, mención a futuro, no bloqueante) · 60/60 tests · catálogo regenerado.
+
+**Pendiente de Débora:** confirmar si existe/se activará un servidor MCP de Atlassian real en el
+tenant APB, para pasar `prov-atlassian-v1.0`/`prov-confluence-v1.0` de "⚠️ Parcial" a "✅ MCP" en
+`adapter-claude-v1.0`.

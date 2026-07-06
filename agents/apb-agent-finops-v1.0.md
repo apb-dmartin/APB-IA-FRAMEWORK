@@ -2,7 +2,7 @@
 id: "apb-agent-finops-v1.0"
 name: "FinOps Agent"
 description: "Agente especializado en optimización de costes cloud y gobierno financiero de la infraestructura. Responsable de evaluar costes de arquitecturas cloud propuestas, identificar oportunidades de ahorro, y establecer políticas de gobierno de costes."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "FinOps <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -26,6 +26,7 @@ created_date: "2026-06-20"
 review_date: "2026-06-22"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-azure-cost-v1.0"     # Azure Cost Management API — catálogo de precios/coste
 
 ---
 
@@ -78,8 +79,12 @@ Ninguno. Este agente no delega en subagentes especializados.
 - Presupuesto asignado al proyecto
 - Catálogo de precios Azure actualizado
 
-> **Gap conocido — Catálogo de precios Azure:**
-> El input "catálogo de precios Azure actualizado" requiere el provider Azure Cost Management (ID planificado: prov-azure-cost-v1.0), que está en el backlog de la Sesión Enriquecimiento C2, punto #73. Hasta que esté disponible, el equipo debe proporcionar manualmente una exportación CSV del portal Azure Cost Management (`Billing > Cost analysis > Export`) como input a este agente. La exportación debe incluir los últimos 90 días con granularidad diaria y filtro por suscripción APB.
+> **Catálogo de precios Azure:** el input "catálogo de precios Azure actualizado" lo
+> provee `prov-azure-cost-v1.0` (Azure Cost Management API — ver `depends_on`). Si el
+> provider no está accesible en el runtime concreto, el equipo puede proporcionar
+> manualmente una exportación CSV del portal Azure Cost Management (`Billing > Cost
+> analysis > Export`, últimos 90 días, granularidad diaria, filtro por suscripción APB)
+> como alternativa puntual.
 
 ## 📤 Output Generado
 
@@ -148,8 +153,12 @@ Agente especializado en optimización de costes cloud y gobierno financiero de l
 - Presupuesto asignado al proyecto
 - Catálogo de precios Azure actualizado
 
-> **Gap conocido — Catálogo de precios Azure:**
-> El input "catálogo de precios Azure actualizado" requiere el provider Azure Cost Management (ID planificado: prov-azure-cost-v1.0), que está en el backlog de la Sesión Enriquecimiento C2, punto #73. Hasta que esté disponible, el equipo debe proporcionar manualmente una exportación CSV del portal Azure Cost Management (`Billing > Cost analysis > Export`) como input a este agente. La exportación debe incluir los últimos 90 días con granularidad diaria y filtro por suscripción APB.
+> **Catálogo de precios Azure:** el input "catálogo de precios Azure actualizado" lo
+> provee `prov-azure-cost-v1.0` (Azure Cost Management API — ver `depends_on`). Si el
+> provider no está accesible en el runtime concreto, el equipo puede proporcionar
+> manualmente una exportación CSV del portal Azure Cost Management (`Billing > Cost
+> analysis > Export`, últimos 90 días, granularidad diaria, filtro por suscripción APB)
+> como alternativa puntual.
 
 ## Capacidades y Skills Disponibles
 - Evaluar costes de arquitecturas cloud propuestas
@@ -185,6 +194,7 @@ Agente especializado en optimización de costes cloud y gobierno financiero de l
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.0.1 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente↔skill/provider) | Añadida `prov-azure-cost-v1.0` a `depends_on:` y corregida la nota "Gap conocido" (el provider ya existe desde 2026-06-29 — `providers/prov-azure-cost-v1.0.md` — la nota seguía describiéndolo como pendiente de backlog) |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

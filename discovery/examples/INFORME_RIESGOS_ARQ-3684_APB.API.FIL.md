@@ -1,7 +1,7 @@
 # Informe de Análisis de Riesgos — ARQ-3684
 
 > **Ejemplo real de output** de la skill `apb-gov-org-risk-report-v1.0`
-> (agente `apb-agent-risk-exception-v1.0`), generado a partir del ticket
+> (agente `apb-agent-compliance-audit-v1.0`), generado a partir del ticket
 > Jira real [ARQ-3684](https://portdebarcelona.atlassian.net/browse/ARQ-3684)
 > como prueba de validación solicitada por Débora (2026-07-06). Sigue la
 > plantilla corporativa exacta de
@@ -17,6 +17,22 @@
 > segundo riesgo, más grave que el original, que había quedado sin
 > registrar.
 >
+> **v3 (2026-07-06):** Débora detectó que la v2, pese a citar
+> `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` en la cabecera, no aplicó
+> realmente su contenido — solo lo nombraba. Causa raíz corregida en la
+> skill (`apb-gov-org-risk-report-v1.0` v1.4.0) y en `validate_repo.py`
+> (check #27): el procedimiento se nombraba en prosa sin ruta literal ni
+> instrucción de carga, a diferencia de `PROCEDURE_RISK_EVALUATION`, que sí
+> tenía un paso "Aplica" explícito — por eso este último se aplicó a fondo
+> (tabla de riesgos, dimensiones C/I/D/T) y el primero no. Esta versión
+> corrige también la atribución de agente (el informe original se atribuyó
+> a `apb-agent-risk-exception-v1.0`, que no tiene asignada esta skill) y
+> añade las 4 secciones que el procedimiento exige y la v2 omitió: ticket
+> maestro JSM (§8.7), justificación de negocio de la excepción (§9.1),
+> flujo exacto de 3 aprobaciones (§9.3) y tabla de plazos de resolución
+> (§10). El análisis de riesgos R1/R2/R3 y el plan de mitigación de la v2
+> no cambian de fondo — se mantienen porque ya eran correctos.
+>
 > **Generado por IA:** Claude (Anthropic), 2026-07-06. Recomendación de
 > soporte, no vinculante — la decisión final y las firmas son siempre
 > humanas (POLICY_AI_USAGE §6, PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0).
@@ -30,8 +46,10 @@
 - **Infraestructura afectada (aportado por Ciberseguridad):** 5 servidores con Apache Tomcat 7.0.x
 - **Responsable del sistema:** [Completar — equipo de desarrollo asignado a APB.API.FIL]
 - **Responsable de la infraestructura Alfresco/Tomcat:** [Completar — Ciberseguridad/Sistemas ya tiene conocimiento de este hallazgo según lo aportado]
+- **Ticket técnico de origen (Jira Software):** [ARQ-3684](https://portdebarcelona.atlassian.net/browse/ARQ-3684)
+- **Ticket maestro (Jira Service Management):** ⚠️ **Pendiente de confirmar** — ver §"Aplicación del procedimiento de incumplimientos", punto 1. No asumido ni inventado.
 - **Fecha:** 2026-07-06 (detección original del incumplimiento SOAP: 2026-02-13T10:56:00+0000; End of Life de Tomcat 7.0.x: 31/3/2021)
-- **Analista:** Claude (Anthropic) — soporte de IA, Risk & Exception Agent (`apb-agent-risk-exception-v1.0`)
+- **Analista:** Claude (Anthropic) — soporte de IA, agente `apb-agent-compliance-audit-v1.0` (orquesta la skill `apb-gov-org-risk-report-v1.0`)
 - **Origen del incumplimiento (R1):** detección automática, SonarQube Quality Gate, entorno TST
 - **Origen del riesgo de infraestructura (R2):** comunicado por Ciberseguridad (no detectado por el escaneo Nessus mensual documentado en este análisis — a confirmar si ya está en el Registro de Vulnerabilidades en SharePoint)
 - **Ticket origen R1:** [ARQ-3684](https://portdebarcelona.atlassian.net/browse/ARQ-3684)
@@ -53,6 +71,53 @@ Débora ha confirmado el contexto que la v1 de este informe dejaba como dato pen
 Pero Ciberseguridad ha aportado un dato que **cambia la naturaleza del análisis**: la infraestructura que sirve esa integración Alfresco corre sobre **Apache Tomcat 7.0.x en 5 servidores**, cuyo End of Life del fabricante fue el **31/3/2021** — es decir, **más de 5 años sin parches de seguridad ni soporte del fabricante**. Esto no es deuda arquitectónica (como el uso de SOAP); es una **vulnerabilidad de infraestructura sin solución de fabricante disponible**, que `POLICY_VULNERABILITY_MANAGEMENT_v1.1 §4.3` trata como un caso cualitativamente distinto: no se puede "aplicar un parche", solo contener el riesgo y decidir formalmente qué hacer con él (migrar, aislar o aceptar el riesgo a nivel de dirección).
 
 **El riesgo real no es aprobar o denegar una excepción de arquitectura aislada — es que aprobar sin condiciones un nuevo acoplamiento de código (APB.API.FIL) a una plataforma ya crítica por obsolescencia de 5 años prolonga y profundiza la dependencia de ese riesgo no resuelto**, en un momento en que el sistema está en desarrollo activo (build 8, TST) y por tanto es el punto de menor coste para intervenir — antes de que llegue a PRE/PRO.
+
+Adicionalmente, este informe **no puede darse por completo hasta resolver dos huecos de procedimiento** (ver siguiente sección): confirmar el ticket maestro JSM y obtener la justificación de negocio de la excepción. Sin ambos, `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` impide considerar el incumplimiento formalmente registrado/evaluable.
+
+---
+
+## Aplicación del procedimiento de gestión de incumplimientos (`PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0`)
+
+> Sección añadida en v3. `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0`
+> (`context/apb/policies/compliance/PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0.md`)
+> exige estos 4 puntos explícitamente — ninguno estaba en la v2.
+
+### 1. Ticket maestro (§8.7)
+
+`ARQ-3684` es, por su formato y proyecto (`ARQ` — Arquitectura .NET), un **ticket técnico de Jira Software**. El procedimiento es explícito: *"el ticket técnico no sustituye el registro del incumplimiento"* y *"en ningún caso se considerará resuelto un incumplimiento únicamente por el cierre de un ticket técnico en herramientas de desarrollo"* (§8.7).
+
+⚠️ **Pendiente de confirmar — pregunta bloqueante, no se asume:** ¿existe un ticket en Jira Service Management (JSM), tipo "Incumplimiento" o "Solicitud de Excepción", vinculado a `ARQ-3684`? Este informe no tiene acceso a JSM para verificarlo directamente.
+
+- Si **existe**: ese ticket JSM es el registro oficial; este informe debe adjuntarse a él y el seguimiento del incumplimiento debe hacerse ahí, no en `ARQ-3684`.
+- Si **no existe**: debe crearse antes de que este incumplimiento pueda considerarse formalmente registrado, conforme a §7 y §8.7.
+
+### 2. Justificación de negocio de la excepción (§9.1, §9.5)
+
+El procedimiento es explícito: *"no se evaluará ninguna solicitud de excepción que no esté debidamente documentada"* (§9.1), y la evaluación de negocio debe responder *"¿qué impacto tendría para el negocio no conceder la excepción?"* (§9.5).
+
+⚠️ **Pendiente de confirmar — pregunta bloqueante, no se asume:** ¿cuál es el impacto operativo de **no** conceder la excepción a R1 (p. ej.: bloqueo del desarrollo de APB.API.FIL, coste/plazo de reescribir la integración sin SOAP, dependencia de una fecha de entrega comprometida)? Este dato no consta en el ticket `ARQ-3684` ni ha sido aportado en esta sesión — debe solicitarse al Responsable del Servicio antes de que la solicitud de excepción (Track B, condiciones más abajo) pueda evaluarse formalmente.
+
+### 3. Flujo de aprobación — 3 niveles exactos (§9.3)
+
+El procedimiento exige 3 aprobaciones obligatorias, no una tabla de firmas genérica. Aplicado a este caso (`POL-ARC-001`, matriz de responsables §3.1: "Arquitectura tecnológica → responsable técnico principal Sistemas, validador adicional Ciberseguridad/Arquitectura"):
+
+| Tipo de aprobación | Rol en este caso | Función |
+|---|---|---|
+| Aprobación de negocio | Jefe de Departamento solicitante (responsable de APB.API.FIL) | Valida la necesidad operativa (una vez completado el punto 2) y asume el compromiso de corrección |
+| Evaluación técnica 1 | Responsable de la política `POL-ARC-001` (Sistemas/Arquitectura) | Evalúa el impacto técnico y la viabilidad de aislar la llamada SOAP (Track B) |
+| Evaluación técnica 2 | Ciberseguridad o Arquitectura, aprobado por CISO o CTO — *`POL-ARC-001` tiene un único responsable técnico principal, por lo que §9.3 exige que la segunda validación la haga Ciberseguridad/Arquitectura con aprobación de CISO/CTO* | Evalúa el riesgo tecnológico global y la coherencia con el marco de políticas IT |
+| **Evaluación adicional obligatoria (CISO)** | Ciberseguridad (CISO) | **Obligatoria por R2** (impacto en seguridad de la información, §9.3 tercer párrafo) — no es opcional dado el hallazgo de Tomcat 7.0.x EOL |
+
+Ninguna de las 4 puede omitirse ni aprobarse unilateralmente por el equipo solicitante (§9.3, último párrafo).
+
+### 4. Plazos de resolución y de excepción (§10)
+
+| Riesgo | Criticidad (`PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0 §10`) | Plazo de corrección recomendado | Duración máxima de excepción |
+|---|---|---|---|
+| R1 — SOAP no homologado | Alto (Media-Alta, ver tabla de riesgos) | ≤ 30 días naturales | Hasta 90 días, con plan de remediación (Track B) |
+| R2 — Tomcat 7.0.x EOL | Crítico | Corrección/contención inmediata, ≤ 7 días naturales | Excepcionalmente hasta 30 días, solo con medidas compensatorias activas (Track A) |
+
+Estos plazos son el criterio corporativo general (§10); no sustituyen, sino que complementan, los plazos ya fijados en el Plan de mitigación más abajo desde `POLICY_VULNERABILITY_MANAGEMENT_v1.1` para R2 (más estricta y más específica para infraestructura EOL — prevalece la más restrictiva).
 
 ---
 
@@ -130,26 +195,29 @@ R2 tiene un nivel de riesgo muy superior a R1 y es, en la práctica, el que debe
 
 ## Observaciones de auditoría
 
-1. **Riesgo transversal de acumulación (§6.2 `PROCEDURE_RISK_EVALUATION.md`):** aprobar R1 sin resolver o al menos contener R2 no es una excepción aislada — es ampliar la superficie de un riesgo ya Crítico. El procedimiento es explícito: "una excepción aislada puede ser tolerable; varias excepciones sobre el mismo servicio cambian el perfil de riesgo del sistema completo". Aquí no son dos excepciones sobre el mismo ticket, pero sí dos riesgos acoplados sobre la misma cadena de dependencia (APB.API.FIL → Alfresco → Tomcat 7.0.x EOL).
+1. **Riesgo transversal de acumulación (§6.2 `PROCEDURE_RISK_EVALUATION.md`; principio de no acumulación de excepciones, §9.9 `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0`):** aprobar R1 sin resolver o al menos contener R2 no es una excepción aislada — es ampliar la superficie de un riesgo ya Crítico. Aquí no son dos excepciones sobre el mismo ticket, pero sí dos riesgos acoplados sobre la misma cadena de dependencia (APB.API.FIL → Alfresco → Tomcat 7.0.x EOL).
 2. **Punto positivo de gobernanza:** el control `ARC-VALIDATION-SOAP` ha funcionado según diseño — detección en TST, antes de PRE/PRO. Esto da margen real para actuar sin coste de rollback en producción.
 3. **Verificar duplicidad:** si Ciberseguridad ya tiene un hallazgo abierto sobre estos 5 servidores (mencionado como comunicación informal — "Según nos comentó Ciberseguridad"), debe confirmarse si ya existe entrada en el Registro de Vulnerabilidades antes de crear una nueva (A1), para no duplicar el seguimiento.
 4. Esta evaluación no sustituye un escaneo Nessus ni un análisis CVSS formal de R2 — la clasificación de Crítico aquí es una valoración cualitativa de soporte, consistente con los criterios documentados de `POLICY_VULNERABILITY_MANAGEMENT_v1.1`, pero la clasificación CVSS formal la determina la OTS.
+5. **(Añadido v3)** Este informe tiene dos huecos de procedimiento sin resolver (ticket maestro JSM, justificación de negocio) — ver §"Aplicación del procedimiento de gestión de incumplimientos". La decisión final no debería tomarse sin cerrarlos, conforme a §9.1 del procedimiento.
 
 ---
 
 ## Decisión
 
-**Resultado:** ⚠️ **NO AUTORIZAR la excepción de R1 sin condiciones — condicionar la aprobación al arranque verificable de Track A (R2).**
+**Resultado:** ⚠️ **NO AUTORIZAR la excepción de R1 sin condiciones — condicionar la aprobación al arranque verificable de Track A (R2) y, con carácter previo, a resolver los dos huecos de procedimiento del punto anterior (ticket JSM, justificación de negocio).**
 
-**Justificación:** El riesgo que gobierna esta decisión no es el incumplimiento de arquitectura en sí (R1, Media-Alta, con remediación disponible y precedente legacy documentado), sino la infraestructura Crítica de la que depende (R2). Aprobar R1 sin exigir contención de R2 significaría autorizar que código nuevo, en desarrollo activo, profundice una dependencia sobre una plataforma sin soporte del fabricante desde hace más de 5 años — exactamente el tipo de riesgo que el procedimiento corporativo clasifica como "no aceptable; requiere remediación inmediata o decisión de dirección" (`PROCEDURE_RISK_EVALUATION.md §3`).
+**Justificación:** El riesgo que gobierna esta decisión no es el incumplimiento de arquitectura en sí (R1, Media-Alta, con remediación disponible y precedente legacy documentado), sino la infraestructura Crítica de la que depende (R2). Aprobar R1 sin exigir contención de R2 significaría autorizar que código nuevo, en desarrollo activo, profundice una dependencia sobre una plataforma sin soporte del fabricante desde hace más de 5 años — exactamente el tipo de riesgo que el procedimiento corporativo clasifica como "no aceptable; requiere remediación inmediata o decisión de dirección" (`PROCEDURE_RISK_EVALUATION.md §3`). Adicionalmente, `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0 §9.1` impide evaluar formalmente una solicitud de excepción sin justificación de negocio documentada.
 
 **Condiciones para autorizar R1 (APROBAR CON CONDICIONES, no aprobación libre):**
+- Confirmar el ticket maestro JSM (§"Aplicación del procedimiento", punto 1) y aportar la justificación de negocio (punto 2) — bloqueante antes de cualquier firma.
 - Track A (A1-A2, ver Plan de mitigación) confirmado en marcha — registro y contención de R2 — antes de continuar el desarrollo de la integración.
 - Track B (B1) — aislamiento de la llamada SOAP tras adaptador — implementado antes de promoción a PRE.
 - No promoción a PRE/PRO (B2) hasta ambas condiciones verificadas.
 - Fecha de retirada de la dependencia SOAP vinculada a la decisión del Comité de Seguridad y Riesgos sobre R2 (B3), no fijada de forma independiente.
+- Firmas conforme al flujo de 3+1 aprobaciones del punto 3 (§9.3), incluida la evaluación del CISO por impacto en seguridad de R2.
 
-**Si estas condiciones no se cumplen:** la recomendación es **DENEGAR** — no por el mérito aislado de R1, sino porque no es razonable evaluar una excepción de arquitectura ignorando que profundiza un riesgo de infraestructura ya clasificado como Crítico.
+**Si estas condiciones no se cumplen:** la recomendación es **DENEGAR** — no por el mérito aislado de R1, sino porque no es razonable evaluar una excepción de arquitectura ignorando que profundiza un riesgo de infraestructura ya clasificado como Crítico, y porque el procedimiento corporativo no permite evaluar una excepción sin justificación de negocio ni ticket maestro confirmado.
 
 ---
 
@@ -157,9 +225,10 @@ R2 tiene un nivel de riesgo muy superior a R1 y es, en la práctica, el que debe
 
 | Rol | Nombre | Firma | Fecha |
 |---|---|---|---|
-| Responsable del Servicio | [Completar] | | |
-| Responsable de Seguridad | [Completar] | | |
-| Responsable de Arquitectura | [Completar] | | |
+| Aprobación de negocio — Jefe de Departamento solicitante | [Completar] | | |
+| Evaluación técnica 1 — Responsable de `POL-ARC-001` (Sistemas/Arquitectura) | [Completar] | | |
+| Evaluación técnica 2 — Ciberseguridad/Arquitectura, aprobado por CISO o CTO | [Completar] | | |
+| Evaluación adicional obligatoria — CISO (por impacto en seguridad de R2) | [Completar] | | |
 
 ---
 

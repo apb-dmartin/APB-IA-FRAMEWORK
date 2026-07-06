@@ -2,7 +2,7 @@
 id: "adapter-claude-v1.0"
 name: "Claude (Anthropic) Adapter"
 description: "Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de Claude (Anthropic). Soporta Claude Code, Claude Desktop, y API de Anthropic."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -47,6 +47,8 @@ Claude 3.5/4 Sonnet/Opus via Anthropic API, Claude Code CLI, Claude Desktop App.
 | Agent | `apb-agent-implementer-v1.0` | ✅ Adaptado | Multi-turn con tool use |
 | Workflow | `apb-wf-sdd-full-v1.0` | ✅ Adaptado | Multi-agent orchestration |
 | Provider | `prov-azure-v1.0` | ✅ MCP | Azure MCP nativo |
+| Provider | `prov-atlassian-v1.0` | ⚠️ Parcial | Sin conector MCP de Atlassian confirmado en este runtime a fecha 2026-07-06 — usar REST directo (api_token vía AKV) hasta confirmar disponibilidad de un servidor MCP de Atlassian en el tenant APB. Actualizar esta fila en cuanto se confirme |
+| Provider | `prov-confluence-v1.0` | ⚠️ Parcial | Mismo estado que `prov-atlassian-v1.0` — REST v2/OAuth2 directo hasta confirmar MCP |
 
 ## 🔌 Interface de Adaptación
 
@@ -70,6 +72,12 @@ Los agentes se invocan mediante:
 - Azure MCP para acceso a recursos Azure
 - GitHub MCP para operaciones de repo
 - SonarQube MCP para análisis de calidad
+- Atlassian (Jira/Confluence): sin servidor MCP confirmado en el tenant APB a fecha
+  2026-07-06 — `prov-atlassian-v1.0`/`prov-confluence-v1.0` operan hoy vía REST directo
+  (api_token/OAuth2 en AKV). Si en el futuro se confirma un servidor MCP de Atlassian
+  disponible para el tenant, migrar aquí siguiendo el mismo patrón que Azure/GitHub/Sonar
+  — no confundir con `adapter-rovo-v1.0` (capa de IA de Rovo, mecanismo distinto,
+  pendiente de activación julio 2026)
 
 ## ⚙️ Configuración
 
@@ -201,6 +209,7 @@ config:
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
 | 1.1.0 | 2026-07-03 | Arquitectura APB | Aclarado que `CLAUDE.md` deriva de `AGENTS.md` (routing file raíz agnóstico, `SYSTEM.md §10.1`); check #22 de `validate_repo.py` verifica que no diverjan. |
+| 1.2.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Corregido un hueco: `prov-atlassian-v1.0`/`prov-confluence-v1.0` no aparecían en este adapter pese a que Azure/GitHub/Sonar sí tenían su mapeo MCP explícito. Añadidos como "⚠️ Parcial" (REST directo, sin conector MCP de Atlassian confirmado en este runtime) — no confundir con `adapter-rovo-v1.0`, un mecanismo distinto y aún no activo en APB. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

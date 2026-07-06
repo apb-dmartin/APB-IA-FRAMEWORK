@@ -209,7 +209,7 @@ de aceptación.}
 ## 14bis. Acta de aprobación del informe de resultados (§6.2)
 > **Rellenar en el informe de ejecución** (no en el plan base). Autoriza los **resultados** de una corrida.
 > El agente **no** se autoaprueba: cada fila la firma una persona nombrada. La decisión se persiste aquí
-> **y** se refleja en el ticket Jira vinculado (`prov-jira-software-v1.0`).
+> **y** se refleja en el ticket Jira vinculado (`prov-atlassian-v1.0`).
 
 - **Estado del informe:** {`pendiente-aprobación` | `aprobado` | `rechazado` | `aprobado-con-reservas`}
 

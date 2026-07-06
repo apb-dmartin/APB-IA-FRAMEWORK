@@ -2,7 +2,7 @@
 id: "apb-agent-compliance-audit-v1.0"
 name: "Compliance Audit Agent"
 description: "Agente que orquesta la auditoría completa de cumplimiento de políticas IT corporativas APB sobre un sistema, proyecto o artefacto. Coordina la detección de incumplimientos en todas las áreas de política y marcos normativos (ENS, ISO 27001, NIST CSF, OWASP, RGPD, LCSP, WCAG), genera el informe de análisis de riesgos multidimensional con recomendación explícita (APROBAR CON CONDICIONES / DENEGAR / ESCALAR) y plan de mitigación concreto, y entrega el informe a los validadores correctos para su decisión y firma. La decisión final es siempre humana."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
@@ -21,6 +21,7 @@ skills:
   - "apb-plat-deliver-artifact-v1.0"
   - "apb-gov-lcsp-check-v1.0"
   - "apb-gov-dpia-v1.0"
+  - "apb-plat-doc-to-markdown-v1.0"
 subagents: []
 runtime:
   - "claude"
@@ -33,6 +34,8 @@ created_date: "2026-06-24"
 review_date: "2026-06-24"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-atlassian-v1.0"      # Confluence (opción 2 de entrega, Fase 3.3)
+  - "prov-ms365-v1.0"          # Correo (opción 4 de entrega, Fase 3.3)
 
 ---
 
@@ -394,6 +397,7 @@ REGLAS DEL AGENTE
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-24 | Arquitectura APB | Creación — Sesión 16 |
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Flujo de entrega: Markdown en chat → aprobación usuario → Word → opciones de entrega (Jira / Confluence / SharePoint / mail / descarga). Notificación a validadores siempre posterior a aprobación del usuario. |
+| 1.2.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente↔skill/provider) | Añadidas `apb-plat-doc-to-markdown-v1.0` a `skills:` y `prov-atlassian-v1.0`/`prov-ms365-v1.0` a `depends_on:` — el Prompt de Sistema (Fase 3.3) ya usaba las tres para conversión a Word, Confluence y correo, pero no estaban declaradas |
 
 ---
 

@@ -265,7 +265,7 @@ Cada caso debe tener:
     (§7.1); invoca `apb-plat-deliver-artifact-v1.0` para resolver formato adicional y destino final.
 12. **Informe de ejecución:** al reportar resultados, incluye el **Acta de aprobación** (§6.2) con las filas
     Analista Funcional + Desarrollador **vacías** (las firma una persona; el agente **no** se autoaprueba).
-    Persiste la decisión en el `.md` y refléjala en Jira (`prov-jira-software-v1.0`). Si hay pruebas en fallo
+    Persiste la decisión en el `.md` y refléjala en Jira (`prov-atlassian-v1.0`). Si hay pruebas en fallo
     o el informe se aprueba «con reservas», dispara el bucle **fallo → PR → Jira** vía
     `apb-sub-qa-fix-loop-v1.0` (§6.3): **propone** el PR, nunca lo mergea.
 

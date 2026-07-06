@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 362
+- **Total Components**: 363
 
 ## Component Breakdown
 
-### Skills APB-Owned (182 total)
+### Skills APB-Owned (183 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -153,6 +153,7 @@
 | `apb-plat-sharepoint-io-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-sharepoint-io-v1.0.md` |
 | `apb-plat-terraform-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-terraform-v1.0.md` |
 | `apb-pm-implementation-planning-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-implementation-planning-v1.0.md` |
+| `apb-pm-jira-estimation-review-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-jira-estimation-review-v1.0.md` |
 | `apb-pm-parallel-execution-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-parallel-execution-v1.0.md` |
 | `apb-pm-product-analysis-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-product-analysis-v1.0.md` |
 | `apb-pm-refactoring-patterns-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-refactoring-patterns-v1.0.md` |
@@ -276,7 +277,7 @@
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents/apb-agent-finops-v1.0.md` |
-| `apb-agent-functional-technical-support-v1.0` | Functional Technical Support | draft | `agents/apb-agent-functional-technical-support-v1.0.md` |
+| `apb-agent-functional-technical-support-v1.0` | Functional Technical Support Agent | draft | `agents/apb-agent-functional-technical-support-v1.0.md` |
 | `apb-agent-governance-v1.0` | Governance Agent | draft | `agents/apb-agent-governance-v1.0.md` |
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
 | `apb-agent-incident-support-v1.0` | Incident Support | draft | `agents/apb-agent-incident-support-v1.0.md` |
@@ -370,7 +371,7 @@
 | `prov-apb-knowledge-v1.0` | Provider: Knowledge APB | approved | `providers/prov-apb-knowledge-v1.0.md` |
 | `prov-arqapibase-v1.0` | Provider: APB.ARQ.APIBASE | draft | `providers/prov-arqapibase-v1.0.md` |
 | `prov-arqbase-v1.0` | Provider: APB.ARQ.BASE | draft | `providers/prov-arqbase-v1.0.md` |
-| `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
+| `prov-atlassian-v1.0` | Provider: Atlassian Jira (Software + Service Management) + Compass | draft | `providers/prov-atlassian-v1.0.md` |
 | `prov-azure-cost-v1.0` | Provider: Azure Cost Management API | draft | `providers/prov-azure-cost-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-qa-runtime-v1.0` | Provider: Azure QA Runtime | draft | `providers/prov-azure-qa-runtime-v1.0.md` |
@@ -381,7 +382,7 @@
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
 | `prov-entra-id-v1.0` | Provider: Microsoft Entra ID (Azure Active Directory) | draft | `providers/prov-entra-id-v1.0.md` |
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers/prov-github-v1.0.md` |
-| `prov-jira-software-v1.0` | Provider: Jira Software REST API | draft | `providers/prov-jira-software-v1.0.md` |
+| `prov-jira-software-v1.0` | Provider: Jira Software REST API | deprecated | `providers/prov-jira-software-v1.0.md` |
 | `prov-k6-v1.0` | Provider: k6 MCP | draft | `providers/prov-k6-v1.0.md` |
 | `prov-ms-learn-v1.0` | Provider: Microsoft Learn MCP | draft | `providers/prov-ms-learn-v1.0.md` |
 | `prov-ms365-v1.0` | Provider: Microsoft 365 (Graph API) | draft | `providers/prov-ms365-v1.0.md` |

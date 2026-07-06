@@ -1111,6 +1111,128 @@ def validate_plan_deliverables_exist(repo_path: Path, result: ValidationResult, 
     result.add(ValidationIssue("INFO", rel, "Reconciliación plan↔repo (entregables CERRADA) verificada"))
 
 
+def validate_procedure_load_instructions(repo_path: Path, result: ValidationResult):
+    """27. Procedimientos nombrados sin instrucción de carga (hallazgo Débora,
+    2026-07-06, sobre discovery/examples/INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md).
+
+    La skill apb-gov-org-risk-report-v1.0 nombraba PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0
+    en prosa (sin ruta literal al fichero) mientras que PROCEDURE_RISK_EVALUATION sí tenía
+    ruta y un paso "Aplica" explícito en el mismo prompt — y el informe generado aplicó a
+    fondo el segundo procedimiento e ignoró casi por completo el primero. Nombrar un
+    PROCEDURE_* por su nombre sin la ruta literal al fichero en el mismo componente es
+    indistinguible, para el modelo, de una referencia decorativa. Este check exige que
+    cualquier skill/agente/workflow que mencione un PROCEDURE_* por nombre incluya también,
+    en el mismo fichero, la ruta relativa literal del documento (para forzar su apertura
+    real en vez de operar solo a partir del nombre)."""
+    policies_folder = repo_path / "context" / "apb" / "policies"
+    if not policies_folder.exists():
+        return
+
+    procedure_paths: Dict[str, Path] = {
+        fp.stem: fp for fp in policies_folder.rglob("PROCEDURE_*.md")
+    }
+    if not procedure_paths:
+        return
+
+    scan_folders = [repo_path / "skills", repo_path / "agents", repo_path / "workflows"]
+    checked_any = False
+    for folder in scan_folders:
+        if not folder.exists():
+            continue
+        for fp in iter_component_files(folder):
+            body = fp.read_text(encoding="utf-8")
+            rel = str(fp.relative_to(repo_path))
+            for name, proc_path in procedure_paths.items():
+                if name not in body:
+                    continue
+                checked_any = True
+                proc_rel = str(proc_path.relative_to(repo_path)).replace("\\", "/")
+                if proc_rel in body:
+                    continue  # ruta literal presente: carga explícita asumida
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"Nombra el procedimiento '{name}' pero no incluye su ruta literal "
+                    f"('{proc_rel}') en el mismo fichero. Sin la ruta explícita, el modelo "
+                    "puede operar solo a partir del nombre sin abrir nunca el documento "
+                    "(check #27, hallazgo Débora 2026-07-06 sobre ARQ-3684)."
+                ))
+
+    if checked_any:
+        result.add(ValidationIssue(
+            "INFO", "scripts/validate_repo.py",
+            "Instrucciones de carga de procedimientos (PROCEDURE_*) verificadas (check #27)"
+        ))
+
+
+def validate_agent_skill_provider_wiring(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+    """28. Skills/providers usados por un agente o subagente pero no
+    declarados (hallazgo Débora, 2026-07-06, auditoría posterior al bug de
+    ARQ-3684/check #27; formalizado en SCHEMA.md §3.3 el mismo día a
+    petición de Débora — 'skills'/'depends_on' pasan de convención informal
+    a campo condicional del schema para subagentes).
+
+    Generaliza el check #27: no solo procedimientos, sino cualquier skill o
+    provider real que el Prompt de Sistema de un agente/subagente use
+    operativamente sin declararlo en 'skills:'/'depends_on:'. Confirmado con
+    una auditoría manual: encontró 6 gaps reales repartidos en 4 agentes y 2
+    subagentes (apb-qa-anonymize-v1.0, apb-plat-doc-to-markdown-v1.0,
+    prov-atlassian-v1.0, prov-ms365-v1.0, prov-azure-cost-v1.0,
+    prov-azure-monitor-v1.0, apb-ops-slo-design-v1.0/apb-ops-observability-v1.0).
+
+    Deliberadamente EXCLUIDO: menciones a otros agentes o subagentes (tipo
+    'agent'/'subagent'). Son, con alta frecuencia, referencias cruzadas
+    legítimas (traspaso de alcance "deriva a X", comparación "a diferencia de
+    X", reutilización sin re-parentar "no se duplica el subagente X") y no
+    defectos de cableado — incluirlas dispararía falsos positivos sistemáticos,
+    confirmado empíricamente durante el diseño de este check."""
+    id_token_re = re.compile(
+        r"\b(apb-[a-z0-9]+(?:-[a-z0-9]+)*-v\d+\.\d+|"
+        r"third-[a-z0-9]+(?:-[a-z0-9]+)*-v\d+\.\d+|"
+        r"prov-[a-z0-9]+(?:-[a-z0-9]+)*-v\d+\.\d+)\b"
+    )
+    prompt_heading_re = re.compile(r"^##\s*.*Prompt de Sistema\s*$", re.MULTILINE)
+    flaggable_types = {"skill", "provider"}
+
+    scan_folders = [repo_path / "agents", repo_path / "subagents"]
+
+    for folder in scan_folders:
+        if not folder.exists():
+            continue
+        for fp in iter_component_files(folder):
+            text = fp.read_text(encoding="utf-8")
+            rel = str(fp.relative_to(repo_path))
+            meta, found = parse_frontmatter(text)
+            if not found:
+                continue
+            declared = (
+                set(meta.get("skills") or [])
+                | set(meta.get("subagents") or [])
+                | set(meta.get("depends_on") or [])
+                | {meta.get("id"), meta.get("parent_agent")}
+            )
+
+            heading_match = prompt_heading_re.search(text)
+            if not heading_match:
+                continue
+            fence_match = re.search(r"```(.*?)```", text[heading_match.end():], re.DOTALL)
+            if not fence_match:
+                continue
+            prompt_text = fence_match.group(1)
+
+            mentioned = set(id_token_re.findall(prompt_text))
+            for mid in sorted(mentioned):
+                if mid in declared:
+                    continue
+                if all_ids.get(mid) not in flaggable_types:
+                    continue  # no existe, o es agent/subagent/workflow/... (referencia cruzada legítima)
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"El Prompt de Sistema usa '{mid}' ({all_ids[mid]}) pero no está en "
+                    "'skills:'/'depends_on:' del frontmatter. Declararlo explícitamente "
+                    "(check #28, generalización del hallazgo de ARQ-3684/check #27)."
+                ))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -1190,6 +1312,8 @@ def main():
     validate_execution_and_approval_methodology(repo_path, result)
     validate_execution_report_evidence_methodology(repo_path, result)
     validate_plan_deliverables_exist(repo_path, result, all_ids)
+    validate_procedure_load_instructions(repo_path, result)
+    validate_agent_skill_provider_wiring(repo_path, result, all_ids)
     validate_catalog(repo_path, result, all_ids)
 
     print()
