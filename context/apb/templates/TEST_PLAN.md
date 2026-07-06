@@ -20,8 +20,11 @@
 | A | {archivo/ticket} | {rovo/github-copilot/usuario} | {jira/documentacion/codigo/usuario} | {N} |
 | … | | | | |
 
-**Leyenda «Procedencia»:** `R`=Rovo · `C`=GitHub Copilot · `U`=Usuario · orígenes `J`=Jira(+ticket) ·
-`AF`=Documentación/Análisis Funcional · `Cod`=Código. Toda prueba lleva ≥1 herramienta y ≥1 origen.
+**Procedencia (texto legible, sin siglas — `TEST_PLAN_STANDARD` §2):** cada caso cita en la columna
+«Procedencia» una frase que un lector no técnico entiende sin leyenda: p. ej. `Jira aportado por Débora
+(ticket AOM-2530)`, `Jira a través de Rovo (ticket TRANSTE-1513)`, `Documentación funcional aportada por
+Débora`, `Código fuente verificado (repo APB.API.TES, PortCallController.cs:38)`. Combinar con ` · ` si hay
+más de un respaldo. Toda prueba lleva ≥1 herramienta y ≥1 origen; nunca se inventa procedencia inexistente.
 **«Desde»:** fecha en que se definió la prueba. **«OK func.»:** funcional que la aprobó (vacío hasta validar).
 
 **Identificador canónico (§3.2):** `{APP}-B{NN}-T{NN}` — bloque append-only + secuencia append-only
@@ -136,7 +139,7 @@ de aceptación.}
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado | Evidencia |
 |----|--------|------|------|------|---------------|--------------------|-------------|-------|----------|--------|-----------|
-| {APP}-B{NN}-T{NN} | {ID plano si migró, si no —} | {caso} | {Funcional/UI/Integración/Seguridad/…} | {Crítica/Alta/Media} | {rol mínimo, p. ej. USER_READ_*} | {resultado} | {R[J:TICKET·AF]·C[Cod] / S[spec:CRIT-id]} | {AAAA-MM-DD} | {rol o —} | Pendiente | {enlace} |
+| {APP}-B{NN}-T{NN} | {ID plano si migró, si no —} | {caso} | {Funcional/UI/Integración/Seguridad/…} | {Crítica/Alta/Media} | {rol mínimo, p. ej. USER_READ_*} | {resultado} | {p. ej. "Jira aportado por Débora (ticket TICKET) · Código fuente verificado (repo X, fichero:línea)" / "Spec SDD (criterio CRIT-id)"} | {AAAA-MM-DD} | {rol o —} | Pendiente | {enlace} |
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.4.0"
+version: "1.5.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -51,7 +51,8 @@ Jira o el Análisis Funcional **pueden faltar o estar obsoletos**. En ese caso:
 - El plan **no se bloquea**: se apoya en las fuentes disponibles (típicamente el código vía Copilot) y
   **marca cada prueba con su procedencia y confianza real**.
 - **Nunca se inventa** respaldo funcional inexistente: si una prueba solo tiene respaldo de código, su
-  procedencia dice `Cod` (código) y **no** `J`/`AF`.
+  procedencia dice, en texto legible, "Código fuente verificado (...)" y **no** cita Jira ni Análisis
+  Funcional que no existan.
 - Si el AF está obsoleto respecto al código, se registra la **discrepancia** como observación de la prueba
   y se marca para revisión funcional humana.
 
@@ -66,9 +67,23 @@ Toda prueba lleva **≥1 origen** y **≥1 herramienta**. La procedencia es una 
 | **Herramienta** (quién la propuso) | `rovo` · `github-copilot` · `usuario` · (otras: nombre libre) |
 | **Origen** (de dónde sale) | `spec` (SDD, con id de la spec/criterio) · `jira` (con ticket) · `documentacion` (AF) · `codigo` · `usuario` (con formato de origen) |
 
-**Notación recomendada en la columna «Procedencia»** de la matriz de casos:
-`R[J:TICKET·AF] · C[Cod]` donde `R`=Rovo, `C`=Copilot, `U`=Usuario; orígenes `J`/`AF`/`Cod`.
-Ejemplo: `R[J:TRANSTE-1513·AF] · C[Cod]` = propuesta por Rovo desde el ticket y el AF, validada contra código por Copilot.
+**Notación de la columna «Procedencia»: texto legible, sin siglas.** Un lector no técnico (QA Lead,
+Analista Funcional, Débora) debe poder leer la columna sin necesitar la leyenda. Formato: frase corta que
+nombra la herramienta real, el origen y la referencia concreta (ticket, fichero, línea). Ejemplos:
+
+- `Jira a través de Rovo (ticket TRANSTE-1513)` — el conector Rovo consultó el ticket en vivo.
+- `Jira aportado por Débora (ticket AOM-2530)` — el ticket se cita dentro de un documento/export de Jira
+  que el usuario aportó directamente (sin conector Rovo activo en la sesión).
+- `Documentación funcional aportada por Débora` — sin ticket concreto, solo el documento narrativo.
+- `Código fuente verificado (repo APB.API.TES, PortCallController.cs:38)` — inspección directa del código
+  clonado, citando repo + fichero + línea.
+- `Usuario (plan de pruebas aportado directamente)` — cuando la prueba viene de un plan ya redactado por
+  el usuario, no de tickets ni de código.
+
+**Prohibido inventar procedencia** (p. ej. escribir "código" cuando no se ha accedido a ningún repositorio) —
+sigue aplicando la regla de degradación de §1.1. Combinar procedencias con ` · ` cuando una prueba tiene
+más de un respaldo, p. ej.: `Jira aportado por Débora (ticket TRANSTE-1513) · Código fuente verificado (repo
+APB.TRU, TruckController.cs:112)`.
 
 Además, cada caso registra:
 - **«Desde»** — fecha en que la prueba quedó definida en el plan (permite ver qué se añadió en cada revisión).
@@ -434,3 +449,4 @@ Un plan de pruebas es conforme cuando:
 | 1.2.0 | 2026-07-03 | **§3.2 Identificador canónico y crecimiento** (`{APP}-B{NN}-T{NN}` append-only, migración con columna «Legado» — resuelve la ruptura de correlación plan↔informe al añadir pruebas a un bloque existente). **§6.1 Gobernanza por aplicación** (owner nombrado, cadencia por release, ciclo de vida `GOVERNANCE.md`). **§7.1 Entrega dual Markdown + HTML** obligatoria (cabecera azul + logo APB, nav lateral, acordeón nativo por bloque, sin DevExpress/CDN). 3 ítems añadidos al checklist §10. Origen: feedback de Débora. |
 | 1.3.0 | 2026-07-03 | **Fase I** (7 huecos detectados por Débora). **§1** añade `spec` (SDD) como fuente funcional autoritativa de primer nivel; **§2** añade origen canónico `spec`. **§6.2 Aprobación del informe de resultados** (acta Funcional + Desarrollador, persistida en `.md` **y** Jira, sign-off no criptográfico, dos ojos). **§6.3 Bucle de corrección** fallo → PR → Jira (`apb-sub-qa-fix-loop-v1.0`, propone PR sin mergear). **§9.1 Destino de ejecución** (`local`/`ci-runner`/`azure-qa`; k6 nunca desde portátil). **§9.2 Roles de usuario y usuario de ejecución** (matriz de roles, columna «Rol requerido», usuario por AKV o runtime, nunca en fichero). **§9.3 Instalación local asistida** (`docs/qa/EJECUCION_LOCAL.md`). **§9.4 Entorno QA en Azure** (`prov-azure-qa-runtime-v1.0`, draft). Secciones obligatorias §5.13/§5.14 y 4 ítems al checklist §10. Origen: feedback de Débora. |
 | 1.4.0 | 2026-07-03 | **§5.15 Casos NO ejecutados/bloqueados** — obligatorio en el informe de ejecución listar por ID canónico (no solo recuento agregado) los casos no ejecutados y su motivo. **§7.1** refuerza que la entrega dual Markdown+HTML nunca se omite en el informe. **§7.2 Evidencia visual: vídeo real, no GIF** — el GIF de herramientas de captura del navegador tiene tope de fotogramas y puede truncar sesiones largas sin avisar; se prefiere vídeo real (Playwright MCP `video:'on'`) o, en su defecto, GIF segmentado por bloque con la limitación declarada. 3 ítems añadidos al checklist §10. Origen: feedback de Débora tras detectar que el informe de ejecución de la sesión QA TruckCenter (2026-07-03) se generó solo en `.md`, sin listar los casos no ejecutados, y con un GIF de cobertura dudosa presentado sin esa advertencia. |
+| 1.5.0 | 2026-07-05 | **§2 Notación de procedencia en texto legible, sin siglas** — sustituye la notación abreviada `R[J:...]·C[Cod]` por frases que un lector no técnico entiende sin leyenda (p. ej. `Jira aportado por Débora (ticket AOM-2530)`, `Código fuente verificado (repo APB.API.TES, PortCallController.cs:38)`). Origen: feedback de Débora durante la generación del lote de 32 planes de pruebas (sesión QA-continuación), tras detectar que `R[J]` no se entendía sin la leyenda y que además `R` (Rovo) se usaba de forma imprecisa para tickets citados en documentos aportados por el usuario, no consultados en vivo vía Rovo. |

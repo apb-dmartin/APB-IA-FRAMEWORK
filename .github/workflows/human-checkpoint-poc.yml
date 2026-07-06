@@ -1,0 +1,127 @@
+name: Human Checkpoint PoC
+
+on:
+  workflow_dispatch:
+    inputs:
+      workflow_id:
+        description: "ID del workflow a orquestar (ej. apb-wf-sdd-full-v1.0)"
+        required: true
+        default: "apb-wf-sdd-full-v1.0"
+        type: string
+      checkpoint_index:
+        description: "Índice del checkpoint (1-based), o 0 para generar todos"
+        required: false
+        default: "1"
+        type: string
+
+jobs:
+  generate-checkpoint:
+    name: Generar bloque de pausa
+    runs-on: ubuntu-latest
+    outputs:
+      checkpoint_output: ${{ steps.gen_checkpoint.outputs.checkpoint_markdown }}
+      decision_log: ${{ steps.gen_checkpoint.outputs.decision_yaml }}
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar dependencias Python
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Generar bloque de checkpoint
+        id: gen_checkpoint
+        run: |
+          python scripts/orchestrate_checkpoint_gate.py \
+            --workflow "${{ inputs.workflow_id }}" \
+            --checkpoint "${{ inputs.checkpoint_index }}" \
+            --output both > checkpoint_output.txt 2>&1
+
+          # Capturar el output como variable
+          echo "checkpoint_markdown<<EOF" >> $GITHUB_OUTPUT
+          cat checkpoint_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Mostrar checkpoint generado
+        run: |
+          echo "📋 Checkpoint generado para workflow: ${{ inputs.workflow_id }}"
+          echo "Checkpoint index: ${{ inputs.checkpoint_index }}"
+          echo ""
+          echo "=== BLOQUE DE PAUSA ==="
+          cat checkpoint_output.txt
+
+      - name: Guardar artefactos
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-gate-${{ inputs.workflow_id }}
+          path: checkpoint_output.txt
+          retention-days: 30
+
+  human-review-gate:
+    name: Pausa de aprobación humana
+    needs: generate-checkpoint
+    runs-on: ubuntu-latest
+    environment:
+      name: human-checkpoint
+      url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Esperando aprobación del revisor...
+        run: |
+          echo "⏸️  CHECKPOINT DE APROBACIÓN HUMANA"
+          echo ""
+          echo "Workflow: ${{ inputs.workflow_id }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo ""
+          echo "El repositorio ha pausado en espera de aprobación del revisor configurado."
+          echo "Revisa los artefactos generados arriba y aprueba/rechaza en:"
+          echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+  log-decision:
+    name: Registrar decisión del revisor
+    needs: [generate-checkpoint, human-review-gate]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Registrar decisión
+        run: |
+          mkdir -p _checkpoint_artifacts
+
+          # Crear archivo de registro con timestamp y decision
+          cat > _checkpoint_artifacts/decision_${{ github.run_id }}.yaml << 'YAML_EOF'
+          # [IA-GEN] Registro de decisión — GitHub Actions (${{ github.run_id }})
+          # Generado por APB AI Framework (human-checkpoint-poc.yml)
+
+          checkpoint_decision:
+            workflow: "${{ inputs.workflow_id }}"
+            checkpoint_index: "${{ inputs.checkpoint_index }}"
+            github_run_id: "${{ github.run_id }}"
+            timestamp_generated: "${{ github.event.repository.pushed_at }}"
+            environment_status: "${{ job.status }}"
+            reviewer_decision: "${{ job.status == 'success' && 'approved' || 'pending_or_rejected' }}"
+          YAML_EOF
+
+          cat _checkpoint_artifacts/decision_${{ github.run_id }}.yaml
+
+      - name: Guardar registro de decisión
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-decision-${{ github.run_id }}
+          path: _checkpoint_artifacts/
+          retention-days: 90
+
+      - name: Resumen final
+        run: |
+          echo "✅ Checkpoint completo"
+          echo ""
+          echo "Workflow: ${{ inputs.workflow_id }}"
+          echo "Environment: human-checkpoint"
+          echo "Revisores configurados: consulta Settings → Environments → human-checkpoint"
+          echo ""
+          echo "Artefactos guardados en: _checkpoint_artifacts/decision_${{ github.run_id }}.yaml"

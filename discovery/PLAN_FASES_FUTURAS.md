@@ -1700,6 +1700,20 @@ Antes de construir nada, realizar:
 5. Implementar `apb-wf-agent-pipeline-v1.0` como primer workflow orquestado real.
 6. `apb-agent-orchestrator-v1.0` — solo tras validar el motor en producción.
 
+#### **Sesión de Análisis de Orquestación completada: 2026-07-06**
+
+> **PoC entregada:** GitHub Action con pausas sincrónicas de aprobación humana (escalón 1 del análisis).
+> 
+> Ficheros generados:
+> - `scripts/orchestrate_checkpoint_gate.py` — lee frontmatter YAML, extrae `human_checkpoints`, genera bloque de pausa
+> - `.github/workflows/human-checkpoint-poc.yml` — workflow_dispatch + environment con required reviewers
+> - `scripts/setup_github_environment.py` — crea/actualiza environment + revisores vía API (portabilidad repo)
+> - [`discovery/HANDOFF_ORQUESTACION_MOTOR.md`](HANDOFF_ORQUESTACION_MOTOR.md) — tabla comparativa (Durable Functions / LangGraph / Temporal), checklist pre-decisión, contrato de eventos (v1 draft)
+>
+> **Próximo bloqueante:** Débora + Plataforma deciden motor de orquestación (A/B/C en handoff). Una vez confirmado, pasar a fase de especificación + prototipo + integración.
+> 
+> Ver [`HANDOFF_ORQUESTACION_MOTOR.md`](HANDOFF_ORQUESTACION_MOTOR.md) para detalles técnicos y checklist.
+
 ---
 
 ## Bloque añadido 2026-07-02 (Debora — estándar de prompting, memoria, planes de pruebas, harness)

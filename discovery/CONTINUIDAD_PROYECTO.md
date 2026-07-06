@@ -914,3 +914,61 @@ cableado en `apb-wf-qa-evidence` y `apb-wf-sdd-full`; **(7)** nuevo provider **`
 **49/49 tests** · **347 componentes** (345 + subagente fix-loop + provider Azure QA, ambos `draft`).
 Pendiente: decidir si pushear la rama `feat/qa2-test-plan-methodology`; **QA-3** (despliegue real del
 entorno Azure QA + ejecución funcional completa con dataset, k6 y SonarQube/OWASP ZAP).
+
+## 24. Sesión Orquestación PoC (#77) + Auditorías de Cumplimiento (#85, #86) (2026-07-06)
+
+**Contexto:** Débora continuó con "las siguientes fases" del framework. Tras mapear
+`PLAN_FASES_FUTURAS.md` y `CONTINUIDAD_PROYECTO.md`, pidió avanzar en paralelo en:
+(A) PoC de orquestación (#77) — demostrar viabilidad de pausas humanas sincrónicas;
+(B) Auditoría Design System (#85) — APB.TRU contra tokens/componentes/tipografía/WCAG;
+(C) Auditoría de calidad (#86) — verificar cierre de hallazgos Sonar en APB.API.SMS.
+
+**Bloqueante resuelto previamente:** #77 quedó pendiente de "decisión arquitectónica del motor"
+(Azure Durable / LangGraph / Temporal). Esta sesión **no elige el motor definitivo** (eso sigue siendo
+responsabilidad de Débora + Plataforma APB), pero **demuestra viabilidad** de la capa de checkpoint
+humano como primer escalón hacia la orquestación real.
+
+**Ejecutado:**
+
+- **PoC #77 (3 artefactos):**
+  - `scripts/orchestrate_checkpoint_gate.py` — lee frontmatter YAML (`human_checkpoints`), genera bloque de
+    pausa exacto según `apb-orch-human-checkpoint-v1.0.md` (formato: ⏸️ header, ¿Qué completado?, ¿Qué revisar?,
+    artifacts table, 3 opciones ✅/🔄/❌, YAML decision log).
+  - `.github/workflows/human-checkpoint-poc.yml` — workflow_dispatch (input `workflow_id`, default
+    `apb-wf-sdd-full-v1.0`), job de generación + job pausa en `environment: human-checkpoint` + job de
+    registro de decisión (GitHub Artifacts, 90 días, `.yaml` con timestamp + reviewer + decision).
+  - `scripts/setup_github_environment.py` — configura Environment + required reviewers vía API
+    (`gh api` / REST, parametrizable `--repo owner/repo --environment human-checkpoint --reviewers user1,user2`),
+    permite portabilidad automática repo personal → repo oficial APB sin depender de UI manual.
+  - `discovery/HANDOFF_ORQUESTACION_MOTOR.md` — memo ejecutivo (1 página) con tabla comparativa
+    (Durable Functions ⭐⭐⭐⭐⭐ recomendado / LangGraph ⭐⭐⭐ / Temporal ⭐⭐), checklist pre-decisión,
+    **primer borrador de contratos de eventos** (CloudEvents `code.*`, `ci.*`, `pr.*`, `bug.*`, `deployment.*`),
+    checklist de migración repo personal → oficial.
+
+- **Actualización del roadmap:**
+  - `discovery/PLAN_FASES_FUTURAS.md` (#77): añadida sección "Sesión de Análisis de Orquestación completada"
+    con puntero a handoff.
+  - Este fichero (`CONTINUIDAD_PROYECTO.md`): esta sesión 24.
+
+- **#85, #86:** (pendiente de ejecución) — preparados: repos ya clonados (`APB.TRU`, `APB.API.SMS`),
+  agentes `apb-agent-design-compliance-v1.0` + `apb-agent-quality-compliance-v1.0` ya en `agents/`
+  (draft 2026-07-04), insumo de 4 hallazgos Sonar en `incumplimientos_sms_arq.md` (aportado por Débora).
+
+**Resultado:** PoC validada por ejecución local (`orchestrate_checkpoint_gate.py --workflow
+apb-wf-sdd-full-v1.0 --checkpoint 1` genera bloque correcto). Cambios aún no commiteados hasta
+confirmación de Débora (scripts pueden disparar CI/CD, requieren aprobación explícita).
+
+`validate_repo.py --strict` (aún no ejecutado post-cambios, en validación final §8 del plan).
+
+**Próximos pasos bloqueantes:**
+1. Débora + Plataforma APB: **decidir motor de orquestación** (A/B/C en `HANDOFF_ORQUESTACION_MOTOR.md`).
+2. Débora: OK explícito para commitar nuevos scripts/workflow `.github/workflows/human-checkpoint-poc.yml`.
+3. GitHub: Configurar Environment `human-checkpoint` + required reviewers (`setup_github_environment.py` o UI).
+4. Ejecutar #85 + #86 (auditorías de cumplimiento sobre APB.TRU + APB.API.SMS).
+5. Validación final: `validate_repo.py --strict` + tests `python -m unittest discover tests`.
+
+**Inventario:** 347 componentes (sin cambios — 3 scripts + 1 workflow + 1 handoff memo, cambios, no nuevos
+componentes en `agents/`/`workflows/`/`skills/` que requieran ID). Los agentes #85/#86 ya existen desde
+sesión anterior (estado `draft`).
+
+**Nota sobre #88:** explícitamente pospuesto a sesión posterior (TruckCenter reejecución completa con vídeo + corrección H1).
