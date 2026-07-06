@@ -3,12 +3,22 @@
 > ⚠️ Borrador generado por IA (Claude, Anthropic) — pendiente de validación por Arquitectura APB.  
 > **Para:** Equipo técnico APB (Plataforma, Desarrollo, Operaciones, Ciberseguridad, QA, DPO, Negocio)  
 > **De:** Arquitectura APB — Débora Martín  
-> **Última actualización:** 2026-07-03 (Sesión QA TruckCenter — ejecución real en PRE (sesiones I+II) +
-> corrección de metodología de informes + activación Playwright MCP; ver §3)  
+> **Última actualización:** 2026-07-06 (reorganización verificada de
+> `PLAN_FASES_FUTURAS.md` + sincronización de cifras — ver nota de proceso
+> más abajo)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** 347 componentes (177 skills APB, 52 third-party, 35 agentes, 34 subagentes,
-> 17 workflows, 21 providers, 7 wrappers, 4 adapters). 0 componentes aprobados. Pendiente despliegue e inicio
-> del ciclo de gobernanza. 211/211 skills+agents con system prompt LLM-agnóstico. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).  
+> **Estado global:** 361 componentes (`generate_catalog.py`, 2026-07-06): 182 skills APB,
+> 56 third-party, 37 agentes, 35 subagentes, 17 workflows, 23 providers, 7 wrappers,
+> 4 adapters. 37 `approved` (todos terceros/wrapper de contexto, 0 apb-owned), 4
+> `deprecated`, resto `draft`. Pendiente despliegue e inicio del ciclo de gobernanza
+> sobre componentes propios. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
+>
+> **Nota de proceso (2026-07-06):** este documento es el único lugar donde debe
+> vivir trabajo de puesta en producción real. No crear documentos de handoff
+> sueltos adicionales (p. ej. `HANDOFF_SESION_N.md`) — cualquier hallazgo nuevo
+> de esta categoría se añade aquí, en la sección que corresponda. Al cerrar
+> cada sesión: regenerar catálogo (`generate_catalog.py`) y corregir aquí
+> cualquier cifra de componentes desfasada.
 > **Alcance de este documento:** solo tareas manuales de despliegue/producción que debe ejecutar
 > una persona (crear una suscripción Azure, registrar una app AD, poblar un secreto en Key Vault,
 > activar una licencia...). Las **decisiones o insumos que Débora/Dirección deben aportar** para
@@ -28,7 +38,8 @@
 7. [Seguridad y compliance](#7-seguridad-y-compliance)
 8. [Telemetría](#8-telemetría)
 9. [Documentación pendiente](#9-documentación-pendiente)
-10. [Orden de ejecución recomendado](#10-orden-de-ejecución-recomendado)
+10. [Motor de orquestación, dashboards y seguimiento de auditorías](#10-motor-de-orquestación-dashboards-y-seguimiento-de-auditorías)
+11. [Orden de ejecución recomendado](#11-orden-de-ejecución-recomendado)
 
 ---
 
@@ -44,7 +55,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 | **BUG-04** | `adapters/claude/adapter-claude-v1.0.md` | Model string `claude-sonnet-4-20250514` obsoleto | Actualizar al model string actual | 5 min |
 | **BUG-05** | `SYSTEM.md §4.2` | Solo documenta 2 adapters; existen 4 (`claude`, `copilot`, `m365`, `rovo`) | Añadir filas de `adapters/m365/` y `adapters/rovo/` con estado `draft` | 10 min |
 | **BUG-06** | `.github/workflows/telemetry.yml` | El workflow hace `git push` directo a `main` para actualizar `telemetry/events.jsonl` — anti-patrón CI y vector de seguridad | Usar Azure Blob Storage como buffer (Opción A) o rama `telemetry-log` sin protección (Opción B) | 1 día |
-| **BUG-07** | `discovery/CONTINUIDAD_PROYECTO.md §8` | Inventario documenta 226 componentes; la realidad es 341 (+115 de sesiones 15-23 no registradas) | Ejecutar `generate_catalog.py` (tras BUG-02) y actualizar §8 | 1h |
+| **BUG-07** | `discovery/CONTINUIDAD_PROYECTO.md §8` | ✅ **RESUELTO (2026-07-06):** `generate_catalog.py` ejecutado, cifra real 361 componentes — corregido en este documento (cabecera + §2 + §3 + Estado global). Pendiente solo actualizar `CONTINUIDAD_PROYECTO.md §8` con la misma cifra. | Actualizar `CONTINUIDAD_PROYECTO.md §8` a 361 | 5 min |
 | **BUG-08** | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` | `source_license: "unverified"` — riesgo legal si se usa en producción | Verificar LICENSE en `https://github.com/Lum1104/Understand-Anything`; si no existe, marcar como `rejected` | 30 min |
 
 **Criterio de éxito de BUG-01 + BUG-02:** `python scripts/validate_repo.py --strict` (exit 0) y `python scripts/generate_catalog.py --check` (sin drift) pasan en verde en CI.
@@ -53,7 +64,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 
 ## 2. Ciclo de aprobación — la prioridad de gobernanza
 
-**Situación actual:** 345 componentes, 100% en estado `draft`. Los controles de seguridad y autonomía declarados en frontmatter son promesas no auditadas. Sin aprobaciones, el framework no tiene base formal para uso en producción.
+**Situación actual (2026-07-06):** 361 componentes; 37 `approved` (todos terceros/wrapper de contexto — ninguno `apb-owned` funcional), 4 `deprecated`, el resto en `draft`. Los controles de seguridad y autonomía declarados en frontmatter de los componentes `apb-owned` son promesas no auditadas. Sin aprobaciones propias, el framework no tiene base formal para uso en producción.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
@@ -112,7 +123,7 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-03):** `validate_repo.py --strict` → exit 0. 347 componentes, 0 huérfanos de wiring. Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+**Estado actual (2026-07-06):** `validate_repo.py --strict` → exit 0, 60/60 tests. 361 componentes, 0 huérfanos de wiring de los ya cableados (5 subagentes aún pendientes de cablear, ver `PLAN_FASES_FUTURAS.md` Sección B). Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
 
 **Sesión QA TruckCenter (2026-07-03) — ejecución real + corrección de metodología:**
 - **Ejecución:** 44/120 casos del plan unificado (v1.4 → v1.5) con escritura real en PRE (B02-B07 + E2E
@@ -309,7 +320,7 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 | DOC5 | Documento Word: Manual de administración del framework | Plataforma / Operaciones | ⬜ Pendiente |
 | DOC6 | Guía de "Primera skill / Primer agente" para onboarding rápido | Nuevos contribuidores | ⬜ Pendiente |
 | DOC7 | Documentar deprecación `apb-ai-skills` en README del framework | Todos | ⬜ Pendiente |
-| DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 343 componentes (sesiones 15-23 no registradas) | IA / Arquitectura APB | ⬜ Pendiente |
+| DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 361 componentes (ver BUG-07) | IA / Arquitectura APB | ⬜ Pendiente |
 | QA2-1 | **Credenciales centrales para pruebas funcionales:** el agente de pruebas (`apb-qa-exploratory-nav` / `prov-browser-agent`) debe consultar credenciales desde un **repositorio central de secretos** (Azure Key Vault, `GOVERNANCE.md §5`) y capturar/reutilizar `storage_state` (EntraID), para ejecutar sin login manual. En la demo QA-2 (2026-07-02) las introdujo el usuario. **Diseño cubierto en Fase I** (2026-07-03): `TEST_PLAN_STANDARD §9.2` (usuario de ejecución por `AKV://<secret>` o runtime) + `docs/qa/EJECUCION_LOCAL.md` (captura/reutilización de `storageState`). **Pendiente:** poblar el secreto real en AKV y verificar el flujo end-to-end (Plataforma/Ciberseguridad). | Plataforma / Ciberseguridad / IA | 🟡 Diseñado, ejecución pendiente |
 | QA3-1 | **Sesión QA-3 — ejecución funcional COMPLETA de TruckCenter.** Bloqueantes detectados en QA-2 E-bis: **F3** (PRE sin datos → sembrar dataset anonimizado RGPD), **F2** (formulario de Alta no carga >45s → investigar/priorizar), acceso de escritura para altas/bajas, 2ª pasada **USER_READ**, **k6** (rendimiento; API LGP ~9,3s F4), **SonarQube/OWASP ZAP** (seguridad), **Playwright** para evidencia visual PNG/traza/vídeo (las capturas del navegador MCP no persisten como fichero), **unitarias** (repo `APB.TRU` + xUnit). Actualizar el AF por **F5** (maestro multiidioma CA/ES/EN). **Fase I añadió el andamiaje** (aún sin ejecución real): Bloque B13 (4 casos k6, `Pendiente`) y B14 (4 casos xUnit, `Pendiente`) en el ejemplo unificado, provider `prov-azure-qa-runtime-v1.0` (`draft`) para correr Playwright/k6 sin instalar nada local, y destino de ejecución `azure-qa` en `TEST_PLAN_STANDARD §9.1`. | QA / Plataforma / Ciberseguridad / Dev | ⬜ Pendiente (Débora 2026-07-02; andamiaje Fase I 2026-07-03) |
 
@@ -324,7 +335,63 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 
 ---
 
-## 10. Orden de ejecución recomendado
+## 10. Motor de orquestación, dashboards y seguimiento de auditorías
+
+> Añadido 2026-07-06 al disolver `HANDOFF_ORQUESTACION_MOTOR.md` y
+> `WORKSTREAMS_SUMMARY_2026-07-06.md` en este documento — ver
+> `PLAN_FASES_COMPLETADAS.md` para el detalle de lo ya entregado.
+
+### 10.1 Motor de orquestación (#77) — pasos condicionados a la decisión
+
+La PoC de pausas humanas ya está entregada y funcionando
+(`scripts/orchestrate_checkpoint_gate.py`, `.github/workflows/human-checkpoint-poc.yml`,
+`scripts/setup_github_environment.py`). La elección del motor definitivo
+(Azure Durable Functions / LangGraph / Temporal.io) vive en
+`PLAN_FASES_FUTURAS.md` Sección A — es una decisión de Débora + Plataforma,
+no una acción de ejecución. Una vez decidida, Plataforma ejecuta:
+
+| Si se elige... | Plataforma ejecuta |
+|---|---|
+| **Azure Durable Functions** (recomendado) | 1) Arquitectura de Durable Functions + contratos de eventos. 2) Implementar motor macro + registrador de eventos. 3) Integrar agentes del framework (binding). 4) Validar workflow SDD completo. |
+| **LangGraph** | 1) Wrapper de LangGraph sobre agentes existentes. 2) Refactor PoC → grafo con estado. 3) Persistencia opcional en Redis. 4) Integrar con GitHub Actions o ejecutor local. |
+| **Temporal.io** | 1) Evaluación coste-beneficio previa (Arquitectura). 2) Desplegar `temporal-server` (auto-hosted o Cloud). 3) Refactor agentes → activities/workflows. 4) Workers dedicados + escalado. |
+
+### 10.2 Despliegue real de dashboards de observabilidad (#39/#40)
+
+Entregado y listo para importar (`discovery/qa-compliance-grafana-dashboard.json`,
+`discovery/qa-compliance-powerbi-spec.json`, runbook operativo en
+`discovery/QA_COMPLIANCE_DASHBOARD_RUNBOOK.md`):
+
+| # | Acción | Responsable | Estado |
+|---|--------|-------------|--------|
+| OBS1 | Importar `qa-compliance-grafana-dashboard.json` en Grafana real, configurar datasource (Prometheus/Azure Monitor) | Plataforma | ⬜ Pendiente (~5 min) |
+| OBS2 | Construir el modelo de datos de `qa-compliance-powerbi-spec.json` en Power BI, conectar Sonar/Jira/Dependabot, publicar | Plataforma / QA | ⬜ Pendiente (~1-2h) |
+| OBS3 | Desplegar infraestructura de mensajería asíncrona (Azure Service Bus o Kafka) para cerrar el 4º gap de enforcement de autonomía (async messaging — los otros 3 gaps son ejecutables por Claude, ver `PLAN_FASES_FUTURAS.md` Sección B) | Plataforma | ⬜ Pendiente |
+
+### 10.3 Accesos pendientes para sesiones ya diseñadas
+
+| # | Qué se necesita | Desbloquea | Responsable |
+|---|---|---|---|
+| ACC1 | Acceso a histórico Jira (la skill de ingesta ya es ejecutable, falta el acceso real para probarla) | #37 — spec desde histórico | Plataforma / Jira Admin |
+| ACC2 | Acceso a código del monolito SÒSTRAT (Java/Oracle → DOCKS) | #38 Fase 1 — descomposición de monolitos (además de la aprobación de dominios, ver §6) | Arquitectura / equipo SÒSTRAT |
+| ACC3 | ≥12 meses de datos reales de uso en Azure | `apb-agent-capacity-planner`, `apb-agent-portfolio-it` (#64) | Plataforma |
+| ACC4 | Validación de Ciberseguridad de `apb-sub-sec-sast-v1.0` + `apb-sub-ops-entra-v1.0` (SAST/Entra) y evaluación de necesidad de wrapper DAST (OWASP ZAP/Trivy) | R9/R10 — gap de seguridad ofensiva | Ciberseguridad |
+
+### 10.4 Seguimiento de auditorías de aplicaciones (evidencia archivada)
+
+Dos auditorías de aplicaciones concretas, ejecutadas y cerradas por el
+framework, con follow-ups que debe resolver el equipo de desarrollo de cada
+aplicación (no el framework). Informes completos archivados en
+`discovery/archive/`:
+
+| Auditoría | Hallazgo pendiente | Responsable | Esfuerzo |
+|---|---|---|---|
+| `archive/AUDIT_DESIGN_COMPLIANCE_TRU_2026-07-06.md` (TruckCenter) | No consume `apb-dx-overrides.css`/`tokens/*.css` del Design System, tipografía Cabin no aplicada, estilos inline sin variables CSS | Equipo TruckCenter | ~4-5h |
+| `archive/AUDIT_QUALITY_COMPLIANCE_SMS_2026-07-06.md` (APB.API.SMS) | Ticket ARQ-3716 marcado "Resuelta" en Jira pero el código aún diverge de la corrección esperada (`NormalizeSender` debería ser `static`) | Equipo APB.API.SMS | Revisar y reabrir si aplica |
+
+---
+
+## 11. Orden de ejecución recomendado
 
 ```
 ESTA SEMANA (< 4h, cualquier desarrollador):
@@ -368,7 +435,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **347 componentes** (0 aprobados) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **361 componentes** (37 aprobados, todos terceros — 0 apb-owned) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 

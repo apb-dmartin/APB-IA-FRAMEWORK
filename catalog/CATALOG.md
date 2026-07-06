@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 361
+- **Total Components**: 362
 
 ## Component Breakdown
 
@@ -257,7 +257,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (37 total)
+### Agentes (38 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -276,6 +276,7 @@
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents/apb-agent-finops-v1.0.md` |
+| `apb-agent-functional-technical-support-v1.0` | Functional Technical Support | draft | `agents/apb-agent-functional-technical-support-v1.0.md` |
 | `apb-agent-governance-v1.0` | Governance Agent | draft | `agents/apb-agent-governance-v1.0.md` |
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
 | `apb-agent-incident-support-v1.0` | Incident Support | draft | `agents/apb-agent-incident-support-v1.0.md` |

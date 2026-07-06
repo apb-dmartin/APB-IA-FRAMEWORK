@@ -157,7 +157,7 @@ Los siguientes gaps se clasifican por criticidad para la madurez del framework.
 
 ### 2.8 GAP MEDIO — Integraciones M365 pendientes de activación
 
-**Descripción:** Los artefactos de integración existen (`openapi/apb-framework-api.yaml`, `openapi/ai-plugin.json`, `forge/manifest.yml`, `forge/src/functions/invokeFramework.js`, `adapters/rovo/`, `adapters/m365/`) pero están en estado `draft` y requieren trabajo de activación por parte del equipo de Plataforma APB. Documentado en `docs/HANDOFF_SESION15_INTEGRACIONES.md`.
+**Descripción:** Los artefactos de integración existen (`openapi/apb-framework-api.yaml`, `openapi/ai-plugin.json`, `forge/manifest.yml`, `forge/src/functions/invokeFramework.js`, `adapters/rovo/`, `adapters/m365/`) pero están en estado `draft` y requieren trabajo de activación por parte del equipo de Plataforma APB. Documentado en `discovery/HANDOFF_TECNICOS.md §4`.
 
 **Impacto:** El framework no está disponible desde M365 Copilot ni desde Rovo (Atlassian) sin este trabajo de activación. Tampoco hay integración activa con Teams, SharePoint ni correo corporativo.
 

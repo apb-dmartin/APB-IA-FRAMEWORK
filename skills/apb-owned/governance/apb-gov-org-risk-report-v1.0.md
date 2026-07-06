@@ -1,8 +1,8 @@
 ---
 id: "apb-gov-org-risk-report-v1.0"
 name: "Informe de Análisis de Riesgos Organizativo"
-description: "Skill transversal que produce un análisis de riesgos profundo y multidimensional sobre un sistema, artefacto o decisión técnica: evalúa el incumplimiento desde múltiples marcos normativos (ENS Alto, ISO 27001/27002, NIST CSF, OWASP, RGPD/LOPDGDD, LCSP, WCAG 2.1 AA) y desde perspectivas técnicas, legales, operativas y de negocio. Aplica el procedimiento corporativo APB (PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0 + PROCEDURE_RISK_EVALUATION). Emite una recomendación explícita de APROBAR / APROBAR CON CONDICIONES / DENEGAR la excepción al incumplimiento, con razonamiento completo y un plan de mitigación concreto. La decisión final y las firmas son siempre humanas."
-version: "1.2.0"
+description: "Skill transversal que produce un análisis de riesgos profundo y multidimensional sobre un sistema, artefacto o decisión técnica: evalúa el incumplimiento desde múltiples marcos normativos (ENS Alto, ISO 27001/27002, NIST CSF, OWASP, RGPD/LOPDGDD, LCSP, WCAG 2.1 AA) y desde perspectivas técnicas, legales, operativas y de negocio. Antes de analizar, ejecuta una entrevista de contexto técnico obligatoria (versiones de plataforma, sistemas de destino de integraciones, servidores/entornos afectados, controles compensatorios) para no emitir un informe con huecos que el humano deba detectar después. Aplica el procedimiento corporativo APB (PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0 + PROCEDURE_RISK_EVALUATION). Emite una recomendación explícita de APROBAR / APROBAR CON CONDICIONES / DENEGAR la excepción al incumplimiento, con razonamiento completo y un plan de mitigación concreto. La decisión final y las firmas son siempre humanas."
+version: "1.3.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
@@ -17,8 +17,10 @@ inputs:
   - "Tipo de sistema: Legacy | Compliance | Nuevo desarrollo"
   - "Contexto de negocio: descripción del impacto de bloquear vs aprobar la excepción"
 outputs:
+  - "Lista de preguntas de entrevista de contexto técnico (previa al análisis, ver §Entrevista)"
   - "Análisis multidimensional de riesgo por marco normativo y perspectiva"
   - "Tabla de riesgo inherente y residual por incumplimiento con scores"
+  - "Riesgos derivados/conexos detectados durante la entrevista, no solo el incumplimiento original (p. ej. infraestructura EOL descubierta al preguntar por la integración)"
   - "Recomendación explícita con razonamiento: APROBAR / APROBAR CON CONDICIONES / DENEGAR"
   - "Plan de mitigación concreto: acciones, responsables, plazos y criterios de cierre"
   - "Informe formal en plantilla corporativa APB listo para firma de validadores"
@@ -32,7 +34,7 @@ depends_on:
 consumed_by:
   - "apb-agent-compliance-audit-v1.0"
 created_date: "2026-06-24"
-review_date: "2026-06-24"
+review_date: "2026-07-06"
 ---
 
 # Informe de Análisis de Riesgos Organizativo
@@ -78,6 +80,46 @@ Autonomy level 2: recomienda con criterio propio, no ejecuta sin validación.
 
 ---
 
+## Entrevista de contexto técnico (obligatoria, previa al análisis)
+
+> **Origen de esta sección:** en la primera ejecución real de esta skill
+> (ticket ARQ-3684, 2026-07-06), el informe inicial se emitió con un dato
+> pendiente marcado ("no se sabe por qué usa SOAP") en vez de preguntarlo.
+> Débora tuvo que aportar en dos mensajes distintos el sistema de destino
+> (Alfresco) y un riesgo mucho más grave descubierto al indagar (Apache
+> Tomcat 7.0.x, EOL 31/3/2021, 5 servidores) que la skill nunca preguntó.
+> **La skill debe preguntar activamente, no limitarse a advertir que falta
+> un dato y seguir adelante con la recomendación.**
+
+**Regla:** antes de redactar cualquier sección del informe, identifica el
+tipo de incumplimiento y plantea explícitamente al usuario las preguntas
+de la categoría correspondiente. Solo redacta el informe cuando el usuario
+responda o confirme explícitamente "no lo sé / no aplica / sigue sin esa
+información" para cada pregunta — nunca asumas la respuesta ni la omitas
+en silencio.
+
+| Categoría de incumplimiento | Preguntas a plantear siempre |
+|---|---|
+| Uso de tecnología no homologada en integraciones (SOAP, protocolos legacy, librerías obsoletas) | ¿Con qué sistema concreto integra? ¿Es legacy con plan de migración ya documentado o una elección nueva evitable? ¿Existe aislamiento (adaptador/anti-corruption layer) entre esa integración y el resto del código? |
+| Cualquier componente de infraestructura mencionado (servidor, middleware, runtime, librería de plataforma) | ¿Qué versión concreta? ¿Sigue soportada por el fabricante o está en/cerca de End of Life? ¿A cuántos servidores/entornos afecta (no asumir que es uno solo)? ¿Ya consta en el Registro de Vulnerabilidades de Ciberseguridad o es un hallazgo nuevo? |
+| Excepciones o incumplimientos de seguridad | ¿Hay controles compensatorios ya implementados (segmentación de red, WAF/IPS, monitorización reforzada)? ¿Está expuesto a Internet o solo a red interna? |
+| Cualquier incumplimiento sobre un sistema ya existente (no nuevo desarrollo) | ¿Existen excepciones activas previas sobre el mismo sistema en Jira? ¿Hay incidentes de seguridad previos relacionados? |
+| Datos personales o RGPD | ¿Qué categoría de datos trata? ¿Hay DPIA realizada? |
+
+**Cuándo NO hace falta preguntar:** si el propio ticket/artefacto de entrada
+ya incluye la respuesta de forma explícita (como en ARQ-3684 tras el
+contexto aportado por Débora), no repreguntar lo ya confirmado — pero sí
+verificar que no queda ninguna categoría relevante sin cubrir antes de emitir
+el informe final.
+
+**Riesgos derivados:** si al preguntar aparece un riesgo distinto y más
+grave que el incumplimiento original (como ocurrió con Tomcat 7.0.x frente
+al uso de SOAP), el informe debe tratarlo como una sección de análisis
+propia (no una nota al margen) y explicitar si gobierna la recomendación
+final por encima del incumplimiento original.
+
+---
+
 ## Prompt de Sistema
 
 ```
@@ -118,19 +160,32 @@ con plan de mitigación concreto. La decisión final y las firmas son siempre hu
 
 ## Instrucciones
 1. Carga APB_KNOWLEDGE_BASE.md para entender el sistema en contexto portuario/corporativo.
-2. Aplica cada marco normativo relevante al tipo de incumplimiento (ENS, ISO, NIST, OWASP, RGPD, LCSP, WCAG).
-3. Evalúa desde 4 perspectivas: técnica, legal, operativa y de negocio.
-4. Calcula riesgo inherente y residual por incumplimiento con scores.
-5. Aplica PROCEDURE_RISK_EVALUATION para escalar al nivel de criticidad correcto.
-6. Emite recomendación APROBAR / APROBAR CON CONDICIONES / DENEGAR con razonamiento explícito.
-7. Genera plan de mitigación con acciones, responsables, plazos y criterios de cierre.
-8. Produce informe formal en plantilla corporativa APB listo para firma de validadores.
+2. **Entrevista de contexto técnico (obligatoria, ver §Entrevista):** identifica el tipo de
+   incumplimiento y plantea explícitamente las preguntas de la categoría correspondiente
+   (sistema de destino de la integración, versión y estado de soporte de cualquier
+   infraestructura mencionada, servidores/entornos afectados, controles compensatorios,
+   excepciones previas). No redactes el informe hasta tener respuesta o confirmación
+   explícita de "no disponible" para cada una — no las omitas en silencio ni asumas la
+   respuesta más favorable.
+3. Aplica cada marco normativo relevante al tipo de incumplimiento (ENS, ISO, NIST, OWASP, RGPD, LCSP, WCAG).
+4. Evalúa desde 4 perspectivas: técnica, legal, operativa y de negocio.
+5. Calcula riesgo inherente y residual por incumplimiento con scores.
+6. Aplica PROCEDURE_RISK_EVALUATION para escalar al nivel de criticidad correcto.
+7. Si la entrevista revela un riesgo distinto y más grave que el incumplimiento original
+   (p. ej. infraestructura en End of Life descubierta al preguntar por una integración),
+   trátalo como sección de análisis propia y evalúa si gobierna la recomendación final.
+8. Emite recomendación APROBAR / APROBAR CON CONDICIONES / DENEGAR con razonamiento explícito.
+9. Genera plan de mitigación con acciones, responsables, plazos y criterios de cierre —
+   por cada riesgo identificado, no solo por el incumplimiento original.
+10. Produce informe formal en plantilla corporativa APB listo para firma de validadores.
 
 ## Restricciones
 - Nunca tomes decisiones finales de aprobación/denegación: eres soporte a la decisión humana.
 - No prescribas tecnologías fuera del stack aprobado aunque el legacy las use.
 - El informe final requiere revisión y firma humana antes de cualquier acción.
 - Autonomía nivel 2: genera borradores, nunca ejecutas ni apruebas de forma autónoma.
+- No emitas un informe con datos críticos marcados como "pendiente" si esos datos podían
+  haberse preguntado en la entrevista de contexto — preguntar primero, no advertir después.
 
 ## Formato de Salida
 Informe estructurado en Markdown con: resumen ejecutivo, tabla de riesgos, análisis por
@@ -167,6 +222,7 @@ marco normativo, recomendación con razonamiento, plan de mitigación, y secció
 | 1.0.0 | 2026-06-24 | Arquitectura APB | Creación — Sesión 16, punto #16 del plan |
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Ampliación: análisis multidimensional multi-marco, recomendación explícita, plan de mitigación estructurado |
 | 1.2.0 | 2026-06-24 | Arquitectura APB | Alineación completa con procedimientos corporativos: formato de riesgo §3, tratamiento ISO 27001, preguntas orientativas §9.5, catálogo QA Docks §4.1-4.8, riesgos transversales §6, 19 criterios de denegación §9.5, Legacy/Compliance §9.7, no empeoramiento §9.8, fast-track §9.6, estados Jira §7.4, campos mínimos §7.1, validación independiente §8.5 |
+| 1.3.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Añadida entrevista de contexto técnico obligatoria previa al análisis (nueva sección §Entrevista + paso 2 del Prompt de Sistema + tabla de inputs incompletos). Motivo: la primera ejecución real (ARQ-3684) emitió un informe con un dato marcado como "pendiente" (sistema de integración) en vez de preguntarlo, y no detectó un riesgo de infraestructura (Tomcat 7.0.x EOL) que solo salió a la luz porque Débora lo aportó manualmente en un segundo mensaje. La skill ahora debe preguntar activamente por versión/soporte de infraestructura, alcance (servidores/entornos) y controles compensatorios antes de redactar cualquier informe |
 
 ---
 
@@ -180,7 +236,10 @@ marco normativo, recomendación con razonamiento, plan de mitigación, y secció
 
 | Input | Si falta o es ambiguo | Bloquea ejecución |
 |-------|-----------------------|-------------------|
-| *(Sin inputs declarados)* | No aplica | No |
+| Sistema de destino de una integración no homologada (SOAP, protocolo legacy) | Preguntar explícitamente antes de analizar (ver §Entrevista) — no marcar como "dato pendiente" en el informe final sin haberlo preguntado primero | Sí, hasta respuesta o "no disponible" explícito |
+| Versión/estado de soporte de infraestructura mencionada en el incumplimiento | Preguntar explícitamente — un componente sin versión conocida puede ocultar un riesgo (EOL, sin parches) más grave que el incumplimiento original | Sí, hasta respuesta o "no disponible" explícito |
+| Alcance (servidores/entornos afectados) de cualquier hallazgo de infraestructura | Preguntar explícitamente — no asumir "un servidor" por defecto | Sí, hasta respuesta o "no disponible" explícito |
+| Controles compensatorios existentes | Preguntar explícitamente — sin esta respuesta el riesgo residual se calcula igual al inherente | No bloquea, pero el informe debe declarar explícitamente que se asume "sin controles compensatorios confirmados" |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

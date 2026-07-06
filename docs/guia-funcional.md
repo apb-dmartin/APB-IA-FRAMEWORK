@@ -213,7 +213,7 @@ Los agentes que generan backlog, tickets o planes de remediación producen la es
 
 ### Con Microsoft 365 (Teams, SharePoint, correo)
 
-El framework dispone de una API OpenAPI (`openapi/apb-framework-api.yaml`) y una aplicación Forge para Atlassian (`forge/`). La integración con Teams, SharePoint y correo está disponible como provider (`prov-ms365-v1.0`) y documentada en `docs/HANDOFF_SESION15_INTEGRACIONES.md`. Su activación requiere trabajo por parte del equipo de Plataforma APB.
+El framework dispone de una API OpenAPI (`openapi/apb-framework-api.yaml`) y una aplicación Forge para Atlassian (`forge/`). La integración con Teams, SharePoint y correo está disponible como provider (`prov-ms365-v1.0`) y documentada en `discovery/HANDOFF_TECNICOS.md §4`. Su activación requiere trabajo por parte del equipo de Plataforma APB.
 
 ### Con M365 Copilot / Rovo (Atlassian)
 

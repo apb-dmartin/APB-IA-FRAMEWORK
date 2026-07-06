@@ -20,13 +20,13 @@
 |---------|-------|
 | Skills APB | 182 / 182 |
 | Skills terceros | 56 / 56 |
-| Agentes | 37 / 37 |
+| Agentes | 38 / 38 |
 | Subagentes | 35 / 35 |
 | Workflows | 17 / 17 |
 | Providers | 23 / 23 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **361** |
+| **Total** | **362** |
 
 ---
 
@@ -52,7 +52,7 @@ APB-IA-FRAMEWORK/
 ├── README.md, SYSTEM.md, GOVERNANCE.md, CONTRIBUTING.md, LICENSE.md
 ├── INDEX.md
 ├── DOMAIN_REGISTRY.md
-├── agents/                     # 37 agentes
+├── agents/                     # 38 agentes
 ├── subagents/                  # 35 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
@@ -109,9 +109,9 @@ APB-IA-FRAMEWORK/
 
 ---
 
-## ✅ Agentes (37)
+## ✅ Agentes (38)
 
-`apb-agent-accessibility-auditor`, `apb-agent-api-product-manager`, `apb-agent-business-analyst`, `apb-agent-catalog-manager`, `apb-agent-change-manager`, `apb-agent-cloud-architect`, `apb-agent-code-reviewer`, `apb-agent-compliance-audit`, `apb-agent-data-governance`, `apb-agent-db`, `apb-agent-ddd`, `apb-agent-design-compliance`, `apb-agent-documentation`, `apb-agent-domain-architect`, `apb-agent-finops`, `apb-agent-governance`, `apb-agent-implementer`, `apb-agent-incident-support`, `apb-agent-knowledge-manager`, `apb-agent-meta-builder`, `apb-agent-modernization`, `apb-agent-observability`, `apb-agent-platform-engineer`, `apb-agent-pm`, `apb-agent-problem-manager`, `apb-agent-qa-auto`, `apb-agent-quality-compliance`, `apb-agent-release-manager`, `apb-agent-risk-exception`, `apb-agent-security-architect`, `apb-agent-spec-engineer`, `apb-agent-sre`, `apb-agent-tech-debt`, `apb-agent-tech-discovery`, `apb-agent-technical-architect`, `apb-agent-ux-mockup`, `apb-agent-vendor-manager`
+`apb-agent-accessibility-auditor`, `apb-agent-api-product-manager`, `apb-agent-business-analyst`, `apb-agent-catalog-manager`, `apb-agent-change-manager`, `apb-agent-cloud-architect`, `apb-agent-code-reviewer`, `apb-agent-compliance-audit`, `apb-agent-data-governance`, `apb-agent-db`, `apb-agent-ddd`, `apb-agent-design-compliance`, `apb-agent-documentation`, `apb-agent-domain-architect`, `apb-agent-finops`, `apb-agent-functional-technical-support`, `apb-agent-governance`, `apb-agent-implementer`, `apb-agent-incident-support`, `apb-agent-knowledge-manager`, `apb-agent-meta-builder`, `apb-agent-modernization`, `apb-agent-observability`, `apb-agent-platform-engineer`, `apb-agent-pm`, `apb-agent-problem-manager`, `apb-agent-qa-auto`, `apb-agent-quality-compliance`, `apb-agent-release-manager`, `apb-agent-risk-exception`, `apb-agent-security-architect`, `apb-agent-spec-engineer`, `apb-agent-sre`, `apb-agent-tech-debt`, `apb-agent-tech-discovery`, `apb-agent-technical-architect`, `apb-agent-ux-mockup`, `apb-agent-vendor-manager`
 
 ---
 

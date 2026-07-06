@@ -61,7 +61,7 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | QA | Testing — auditoría `apb-ai-skills`, resolver solape | ✅ **Completa** — ver sección 13 |
 | Frontend | Mockups, generación frontend, catálogo de componentes | ✅ **Completa** |
 | Design System | Sistema de diseño APB sobre DevExtreme — repo propio `APB-DESIGN-SYSTEM` | ✅ **Completa** (v1.3.0, 2026-06-26) |
-| 15 | Integraciones Microsoft + gaps Rovo / M365 Copilot | ✅ **Completa** (2026-06-26) — artefactos en `openapi/`, `forge/`, `docs/`. Pendiente de equipo APB: ver `docs/HANDOFF_SESION15_INTEGRACIONES.md` |
+| 15 | Integraciones Microsoft + gaps Rovo / M365 Copilot | ✅ **Completa** (2026-06-26) — artefactos en `openapi/`, `forge/`, `docs/`. Pendiente de equipo APB: ver `discovery/HANDOFF_TECNICOS.md §4` |
 | 16 | Skill de análisis de riesgos con procedimientos APB | ✅ **Completa** (2026-06-24) — `apb-gov-org-risk-report-v1.0` v1.2.0. Multi-framework (ENS, ISO 27001, NIST CSF 2.0, OWASP, RGPD, LCSP, WCAG 2.1 AA), recomendación APROBAR/DENEGAR/ESCALAR, plan de mitigación, alineado con `PROCEDURE_RISK_EVALUATION` + `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` |
 | 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ⚠️ **Parcial** (2026-06-26, 7/10) — bloqueados: #6 (ejemplos Word/Excel de Débora), #8 (horas COSMIC históricas de Débora), #52 (mail Jira de Arquitectura) |
 | 22/#47bis | Taxonomía de capacidades en agentes y skills | ✅ **Completa** (2026-06-26) — taxonomía APB normalizada en frontmatter |
@@ -940,10 +940,12 @@ humano como primer escalón hacia la orquestación real.
   - `scripts/setup_github_environment.py` — configura Environment + required reviewers vía API
     (`gh api` / REST, parametrizable `--repo owner/repo --environment human-checkpoint --reviewers user1,user2`),
     permite portabilidad automática repo personal → repo oficial APB sin depender de UI manual.
-  - `discovery/HANDOFF_ORQUESTACION_MOTOR.md` — memo ejecutivo (1 página) con tabla comparativa
-    (Durable Functions ⭐⭐⭐⭐⭐ recomendado / LangGraph ⭐⭐⭐ / Temporal ⭐⭐), checklist pre-decisión,
-    **primer borrador de contratos de eventos** (CloudEvents `code.*`, `ci.*`, `pr.*`, `bug.*`, `deployment.*`),
-    checklist de migración repo personal → oficial.
+  - Memo ejecutivo con tabla comparativa (Durable Functions ⭐⭐⭐⭐⭐ recomendado / LangGraph ⭐⭐⭐ /
+    Temporal ⭐⭐), checklist pre-decisión, **primer borrador de contratos de eventos** (CloudEvents
+    `code.*`, `ci.*`, `pr.*`, `bug.*`, `deployment.*`), checklist de migración repo personal → oficial.
+    *(Nota 2026-07-06: este memo vivía en `discovery/HANDOFF_ORQUESTACION_MOTOR.md`, disuelto en la
+    reorganización — la decisión de motor está ahora en `PLAN_FASES_FUTURAS.md` Sección A y los pasos
+    condicionados a la decisión en `HANDOFF_TECNICOS.md §10.1`.)*
 
 - **Actualización del roadmap:**
   - `discovery/PLAN_FASES_FUTURAS.md` (#77): añadida sección "Sesión de Análisis de Orquestación completada"
@@ -961,7 +963,7 @@ confirmación de Débora (scripts pueden disparar CI/CD, requieren aprobación e
 `validate_repo.py --strict` (aún no ejecutado post-cambios, en validación final §8 del plan).
 
 **Próximos pasos bloqueantes:**
-1. Débora + Plataforma APB: **decidir motor de orquestación** (A/B/C en `HANDOFF_ORQUESTACION_MOTOR.md`).
+1. Débora + Plataforma APB: **decidir motor de orquestación** (A/B/C en `PLAN_FASES_FUTURAS.md` Sección A).
 2. Débora: OK explícito para commitar nuevos scripts/workflow `.github/workflows/human-checkpoint-poc.yml`.
 3. GitHub: Configurar Environment `human-checkpoint` + required reviewers (`setup_github_environment.py` o UI).
 4. Ejecutar #85 + #86 (auditorías de cumplimiento sobre APB.TRU + APB.API.SMS).
