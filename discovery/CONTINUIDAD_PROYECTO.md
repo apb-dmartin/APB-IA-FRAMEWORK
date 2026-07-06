@@ -1063,3 +1063,98 @@ sesión anterior (estado `draft`).
 ---
 
 *Cierre de sesión 2026-07-06*
+
+---
+
+## Sesión 26 — Estrategia de Optimización de Tokens (2026-07-06, continuación)
+
+**Participantes:** Débora Martín, Claude Haiku 4.5
+
+**Tipo:** Análisis estratégico + Documentación
+
+**Solicitud:** "apunta para fases futuras, estrategias para optimizar consumo tokens por el framework"
+
+### Entregable Principal
+
+- ✅ **`discovery/ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md`** (5 KB, completo)
+  - 10 estrategias viables (priorizadas por impacto/esfuerzo)
+  - Roadmap de 3 fases de implementación
+  - Estimación de ahorro anual (30-50% en tokens/turno)
+  - Checklist detallado para cada fase
+  - Métricas de validación de impacto
+
+### Resumen Ejecutivo de Estrategias
+
+| # | Estrategia | Impacto | Esfuerzo | Prioridad |
+|---|-----------|---------|----------|-----------|
+| 1 | Caching YAML frontmatter | 15-20t | Bajo | 🔴 CRÍTICA |
+| 2 | Workflows paralelos | 10-15% | Medio | 🔴 CRÍTICA |
+| 3 | Lazy loading de archivos | 5-10t | Bajo | 🟡 ALTA |
+| 4 | Dedup búsquedas Grep/Glob | 2-5t | Bajo | 🟡 ALTA |
+| 5 | Batch processing análisis | 20-30% | Medio | 🟡 ALTA |
+| 6 | Model selection inteligente | 15-25% | Bajo | 🟢 MEDIA |
+| 7 | Context compression | 5-10% | Bajo | 🟢 MEDIA |
+| 8 | Subagent registry | 10-20% | Medio | 🟢 MEDIA |
+| 9 | Streaming resultados | 5-15% | Alto | 🔵 FUTURA |
+| 10 | MCP caching | 2-5t | Bajo | 🔵 FUTURA |
+
+**Ahorro teórico acumulado (Fases 1+2+3):** 30-50% tokens/sesión
+
+### Roadmap de Implementación
+
+**Fase 1 (1-2 semanas) — QUICK WINS**
+- Caching frontmatter YAML
+- Lazy loading con índices
+- Dedup búsquedas
+- Esfuerzo: ~4-6 horas
+- Ahorro esperado: 20-35 tokens/turno
+
+**Fase 2 (Semanas 3-4) — ARQUITECTURA**
+- Workflow patterns para paralelismo
+- Batch processing framework
+- Model selection heuristics
+- Esfuerzo: ~8-12 horas
+- Ahorro esperado: +15-30% adicional
+
+**Fase 3 (Mes 2) — AVANZADO**
+- Subagent registry
+- Context compression tuning
+- Streaming + MCP caching (si disponible)
+- Esfuerzo: ~12-16 horas
+- Ahorro esperado: +10-20% adicional
+
+### Insights Clave
+
+1. **Context matters más que model size** — Haiku con buen contexto > Opus con mal contexto
+2. **Paralelismo es gratis** — Workflows no cuestan más, ahorran tiempo y tokens
+3. **Lazy > Eager** — Solo cargar lo necesario es ~10% más barato que full context
+4. **Caching pequeño ahorra grande** — 180KB cache frontmatter → 20 tokens/turno ahorrados
+5. **Batch > Sequential** — 50 items en 1 agente (5K tokens) vs 50 agentes (50K tokens)
+
+### Artefactos Anexos
+
+- Estimación de ahorro anual (416K tokens → 150K tokens con todas las fases)
+- Baseline Sesión 25: ~45K tokens gastados, 2h ejecución
+- Target post-optimización: ~25K tokens (-44%)
+
+### Recomendaciones para Debate (Arquitectura APB)
+
+1. **¿Adoptar todas las estrategias, o piloto Fase 1 primero?**
+   - Recomendación: Piloto Fase 1 (4-6h, bajo riesgo)
+
+2. **¿Reutilizar optimizer para workflows existentes (#77 PoC)?**
+   - Recomendación: Sí, medir Sesión 25 vs post-optimización
+
+3. **¿Formalizar "token budgets" por sesión?**
+   - Recomendación: Sí, directiva +500k ya existe
+
+### Próximas Acciones (Debate Débora)
+
+- [ ] Revisar documento de estrategia
+- [ ] Elegir modelo de implementación (piloto Fase 1 vs. full rollout)
+- [ ] Decidir si priorizar caching YAML o workflows primero
+- [ ] Asignar recursos para Fase 1
+
+---
+
+*Cierre de sesión 2026-07-06 (continuación)*
