@@ -972,3 +972,94 @@ componentes en `agents/`/`workflows/`/`skills/` que requieran ID). Los agentes #
 sesión anterior (estado `draft`).
 
 **Nota sobre #88:** explícitamente pospuesto a sesión posterior (TruckCenter reejecución completa con vídeo + corrección H1).
+
+---
+
+## Sesión 25 — #39/#40 Dashboards + #41 Autonomía (2026-07-06)
+
+**Participantes:** Débora Martín, Claude Haiku 4.5 (sesión parallel workstreams)
+
+**Tipo:** Implementación + Análisis
+
+### Workstream 1: #39/#40 — Dashboards Genéricos (COMPLETADO)
+
+**Objetivo:** Generar skill + subagent para crear dashboards agnósticos (Power BI, Grafana) desde especificación natural.
+
+**Entregables:**
+- ✅ Skill `apb-plat-dashboards-generator-v1.0` (generador agnóstico)
+- ✅ Subagent `apb-sub-dashboard-discovery-v1.0` (entrevista + reuso)
+- ✅ Dashboard **Grafana JSON** (importable en 5 min)
+- ✅ Dashboard **Power BI spec** (guía + DAX measures)
+- ✅ **Runbook operativo** (SLAs, alertas, troubleshooting)
+
+**Caso de uso (MVP):** QA Compliance Dashboard
+- Origen: Sonar (coverage, bugs), Dependabot (vulnerabilities), Jira (resolution time)
+- Metrics: test coverage%, High/Critical bugs, open vulnerabilities, MTTR
+- Dimensions: app, environment (DEV/PRE/PROD), team
+- Frecuencia: Real-time (Grafana) + Daily (Power BI)
+
+**Hallazgos de reutilización:**
+- Subagentes existentes encontrados (`apb-sub-obs-powerbi-v1.0`, `apb-sub-obs-grafana-v1.0`)
+- Plantillas Grafana comunitarias identificadas
+- Estrategia: CUSTOMIZE_TEMPLATE (Grafana) + BUILD_FROM_SCRATCH (Power BI)
+
+**Próximos pasos:**
+1. Probar dashboard Grafana JSON en vivo (requiere Prometheus/Azure Monitor)
+2. Construir Power BI dataset desde spec (1-2 horas)
+3. Validar alertas y SLAs en operación
+
+---
+
+### Workstream 2: #41 — Autonomía de Agentes (COMPLETADO)
+
+**Objetivo:** Analizar qué 217 componentes pueden operar sin revisión humana previa (Nivel 2/3).
+
+**Descubrimiento:**
+- **350 componentes** mapeados (no 217)
+- **Distribución:** Level 0 (1), Level 1 (318), Level 2 (31), Level 3/4 (0)
+- **Candidatos identificados:** 3 (auditoría read-only, bajo riesgo)
+  - `apb-agent-accessibility-auditor-v1.0`
+  - `apb-ops-dependency-audit-v1.0`
+  - `apb-wf-accessibility-audit-v1.0`
+
+**Gaps críticos identificados:**
+1. ❌ Sin timeout policy (agente puede colgarse indefinidamente)
+2. ❌ Sin loop detection (ciclos no detectados)
+3. ❌ Sin enforcement real (validación es solo metadata)
+4. ❌ Sin async messaging (comunicación síncrona via Git/Jira)
+
+**Recomendación:**
+- NO promover a Nivel 2 hasta cerrar gaps
+- Implementar enforcement en futuro
+- Usar candidatos actuales como test case para validation
+
+---
+
+### Calidad & Validación
+
+- ✅ `validate_repo.py --strict`: EXITOSO (0 errores, 10 warnings conocidos)
+- ✅ 14 files changed, 2679 insertions
+- ✅ Commit: 0788c9c
+
+### Commits Relevantes
+
+- `0788c9c`: feat: #39/#40 dashboards genéricos + #41 análisis autonomía
+
+---
+
+### Próxima Sesión
+
+**Tema:** Prueba de implementación dashboard Power BI (construcción real dataset + import)
+
+**Bloqueantes resueltos:**
+- Especificación Power BI lista
+- DAX measures documentadas
+- Data model definido
+
+**Bloqueantes pendientes:**
+- Azure Monitor / Sonar credenciales para Grafana
+- Acceso Power BI Service para deploy
+
+---
+
+*Cierre de sesión 2026-07-06*
