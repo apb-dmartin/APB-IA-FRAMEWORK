@@ -304,10 +304,10 @@ body {
    ```
 4. **Revisar nav items con screen reader (NVDA o JAWS)**
 
-### Prioridad 3 (Medio plazo)
+### Prioridad 3 (Documentación)
 
-- Documentar que APB.TRU usa DevExtreme JS (no React), consumidor de `components-dx/` del Design System
-- Evaluar migración a React solo si el roadmap lo incluye (decisión arquitectónica separada)
+- Documentar que APB.TRU usa DevExtreme JS, consumidor de `components-dx/` y `tokens/` del Design System
+- Stack aprobado: JavaScript + DevExtreme (sin React)
 
 ---
 
