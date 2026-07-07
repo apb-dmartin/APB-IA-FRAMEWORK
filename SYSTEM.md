@@ -147,6 +147,50 @@ Ambos puntos de entrada reales derivan de `AGENTS.md` (§10.1); ninguno duplica 
 - **Tests automatizados de regresión:** Puede operar en Nivel 3 si están previamente autorizados.
 - **Ninguna actividad inicia en Nivel 4** sin aprobación explícita de Arquitectura y Ciberseguridad.
 
+#### Timeout Policy
+
+Todo **Agent** o **Subagent** con `autonomy_level >= 2` debe declarar
+`max_duration_minutes` en su frontmatter (`context/apb/SCHEMA.md` §3.2/3.3,
+verificado por `scripts/validate_repo.py`) — duración máxima esperada de una
+ejecución antes de requerir intervención humana o abortar. Un componente de
+Nivel 2+ que se ejecuta sin límite de tiempo declarado puede quedar colgado
+indefinidamente sin que nadie lo note (gap de enforcement identificado en el
+análisis de autonomía del 2026-07-06).
+
+Defaults sugeridos por nivel (cada componente puede declarar su propio valor
+si su naturaleza lo justifica):
+
+| Nivel | Naturaleza | Default sugerido |
+|---|---|---|
+| 2 | Ejecución supervisada, bajo riesgo | 30 minutos |
+| 3 | Automatización controlada | 60 minutos |
+| 4 | Autorización explícita por acción | 15 minutos por acción individual (no la sesión completa) |
+
+#### Límites Hardcoded por Nivel
+
+Ninguna actividad de IA, con independencia de su `autonomy_level` declarado,
+puede ejecutar sin excepción explícita las siguientes acciones:
+
+| Acción | Nivel mínimo requerido |
+|---|---|
+| `git push --force` a cualquier rama | Nunca permitido por defecto — requiere excepción explícita de Arquitectura |
+| Modificar rama `main`/`master` directamente (sin PR) | 4, y solo con aprobación explícita previa |
+| Desplegar a producción | 4, con checkpoint humano por acción |
+| Aprobar su propio Pull Request | Nunca permitido, en ningún nivel |
+| Modificar IAM/permisos/roles de acceso | 4 |
+| Eliminar recursos de producción (bases de datos, storage) | 4, con checkpoint humano explícito |
+| Ejecutar cambios en Nivel 3+ sin autorización previa registrada | Prohibido — el Nivel 3 exige "previamente autorizadas" (§5 arriba) |
+
+**Limitación conocida:** este repositorio es documentación y metadatos — no
+ejecuta el código de los agentes. El enforcement real de estos límites en
+tiempo de ejecución es responsabilidad del runtime que invoque los agentes
+(futuro APB Agents MCP Server, ver `discovery/PLAN_MCP_SERVER_APB.md`,
+bloqueado hoy por MCP-1). Lo que existe en este repo es una salvaguarda
+**documental**: `scripts/enforce_autonomy_limits.py` revisa que ningún
+agente/subagente describa en su propio cuerpo Markdown una acción de esta
+tabla sin matización humana cercana, dado su nivel declarado — no sustituye
+el enforcement real de runtime.
+
 ---
 
 ## 6. Human Review Obligatorio

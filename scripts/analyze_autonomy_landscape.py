@@ -200,15 +200,21 @@ class ComponentAnalyzer:
             return "Medium"
         return "Low"
 
-    def detect_cycles(self) -> List[Tuple[str, str]]:
+    def detect_cycles(self) -> List[str]:
         """
-        Simple cycle detection: if A depends on B and B depends on A.
-        (Full implementation would require traversing entire dependency graph.)
+        Detección real de ciclos de dependencia (de cualquier longitud, no solo
+        A↔B directo) delegada en scripts/validate_repo.py::validate_no_circular_dependencies,
+        que recorre el grafo completo de wiring del repo (skills/subagents/agents/
+        depends_on) con DFS de 3 colores. Este método existía como stub sin
+        implementar (Gap B1 de enforcement de autonomía, cerrado 2026-07-07) —
+        ahora reutiliza la única implementación real en vez de duplicarla.
         """
-        cycles = []
-        # Simplified: check for direct cycles in current catalog
-        # Full implementation requires loading dependency info from each component
-        return cycles
+        sys.path.insert(0, str(Path(__file__).parent))
+        import validate_repo
+
+        result = validate_repo.ValidationResult()
+        validate_repo.validate_no_circular_dependencies(self.root, result)
+        return [issue.message for issue in result.errors]
 
     def print_summary(self):
         """Print summary statistics."""

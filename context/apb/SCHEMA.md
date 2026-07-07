@@ -69,6 +69,7 @@ de este repositorio.
 | `subagents` | list[string] | No | IDs de subagentes que puede invocar. |
 | `runtime` | list[string] | Sí | Subconjunto de `["copilot", "claude"]`. |
 | `human_review_points` | list[string] | Sí | Fases con validación humana obligatoria. |
+| `max_duration_minutes` | int | **Sí si `autonomy_level >= 2`** | Duración máxima esperada de una ejecución antes de requerir intervención/aborto (timeout policy, ver `SYSTEM.md` §5.1). |
 
 ### 3.3 Subagent
 | Campo | Tipo | Obligatorio | Descripción |
@@ -77,6 +78,7 @@ de este repositorio.
 | `specialty` | string | Sí | Tecnología o contexto concreto (.NET, Django, Azure...). |
 | `skills` | list[string] | Condicional | IDs de skills que usa. **Obligatorio si el Prompt de Sistema del subagente invoca alguna** — si no invoca ninguna, se omite el campo. |
 | `depends_on` | list[string] | Condicional | IDs de providers (o skills) de los que depende (contexto corporativo, telemetría, etc.). Misma condición que `skills`. |
+| `max_duration_minutes` | int | **Sí si `autonomy_level >= 2`** | Misma regla que en Agent — ver `SYSTEM.md` §5.1. |
 
 > **Regla de cierre (añadida 2026-07-06, formalización a petición de Débora):**
 > ningún subagente puede nombrar una skill o provider real por su ID en el

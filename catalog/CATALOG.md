@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 363
+- **Total Components**: 365
 
 ## Component Breakdown
 
@@ -197,7 +197,7 @@
 | `apb-sec-supply-chain-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-supply-chain-v1.0.md` |
 | `apb-sec-threat-model-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-threat-model-v1.0.md` |
 
-### Skills de Terceros (56 total)
+### Skills de Terceros (57 total)
 
 | ID | Fuente | Licencia | Estado | Archivo |
 |---|---|---|---|---|
@@ -244,6 +244,7 @@
 | `third-obra-test-driven-development-v1.0` | https://github.com/obra/superpowers | MIT | approved | `skills/third_party/obra/third-obra-test-driven-development-v1.0.md` |
 | `third-openai-threat-model-v1.0` | https://github.com/openai/security-threat-model | MIT | approved | `skills/third_party/openai/third-openai-threat-model-v1.0.md` |
 | `third-openspec-spec-gen-v1.0` | https://github.com/Fission-AI/OpenSpec | MIT | approved | `skills/third_party/openspec/third-openspec-spec-gen-v1.0.md` |
+| `third-roboflow-supervision-v1.0` | https://github.com/roboflow/supervision | MIT | draft | `skills/third_party/roboflow/third-roboflow-supervision-v1.0.md` |
 | `third-rowboat-orchestrator-v1.0` | https://github.com/rowboatlabs/rowboat | Apache 2.0 | approved | `skills/third_party/rowboat/third-rowboat-orchestrator-v1.0.md` |
 | `third-sickn33-auth-implementation-patterns-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-auth-implementation-patterns-v1.0.md` |
 | `third-sickn33-ddd-context-mapping-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-ddd-context-mapping-v1.0.md` |
@@ -258,7 +259,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (38 total)
+### Agentes (39 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -282,6 +283,7 @@
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
 | `apb-agent-incident-support-v1.0` | Incident Support | draft | `agents/apb-agent-incident-support-v1.0.md` |
 | `apb-agent-knowledge-manager-v1.0` | Knowledge Manager | draft | `agents/apb-agent-knowledge-manager-v1.0.md` |
+| `apb-agent-log-analyst-v1.0` | Log Analyst Agent | draft | `agents/apb-agent-log-analyst-v1.0.md` |
 | `apb-agent-meta-builder-v1.0` | Meta Builder Agent | draft | `agents/apb-agent-meta-builder-v1.0.md` |
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |

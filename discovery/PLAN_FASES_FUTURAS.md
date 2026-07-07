@@ -45,7 +45,11 @@
 | #8 | Horas históricas reales de la organización para calibrar conversión puntos↔horas | Calibración `apb-disc-cosmic-v1.0` | 🟡 Mes 2 |
 | #79 | URL/organización exacta de "Fine Skills" (único resto abierto del bloque de terceros #79, ya resuelto en el resto) | Evaluación de incorporación | 🟢 Mes 2-3 |
 | #87 | Pasos concretos del proceso de evaluación/migración a Cloud definidos por APB | Reescritura de `apb-wf-cloud-migration-v1.0` con el proceso real (no el genérico de industria actual) | 🟡 Cuando Débora lo aporte |
-| N8 | **Runtime de agentes en producción** — qué asistente de IA concreto ejecuta cada agente cuando un empleado lo usa en el día a día (Claude Code, GitHub Copilot, Rovo, M365 Copilot). Hoy el campo `runtime:` del frontmatter es declarativo/aspiracional; no hay mecanismo de invocación real por runtime salvo `scripts/invoke_agent.py` (uso interno Claude). **Distinta de #77** (que es el motor de orquestación de flujos multi-agente, no el runtime de un agente individual) | Estrategia de despliegue real a usuarios finales | 🟡 Mes 2 |
+| N8 | **Runtime de agentes en producción** — qué asistente de IA concreto ejecuta cada agente cuando un empleado lo usa en el día a día (Claude Code, GitHub Copilot, Rovo, M365 Copilot). Hoy el campo `runtime:` del frontmatter es declarativo/aspiracional; no hay mecanismo de invocación real por runtime salvo `scripts/invoke_agent.py` (uso interno Claude). **Distinta de #77** (que es el motor de orquestación de flujos multi-agente, no el runtime de un agente individual). **Mecanismo propuesto (2026-07-07):** MCP Server APB Agents — ver `PLAN_MCP_SERVER_APB.md`, Fase 0 ejecutable ya (Sección B de aquí), Fases 1+ bloqueadas por MCP-1 a MCP-4 abajo | Estrategia de despliegue real a usuarios finales | 🟡 Mes 2 |
+| MCP-1 | **MCP Server APB Agents — Fase 1 (auth + despliegue Azure Container Apps):** verificar con prototipo si la autenticación de plataforma de Container Apps es compatible con el flujo de autorización MCP (desafío `401`/PRM), y definir los grupos de Entra ID concretos para los scopes `apb-mcp.read`/`apb-mcp.execute`. Ver `PLAN_MCP_SERVER_APB.md` Fase 1 | Despliegue real del MCP server a Claude Code/Copilot (resuelve N8) | 🔴 Cuando Arquitectura decida avanzar más allá del MVP local |
+| MCP-2 | Confirmar orden de prioridad de skills/workflows a exponer en la Fase 3 del MCP Server (`list_skills`/`get_skill_definition`/`list_workflows`) — propuesta sin confirmar: `development` primero, luego `governance` | Ampliación del catálogo del MCP server más allá de las 3 tools del MVP | 🟡 Mes 2 |
+| MCP-3 | Verificar contra un tenant real de Atlassian si Forge/Rovo puede consumir este MCP server como tool externa, o si la única vía sigue siendo REST/webhook (`forge/manifest.yml`). Ligado a **#78** (tagging `runtime: rovo`) | Decide si la Fase 5 (Rovo) es extensión del MCP server o arquitectura REST paralela | 🟡 Cuando Débora tenga acceso al tenant |
+| MCP-4 | Identificar un caso de uso real de routing a un LLM específico por skill (Fase 6 del MCP Server) — sin caso confirmado hoy, no construir el motor de routing especulativamente | Activación de la Fase 6 del MCP server | 🟢 Sin urgencia, solo si aparece un caso concreto |
 | N9 | **Configurar Obsidian** — definir con Débora: ¿vault sobre `discovery/` (o todo el repo)?, ¿qué plugins (grafo de enlaces `[[...]]` ya usado en memoria, Dataview, Kanban)?, ¿uso personal o compartido con el equipo? Sin estas respuestas no es ejecutable — no es un componente del framework, es tooling personal de Débora | Flujo de trabajo personal de Débora sobre la documentación del framework | 🟢 Cuando Débora lo defina |
 
 ---
@@ -58,7 +62,8 @@ de que se le asigne turno, no de que alguien lo desbloquee.
 
 | Ítem | Qué es | Origen |
 |---|---|---|
-| Wiring de 5 subagentes | `apb-sub-ops-entra-v1.0`, `apb-sub-sec-sast-v1.0` → `apb-agent-security-architect-v1.0`; `apb-sub-qa-performance-v1.0` → `apb-agent-qa-auto-v1.0`; `apb-sub-finops-azure-v1.0` → `apb-agent-finops-v1.0`; `apb-sub-gov-data-v1.0` → `apb-agent-data-governance-v1.0` (añadirlos a `subagents:` del padre) | R2 (revisión 360° 2026-06-29) |
+| **Construir MVP local del MCP Server APB Agents (Fase 0)** | Servidor MCP stateless con exactamente 3 tools (`list_agents`, `get_agent_instructions`, `get_apb_knowledge`), transporte `streamable-http`, Python + SDK oficial `mcp`, contenedor Docker con el repo montado read-only (`/repo`), sin auth ni telemetría (explícitamente fuera de alcance v1). Resuelve de raíz el gap **N8** (no hay hoy mecanismo de invocación real por runtime, solo el simulador `scripts/invoke_agent.py`). Checklist de "hecho" y detalle completo (incluidas Fases 1-7, todas con blocantes propios — ver tabla MCP-1 a MCP-4 en Sección A) en [`PLAN_MCP_SERVER_APB.md`](PLAN_MCP_SERVER_APB.md) | Sesión de arquitectura con Débora, 2026-07-07 |
+| ~~Wiring de 5 subagentes~~ **— ✅ VERIFICADO (2026-07-07)** | Ya estaban correctamente wireados en ambos sentidos en el repo real — ver detalle en [`PLAN_FASES_COMPLETADAS.md`](PLAN_FASES_COMPLETADAS.md#wiring-de-5-subagentes--verificado-2026-07-07) | R2 (revisión 360° 2026-06-29) |
 | Sincronizar cifras de componentes en `HANDOFF_TECNICOS.md` | Regenerar catálogo y corregir las 3 menciones desfasadas (345/347/341 → cifra real) | BUG-07 (ya definido, no ejecutado) |
 | Ampliar `apb-gov-org-risk-report-v1.0` | 2 de 7 marcos normativos (LCSP, RGPD-adjacent WCAG) están mencionados sin checklist operativo propio — desarrollar criterios de evaluación igual que ENS/ISO/NIST/RGPD/OWASP | Hallazgo de esta auditoría (2026-07-06) |
 | Cerrar 3 de 4 gaps de enforcement de autonomía | Timeout policy, loop detection, hardcoded limits por nivel (el 4º, async messaging vía Service Bus/Kafka, requiere infraestructura → en `HANDOFF_TECNICOS.md`) | #41 / análisis de autonomía 2026-07-06 |
@@ -138,6 +143,16 @@ de que se le asigne turno, no de que alguien lo desbloquee.
 (#77), functional-technical-support, LCSP (#36), continuidad de servicio
 (skill), dashboards (#39/#40), ingesta Jira (#37), telemetría (HANDOFF
 TEL), caching de outputs, SBOM/supply-chain, capabilities/.
+
+**MCP Server APB Agents:** plan completo (Fases 0-7) consolidado — ver
+[`PLAN_MCP_SERVER_APB.md`](PLAN_MCP_SERVER_APB.md). Fase 0 ejecutable ya
+(Sección B de arriba, resuelve N8); Fases 1-7 bloqueadas por MCP-1 a MCP-4
+(Sección A). **Skill de terceros añadida en la misma sesión (2026-07-07), sin
+relación con el MCP server:**
+[`third-roboflow-supervision-v1.0`](../skills/third_party/roboflow/third-roboflow-supervision-v1.0.md)
+(visión artificial — Roboflow `supervision`, MIT) — sin caso de uso APB
+confirmado, `consumed_by` vacío, no wirear a ningún agente sin que Arquitectura
+documente antes un caso de uso real.
 
 **Estrategia de optimización de tokens:** ya resuelta — ver
 [`ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md`](ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md)

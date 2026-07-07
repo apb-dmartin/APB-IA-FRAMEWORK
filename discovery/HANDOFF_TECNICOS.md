@@ -7,8 +7,8 @@
 > `PLAN_FASES_FUTURAS.md` + sincronización de cifras — ver nota de proceso
 > más abajo)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** 361 componentes (`generate_catalog.py`, 2026-07-06): 182 skills APB,
-> 56 third-party, 37 agentes, 35 subagentes, 17 workflows, 23 providers, 7 wrappers,
+> **Estado global:** 365 componentes (`generate_catalog.py`, 2026-07-07): 183 skills APB,
+> 57 third-party, 39 agentes, 35 subagentes, 17 workflows, 23 providers, 7 wrappers,
 > 4 adapters. 37 `approved` (todos terceros/wrapper de contexto, 0 apb-owned), 4
 > `deprecated`, resto `draft`. Pendiente despliegue e inicio del ciclo de gobernanza
 > sobre componentes propios. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
@@ -55,7 +55,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 | **BUG-04** | `adapters/claude/adapter-claude-v1.0.md` | Model string `claude-sonnet-4-20250514` obsoleto | Actualizar al model string actual | 5 min |
 | **BUG-05** | `SYSTEM.md §4.2` | Solo documenta 2 adapters; existen 4 (`claude`, `copilot`, `m365`, `rovo`) | Añadir filas de `adapters/m365/` y `adapters/rovo/` con estado `draft` | 10 min |
 | **BUG-06** | `.github/workflows/telemetry.yml` | El workflow hace `git push` directo a `main` para actualizar `telemetry/events.jsonl` — anti-patrón CI y vector de seguridad | Usar Azure Blob Storage como buffer (Opción A) o rama `telemetry-log` sin protección (Opción B) | 1 día |
-| **BUG-07** | `discovery/CONTINUIDAD_PROYECTO.md §8` | ✅ **RESUELTO (2026-07-06):** `generate_catalog.py` ejecutado, cifra real 361 componentes — corregido en este documento (cabecera + §2 + §3 + Estado global). Pendiente solo actualizar `CONTINUIDAD_PROYECTO.md §8` con la misma cifra. | Actualizar `CONTINUIDAD_PROYECTO.md §8` a 361 | 5 min |
+| **BUG-07** | `discovery/CONTINUIDAD_PROYECTO.md §8` | ✅ **RESUELTO (2026-07-07):** `generate_catalog.py` ejecutado, cifra real 365 componentes — corregido en este documento (cabecera + §2 + §3 + Estado global). `CONTINUIDAD_PROYECTO.md §8` **no requiere cambio**: su entrada histórica (208→341) es un BUG-07 distinto ya cerrado en su momento; la entrada de Sesión 27 ya refleja la cifra correcta. Nota de proceso: esta fila queda obsoleta cada vez que el catálogo se regenera tras añadir/quitar componentes — revisar contra `catalog/CATALOG.md` antes de asumir que sigue vigente. | — (sin acción pendiente) | — |
 | **BUG-08** | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` | `source_license: "unverified"` — riesgo legal si se usa en producción | Verificar LICENSE en `https://github.com/Lum1104/Understand-Anything`; si no existe, marcar como `rejected` | 30 min |
 
 **Criterio de éxito de BUG-01 + BUG-02:** `python scripts/validate_repo.py --strict` (exit 0) y `python scripts/generate_catalog.py --check` (sin drift) pasan en verde en CI.
@@ -64,7 +64,7 @@ Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
 
 ## 2. Ciclo de aprobación — la prioridad de gobernanza
 
-**Situación actual (2026-07-06):** 361 componentes; 37 `approved` (todos terceros/wrapper de contexto — ninguno `apb-owned` funcional), 4 `deprecated`, el resto en `draft`. Los controles de seguridad y autonomía declarados en frontmatter de los componentes `apb-owned` son promesas no auditadas. Sin aprobaciones propias, el framework no tiene base formal para uso en producción.
+**Situación actual (2026-07-07):** 365 componentes; 37 `approved` (todos terceros/wrapper de contexto — ninguno `apb-owned` funcional), 4 `deprecated`, el resto en `draft`. Los controles de seguridad y autonomía declarados en frontmatter de los componentes `apb-owned` son promesas no auditadas. Sin aprobaciones propias, el framework no tiene base formal para uso en producción.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
@@ -123,7 +123,7 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-06):** `validate_repo.py --strict` → exit 0, 60/60 tests. 361 componentes, 0 huérfanos de wiring de los ya cableados (5 subagentes aún pendientes de cablear, ver `PLAN_FASES_FUTURAS.md` Sección B). Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+**Estado actual (2026-07-07):** `validate_repo.py --strict` → exit 0. 365 componentes, 0 huérfanos de wiring (los 5 subagentes que aparecían como pendientes de cablear ya estaban correctamente wireados en el repo real — verificado 2026-07-07, ver `PLAN_FASES_COMPLETADAS.md`). Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
 
 **Sesión QA TruckCenter (2026-07-03) — ejecución real + corrección de metodología:**
 - **Ejecución:** 44/120 casos del plan unificado (v1.4 → v1.5) con escritura real en PRE (B02-B07 + E2E
@@ -320,7 +320,7 @@ El código de telemetría está completo (`emit_telemetry.py`, `telemetry.yml`).
 | DOC5 | Documento Word: Manual de administración del framework | Plataforma / Operaciones | ⬜ Pendiente |
 | DOC6 | Guía de "Primera skill / Primer agente" para onboarding rápido | Nuevos contribuidores | ⬜ Pendiente |
 | DOC7 | Documentar deprecación `apb-ai-skills` en README del framework | Todos | ⬜ Pendiente |
-| DOC8 | Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real: 361 componentes (ver BUG-07) | IA / Arquitectura APB | ⬜ Pendiente |
+| DOC8 | ~~Actualizar `CONTINUIDAD_PROYECTO.md §8` con recuento real~~ | IA / Arquitectura APB | ✅ No aplica (verificado 2026-07-07): esa sección es un BUG-07 histórico distinto, ya correcto; la entrada de Sesión 27 tiene la cifra real (365, ver BUG-07) |
 | QA2-1 | **Credenciales centrales para pruebas funcionales:** el agente de pruebas (`apb-qa-exploratory-nav` / `prov-browser-agent`) debe consultar credenciales desde un **repositorio central de secretos** (Azure Key Vault, `GOVERNANCE.md §5`) y capturar/reutilizar `storage_state` (EntraID), para ejecutar sin login manual. En la demo QA-2 (2026-07-02) las introdujo el usuario. **Diseño cubierto en Fase I** (2026-07-03): `TEST_PLAN_STANDARD §9.2` (usuario de ejecución por `AKV://<secret>` o runtime) + `docs/qa/EJECUCION_LOCAL.md` (captura/reutilización de `storageState`). **Pendiente:** poblar el secreto real en AKV y verificar el flujo end-to-end (Plataforma/Ciberseguridad). | Plataforma / Ciberseguridad / IA | 🟡 Diseñado, ejecución pendiente |
 | QA3-1 | **Sesión QA-3 — ejecución funcional COMPLETA de TruckCenter.** Bloqueantes detectados en QA-2 E-bis: **F3** (PRE sin datos → sembrar dataset anonimizado RGPD), **F2** (formulario de Alta no carga >45s → investigar/priorizar), acceso de escritura para altas/bajas, 2ª pasada **USER_READ**, **k6** (rendimiento; API LGP ~9,3s F4), **SonarQube/OWASP ZAP** (seguridad), **Playwright** para evidencia visual PNG/traza/vídeo (las capturas del navegador MCP no persisten como fichero), **unitarias** (repo `APB.TRU` + xUnit). Actualizar el AF por **F5** (maestro multiidioma CA/ES/EN). **Fase I añadió el andamiaje** (aún sin ejecución real): Bloque B13 (4 casos k6, `Pendiente`) y B14 (4 casos xUnit, `Pendiente`) en el ejemplo unificado, provider `prov-azure-qa-runtime-v1.0` (`draft`) para correr Playwright/k6 sin instalar nada local, y destino de ejecución `azure-qa` en `TEST_PLAN_STANDARD §9.1`. | QA / Plataforma / Ciberseguridad / Dev | ⬜ Pendiente (Débora 2026-07-02; andamiaje Fase I 2026-07-03) |
 
@@ -435,7 +435,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **361 componentes** (37 aprobados, todos terceros — 0 apb-owned) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **365 componentes** (37 aprobados, todos terceros — 0 apb-owned) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 

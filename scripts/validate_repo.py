@@ -302,6 +302,21 @@ def validate_component_file(
             "ERROR", rel_path, f"Nivel de autonomía no válido: {autonomy}. Permitidos: 0-4"
         ))
 
+    # 9. Timeout policy (SYSTEM.md §5.1) — obligatorio para agent/subagent con autonomy_level >= 2
+    if component_type in ("agent", "subagent") and isinstance(autonomy, int) and autonomy >= 2:
+        max_duration = metadata.get("max_duration_minutes")
+        if max_duration is None:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                f"Nivel de autonomía {autonomy} >= 2 requiere declarar "
+                f"'max_duration_minutes' (SYSTEM.md §5.1, timeout policy)."
+            ))
+        elif not isinstance(max_duration, int) or isinstance(max_duration, bool) or max_duration <= 0:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                f"'max_duration_minutes' debe ser un entero positivo, se obtuvo: {max_duration!r}."
+            ))
+
     # 9. Pin de versión real para wrappers/skills de terceros (nunca "HEAD";
     #    "unverified" es admisible solo junto con verified_date, GOVERNANCE.md §4.2)
     source_commit_val = str(metadata.get("source_commit", "")).strip()
@@ -574,8 +589,14 @@ def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResul
     """Verifica que la relación agente↔subagente sea coherente en ambos
     sentidos: si un agente declara un subagent en su lista 'subagents', ese
     subagent debe declarar el ID (no el nombre) de ese mismo agente en su
-    campo 'parent_agent'."""
-    agent_to_subagents: Dict[str, str] = {}
+    campo 'parent_agent'.
+
+    Un subagente puede ser referenciado (reutilizado) por varios agentes en su
+    array 'subagents' sin cambiar su propio 'parent_agent' — el subagente solo
+    tiene un dueño formal, pero puede ser invocado por otros agentes. Por eso
+    se acumulan todos los agentes que referencian cada subagente en un set, en
+    vez de sobreescribir con el último visto en orden alfabético de fichero."""
+    agent_to_subagents: Dict[str, Set[str]] = {}
     agents_folder = repo_path / "agents"
     if not agents_folder.exists():
         return
@@ -585,7 +606,7 @@ def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResul
             continue
         agent_id = metadata.get("id")
         for sub_id in (metadata.get("subagents") or []):
-            agent_to_subagents[sub_id] = agent_id
+            agent_to_subagents.setdefault(sub_id, set()).add(agent_id)
 
     subagents_folder = repo_path / "subagents"
     if not subagents_folder.exists():
@@ -606,12 +627,13 @@ def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResul
             ))
             continue
 
-        expected_parent = agent_to_subagents.get(sub_id)
-        if expected_parent and declared_parent != expected_parent:
+        expected_parents = agent_to_subagents.get(sub_id)
+        if expected_parents and declared_parent not in expected_parents:
             result.add(ValidationIssue(
                 "ERROR", rel_path,
-                f"Inconsistencia agente↔subagente: '{expected_parent}' lista este "
-                f"subagent, pero 'parent_agent' aquí es '{declared_parent}'."
+                f"Inconsistencia agente↔subagente: {sorted(expected_parents)} "
+                f"listan este subagent, pero 'parent_agent' aquí es "
+                f"'{declared_parent}' (no coincide con ninguno)."
             ))
 
 
@@ -693,14 +715,37 @@ def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
                     ))
 
 
-def validate_no_circular_dependencies(repo_path: Path, result: ValidationResult):
-    """Detecta dependencias circulares directas (A depende de B y B depende
-    de A) en el campo 'depends_on' de las skills. 'depends_on' representa
-    una relación de prerrequisito de ejecución, por lo que no debe ser
-    simétrica; relaciones bidireccionales genuinas (skills complementarias)
-    deben documentarse en el cuerpo como 'relacionadas', no como depends_on."""
-    depends_map: Dict[str, List[str]] = {}
-    for folder in ["skills/apb-owned", "skills/third_party"]:
+CYCLE_EDGE_FIELDS = ["skills", "subagents", "agents", "depends_on"]
+
+
+def validate_no_circular_dependencies(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str] = None):
+    """Detecta dependencias circulares — de cualquier longitud, no solo
+    directas de 2 nodos — en el grafo de wiring de TODO el repo (no solo
+    skills): aristas desde 'skills', 'subagents', 'agents' y 'depends_on' de
+    cualquier componente. 'consumed_by' se excluye deliberadamente: es la
+    relación inversa de 'skills'/'depends_on' del consumidor, incluirla
+    duplicaría/invertiría aristas ya cubiertas.
+
+    Recorre el grafo con DFS de 3 colores (blanco/gris/negro) para detectar
+    back-edges (ciclos de cualquier longitud, no solo A↔B). Relaciones
+    bidireccionales genuinas (skills/agentes complementarios) deben
+    documentarse en el cuerpo como 'relacionados', no como referencia cruzada
+    en estos campos."""
+    graph: Dict[str, List[str]] = {}
+    edge_field: Dict[Tuple[str, str], str] = {}
+
+    if all_ids is None:
+        all_ids = {}
+        for folder in COMPONENT_FOLDERS:
+            folder_path = repo_path / folder
+            if not folder_path.exists():
+                continue
+            for filepath in iter_component_files(folder_path):
+                metadata, found = parse_frontmatter(filepath.read_text(encoding="utf-8"))
+                if found and metadata.get("id"):
+                    all_ids[metadata["id"]] = str(filepath.relative_to(repo_path))
+
+    for folder in COMPONENT_FOLDERS:
         folder_path = repo_path / folder
         if not folder_path.exists():
             continue
@@ -709,21 +754,55 @@ def validate_no_circular_dependencies(repo_path: Path, result: ValidationResult)
             if not found:
                 continue
             comp_id = metadata.get("id")
-            if comp_id:
-                depends_map[comp_id] = metadata.get("depends_on") or []
+            if not comp_id:
+                continue
+            graph.setdefault(comp_id, [])
+            for field_name in CYCLE_EDGE_FIELDS:
+                refs = metadata.get(field_name) or []
+                if isinstance(refs, str):
+                    refs = [refs]
+                for ref_id in refs:
+                    if ref_id in all_ids:
+                        graph[comp_id].append(ref_id)
+                        edge_field[(comp_id, ref_id)] = field_name
 
-    reported = set()
-    for a, deps in depends_map.items():
-        for b in deps:
-            if a in depends_map.get(b, []) and (b, a) not in reported:
-                reported.add((a, b))
-                result.add(ValidationIssue(
-                    "ERROR", f"{a} / {b}",
-                    f"Dependencia circular en 'depends_on': '{a}' y '{b}' se "
-                    f"declaran mutuamente como dependencia. Si la relación es "
-                    f"complementaria (no de prerrequisito), documentarla en el "
-                    f"cuerpo del documento, no en 'depends_on'."
-                ))
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color: Dict[str, int] = {node: WHITE for node in graph}
+    reported_cycles = set()
+
+    def report_cycle(cycle: List[str]):
+        chain = " → ".join(cycle)
+        edges_detail = "; ".join(
+            f"{cycle[i]} --[{edge_field.get((cycle[i], cycle[i + 1]), '?')}]--> {cycle[i + 1]}"
+            for i in range(len(cycle) - 1)
+        )
+        result.add(ValidationIssue(
+            "ERROR", cycle[0],
+            f"Dependencia circular detectada: {chain}. Cadena de wiring: "
+            f"{edges_detail}. Romper el ciclo eliminando o invirtiendo una de "
+            f"estas referencias (revisar cuál componente debería depender del "
+            f"otro, no al revés)."
+        ))
+
+    def dfs(node: str, path: List[str]):
+        color[node] = GRAY
+        path.append(node)
+        for neighbor in graph.get(node, []):
+            if color.get(neighbor, WHITE) == WHITE:
+                dfs(neighbor, path)
+            elif color.get(neighbor) == GRAY:
+                cycle_start = path.index(neighbor)
+                cycle = path[cycle_start:] + [neighbor]
+                key = frozenset(cycle)
+                if key not in reported_cycles:
+                    reported_cycles.add(key)
+                    report_cycle(cycle)
+        path.pop()
+        color[node] = BLACK
+
+    for node in list(graph.keys()):
+        if color[node] == WHITE:
+            dfs(node, [])
 
 
 def validate_version_drift(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
@@ -1304,7 +1383,7 @@ def main():
     validate_agent_subagent_consistency(repo_path, result, all_ids)
     validate_bidirectional_wiring(repo_path, result)
     validate_version_drift(repo_path, result, all_ids)
-    validate_no_circular_dependencies(repo_path, result)
+    validate_no_circular_dependencies(repo_path, result, all_ids)
     validate_harness_cold_start(repo_path, result)
     validate_test_plan_methodology(repo_path, result)
     validate_unified_plan_conservation(repo_path, result)

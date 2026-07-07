@@ -1275,3 +1275,79 @@ tenant APB.
 ---
 
 *Cierre de Sesión 26 (2026-07-06).*
+
+---
+
+## Sesión 27 — Plan MCP Server APB Agents consolidado + skill third-party supervision (2026-07-07)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Consolidación de documentación + creación de componente
+
+**Solicitud:** "añade al plan por fases lo indicado en el proyecto [los dos ficheros
+adjuntos `PLAN_MCP_SERVER_APB_v1.md` y `PLAN_MCP_SERVER_APB_FASES_1-7.md`] y las
+funcionalidades de terceros de `roboflow/supervision`". Aclarado antes de ejecutar
+(dos preguntas): (1) "el proyecto" = los propios ficheros adjuntos, no otra
+decisión ya registrada; (2) `supervision` es una skill de terceros normal en el
+catálogo, sin relación con el servidor MCP.
+
+### Workstream 1: Consolidación del plan MCP Server APB Agents (COMPLETADO)
+
+**Ejecutado:**
+- Releídos y reverificados contra el repo real los 5 ficheros de contexto que el
+  propio plan exige (`agents/apb-agent-ddd-v1.0.md`, `providers/prov-apb-knowledge-v1.0.md`,
+  `scripts/invoke_agent.py`, `context/apb/SCHEMA.md`) — frontmatter y los "dos bloques
+  Prompt de Sistema" confirmados como describía el plan original.
+- Creado `discovery/PLAN_MCP_SERVER_APB.md`: consolida íntegramente (sin resumir)
+  los dos documentos adjuntos (Fase 0 MVP local + Fases 1-7 con leyenda de
+  confianza Seguro/Probable/Suposición), más una sección nueva "Vínculos con el
+  resto del framework APB" que conecta el plan con **N8** (runtime de agentes en
+  producción — este MCP server es el mecanismo que falta), **#78** (tagging
+  `runtime: rovo`), `adapter-rovo-v1.0`, y aclara que no se solapa con los
+  providers P1-P6 de `PLAN_FASES_FUTURAS.md` §B.2.
+- `PLAN_FASES_FUTURAS.md`: añadidas 4 filas a Sección A (**MCP-1** a **MCP-4**,
+  los 5 bloqueantes reales de las Fases 1-7 condensados en 4 decisiones), 1 fila
+  a Sección B (Fase 0, ejecutable ya, ligada a N8), y notas de puntero en N8 y en
+  el cierre de §B.2.
+
+**No implementado en esta sesión:** el servidor MCP en sí (código, Dockerfile,
+tests) — esta sesión fue de consolidación de planificación, no de construcción.
+La Fase 0 queda en el backlog ejecutable (Sección B) para una sesión futura.
+
+### Workstream 2: Skill de terceros — visión artificial (roboflow/supervision) (COMPLETADO)
+
+**Verificación previa (no se asumió nada del enunciado del usuario):** grep
+exhaustivo del repo confirmó que no existía ninguna mención previa a visión
+artificial, cámaras, detección de objetos o tracking — no hay caso de uso APB
+que justifique esta skill. Verificado vía API de GitHub: licencia **MIT**,
+commit real `fd3de344dc9ba2dacd1e996ee6416b60d5e4d0d2` (rama `main`), repo activo
+(~47k ⭐, no archivado).
+
+**Ejecutado:**
+- Creado `skills/third_party/roboflow/third-roboflow-supervision-v1.0.md`
+  (dominio `development`, `status: draft`, `consumed_by` vacío). Cuerpo con
+  Capacidades (anotación de detecciones/segmentación, tracking multi-objeto,
+  análisis por zonas, conversión de datasets YOLO/COCO/Pascal VOC, métricas de
+  evaluación), y una **Nota de gobernanza explícita**: sin caso de uso ni
+  agente consumidor confirmado, no debe wirearse a ningún componente real sin
+  que Arquitectura APB documente antes el caso de uso concreto (mismo
+  tratamiento que `third-lum1104-knowledge-graph-v1.0`).
+
+**Pendiente:** identificar (si Débora lo decide) un caso de uso real antes de
+conectar esta skill a cualquier agente/workflow.
+
+### Calidad & Validación
+
+`scripts/generate_catalog.py` regenerado (364 componentes, +1 sobre los 363
+previos: la skill `third-roboflow-supervision-v1.0`) ·
+`scripts/validate_repo.py --strict` → **0 errores**, 10 warnings exentos
+(`source_commit: unverified`, política `GOVERNANCE.md §4.2`) · **60/60 tests**
+(`python -m unittest discover tests`).
+
+**Inventario al cierre:** 364 componentes (57 skills terceros [+1 sobre las 56
+previas], resto sin cambio — el plan MCP Server es documentación en
+`discovery/`, no un componente catalogable).
+
+---
+
+*Cierre de Sesión 27 (2026-07-07).*

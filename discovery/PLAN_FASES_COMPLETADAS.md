@@ -3471,3 +3471,20 @@ sí, cubren direcciones de integración diferentes.
 **Pendiente de Débora:** confirmar si existe/se activará un servidor MCP de Atlassian real en el
 tenant APB, para pasar `prov-atlassian-v1.0`/`prov-confluence-v1.0` de "⚠️ Parcial" a "✅ MCP" en
 `adapter-claude-v1.0`.
+
+---
+
+## Wiring de 5 subagentes — ✅ VERIFICADO (2026-07-07)
+
+`PLAN_FASES_FUTURAS.md` marcaba como pendiente el wiring de 5 subagentes (origen R2,
+revisión 360° 2026-06-29): `apb-sub-ops-entra-v1.0`, `apb-sub-sec-sast-v1.0` →
+`apb-agent-security-architect-v1.0`; `apb-sub-qa-performance-v1.0` →
+`apb-agent-qa-auto-v1.0`; `apb-sub-finops-azure-v1.0` → `apb-agent-finops-v1.0`;
+`apb-sub-gov-data-v1.0` → `apb-agent-data-governance-v1.0`.
+
+Verificación directa de frontmatter (inspección de cada fichero en `subagents/` y de sus
+agentes padre en `agents/`) confirmó que el wiring **ya existía** en ambos sentidos:
+cada subagente declara el `parent_agent` correcto, y cada agente padre ya lo lista en su
+propio array `subagents:`. La entrada original del backlog quedó desactualizada respecto
+al estado real del repo — no requirió ninguna edición de código, solo la corrección del
+propio plan (movida aquí y tachada en `PLAN_FASES_FUTURAS.md`).

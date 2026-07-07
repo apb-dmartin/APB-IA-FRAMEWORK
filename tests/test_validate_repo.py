@@ -345,6 +345,88 @@ review_date: "2026-06-24"
 
         self.assertEqual(len(result.errors), 0)
 
+    def test_multi_hop_cycle_of_three_is_detected(self):
+        """A→B→C→A (3 saltos) no es detectable por la comprobación de 2 nodos
+        original — el DFS multi-salto sí debe encontrarlo."""
+        self._write_skill("apb-dev-a-v1.0", ["apb-dev-b-v1.0"])
+        self._write_skill("apb-dev-b-v1.0", ["apb-dev-c-v1.0"])
+        self._write_skill("apb-dev-c-v1.0", ["apb-dev-a-v1.0"])
+
+        result = vr.ValidationResult()
+        vr.validate_no_circular_dependencies(self.tmp_dir, result)
+
+        self.assertEqual(
+            len(result.errors), 1,
+            f"Se esperaba exactamente 1 error de ciclo de 3 nodos, hubo {len(result.errors)}: "
+            f"{[e.message for e in result.errors]}",
+        )
+        self.assertIn("apb-dev-a-v1.0", result.errors[0].message)
+        self.assertIn("apb-dev-b-v1.0", result.errors[0].message)
+        self.assertIn("apb-dev-c-v1.0", result.errors[0].message)
+
+
+class TestCircularDependenciesCrossType(unittest.TestCase):
+    """El grafo de ciclos debe cruzar tipos de componente (agente → skill →
+    agente), no solo skill → skill, usando los campos skills/subagents/
+    agents/depends_on."""
+
+    def setUp(self):
+        self.tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_cross_"))
+        (self.tmp_dir / "skills" / "apb-owned").mkdir(parents=True)
+        (self.tmp_dir / "skills" / "third_party").mkdir(parents=True)
+        (self.tmp_dir / "agents").mkdir()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
+
+    def test_agent_skill_agent_cycle_is_detected(self):
+        # Agente A lista la skill S; la skill S depende (depends_on) del agente A → ciclo.
+        (self.tmp_dir / "agents" / "apb-agent-a-v1.0.md").write_text(textwrap.dedent("""\
+            ---
+            id: "apb-agent-a-v1.0"
+            name: "Agent A"
+            description: "Agente de prueba con ciclo cruzado"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 1
+            skills:
+              - "apb-dev-s-v1.0"
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Agent A
+        """), encoding="utf-8")
+        (self.tmp_dir / "skills" / "apb-owned" / "apb-dev-s-v1.0.md").write_text(textwrap.dedent("""\
+            ---
+            id: "apb-dev-s-v1.0"
+            name: "Skill S"
+            description: "Skill de prueba con ciclo cruzado"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 1
+            depends_on:
+              - "apb-agent-a-v1.0"
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Skill S
+        """), encoding="utf-8")
+
+        result = vr.ValidationResult()
+        vr.validate_no_circular_dependencies(self.tmp_dir, result)
+
+        self.assertEqual(
+            len(result.errors), 1,
+            f"Se esperaba 1 error de ciclo cruzado agente↔skill, hubo {len(result.errors)}: "
+            f"{[e.message for e in result.errors]}",
+        )
+
 
 class TestStrictModeExemptions(unittest.TestCase):
     """Sesión 7: --strict no debe fallar solo por warnings 'source_commit:
@@ -509,6 +591,191 @@ class TestValidateBidirectionalWiring(unittest.TestCase):
         vr.validate_bidirectional_wiring(self.repo, result)
         self.assertEqual(result.warnings, [],
             f"No se esperaba ningún WARNING, se obtuvo: {result.warnings}")
+
+
+class TestAgentSubagentMultiParent(unittest.TestCase):
+    """validate_agent_subagent_consistency debe permitir que un subagente sea
+    referenciado por varios agentes en 'subagents:' sin que eso dispare un
+    ERROR, siempre que su 'parent_agent' coincida con AL MENOS uno de ellos
+    (patrón real del repo: apb-sub-ops-azure-v1.0 referenciado tanto por
+    apb-agent-sre-v1.0 -su parent_agent- como por apb-agent-observability-v1.0)."""
+
+    def setUp(self):
+        self.tmpdir = tempfile.mkdtemp()
+        self.repo = Path(self.tmpdir)
+        (self.repo / "agents").mkdir()
+        (self.repo / "subagents").mkdir()
+
+    def tearDown(self):
+        shutil.rmtree(self.tmpdir)
+
+    def _write(self, path, content):
+        full = self.repo / path
+        full.parent.mkdir(parents=True, exist_ok=True)
+        full.write_text(content, encoding="utf-8")
+
+    def _agent(self, agent_id, subagents_yaml):
+        return textwrap.dedent(f"""\
+            ---
+            id: "{agent_id}"
+            name: "Test Agent {agent_id}"
+            description: "Agente de prueba"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 1
+            skills: []
+            subagents:
+{subagents_yaml}
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Test Agent
+        """)
+
+    def test_subagent_referenced_by_two_agents_no_error(self):
+        """Dos agentes listan el mismo subagente; parent_agent coincide con
+        uno de ellos → no debe dispararse ERROR de inconsistencia."""
+        self._write("agents/apb-agent-owner-v1.0.md",
+                     self._agent("apb-agent-owner-v1.0", '              - "apb-sub-shared-v1.0"'))
+        self._write("agents/apb-agent-reuser-v1.0.md",
+                     self._agent("apb-agent-reuser-v1.0", '              - "apb-sub-shared-v1.0"'))
+        self._write("subagents/apb-sub-shared-v1.0.md", textwrap.dedent("""\
+            ---
+            id: "apb-sub-shared-v1.0"
+            name: "Shared Subagent"
+            description: "Subagente reutilizado por dos agentes"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 2
+            parent_agent: "apb-agent-owner-v1.0"
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Shared Subagent
+        """))
+        all_ids = {
+            "apb-agent-owner-v1.0": "agents/apb-agent-owner-v1.0.md",
+            "apb-agent-reuser-v1.0": "agents/apb-agent-reuser-v1.0.md",
+            "apb-sub-shared-v1.0": "subagents/apb-sub-shared-v1.0.md",
+        }
+        result = vr.ValidationResult()
+        vr.validate_agent_subagent_consistency(self.repo, result, all_ids)
+        self.assertEqual(result.errors, [],
+            f"No se esperaba ningún ERROR de wiring multi-padre, se obtuvo: {result.errors}")
+
+    def test_subagent_parent_matches_neither_still_errors(self):
+        """Si el 'parent_agent' declarado no coincide con NINGUNO de los
+        agentes que lo referencian, el ERROR debe seguir disparándose."""
+        self._write("agents/apb-agent-owner-v1.0.md",
+                     self._agent("apb-agent-owner-v1.0", '              - "apb-sub-shared-v1.0"'))
+        self._write("agents/apb-agent-reuser-v1.0.md",
+                     self._agent("apb-agent-reuser-v1.0", '              - "apb-sub-shared-v1.0"'))
+        self._write("subagents/apb-sub-shared-v1.0.md", textwrap.dedent("""\
+            ---
+            id: "apb-sub-shared-v1.0"
+            name: "Shared Subagent"
+            description: "Subagente con parent_agent incorrecto"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: 2
+            parent_agent: "apb-agent-other-v1.0"
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Shared Subagent
+        """))
+        all_ids = {
+            "apb-agent-owner-v1.0": "agents/apb-agent-owner-v1.0.md",
+            "apb-agent-reuser-v1.0": "agents/apb-agent-reuser-v1.0.md",
+            "apb-agent-other-v1.0": "agents/apb-agent-other-v1.0.md",
+            "apb-sub-shared-v1.0": "subagents/apb-sub-shared-v1.0.md",
+        }
+        result = vr.ValidationResult()
+        vr.validate_agent_subagent_consistency(self.repo, result, all_ids)
+        self.assertTrue(
+            any("apb-sub-shared-v1.0" in i.file for i in result.errors),
+            f"Se esperaba ERROR de inconsistencia agente↔subagente, se obtuvo: {result.errors}"
+        )
+
+
+class TestTimeoutPolicyCheck(unittest.TestCase):
+    """Gap B2 de enforcement de autonomía (cerrado 2026-07-07, SYSTEM.md §5.1):
+    todo agent/subagent con autonomy_level >= 2 debe declarar
+    'max_duration_minutes' en el frontmatter."""
+
+    def setUp(self):
+        self.tmp_dir = Path(tempfile.mkdtemp(prefix="apb_validator_test_timeout_"))
+        (self.tmp_dir / "agents").mkdir(parents=True)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp_dir, ignore_errors=True)
+
+    def _validate_agent(self, autonomy_level, extra_frontmatter_line=""):
+        content = textwrap.dedent(f"""\
+            ---
+            id: "apb-agent-fixture-v1.0"
+            name: "Fixture Agent"
+            description: "Agente de prueba para timeout policy"
+            version: "1.0.0"
+            status: "draft"
+            owner: "test"
+            domain: "development"
+            autonomy_level: {autonomy_level}
+            {extra_frontmatter_line}
+            skills: []
+            runtime: ["claude"]
+            human_review_points: ["Revisar output"]
+            created_date: "2026-01-01"
+            review_date: "2026-07-01"
+            ---
+            # Fixture Agent
+        """)
+        path = self.tmp_dir / "agents" / "apb-agent-fixture-v1.0.md"
+        path.write_text(content, encoding="utf-8")
+        result = vr.ValidationResult()
+        vr.validate_component_file(path, self.tmp_dir, "agent", result, {})
+        return result
+
+    def test_level_2_without_max_duration_errors(self):
+        result = self._validate_agent(2)
+        self.assertTrue(
+            any("max_duration_minutes" in i.message for i in result.errors),
+            f"Se esperaba ERROR por falta de max_duration_minutes, se obtuvo: {result.errors}"
+        )
+
+    def test_level_2_with_max_duration_no_error(self):
+        result = self._validate_agent(2, 'max_duration_minutes: 30')
+        self.assertFalse(
+            any("max_duration_minutes" in i.message for i in result.errors),
+            f"No se esperaba ERROR de timeout policy, se obtuvo: {result.errors}"
+        )
+
+    def test_level_1_without_max_duration_no_error(self):
+        """Nivel 1 no requiere timeout policy — solo autonomy_level >= 2."""
+        result = self._validate_agent(1)
+        self.assertFalse(
+            any("max_duration_minutes" in i.message for i in result.errors),
+            f"No se esperaba ERROR de timeout policy en nivel 1, se obtuvo: {result.errors}"
+        )
+
+    def test_level_2_with_zero_max_duration_errors(self):
+        result = self._validate_agent(2, 'max_duration_minutes: 0')
+        self.assertTrue(
+            any("entero positivo" in i.message for i in result.errors),
+            f"Se esperaba ERROR por max_duration_minutes <= 0, se obtuvo: {result.errors}"
+        )
 
 
 class TestNoDeprecatedWiring(unittest.TestCase):
