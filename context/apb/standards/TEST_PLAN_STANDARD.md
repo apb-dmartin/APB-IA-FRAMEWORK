@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.5.1"
+version: "1.6.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -342,6 +342,23 @@ Tanto el **plan** como el **informe de ejecución** se generan siempre en **dos 
   nueva** para obtener la comparativa base. Cruza con [`prov-k6-v1.0`](../../../providers/prov-k6-v1.0.md)
   (carga/rendimiento) — umbral de referencia: p95 < 2000 ms, error < 1 %.
 
+### 8.1 Verificación pre-vuelo de k6 (obligatoria antes de generar/ejecutar una prueba real)
+
+> `prov-k6-v1.0` no es un MCP real (a diferencia de Playwright) — es un wrapper de CLI (`k6 run`), requiere
+> el binario instalado en el entorno que lo ejecuta.
+
+- Confirmar el **destino de ejecución** (§9.1) ANTES de generar el script:
+  - Si el destino es **`local`**: limitar el escenario a **`smoke`** (1-2 VUs, verificación básica) —
+    **nunca** carga/estrés real contra un entorno compartido (PRE/PRO) desde un portátil individual.
+  - Si el plan requiere una prueba de carga real (`load`/`stress`/`spike`/`soak`) contra PRE/PRO, el
+    destino **debe** ser `ci-runner` o `azure-qa` (`prov-azure-qa-runtime-v1.0`, k6 preinstalado).
+- Si ninguno de los dos destinos está disponible (p. ej. `azure-qa` aún sin desplegar — ver
+  `HANDOFF_TECNICOS.md` QA3-2), **no se ejecuta la carga real**: se declara el bloqueante explícitamente en
+  el informe. Nunca se sustituye en silencio por un smoke test presentado como si fuera la prueba completa.
+- Si el destino es `local` (solo smoke), verificar que k6 está instalado (`k6 version`) antes de proceder;
+  si no lo está, guiar la instalación (`docs/qa/EJECUCION_LOCAL.md` §2.3/§3) o preguntar si se prefiere
+  otro destino.
+
 ---
 
 ## 9. Ejecución funcional
@@ -439,6 +456,9 @@ Un plan de pruebas es conforme cuando:
 - [ ] **Verificación pre-vuelo de Playwright MCP (§7.2):** ANTES de empezar, confirmado que las tools de
       Playwright MCP están cargadas en la sesión activa (reabierta si hacía falta). Si no lo están, el
       informe declara el bloqueante explícitamente — no se asume vídeo real sin haberlo comprobado.
+- [ ] **Verificación pre-vuelo de k6 (§8.1):** si el plan incluye rendimiento real (no smoke), confirmado
+      que el destino de ejecución es `ci-runner`/`azure-qa` (nunca carga real desde un portátil); si no hay
+      destino disponible, el bloqueante queda declarado explícitamente, no sustituido en silencio por smoke.
 - [ ] **Roles y usuario de ejecución (§9.2):** existe la matriz de roles y cada caso declara su «Rol
       requerido»; el usuario de ejecución se resuelve por referencia AKV o entrada en runtime — **ningún
       secreto ni `storageState` con credenciales está en fichero versionado**.
@@ -465,3 +485,4 @@ Un plan de pruebas es conforme cuando:
 | 1.4.0 | 2026-07-03 | **§5.15 Casos NO ejecutados/bloqueados** — obligatorio en el informe de ejecución listar por ID canónico (no solo recuento agregado) los casos no ejecutados y su motivo. **§7.1** refuerza que la entrega dual Markdown+HTML nunca se omite en el informe. **§7.2 Evidencia visual: vídeo real, no GIF** — el GIF de herramientas de captura del navegador tiene tope de fotogramas y puede truncar sesiones largas sin avisar; se prefiere vídeo real (Playwright MCP `video:'on'`) o, en su defecto, GIF segmentado por bloque con la limitación declarada. 3 ítems añadidos al checklist §10. Origen: feedback de Débora tras detectar que el informe de ejecución de la sesión QA TruckCenter (2026-07-03) se generó solo en `.md`, sin listar los casos no ejecutados, y con un GIF de cobertura dudosa presentado sin esa advertencia. |
 | 1.5.0 | 2026-07-05 | **§2 Notación de procedencia en texto legible, sin siglas** — sustituye la notación abreviada `R[J:...]·C[Cod]` por frases que un lector no técnico entiende sin leyenda (p. ej. `Jira aportado por Débora (ticket AOM-2530)`, `Código fuente verificado (repo APB.API.TES, PortCallController.cs:38)`). Origen: feedback de Débora durante la generación del lote de 32 planes de pruebas (sesión QA-continuación), tras detectar que `R[J]` no se entendía sin la leyenda y que además `R` (Rovo) se usaba de forma imprecisa para tickets citados en documentos aportados por el usuario, no consultados en vivo vía Rovo. |
 | 1.5.1 | 2026-07-07 | **§7.2 Verificación pre-vuelo de Playwright MCP** — obligatorio confirmar, antes de iniciar cualquier sesión de ejecución con evidencia visual, que las tools de Playwright MCP están cargadas (reabrir la sesión si hace falta); si no lo están, no se procede y se declara el bloqueante en vez de asumir vídeo real. Ítem añadido al checklist §10. Fix estructural señalado: desplegar `prov-azure-qa-runtime-v1.0` (`HANDOFF_TECNICOS.md` QA3-2) para eliminar la dependencia del puesto de trabajo por completo. Origen: feedback de Débora tras confirmar que la última ejecución de un plan de pruebas volvió a generar solo GIF, no vídeo, por repetir el mismo fallo de sesión no reabierta (punto #88). |
+| 1.6.0 | 2026-07-07 | **§8.1 Verificación pre-vuelo de k6** (nueva subsección) — antes de generar/ejecutar una prueba de rendimiento real, confirmar el destino de ejecución: `local` limita a smoke, carga real requiere `ci-runner`/`azure-qa` o se declara el bloqueante explícitamente (nunca sustituido en silencio por un smoke test). Ítem añadido al checklist §10. Origen: Débora preguntó qué hacía falta para que la próxima ejecución de un plan incluyera también rendimiento — se confirmó que el diseño (skill + subagente + bloque B13 de TruckCenter) ya existe, pero falta el mismo runtime de Azure QA (QA3-2) que resuelve también el vídeo. |

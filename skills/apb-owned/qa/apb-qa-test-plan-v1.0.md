@@ -2,7 +2,7 @@
 id: "apb-qa-test-plan-v1.0"
 name: "Test Plan Generator"
 description: "Genera planes de pruebas estructurados a partir de especificaciones, historias de usuario o requisitos, con trazabilidad LCSP/ENS/RGPD/WCAG 2.1 AA cuando el proyecto lo requiere. Incluye casos de prueba, criterios de aceptación, datos de prueba, estimaciones y asignación de responsables."
-version: "1.4.0"
+version: "1.5.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
@@ -42,6 +42,13 @@ depends_on:
 > informe de ejecución) se entregan siempre en **Markdown + HTML** (§7.1: cabecera azul + logo APB, nav
 > lateral, acordeón por bloque — `scripts/generate_test_plan_html.py`), resolviendo el destino final con
 > `apb-plat-deliver-artifact-v1.0`.
+
+> **Ampliación v1.5.0 (2026-07-07, feedback de Débora):** la verificación de **vigencia del plan**
+> (¿existe `previous_plan`? ¿está desactualizado respecto a la app real?) ya no es solo un paso de
+> *generación* — es un **pre-vuelo obligatorio antes de cualquier ejecución real** de un plan existente.
+> [`apb-qa-exploratory-nav-v1.0`](apb-qa-exploratory-nav-v1.0.md) invoca esta skill en modo verificación
+> (sin regenerar) antes de ejecutar `test_plan_ref`; si detecta desfase, avisa y ofrece actualizar
+> incrementalmente antes de proceder — nunca ejecuta en silencio un plan potencialmente obsoleto.
 
 > **Ampliación v1.4.0 (Sesión QA-2, Fase I, 2026-07-03):** cubre 7 huecos de uso real
 > ([`TEST_PLAN_STANDARD v1.3.0`](../../../context/apb/standards/TEST_PLAN_STANDARD.md)): **(1)** define los
@@ -361,6 +368,7 @@ Cada caso debe tener:
 | `apb-agent-qa-auto-v1.0` | Generación de planes de prueba para sprints/releases |
 | `apb-agent-spec-engineer-v1.0` | Validación de cobertura de specs |
 | Workflow `apb-wf-qa-evidence-v1.0` | Generación de evidencias de testing |
+| `apb-qa-exploratory-nav-v1.0` | Invoca esta skill en **modo verificación** (sin regenerar) como pre-vuelo antes de ejecutar un `test_plan_ref` existente — confirma que no está desactualizado respecto a la app real |
 
 ## 7. Human Review
 
@@ -394,6 +402,7 @@ Cada caso debe tener:
 | 1.2.0 | 2026-07-02 | APB AI Framework (Sesión QA-2) | Implementa `TEST_PLAN_STANDARD`: ingesta de planes aportados (cualquier formato), unificación sin duplicados con procedencia múltiple, orden de fuentes con degradación, detección de plan previo + actualización incremental, secciones de gobernanza, no-regresión de rendimiento, skill interactiva. Inputs: `provided_plans`, `sources`, `previous_plan`, `app_repo`, `performance_baseline`, `evidence_destination`. `depends_on` += `apb-plat-doc-to-markdown-v1.0` |
 | 1.3.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, continuación) | Adopta el **ID canónico** `{APP}-B{NN}-T{NN}` (`TEST_PLAN_STANDARD §3.2`, append-only, con columna «Legado» en migraciones). Declara **gobernanza por aplicación** (§6.1). Entrega el plan siempre en **Markdown + HTML** (§7.1, `scripts/generate_test_plan_html.py`), delegando destino final en `apb-plat-deliver-artifact-v1.0` (añadido a `depends_on`). |
 | 1.4.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, Fase I) | Implementa `TEST_PLAN_STANDARD v1.3.0`: inputs `spec` (fuente SDD autoritativa), `test_roles`, `execution_user_source` (AKV/runtime), `execution_target` (`local`/`ci-runner`/`azure-qa`). Matriz de roles + «Rol requerido» por caso; usuario de ejecución por referencia AKV o runtime (nunca en fichero). Guía de instalación local si falta tooling. **Acta de aprobación del informe** (§6.2) y bucle **fallo → PR → Jira** (`apb-sub-qa-fix-loop-v1.0`, §6.3). `depends_on` += `prov-akv-v1.0`, `apb-disc-spec-gen-v1.0`. |
+| 1.5.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | La verificación de vigencia de `previous_plan` deja de ser solo un paso de generación: se formaliza como **pre-vuelo invocable por `apb-qa-exploratory-nav-v1.0`** antes de ejecutar un plan existente (modo verificación, sin regenerar). Añadida fila en «6. Agentes Consumidores». Origen: gap detectado por Débora — no había ningún mecanismo que impidiera ejecutar un plan desactualizado. |
 
 > **Generado por IA:** Claude (Anthropic), Sesión QA del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
