@@ -1,0 +1,10 @@
+# [IA-GEN] Generado por APB AI Framework (prov-azure-qa-runtime-v1.0)
+.git
+.gitignore
+.env
+.env.*
+*.pem
+*.key
+output/
+results.json
+summary.json

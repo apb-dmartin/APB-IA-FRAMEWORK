@@ -2,7 +2,7 @@
 id: "prov-azure-qa-runtime-v1.0"
 name: "Provider: Azure QA Runtime"
 description: "Proveedor de acción para ejecutar pruebas (Playwright + k6) en un entorno efímero de la suscripción QA de Azure, con las herramientas pre-instaladas y credenciales por Managed Identity → Azure Key Vault. Permite ejecución completa sin que el usuario ni el runner instalen nada. Agnóstico de implementación (Azure Container Apps job, Container Instances, Azure Load Testing, Microsoft Playwright Testing como referencias)."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "platform"
@@ -21,8 +21,12 @@ depends_on:
 > "en la suscripción QA de Azure, sin que nadie instale nada localmente" (destino `azure-qa`,
 > [`TEST_PLAN_STANDARD §9.1/§9.4`](../context/apb/standards/TEST_PLAN_STANDARD.md)).
 >
-> **Estado `draft` (diseño):** el **contrato** está definido; el **despliegue real** de la infraestructura
-> (job, red, identidades) es trabajo de la sesión **QA-3**. No hay recursos Azure aprovisionados todavía.
+> **Estado `draft` (diseño + contenedores generados, 2026-07-07):** el **contrato** está definido y las
+> **imágenes de referencia ya existen** en [`infra/azure-qa-runtime/`](../infra/azure-qa-runtime/README.md)
+> (Dockerfiles Playwright + k6, listos para build/run en local). El **despliegue real** a Azure Container
+> Apps (push a ACR, Job, Managed Identity, red, población de AKV) sigue pendiente — Débora avisará cuando
+> tenga el entorno listo; no hay recursos Azure aprovisionados todavía. Ver el README de esa carpeta para
+> el estado exacto y los pasos que faltan (trabajo de Plataforma, no de este framework).
 
 ---
 
@@ -89,7 +93,7 @@ Azure Key Vault** (`prov-akv-v1.0`), nunca se pasan en claro ni se persisten en 
 
 | Implementación | Uso típico | Nota |
 |---|---|---|
-| **Azure Container Apps job** | Job efímero con imagen Playwright+k6 | Escala a cero; ideal para regresión bajo demanda |
+| **Azure Container Apps job** | Job efímero con imagen Playwright+k6 | Escala a cero; ideal para regresión bajo demanda. Dockerfiles de referencia: [`infra/azure-qa-runtime/playwright/Dockerfile`](../infra/azure-qa-runtime/playwright/Dockerfile) y [`infra/azure-qa-runtime/k6/Dockerfile`](../infra/azure-qa-runtime/k6/Dockerfile) |
 | **Azure Container Instances** | Ejecución puntual contenedorizada | Alternativa simple sin plataforma de contenedores |
 | **Azure Load Testing** | Carga k6 gestionada a escala | Para rendimiento/estrés más allá de un solo nodo |
 | **Microsoft Playwright Testing** | Ejecución Playwright gestionada, paralela | Navegadores en la nube, sin instalar local |
@@ -99,7 +103,8 @@ Azure Key Vault** (`prov-akv-v1.0`), nunca se pasan en claro ni se persisten en 
 
 ## Restricciones
 
-- **`draft`:** contrato definido; sin infraestructura aprovisionada (despliegue = QA-3).
+- **`draft`:** contrato definido y contenedores generados (`infra/azure-qa-runtime/`); sin infraestructura
+  Azure aprovisionada todavía (despliegue = QA-3, `HANDOFF_TECNICOS.md`).
 - **Nunca ejecuta en producción** sin autorización explícita; ámbito por defecto PRE/QA.
 - **Credenciales nunca en claro ni persistidas**: solo Managed Identity → AKV por referencia
   (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
@@ -114,6 +119,13 @@ Invocar: prov-azure-qa-runtime-v1.0
 Input: { test_suite: "ref:tru/e2e", target_env: "pre", role: "USER_READ_TRUCK_CENTER", evidence_destination: "ambos" }
 Output: results[] (por ID canónico) + evidence_package + performance_summary + run_metadata
 ```
+
+## Historial de Cambios
+
+| Versión | Fecha | Autor | Cambio |
+|---|---|---|---|
+| 1.0.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, Fase I) | Creación del contrato (diseño), sin infraestructura ni imágenes reales |
+| 1.1.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | Genera las imágenes de referencia reales en `infra/azure-qa-runtime/` (Dockerfiles Playwright + k6, listos para build/run local); despliegue Azure sigue pendiente de confirmación de Débora |
 
 ---
 *Registrado en APB AI Framework. Requiere revisión humana antes de aprobación.*

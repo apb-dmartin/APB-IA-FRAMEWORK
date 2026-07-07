@@ -2,7 +2,7 @@
 id: "apb-qa-performance-v1.0"
 name: "Testing de Performance con k6"
 description: "Diseña y ejecuta pruebas de carga con k6 para validar el rendimiento de APIs y portales APB. Genera scripts k6 con escenarios ajustados al tráfico portuario real, define umbrales de aceptación (p95, error rate, RPS) y analiza los resultados contra la línea base."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "qa"
@@ -45,7 +45,7 @@ Validar que las APIs REST y portales web de APB soportan la carga esperada con t
 | `auth_type` | Enum | `none` / `bearer` / `api-key` / `mtls` | ❌ |
 | `baseline_metrics` | JSON | Métricas de referencia de la última ejecución (para comparativa) | ❌ |
 | `expected_rps` | Número | Requests per second esperados en pico de producción | ❌ |
-| `execution_target` | Enum | `local` / `ci-runner` / `azure-qa` (`TEST_PLAN_STANDARD §9.1`). Determina si el escenario se limita a `smoke` (`local`) o puede ser carga real (`ci-runner`/`azure-qa`) — ver §8.1 del estándar | ✅ si `scenario_type` ≠ `smoke` |
+| `execution_target` | Enum | `local` / `ci-runner` / `azure-qa` (`TEST_PLAN_STANDARD §9.1`). **Default: `local`.** Determina si el escenario se limita a `smoke` (`local`) o puede ser carga real (`ci-runner`/`azure-qa` — imágenes ya generadas en `infra/azure-qa-runtime/`) — ver §8.1 del estándar | ✅ si `scenario_type` ≠ `smoke` |
 
 ## Escenarios de Carga APB
 
@@ -201,6 +201,7 @@ Diseña y ejecuta pruebas de carga con k6 para validar el rendimiento de APIs y 
 |---|---|---|---|
 | 1.0.0 | 2026-06-29 | Arquitectura APB / Claude Code | Creación inicial — Sesión Enriquecimiento B |
 | 1.1.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | Añade input `execution_target` y verificación pre-vuelo (`TEST_PLAN_STANDARD §8.1`): carga real (no smoke) requiere `ci-runner`/`azure-qa`, nunca lanzada desde un portátil individual contra entorno compartido. Origen: Débora preguntó qué hacía falta para incluir rendimiento en la próxima ejecución del plan — se confirmó que faltaba esta verificación explícita, no la skill en sí. |
+| 1.2.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | `execution_target` pasa a default explícito `local`; referencia a la imagen k6 real ya generada en `infra/azure-qa-runtime/k6/` como implementación de `azure-qa`. |
 
 ## ⚠️ Comportamiento ante inputs incompletos
 
@@ -212,7 +213,7 @@ Diseña y ejecuta pruebas de carga con k6 para validar el rendimiento de APIs y 
 | `auth_type` | Asume `bearer` (más común en APIs APB) e indica la asunción | No |
 | `baseline_metrics` | Genera el test sin comparativa; indica que la primera ejecución establecerá el baseline | No |
 | `expected_rps` | Usa 50 VUs concurrentes como carga por defecto e indica la asunción | No |
-| `execution_target` | Pregunta: "¿Dónde se ejecuta: local (solo smoke), ci-runner o azure-qa?"; si `local` y el escenario no es `smoke`, no se genera el test de carga real — se explica la restricción (`TEST_PLAN_STANDARD §8.1`) | Sí si `scenario_type` ≠ `smoke` |
+| `execution_target` | Si no se indica, asume `local` (default). Si `local` y el escenario no es `smoke`, no se genera el test de carga real — se explica la restricción y se pregunta si prefiere `ci-runner`/`azure-qa` (`TEST_PLAN_STANDARD §8.1`) | Sí si `scenario_type` ≠ `smoke` |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

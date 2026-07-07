@@ -2,15 +2,17 @@
 id: "apb-qa-test-auto-v1.0"
 name: "Automatización de Testing"
 description: "Diseñar, implementar y mantener suites de tests automatizados (unitarios, de integración, E2E, de contrato, de performance) que garanticen la calidad del software de forma repetible y escalable."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "QA APB <arquitectura@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 2
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-07-07"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-playwright-v1.0"  # Motor de referencia para tests E2E scriptados
+  - "prov-azure-qa-runtime-v1.0"  # Destino azure-qa: contenedor sin instalación local
 
 ---
 
@@ -46,7 +48,11 @@ Al definir la estrategia de testing de un proyecto, al añadir nueva funcionalid
 - Arquitectura del sistema y contratos API/eventos
 - Código fuente del SUT
 - Estrategia de testing definida
-- Entornos de ejecución disponibles
+- `execution_target`: dónde corren los tests E2E scriptados — `local` (PC del usuario, guiado,
+  `docs/qa/EJECUCION_LOCAL.md`), `ci-runner` (pipeline) o `azure-qa` (`prov-azure-qa-runtime-v1.0`,
+  contenedor Playwright ya generado en `infra/azure-qa-runtime/playwright/`, sin instalar nada).
+  **Default: `local`** — el usuario elige `azure-qa`/`ci-runner` explícitamente si lo prefiere
+  (`TEST_PLAN_STANDARD §9.1`).
 
 ---
 
@@ -121,6 +127,8 @@ Al definir la estrategia de testing de un proyecto, al añadir nueva funcionalid
 - `apb-qa-unit-test-gen-v1.0`
 - `apb-sub-qa-unit-v1.0`
 - `apb-sub-qa-e2e-v1.0`
+- `prov-playwright-v1.0` — motor de referencia para tests E2E scriptados
+- `prov-azure-qa-runtime-v1.0` — destino `azure-qa` (contenedor sin instalación local)
 
 ---
 
@@ -132,7 +140,16 @@ Al definir la estrategia de testing de un proyecto, al añadir nueva funcionalid
 
 ---
 
-*Skill generada por Arquitectura APB — APB AI Framework v1.0.0-draft*
+## 🔄 Historial de Cambios
+
+| Versión | Fecha | Autor | Cambio |
+|---|---|---|---|
+| 1.0.0-draft | 2026-06-20 | Arquitectura APB | Creación inicial |
+| 1.1.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | Sustituye el input genérico "Entornos de ejecución disponibles" por `execution_target` estructurado (`local`/`ci-runner`/`azure-qa`, default `local`), referenciando el contenedor Playwright real ya generado en `infra/azure-qa-runtime/playwright/` como implementación de `azure-qa`. `depends_on` += `prov-playwright-v1.0`, `prov-azure-qa-runtime-v1.0`. |
+
+---
+
+*Skill generada por Arquitectura APB — APB AI Framework*
 
 
 
@@ -163,7 +180,9 @@ Diseñar, implementar y mantener suites de tests automatizados (unitarios, de in
 - Arquitectura del sistema y contratos API/eventos
 - Código fuente del SUT
 - Estrategia de testing definida
-- Entornos de ejecución disponibles
+- `execution_target` (local/ci-runner/azure-qa, default `local`) — dónde corren los tests E2E
+  scriptados; `azure-qa` usa el contenedor Playwright de `prov-azure-qa-runtime-v1.0`
+  (`infra/azure-qa-runtime/playwright/`), sin instalar nada
 
 ---
 
@@ -217,7 +236,7 @@ Diseñar, implementar y mantener suites de tests automatizados (unitarios, de in
 | `Arquitectura del sistema y contratos API/eventos` | Pregunta: "¿Puedes proporcionar arquitectura del sistema y contratos api/eventos?" | Sí |
 | `Código fuente del SUT` | Pregunta: "¿Puedes proporcionar código fuente del sut?" | Sí |
 | `Estrategia de testing definida` | Pregunta: "¿Puedes proporcionar estrategia de testing definida?" | Sí |
-| `Entornos de ejecución disponibles` | Pregunta: "¿Puedes proporcionar entornos de ejecución disponibles?" | Sí |
+| `execution_target` | Si no se indica, asume `local` (default) y lo declara explícitamente | No — default `local` |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

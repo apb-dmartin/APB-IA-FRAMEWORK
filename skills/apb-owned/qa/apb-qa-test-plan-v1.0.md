@@ -2,7 +2,7 @@
 id: "apb-qa-test-plan-v1.0"
 name: "Test Plan Generator"
 description: "Genera planes de pruebas estructurados a partir de especificaciones, historias de usuario o requisitos, con trazabilidad LCSP/ENS/RGPD/WCAG 2.1 AA cuando el proyecto lo requiere. Incluye casos de prueba, criterios de aceptación, datos de prueba, estimaciones y asignación de responsables."
-version: "1.5.0"
+version: "1.5.1"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
@@ -106,7 +106,7 @@ Esta skill:
 | `spec` | file_path / ref | No | Especificación SDD (`apb-disc-spec-gen-v1.0`). Si el plan nace de un flujo SDD es **input obligatorio** y **fuente funcional autoritativa** (§1): los casos derivan de sus criterios de aceptación. |
 | `test_roles` | list | No | Roles de usuario necesarios para las pruebas (nombre + alcance). Alimenta la matriz de roles (§9.2) y la columna «Rol requerido» por caso. Default: preguntar / inferir de la app. |
 | `execution_user_source` | enum | No | Origen del usuario concreto de ejecución: `akv-ref` (`AKV://<secret>`, vía `prov-akv-v1.0`) o `interactive` (login asistido en runtime → `storageState`). **Nunca** se persiste la credencial. Default: preguntar. |
-| `execution_target` | enum | No | Dónde se ejecuta: `local` (PC del usuario, guiado), `ci-runner` (pipeline), `azure-qa` (`prov-azure-qa-runtime-v1.0`, sin instalar nada). §9.1. Default: preguntar. |
+| `execution_target` | enum | No | Dónde se ejecuta: `local` (PC del usuario, guiado), `ci-runner` (pipeline), `azure-qa` (`prov-azure-qa-runtime-v1.0`, sin instalar nada — imágenes ya generadas en `infra/azure-qa-runtime/`, despliegue Azure pendiente). §9.1. **Default: `local`** — el usuario elige `azure-qa`/`ci-runner` explícitamente si lo prefiere. |
 
 ## 3. Outputs
 
@@ -246,10 +246,11 @@ Cada caso debe tener:
    referencia `AKV://<secret>` (`prov-akv-v1.0`); `interactive` → login asistido → `storageState`.
    **NUNCA** escribas usuario/contraseña/token/`storageState` con secretos en el plan, el informe ni ningún
    fichero; solo la referencia simbólica (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
-0ter. **Destino de ejecución (§9.1).** Registra `execution_target`. Si es `local` y falta tooling
-   (Node/Playwright/k6), **NO falles**: guía la instalación paso a paso remitiendo a
+0ter. **Destino de ejecución (§9.1).** Si `execution_target` no se indica, **asume `local` por defecto**
+   y decláralo explícitamente (el usuario puede pedir `ci-runner`/`azure-qa` en cualquier momento). Si es
+   `local` y falta tooling (Node/Playwright/k6), **NO falles**: guía la instalación paso a paso remitiendo a
    `docs/qa/EJECUCION_LOCAL.md`. La carga **k6 nunca** se lanza desde el portátil contra infra compartida
-   (→ `ci-runner`/`azure-qa`).
+   (→ `ci-runner`/`azure-qa` — implementación real ya generada en `infra/azure-qa-runtime/`).
 1. **Ingiere y normaliza** los `provided_plans` (cualquier formato → Markdown vía `apb-plat-doc-to-markdown-v1.0`).
 2. **Orden de fuentes con degradación:** usuario → **spec SDD** → Rovo (Jira+AF) → Copilot (código). En
    flujo SDD la **spec manda** como fuente funcional autoritativa (§1): deriva los casos de sus criterios de
@@ -403,6 +404,7 @@ Cada caso debe tener:
 | 1.3.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, continuación) | Adopta el **ID canónico** `{APP}-B{NN}-T{NN}` (`TEST_PLAN_STANDARD §3.2`, append-only, con columna «Legado» en migraciones). Declara **gobernanza por aplicación** (§6.1). Entrega el plan siempre en **Markdown + HTML** (§7.1, `scripts/generate_test_plan_html.py`), delegando destino final en `apb-plat-deliver-artifact-v1.0` (añadido a `depends_on`). |
 | 1.4.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, Fase I) | Implementa `TEST_PLAN_STANDARD v1.3.0`: inputs `spec` (fuente SDD autoritativa), `test_roles`, `execution_user_source` (AKV/runtime), `execution_target` (`local`/`ci-runner`/`azure-qa`). Matriz de roles + «Rol requerido» por caso; usuario de ejecución por referencia AKV o runtime (nunca en fichero). Guía de instalación local si falta tooling. **Acta de aprobación del informe** (§6.2) y bucle **fallo → PR → Jira** (`apb-sub-qa-fix-loop-v1.0`, §6.3). `depends_on` += `prov-akv-v1.0`, `apb-disc-spec-gen-v1.0`. |
 | 1.5.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | La verificación de vigencia de `previous_plan` deja de ser solo un paso de generación: se formaliza como **pre-vuelo invocable por `apb-qa-exploratory-nav-v1.0`** antes de ejecutar un plan existente (modo verificación, sin regenerar). Añadida fila en «6. Agentes Consumidores». Origen: gap detectado por Débora — no había ningún mecanismo que impidiera ejecutar un plan desactualizado. |
+| 1.5.1 | 2026-07-07 | Claude (Anthropic), a petición de Débora | `execution_target` pasa de "Default: preguntar" a **default explícito `local`** — el usuario elige `azure-qa`/`ci-runner` cuando lo prefiere, ya no se pregunta a ciegas en cada invocación. Referencia a la implementación real de `azure-qa` en `infra/azure-qa-runtime/`. |
 
 > **Generado por IA:** Claude (Anthropic), Sesión QA del plan de remediación APB-IA-FRAMEWORK.
 > **Validado por humano:** _pendiente — completar nombre/rol del validador antes de pasar a `candidate`._
@@ -422,7 +424,7 @@ Cada caso debe tener:
 | `spec` | Preguntar si el plan nace de un flujo SDD (spec = fuente autoritativa) | No — pero si es SDD, sí |
 | `test_roles` | Preguntar qué roles hacen falta; inferir de la app si no | No — se marca por caso al ejecutar |
 | `execution_user_source` | Preguntar: AKV por referencia o aportado en runtime; **nunca hardcodear** | Sí para ejecución funcional |
-| `execution_target` | Preguntar `local`/`ci-runner`/`azure-qa`; si `local` sin tooling, guiar instalación | No — por defecto preguntar |
+| `execution_target` | Si no se indica, asume `local` (guía instalación si falta tooling) y lo declara explícitamente; el usuario puede pedir `ci-runner`/`azure-qa` en cualquier momento | No — default `local`, no bloquea |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

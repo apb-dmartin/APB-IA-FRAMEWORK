@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.6.0"
+version: "1.6.1"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -384,7 +384,12 @@ Las pruebas puede lanzarlas **una persona** o **un workflow**. El plan declara e
   y estrés van a `ci-runner` o, preferentemente, `azure-qa`.
 - Exploratorio/descubrimiento → `local` (o navegación agéntica). Regresión/rendimiento/seguridad →
   `ci-runner` / `azure-qa`.
-- El destino se decide en la elicitación de la skill; si no se indica, se pregunta.
+- **Default explícito: `local`.** El usuario elige `azure-qa`/`ci-runner` explícitamente cuando lo
+  prefiera (rendimiento real, "no quiero instalar nada", regresión reproducible) — no se pregunta a ciegas
+  en cada invocación; se asume `local` salvo indicación en contra, respetando siempre la regla de arriba
+  (carga real nunca desde `local`). Implementación de referencia para `azure-qa` (Playwright/k6
+  preinstalados): [`infra/azure-qa-runtime/`](../../../infra/azure-qa-runtime/README.md) — contenedores ya
+  generados, despliegue Azure pendiente de confirmación de Débora.
 
 ### 9.2 Roles de usuario y usuario de ejecución
 
@@ -486,3 +491,4 @@ Un plan de pruebas es conforme cuando:
 | 1.5.0 | 2026-07-05 | **§2 Notación de procedencia en texto legible, sin siglas** — sustituye la notación abreviada `R[J:...]·C[Cod]` por frases que un lector no técnico entiende sin leyenda (p. ej. `Jira aportado por Débora (ticket AOM-2530)`, `Código fuente verificado (repo APB.API.TES, PortCallController.cs:38)`). Origen: feedback de Débora durante la generación del lote de 32 planes de pruebas (sesión QA-continuación), tras detectar que `R[J]` no se entendía sin la leyenda y que además `R` (Rovo) se usaba de forma imprecisa para tickets citados en documentos aportados por el usuario, no consultados en vivo vía Rovo. |
 | 1.5.1 | 2026-07-07 | **§7.2 Verificación pre-vuelo de Playwright MCP** — obligatorio confirmar, antes de iniciar cualquier sesión de ejecución con evidencia visual, que las tools de Playwright MCP están cargadas (reabrir la sesión si hace falta); si no lo están, no se procede y se declara el bloqueante en vez de asumir vídeo real. Ítem añadido al checklist §10. Fix estructural señalado: desplegar `prov-azure-qa-runtime-v1.0` (`HANDOFF_TECNICOS.md` QA3-2) para eliminar la dependencia del puesto de trabajo por completo. Origen: feedback de Débora tras confirmar que la última ejecución de un plan de pruebas volvió a generar solo GIF, no vídeo, por repetir el mismo fallo de sesión no reabierta (punto #88). |
 | 1.6.0 | 2026-07-07 | **§8.1 Verificación pre-vuelo de k6** (nueva subsección) — antes de generar/ejecutar una prueba de rendimiento real, confirmar el destino de ejecución: `local` limita a smoke, carga real requiere `ci-runner`/`azure-qa` o se declara el bloqueante explícitamente (nunca sustituido en silencio por un smoke test). Ítem añadido al checklist §10. Origen: Débora preguntó qué hacía falta para que la próxima ejecución de un plan incluyera también rendimiento — se confirmó que el diseño (skill + subagente + bloque B13 de TruckCenter) ya existe, pero falta el mismo runtime de Azure QA (QA3-2) que resuelve también el vídeo. |
+| 1.6.1 | 2026-07-07 | **§9.1 Default explícito `local`** para el destino de ejecución — deja de preguntarse a ciegas en cada invocación; `azure-qa`/`ci-runner` se eligen explícitamente. Referencia a la implementación real de `azure-qa` ya generada en `infra/azure-qa-runtime/` (Dockerfiles Playwright + k6). Origen: Débora pidió que el agente de QA permita elegir entre local (predeterminado) y Azure QA, tras confirmar que ya tiene el entorno Container Apps creado. |
