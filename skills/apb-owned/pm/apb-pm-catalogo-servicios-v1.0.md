@@ -1,8 +1,8 @@
 ---
 id: "apb-pm-catalogo-servicios-v1.0"
 name: "Catálogo de Servicios Técnicos Desatendidos (USM/UEC/UTA)"
-description: "Clasifica una tarea o servicio técnico automatizado/desatendido dentro del catálogo real de servicios APB (USM/UEC/UTA), identificando la unidad económica aplicable y el tramo de volumetría, conforme al ANEXO de Criterios de Valoración APB. No calcula importe: el precio €/unidad es específico de cada contrato y no está definido en el catálogo fuente."
-version: "1.0.0"
+description: "Clasifica una tarea o servicio técnico automatizado/desatendido dentro del catálogo real de servicios APB (USM/UEC/UTA), identificando la unidad económica aplicable, el tramo de volumetría y el volumen de horas de referencia de esa unidad. El framework APB solo valora en horas (Horas/Perfil) o en CFP (COSMIC) — este catálogo nunca introduce un precio de mercado propio: entrega horas, y la conversión a euros se hace aplicando la tarifa/hora real del proveedor concreto del contrato, no una estimación de mercado externa."
+version: "1.1.0"
 status: "draft"
 owner: "PMO APB <arquitectura@portdebarcelona.cat>"
 domain: "pm"
@@ -26,16 +26,24 @@ técnico recurrente, estandarizable o automatizable — **nunca** a desarrollo
 funcional (COSMIC, `apb-disc-cosmic-v1.0`) ni a trabajo técnico excepcional no
 catalogado (Horas/Perfil, `apb-pm-jira-estimation-review-v1.0`).
 
-- Dado un servicio o tarea técnica desatendida, identifica cuál de los 12 servicios
-  reales del catálogo APB aplica (o declara que no hay ninguno equivalente).
-- Determina la unidad económica correspondiente: **USM** (continuo/mensual), **UEC**
-  (por evento/ejecución) o **UTA** (automatización activa).
-- Identifica el tramo de volumetría aplicable según el criterio del servicio (nº de
-  cuentas, sistemas, pipelines, servicios protegidos, etc.).
-- **Nunca calcula un importe económico** — el catálogo fuente (`Catálogo de coste de
-  tareas técnicas APB — v1.xlsx`, hoja "Servicios desatendidos") define unidades,
-  periodicidad y tramos, pero **no incluye precios €/unidad**: son específicos de
-  cada contrato y deben aportarse como input.
+El framework APB solo valora en dos unidades reales: **horas** (Horas/Perfil) y
+**CFP** (COSMIC). Este catálogo no introduce una tercera unidad económica de mercado
+propia — su función es:
+
+- Dado un servicio o tarea técnica desatendida, identificar cuál de los 12 servicios
+  reales del catálogo APB aplica (o declarar que no hay ninguno equivalente).
+- Determinar la unidad contractual correspondiente: **USM** (continuo/mensual),
+  **UEC** (por evento/ejecución) o **UTA** (automatización activa).
+- Identificar el tramo de volumetría aplicable según el criterio real del servicio
+  (nº de cuentas, sistemas, pipelines, servicios protegidos, etc.).
+- **Estimar el volumen de horas de referencia** de esa unidad/tramo, usando datos
+  reales ya disponibles (`Catálogo de coste de tareas técnicas APB — v1.xlsx`, hoja
+  "Tareas técnicas") donde exista un concepto equivalente, y declarando
+  explícitamente "sin dato real, pendiente" donde no lo haya — **nunca estimando
+  horas a partir de referencias de mercado externas**.
+- **Nunca calcula un importe económico.** La conversión horas → € se hace aplicando
+  la tarifa/hora real que ya tiene el proveedor concreto del contrato — un dato que
+  aporta el usuario, nunca una estimación de mercado de esta skill.
 
 ## 2. Inputs
 
@@ -43,7 +51,7 @@ catalogado (Horas/Perfil, `apb-pm-jira-estimation-review-v1.0`).
 |--------|------|-------------|-------------|
 | `descripcion_servicio` | string | Sí | Qué hace el servicio/tarea a clasificar (p. ej. "monitorización de 15 aplicaciones", "pipeline CI/CD que compila tras cada commit") |
 | `volumetria` | string | No | Magnitud del servicio (nº de cuentas, sistemas, pipelines, servidores...) para ubicar el tramo. Si no se aporta, la skill pide el dato antes de concluir el tramo |
-| `precio_unidad` | number | No | €/unidad del contrato concreto (USM, UEC o UTA). Sin este dato, el output se limita a clasificación, nunca a importe |
+| `tarifa_hora_proveedor` | number | No | €/hora real del perfil del proveedor concreto (dato que ya tiene APB de su contrato). Sin este dato, el output se limita a horas, nunca a importe |
 
 ## 3. Outputs
 
@@ -52,34 +60,52 @@ catalogado (Horas/Perfil, `apb-pm-jira-estimation-review-v1.0`).
 | `servicio_catalogo` | string | Servicio real del catálogo que aplica, o "sin equivalente en catálogo" |
 | `unidad_aplicable` | enum | `USM` / `UEC` / `UTA` con justificación |
 | `tramo` | string | Tramo de volumetría identificado, citando el criterio real del servicio |
+| `horas_referencia` | markdown | Volumen de horas estimado para esa unidad/tramo, citando la fuente real (Excel/histórico) o declarando "sin dato real, pendiente" |
 | `exclusiones` | markdown | Qué queda explícitamente fuera de este servicio (según catálogo) |
-| `importe` | markdown | Solo si se aportó `precio_unidad`; si no, declara explícitamente "pendiente de €/unidad contractual — no se asume ningún precio" |
+| `importe` | markdown | Solo si se aportó `tarifa_hora_proveedor` (horas_referencia × tarifa); si no, declara explícitamente "pendiente de tarifa/hora real del proveedor — no se asume ningún precio de mercado" |
 
 ## 4. Catálogo real de Servicios Desatendidos (APB)
 
 > Fuente: `Catálogo de coste de tareas técnicas APB — v1.xlsx`, hoja "Servicios
-> desatendidos". **Regla de no solapamiento del propio catálogo:** *"Ninguna
-> actuación podrá facturarse simultáneamente por más de un servicio del presente
-> catálogo ni combinarse con horas, COSMIC o servicios profesionales salvo
-> indicación expresa."*
+> desatendidos" (definiciones/tramos) y hoja "Tareas técnicas" (horas de
+> referencia, donde existe concepto equivalente). **Regla de no solapamiento del
+> propio catálogo:** *"Ninguna actuación podrá facturarse simultáneamente por más
+> de un servicio del presente catálogo ni combinarse con horas, COSMIC o servicios
+> profesionales salvo indicación expresa."*
+>
+> ⚠️ Las horas de referencia de la hoja "Tareas técnicas" son, en su mayoría,
+> esfuerzo de **implementación/evolución puntual** (no está confirmada su
+> periodicidad exacta como coste recurrente mensual) — se citan como punto de
+> partida, nunca como cifra recurrente cerrada. Los servicios sin concepto
+> equivalente en el Excel se declaran explícitamente "sin dato real" — **no se
+> estiman horas de mercado externas para rellenar el hueco**; se completan con el
+> tiempo vía `discovery/ESTIMATION_REFERENCES.md` a medida que haya precedentes
+> reales.
 
-| Servicio | Definición (alcance operativo) | Periodicidad | Unidad | Tramos de referencia | Exclusiones explícitas |
-|---|---|---|---|---|---|
-| Gobierno Técnico, Cloud y de Arquitectura | Gobierno automatizado del cumplimiento técnico/cloud/arquitectónico, detección de desviaciones, reporting y correcciones automáticas permitidas | Continua + informes periódicos | USM | Nº cuentas/sistemas/apps (≤10 / 11–50 / >50) | Diseño de arquitecturas, rediseño cloud, remediación manual compleja |
-| Gobierno Integral de CMDB y Documentación Operativa Automatizada | Descubrimiento automático, sincronización de CMDB, generación/mantenimiento automático de documentación y runbooks | Continua + informes mensuales | USM | Nº CI / servicios gestionados | Modelado manual, redacción estratégica |
-| FinOps — Gobierno y Optimización | Monitorización de consumo, alertas, recomendaciones automáticas de optimización y reporting financiero | Continua + informes mensuales | USM | Nº cuentas cloud / volumen de gasto | Decisiones presupuestarias, negociación comercial |
-| Platform Engineering y Automatización CI/CD | Gobierno y operación de pipelines, IaC/CaC, automatismos reutilizables, golden paths y provisión estándar | Continua | USM | Nº pipelines / repositorios activos | Desarrollo funcional, decisiones de activación runtime |
-| Observabilidad, Monitorización y Gestión de Capacidad de Plataforma | Captura de métricas/logs/eventos, monitorización técnica y análisis preventivo de capacidad | Continua 24x7 | USM | Nº servicios/plataformas/nodos | Análisis manual avanzado |
-| Servicio SRE — Gestión de Fiabilidad Operativa | Definición y seguimiento de SLIs/SLOs, error budgets, activación de automatismos y reporting de fiabilidad | Continua | USM | Nº servicios SRE | Ejecución de acciones correctivas |
-| Operación Técnica de Infraestructura, Plataformas y Redes | Operación técnica continua: estado, parches estándar, redes, plataformas, ejecución automática autorizada | Continua | USM | Nº servidores/plataformas/redes | Migraciones, ampliaciones, rediseños |
-| Continuidad Técnica: Backup, Recuperación, HA y DR | Protección y resiliencia técnica: backups, RPO, HA y pruebas técnicas de DR sin activación de negocio | Continua + pruebas periódicas | USM + UEC | Nº sistemas protegidos | Activación de continuidad de negocio |
-| Guardias Técnicas Automatizadas y Respuesta Automática | Recepción, clasificación, priorización y respuesta automática a incidentes técnicos mediante acciones simples | Continua 24x7 | USM | Nº servicios críticos | Guardia humana, acciones complejas |
-| Administración de Plataformas y Productos (Terceros) | Administración técnica: estado, parches estándar, licencias y seguimiento EOS/EOL | Continua | USM | Nº productos/plataformas | Evolución funcional, upgrades mayores |
-| Desarrollo de Software (Ciclo de Construcción Automatizado) | Ejecución automática de build, tests técnicos, análisis de calidad/seguridad, versionado y métricas DevOps | Bajo evento + reporting | USM | Nº aplicaciones/repositorios | Desarrollo funcional, corrección manual |
-| QA — Oficina de Gobierno y Calidad | Gobierno centralizado de QA, herramientas, quality gates, auditoría automática y bloqueo de despliegues | Continua | USM | Nº aplicaciones/dominios | Diseño funcional de pruebas, QA manual |
-| QA — Equipos de Desarrollo | Automatización, ejecución y mantenimiento de pruebas automáticas funcionales/regresión/contratos en pipelines | Por evento + programada | USM | Nº apps/repos del equipo (≤10 / 11–30 / >30) | QA manual, diseño funcional de pruebas |
+| Servicio | Definición (alcance operativo) | Periodicidad | Unidad | Tramos de referencia | Horas de referencia (fuente real) | Exclusiones explícitas |
+|---|---|---|---|---|---|---|
+| Gobierno Técnico, Cloud y de Arquitectura | Gobierno automatizado del cumplimiento técnico/cloud/arquitectónico, detección de desviaciones, reporting y correcciones automáticas permitidas | Continua + informes periódicos | USM | Nº cuentas/sistemas/apps (≤10 / 11–50 / >50) | Sin dato real — pendiente | Diseño de arquitecturas, rediseño cloud, remediación manual compleja |
+| Gobierno Integral de CMDB y Documentación Operativa Automatizada | Descubrimiento automático, sincronización de CMDB, generación/mantenimiento automático de documentación y runbooks | Continua + informes mensuales | USM | Nº CI / servicios gestionados | Sin dato real — pendiente | Modelado manual, redacción estratégica |
+| FinOps — Gobierno y Optimización | Monitorización de consumo, alertas, recomendaciones automáticas de optimización y reporting financiero | Continua + informes mensuales | USM | Nº cuentas cloud / volumen de gasto | Sin dato real — pendiente | Decisiones presupuestarias, negociación comercial |
+| Platform Engineering y Automatización CI/CD | Gobierno y operación de pipelines, IaC/CaC, automatismos reutilizables, golden paths y provisión estándar | Continua | USM | Nº pipelines / repositorios activos | 16-40h/intervención (Mantenimiento plataforma 16-32h · Golden paths/templates 16-24h · Evolución CI/CD corporativo 24-40h · Gestión herramientas DevOps 16-32h) | Desarrollo funcional, decisiones de activación runtime |
+| Observabilidad, Monitorización y Gestión de Capacidad de Plataforma | Captura de métricas/logs/eventos, monitorización técnica y análisis preventivo de capacidad | Continua 24x7 | USM | Nº servicios/plataformas/nodos | 16-32h/intervención (Implementación monitorización avanzada 16-32h · Gestión de capacidad y rendimiento 16-32h) | Análisis manual avanzado |
+| Servicio SRE — Gestión de Fiabilidad Operativa | Definición y seguimiento de SLIs/SLOs, error budgets, activación de automatismos y reporting de fiabilidad | Continua | USM | Nº servicios SRE | 8-40h/intervención (Definición SLIs/SLOs 16-24h · Automatización de operaciones 24-40h · Post-mortem 8-16h) | Ejecución de acciones correctivas |
+| Operación Técnica de Infraestructura, Plataformas y Redes | Operación técnica continua: estado, parches estándar, redes, plataformas, ejecución automática autorizada | Continua | USM | Nº servidores/plataformas/redes | Sin dato real — pendiente | Migraciones, ampliaciones, rediseños |
+| Continuidad Técnica: Backup, Recuperación, HA y DR | Protección y resiliencia técnica: backups, RPO, HA y pruebas técnicas de DR sin activación de negocio | Continua + pruebas periódicas | USM + UEC | Nº sistemas protegidos | Sin dato real — pendiente (ver Tabla B de `apb-pm-jira-estimation-review-v1.0` para scripts BBDD puntuales, no equivalente directo) | Activación de continuidad de negocio |
+| Guardias Técnicas Automatizadas y Respuesta Automática | Recepción, clasificación, priorización y respuesta automática a incidentes técnicos mediante acciones simples | Continua 24x7 | USM | Nº servicios críticos | Sin dato real — pendiente | Guardia humana, acciones complejas |
+| Administración de Plataformas y Productos (Terceros) | Administración técnica: estado, parches estándar, licencias y seguimiento EOS/EOL | Continua | USM | Nº productos/plataformas | Sin dato real — pendiente | Evolución funcional, upgrades mayores |
+| Desarrollo de Software (Ciclo de Construcción Automatizado) | Ejecución automática de build, tests técnicos, análisis de calidad/seguridad, versionado y métricas DevOps | Bajo evento + reporting | USM | Nº aplicaciones/repositorios | Ver setup en tabla UEC de abajo (Nuevo pipeline estándar 16-24h · Ajuste pipeline CI/CD 8-16h) | Desarrollo funcional, corrección manual |
+| QA — Oficina de Gobierno y Calidad | Gobierno centralizado de QA, herramientas, quality gates, auditoría automática y bloqueo de despliegues | Continua | USM | Nº aplicaciones/dominios | Sin dato real — pendiente | Diseño funcional de pruebas, QA manual |
+| QA — Equipos de Desarrollo | Automatización, ejecución y mantenimiento de pruebas automáticas funcionales/regresión/contratos en pipelines | Por evento + programada | USM | Nº apps/repos del equipo (≤10 / 11–30 / >30) | 8-40h/intervención (Diseño framework tests automáticos 24-40h · Implementación tests unitarios 8-16h · Implementación tests integración 16-32h · Integración tests en CI/CD 8-16h · Mantenimiento tests automáticos 8-24h) | QA manual, diseño funcional de pruebas |
 
 ### Servicios "Bajo evento" (UEC) del catálogo — ciclo de construcción
+
+> Estas ejecuciones automáticas tienen coste marginal de horas humanas
+> prácticamente nulo por ejecución individual (build/test/escaneo corren solos en
+> el pipeline) — el esfuerzo humano real está en el **setup inicial**, ya cubierto
+> arriba como parte de Platform Engineering/CI-CD (16-24h nuevo pipeline, 8-16h
+> ajuste). No se estima un valor de horas por ejecución individual — no hay dato
+> real y no tiene sentido estimarlo (es prácticamente cero).
 
 | Servicio | Definición | Alcance | Periodicidad |
 |---|---|---|---|
@@ -97,11 +123,11 @@ catalogado (Horas/Perfil, `apb-pm-jira-estimation-review-v1.0`).
 
 ### Infrastructure as Code / Configuration as Code (IaC/CaC)
 
-| Concepto | Unidad |
-|---|---|
-| Diseño, desarrollo o modificación de código IaC/CaC | Horas (no catalogado como servicio continuo) |
-| Automatizaciones reutilizables activadas bajo demanda | UTA |
-| Prestación continua de capacidades IaC/CaC | USM |
+| Concepto | Unidad | Horas de referencia |
+|---|---|---|
+| Diseño, desarrollo o modificación de código IaC/CaC | Horas (no catalogado como servicio continuo) | Usar `apb-pm-jira-estimation-review-v1.0` directamente — es Horas/Perfil, no catálogo |
+| Automatizaciones reutilizables activadas bajo demanda | UTA | Sin dato real — pendiente |
+| Prestación continua de capacidades IaC/CaC | USM | Sin dato real — pendiente |
 
 ## 5. Prompt del Sistema
 
@@ -133,13 +159,22 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 5. Recuerda la regla de no solapamiento del catálogo: ninguna actuación se factura
    simultáneamente por más de un servicio, ni se combina con horas/COSMIC/
    profesionales salvo indicación expresa.
-6. Si se aportó `precio_unidad`, calcula el importe = unidades del tramo × precio.
-   Si NO se aportó, el output se limita a clasificación — declara explícitamente
-   "pendiente de €/unidad contractual, no se asume ningún precio". Nunca inventes
-   ni asumas un precio de mercado.
+6. Cita el volumen de horas de referencia de la fila del catálogo (§4) SOLO si
+   tiene fuente real (Excel "Tareas técnicas") — nunca inventes ni estimes horas
+   a partir de referencias de mercado externas. Si la fila dice "sin dato real —
+   pendiente", devuelve exactamente eso; no rellenes el hueco con una suposición.
+7. Si se aportó `tarifa_hora_proveedor` Y hay horas de referencia reales: calcula
+   el importe = horas × tarifa. Si falta cualquiera de los dos, el output se
+   limita a horas (o a "sin dato real"), declarando explícitamente qué falta.
+   Nunca inventes ni asumas una tarifa de mercado — es un dato que ya tiene APB
+   de su contrato real con el proveedor.
 
 ## Restricciones
-- Nunca calcula un importe sin `precio_unidad` aportado por el usuario.
+- Nunca calcula un importe sin `tarifa_hora_proveedor` aportado por el usuario Y
+  horas de referencia reales disponibles.
+- Nunca estima horas de referencia a partir de benchmarks de mercado externos
+  (día/hora de consultoría, pricing de herramientas SaaS, etc.) — solo usa datos
+  reales del Excel APB o del histórico `discovery/ESTIMATION_REFERENCES.md`.
 - Nunca clasifica desarrollo funcional (eso es COSMIC, apb-disc-cosmic-v1.0) ni
   trabajo técnico excepcional no catalogado (eso es Horas/Perfil,
   apb-pm-jira-estimation-review-v1.0) dentro de este catálogo.
@@ -153,8 +188,9 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 **Servicio del catálogo:** {nombre real o "sin equivalente"}
 **Unidad aplicable:** {USM/UEC/UTA} — {justificación}
 **Tramo:** {tramo identificado} — {criterio citado}
+**Horas de referencia:** {rango citado con fuente, o "sin dato real — pendiente"}
 **Exclusiones:** {lista citada del catálogo}
-**Importe:** {cálculo si hay precio_unidad, o "pendiente de €/unidad contractual"}
+**Importe:** {horas × tarifa_hora_proveedor si ambos disponibles, o "pendiente de tarifa/hora real del proveedor y/o de horas de referencia"}
 ```
 
 ## 6. Agentes Consumidores
@@ -168,7 +204,7 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 | Fase | Responsable | Tipo de revisión |
 |------|-------------|-------------------|
 | Pre-ejecución | PMO / Arquitectura APB | Confirmar que el servicio descrito es realmente desatendido/catalogado (no funcional ni técnico excepcional) |
-| Post-ejecución | PMO / Arquitectura APB | Aprobar la clasificación y, si aplica, el €/unidad usado antes de cualquier uso contractual |
+| Post-ejecución | PMO / Arquitectura APB | Aprobar la clasificación, las horas de referencia usadas y, si aplica, el importe antes de cualquier uso contractual |
 
 ## 8. Riesgo y Clasificación
 
@@ -176,13 +212,14 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 |----------|-------|
 | Nivel de riesgo | Low |
 | Impacto en producción | Ninguno directo — no modifica Jira, código ni despliegues |
-| Medidas compensatorias | Nunca calcula importe sin precio aportado; nunca fuerza un encaje de catálogo |
+| Medidas compensatorias | Nunca calcula importe sin tarifa/hora real y horas de referencia reales; nunca estima horas de mercado externas; nunca fuerza un encaje de catálogo |
 
 ## 9. Historial de Cambios
 
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
-| 1.0.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Creación a partir de la hoja real "Servicios desatendidos" de `Catálogo de coste de tareas técnicas APB — v1.xlsx` (12 servicios + 11 servicios "bajo evento" del ciclo de construcción + IaC/CaC). Cierra parcialmente el gap de catálogo USM/UEC/UTA — pendiente el precio €/unidad, específico de cada contrato |
+| 1.0.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Creación a partir de la hoja real "Servicios desatendidos" de `Catálogo de coste de tareas técnicas APB — v1.xlsx` (12 servicios + 11 servicios "bajo evento" del ciclo de construcción + IaC/CaC) |
+| 1.1.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Corrección de rumbo: el catálogo NO estima €/unidad de mercado (rechazado explícitamente por Débora). Ahora estima **volumen de horas de referencia** por servicio/tramo, citando datos reales de la hoja "Tareas técnicas" del Excel donde existe concepto equivalente (Platform Engineering, Observabilidad, SRE, QA equipos de desarrollo) y declarando "sin dato real — pendiente" en el resto (Gobierno Técnico/Cloud, CMDB, FinOps, Operación Técnica, Continuidad/DR, Guardias, Administración terceros, QA Gobierno). La conversión horas→€ se deja a `tarifa_hora_proveedor`, dato real que ya tiene APB de su contrato — nunca una tarifa de mercado estimada por esta skill |
 
 ## ⚠️ Comportamiento ante inputs incompletos
 
@@ -192,7 +229,8 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 |-------|-----------------------|-------------------|
 | `descripcion_servicio` vacía o ambigua | Preguntar qué hace el servicio concretamente | Sí |
 | `volumetria` no aportada | Preguntar antes de concluir el tramo — nunca asumir un tramo por defecto | No, pero condiciona el output a "tramo pendiente" |
-| `precio_unidad` no aportado | Entregar solo clasificación, declarar explícitamente que el importe queda pendiente | No |
+| `tarifa_hora_proveedor` no aportada | Entregar clasificación + horas de referencia, declarar explícitamente que el importe queda pendiente de la tarifa real del contrato | No |
+| Horas de referencia sin dato real para el servicio identificado | Declarar "sin dato real — pendiente", nunca estimar con benchmarks de mercado externos | No, pero condiciona el output |
 | Servicio descrito sin equivalente razonable en el catálogo | Declararlo explícitamente, sugerir Horas/Perfil o COSMIC según corresponda | No, pero condiciona el output |
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

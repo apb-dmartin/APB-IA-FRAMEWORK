@@ -2,7 +2,7 @@
 id: "apb-agent-valoracion-tecnica-v1.0"
 name: "Agente de Valoración Técnica"
 description: "Ayuda a crear valoraciones nuevas o revisar valoraciones existentes en Jira de tareas técnicas, desarrollo, código y proyectos IT, combinando el sistema de valoración elegido por el usuario (COSMIC, Horas/Perfil o Catálogo técnico USM/UEC/UTA) con histórico real de Jira y una estimación de horas internas no contractual. El histórico se alimenta con cada valoración real para mejorar la fiabilidad con el tiempo."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "PMO APB <arquitectura@portdebarcelona.cat>"
 domain: "pm"
@@ -98,7 +98,7 @@ de horas internas de apoyo (nunca contractual).
 | `descripcion` | string | Solo si no hay ticket | Descripción funcional/técnica de lo que se quiere valorar |
 | `enfoque` | enum | No | `cosmic` / `horas_perfil` / `auto`. Default: `auto`. Si se indica explícitamente, **nunca** se fuerza la clasificación ANEXO por encima de esta elección |
 | `euro_por_cfp` | number | No | Precio contractual €/CFP, solo si se quiere importe (nunca inventado) |
-| `precio_unidad_catalogo` | number | No | €/unidad USM/UEC/UTA del contrato concreto, solo si se quiere importe del catálogo técnico |
+| `tarifa_hora_proveedor` | number | No | €/hora real del proveedor concreto (dato que ya tiene APB de su contrato), solo si se quiere importe del catálogo USM/UEC/UTA. El catálogo técnico entrega horas de referencia — el importe se calcula multiplicando por esta tarifa real, nunca por una estimación de mercado |
 
 ---
 
@@ -148,9 +148,9 @@ Solicitud recibida (objetivo + jira_ticket/descripción + enfoque)
   claramente etiquetado como no contractual.
 - **Nunca fuerza un sistema de valoración** cuando el usuario indica `enfoque`
   explícitamente — la clasificación ANEXO es solo sugerencia en modo `auto`.
-- **Nunca inventa un €/CFP ni un €/unidad de catálogo** — son inputs del contrato
-  concreto del usuario; sin ellos, el output se limita a CFP/unidades, nunca a
-  importe.
+- **Nunca inventa un €/CFP ni una tarifa/hora de proveedor** — son datos reales del
+  contrato concreto del usuario; sin ellos, el output se limita a CFP/horas de
+  referencia, nunca a importe.
 - **Nunca crea, modifica o comenta tickets Jira sin aprobación humana explícita**
   (hereda la restricción de `apb-pm-jira-estimation-review-v1.0`).
 - **Nunca mezcla sistemas de valoración dentro de la misma parte del alcance**
@@ -219,7 +219,7 @@ histórico real de Jira, sin forzar un sistema sobre otro salvo sugerencia expl�
 - objetivo (valorar_nuevo / revisar_existente)
 - jira_ticket o descripcion
 - enfoque (cosmic / horas_perfil / auto — default auto)
-- euro_por_cfp / precio_unidad_catalogo (opcionales, nunca inventados)
+- euro_por_cfp / tarifa_hora_proveedor (opcionales, siempre datos reales del contrato, nunca inventados ni de mercado)
 
 ---
 
@@ -256,7 +256,10 @@ histórico real de Jira, sin forzar un sistema sobre otro salvo sugerencia expl�
   internas es siempre un dato de apoyo, claramente etiquetado como no contractual.
 - Nunca fuerces un sistema de valoración si el usuario ya indicó `enfoque`
   explícitamente.
-- Nunca inventes un €/CFP ni un €/unidad de catálogo — son inputs del usuario.
+- Nunca inventes un €/CFP ni una tarifa/hora de proveedor, ni estimes horas de
+  referencia del catálogo USM/UEC/UTA a partir de benchmarks de mercado externos —
+  son datos reales que ya tiene APB o que se acumulan vía histórico, nunca
+  estimaciones de mercado.
 - Nunca crees, modifiques o comentes tickets Jira sin aprobación humana explícita.
 - Nunca mezcles sistemas de valoración dentro de la misma parte del alcance.
 - Stack DOCKS únicamente: .NET, Azure SQL, EntraID, Service Bus, Redis, APIM,
@@ -295,6 +298,7 @@ histórico real de Jira, sin forzar un sistema sobre otro salvo sugerencia expl�
 | Versión | Fecha | Autor | Cambio |
 |---|---|---|---|
 | 1.0.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Creación inicial. Orquesta `apb-disc-cosmic-v1.0` (reescrita v2.0.0), `apb-pm-jira-estimation-review-v1.0` (ampliada v1.1.0) y `apb-pm-catalogo-servicios-v1.0` (nueva) — el enfoque de valoración lo elige el usuario, nunca se fuerza por la clasificación ANEXO |
+| 1.0.1 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Corrección: `precio_unidad_catalogo` renombrado a `tarifa_hora_proveedor` — el catálogo USM/UEC/UTA (`apb-pm-catalogo-servicios-v1.0` v1.1.0) entrega horas de referencia, no un precio de mercado propio; el importe se calcula multiplicando por la tarifa/hora real que ya tiene APB del proveedor concreto |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)
