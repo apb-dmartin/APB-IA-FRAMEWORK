@@ -1351,3 +1351,93 @@ previas], resto sin cambio — el plan MCP Server es documentación en
 ---
 
 *Cierre de Sesión 27 (2026-07-07).*
+
+## Sesión 28 — Corrección de handoff + Agente de Valoración Técnica COSMIC/Horas-Perfil (2026-07-08)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Corrección documental + construcción de agente nuevo con metodología corporativa real
+
+**Solicitud:** (1) "siguientes tareas pendientes que podríamos realizar" → ejecución
+de 3 tareas de bajo riesgo detectadas como ya resueltas pero mal reflejadas en
+`HANDOFF_TECNICOS.md`; (2) "vamos a mejorar el agente que permita valorar tareas
+técnicas..." — construir un agente de valoración (COSMIC / Horas-Perfil) apoyado en
+histórico real de Jira, aportando 3 documentos de metodología corporativa
+(`Guía para valoración de desarrollos con Cosmic`, `ANEXO - Criterios de valoración`,
+`OBSOLETO - Guía genérica`), datos reales de 12 meses de Jira, y un Excel
+(`Catálogo de coste de tareas técnicas APB`) con la hoja de servicios USM/UEC/UTA.
+
+### Workstream 1: Corrección de handoff desactualizado (COMPLETADO)
+
+**Ejecutado:**
+- `HANDOFF_TECNICOS.md`: verificado contra código real que **7 de 8 bugs** de la
+  tabla §1 ya estaban resueltos (BUG-01, 02, 04, 05, 06, 07, 08) — el documento
+  los listaba como pendientes. Hallazgos nuevos en la verificación: BUG-06
+  (`telemetry.yml` ya usa rama + PR, no push directo a `main`) y BUG-08 (licencia
+  `third-lum1104-knowledge-graph-v1.0` = MIT, ya verificada 2026-07-04, repo
+  transferido de `Lum1104` a `Egonex-AI`). Solo BUG-03 (Design System, repo
+  separado) sigue pendiente real.
+- README.md: nueva sección "Relación con Otros Repositorios APB" documentando la
+  deprecación de `apb-ai-skills` (DOC7).
+- Commit `22c5af9`.
+
+### Workstream 2: Agente de Valoración Técnica — COSMIC + Horas/Perfil + Catálogo USM/UEC/UTA (COMPLETADO)
+
+**Hallazgo clave de planificación:** ya existía
+`apb-pm-jira-estimation-review-v1.0` (Sesión 26) cubriendo búsqueda híbrida de
+precedentes (Jira en vivo + catálogo) y regla de desviación >25% para tickets
+técnicos — no se duplicó esa maquinaria, se extendió.
+
+**Ejecutado:**
+- `apb-disc-cosmic-v1.0` reescrita v1.0.0→v2.0.0: de ISO/IEC 19761 genérico a las
+  reglas reales de la `Guía para valoración de desarrollos con Cosmic` vigente
+  (checklist de validación, tablas E/X/R/W con inclusiones/exclusiones, catálogo
+  de acciones, 6 ejemplos reales, sección de calibración interna no contractual
+  con los factores del informe Rovo aportado por Débora, marcados explícitamente
+  "no verificados").
+- `apb-pm-jira-estimation-review-v1.0` ampliada v1.0.2→v1.1.0: de "solo tickets
+  técnicos" a todo el sistema Horas/Perfil (incluye desarrollo funcional cuando
+  el contrato de proveedor no usa COSMIC — caso real: proyectos Java/Sòstrat).
+  Sustituida la guía obsoleta 2020-2022 por Tablas A/B de datos reales de 12
+  meses de Jira aportados por Débora (7 categorías de desarrollo + 4 de tareas
+  técnicas, con confianza ✅/⚠️/❌ por nº de tickets).
+- `apb-pm-catalogo-servicios-v1.0` (nueva): catálogo real USM/UEC/UTA de 12
+  servicios desatendidos + 11 servicios "bajo evento" del ciclo de construcción,
+  extraído del Excel real de Débora.
+- `apb-agent-valoracion-tecnica-v1.0` (nuevo): orquestador que aplica la
+  clasificación ANEXO (Naturaleza × Modo) **solo como sugerencia, nunca forzada**
+  — el enfoque (COSMIC/Horas-Perfil) lo elige el usuario, porque depende del
+  contrato del proveedor, no solo de la naturaleza del trabajo.
+- `discovery/ESTIMATION_REFERENCES.md`: sembrado con las tablas reales (antes 0
+  entradas).
+- Gap #8 de `PLAN_FASES_FUTURAS.md` (horas históricas para calibrar COSMIC↔horas)
+  marcado **aportado, no 100% resuelto** — categorías con <50 tickets siguen
+  indicativas; detalle en `PLAN_FASES_COMPLETADAS.md`.
+- Commit `ae2b7a7`.
+
+**Corrección de rumbo post-commit (Débora):** el catálogo USM/UEC/UTA no debía
+estimar €/unidad vía referencias de mercado externas (día/hora de consultoría,
+pricing SaaS) — el framework APB solo valora en horas o CFP. Se investigaron
+referencias de mercado (España 2026: DevOps/SRE 40-90€/h freelance; benchmarks de
+monitorización/SOC/backup-DR/FinOps/helpdesk) pero se descartaron por completo tras
+la corrección. `apb-pm-catalogo-servicios-v1.0` v1.1.0 ahora estima **volumen de
+horas de referencia** citando datos reales del Excel donde hay concepto equivalente
+(Platform Engineering, Observabilidad, SRE, QA equipos desarrollo) y declarando
+"sin dato real — pendiente" en el resto; la conversión horas→€ se deja a
+`tarifa_hora_proveedor` (dato real del contrato, nunca estimado). `apb-agent-
+valoracion-tecnica-v1.0` v1.0.0→v1.0.1 actualizado en consecuencia. Commit
+`001c94c`.
+
+### Calidad & Validación
+
+`scripts/validate_repo.py --strict` → **0 errores**, 10 warnings exentos
+(`source_commit: unverified`) tras cada commit · **68/68 tests** · catálogo
+regenerado sin drift tras cada cambio.
+
+**Inventario al cierre:** 367 componentes (184 skills APB [+1: `apb-pm-catalogo-
+servicios-v1.0`], 57 skills terceros, 40 agentes [+1: `apb-agent-valoracion-
+tecnica-v1.0`], 35 subagentes, 17 workflows, 23 providers, 7 wrappers, 4 adapters).
+
+---
+
+*Cierre de Sesión 28 (2026-07-08).*

@@ -7,8 +7,8 @@
 > `PLAN_FASES_FUTURAS.md` + sincronización de cifras — ver nota de proceso
 > más abajo)  
 > **Repositorios cubiertos:** APB-IA-FRAMEWORK · APB-DESIGN-SYSTEM · APB-DOMAIN-CATALOG  
-> **Estado global:** 365 componentes (`generate_catalog.py`, 2026-07-07): 183 skills APB,
-> 57 third-party, 39 agentes, 35 subagentes, 17 workflows, 23 providers, 7 wrappers,
+> **Estado global:** 367 componentes (`generate_catalog.py`, 2026-07-08): 184 skills APB,
+> 57 third-party, 40 agentes, 35 subagentes, 17 workflows, 23 providers, 7 wrappers,
 > 4 adapters. 37 `approved` (todos terceros/wrapper de contexto, 0 apb-owned), 4
 > `deprecated`, resto `draft`. Pendiente despliegue e inicio del ciclo de gobernanza
 > sobre componentes propios. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
@@ -64,7 +64,7 @@
 
 ## 2. Ciclo de aprobación — la prioridad de gobernanza
 
-**Situación actual (2026-07-07):** 365 componentes; 37 `approved` (todos terceros/wrapper de contexto — ninguno `apb-owned` funcional), 4 `deprecated`, el resto en `draft`. Los controles de seguridad y autonomía declarados en frontmatter de los componentes `apb-owned` son promesas no auditadas. Sin aprobaciones propias, el framework no tiene base formal para uso en producción.
+**Situación actual (2026-07-08):** 367 componentes; 37 `approved` (todos terceros/wrapper de contexto — ninguno `apb-owned` funcional), 4 `deprecated`, el resto en `draft`. Los controles de seguridad y autonomía declarados en frontmatter de los componentes `apb-owned` son promesas no auditadas. Sin aprobaciones propias, el framework no tiene base formal para uso en producción.
 
 **Responsables:** Arquitectura APB + Ciberseguridad (two-eyes obligatorio por GOVERNANCE.md)
 
@@ -123,7 +123,7 @@ Antes de iniciar aprobaciones, añadir a `SCHEMA.md` los campos:
 | T4 | **Validador bidireccional** | `validate_bidirectional_wiring()` añadida; `TestValidateBidirectionalWiring` (2 tests). `--strict` → exit 0, 0 errores, 59 warnings exentos. | ✅ RESUELTO |
 | T5 | **Template `AGENT.md`** | Sigue en formato blockquote antiguo (punto #44). Quien lo use genera un componente que falla el validador. Fix: YAML frontmatter igual que SCHEMA.md. | ⬜ Pendiente |
 
-**Estado actual (2026-07-07):** `validate_repo.py --strict` → exit 0. 365 componentes, 0 huérfanos de wiring (los 5 subagentes que aparecían como pendientes de cablear ya estaban correctamente wireados en el repo real — verificado 2026-07-07, ver `PLAN_FASES_COMPLETADAS.md`). Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
+**Estado actual (2026-07-08):** `validate_repo.py --strict` → exit 0. 367 componentes, 0 huérfanos de wiring (los 5 subagentes que aparecían como pendientes de cablear ya estaban correctamente wireados en el repo real — verificado 2026-07-07, ver `PLAN_FASES_COMPLETADAS.md`). Estándar de prompting (check #18 en ERROR) + Cold-Start (check #19) + metodología de planes de pruebas (check #20) + conservación íntegra/ID canónico (check #21) + routing raíz agnóstico (check #22) + metodología de ejecución y aprobación (check #23, Fase I) + **evidencia de informes de ejecución: entrega dual + casos no ejecutados + vídeo real (check #24, nuevo)**. 47/47 tests. Sesión QA-2 cerrada: `TEST_PLAN_STANDARD`, `apb-qa-test-plan` v1.2.0, `prov-browser-agent`, `apb-qa-exploratory-nav`, ejemplo unificado TruckCenter, ejecución real en PRE.
 
 **Sesión QA TruckCenter (2026-07-03) — ejecución real + corrección de metodología:**
 - **Ejecución:** 44/120 casos del plan unificado (v1.4 → v1.5) con escritura real en PRE (B02-B07 + E2E
@@ -436,7 +436,7 @@ ESTE TRIMESTRE:
 
 | Repositorio | Versión | Componentes | Estado |
 |-------------|---------|-------------|--------|
-| `APB-IA-FRAMEWORK` | — | **365 componentes** (37 aprobados, todos terceros — 0 apb-owned) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
+| `APB-IA-FRAMEWORK` | — | **367 componentes** (37 aprobados, todos terceros — 0 apb-owned) | ✅ Framework construido / ⬜ Gobernanza pendiente / ⬜ Integraciones pendientes despliegue |
 | `APB-DESIGN-SYSTEM` | v1.3.0 | 15 componentes React + configs DX + UI Kit | ✅ Listo para consumo / ⬜ Verificación DevExtreme CLI / ⬜ Decisión distribución |
 | `APB-DOMAIN-CATALOG` | — | 21 dominios `proposed` (Sesión DDD 2026-06-30) | 🟢 Pendiente aprobación de Arquitectura |
 

@@ -206,7 +206,7 @@ apb-ai-framework/
 
 Consultar [`catalog/CATALOG.md`](catalog/CATALOG.md) para el listado completo de skills, agentes, subagentes y workflows con sus metadatos, estados y dependencias.
 
-**345 componentes** (2026-07-02): 177 skills APB · 52 skills terceros · 35 agentes · 33 subagentes · 17 workflows · 20 providers · 7 wrappers · 4 adapters.
+**367 componentes** (2026-07-08): 184 skills APB · 57 skills terceros · 40 agentes · 35 subagentes · 17 workflows · 23 providers · 7 wrappers · 4 adapters.
 
 Todos los componentes cumplen el [`PROMPTING_STANDARD`](context/apb/standards/PROMPTING_STANDARD.md) (estructura de prompt obligatoria, verificada por el check #18 de `validate_repo.py`) y el modelo de **Harness Engineering** (`SYSTEM.md §10` + `GOVERNANCE.md §8`, agnóstico de LLM). Los planes de pruebas siguen el [`TEST_PLAN_STANDARD`](context/apb/standards/TEST_PLAN_STANDARD.md) (check #20).
 
@@ -223,7 +223,17 @@ Antes de crear una skill APB, debe existir evidencia en `discovery/` de revisió
 >
 > Este repositorio está preparado para iniciar pilotos controlados. No debe usarse en producción sin revisión y aprobación explícita de Arquitectura, QA, Ciberseguridad y Gobierno de APB.
 
-Último hito (2026-07-02): **Sesión QA-2** — metodología corporativa de planes de pruebas (#82: `TEST_PLAN_STANDARD`, plantilla, `apb-qa-test-plan` v1.2.0, ejemplo unificado TruckCenter de 112 casos con procedencia múltiple) + navegación agéntica para pruebas funcionales (#84: `prov-browser-agent` + `apb-qa-exploratory-nav`), con **ejecución funcional real demostrada sobre TruckCenter PRE**. Antes: estándar de prompting (#78) + Harness Engineering (#83) sobre todo el catálogo. El ciclo de aprobación `draft → approved` sigue pendiente.
+Último hito (2026-07-08): **Sesión 28** — Agente de Valoración Técnica
+(`apb-agent-valoracion-tecnica-v1.0`), orquestando los 3 sistemas reales de
+valoración APB (COSMIC, Horas/Perfil, Catálogo técnico USM/UEC/UTA) sobre
+metodología corporativa vigente y datos reales de 12 meses de Jira, sin forzar el
+enfoque por clasificación automática. Antes (2026-07-02): **Sesión QA-2** —
+metodología corporativa de planes de pruebas (#82: `TEST_PLAN_STANDARD`, plantilla,
+`apb-qa-test-plan` v1.2.0, ejemplo unificado TruckCenter de 112 casos con
+procedencia múltiple) + navegación agéntica para pruebas funcionales (#84:
+`prov-browser-agent` + `apb-qa-exploratory-nav`), con **ejecución funcional real
+demostrada sobre TruckCenter PRE**. El ciclo de aprobación `draft → approved` sigue
+pendiente.
 
 ## Contacto
 
