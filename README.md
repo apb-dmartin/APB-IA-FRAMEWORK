@@ -72,6 +72,14 @@ Workflow (orquestación de agentes para un objetivo de negocio)
 | `watchlist` | Observado, no consumible hasta nueva evaluación. |
 | `rejected` | Descartado. |
 
+## Relación con Otros Repositorios APB
+
+> **`apb-ai-skills` está DEPRECADO** (decisión de Arquitectura APB, Sesión QA). Todo desarrollo
+> de skills, agentes y subagentes de QA vive exclusivamente en este repositorio
+> (`APB-IA-FRAMEWORK`). El repositorio `apb-ai-skills` no se ha modificado ni retirado
+> físicamente — la deprecación es una decisión de proceso, no una migración de código.
+> Detalle completo en `discovery/CONTINUIDAD_PROYECTO.md §13.3`.
+
 ## Tecnología Soportada
 
 | Ámbito | Tecnología / Estándar |

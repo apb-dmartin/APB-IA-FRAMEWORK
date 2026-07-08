@@ -45,20 +45,20 @@
 
 ## 1. Bugs críticos — acción inmediata
 
-Estos bugs afectan al CI y a la integridad del catálogo. Esfuerzo total < 2h.
+**Estado (2026-07-08, verificado contra código real): 7 de 8 resueltos.** Solo **BUG-03** sigue pendiente (vive en `APB-DESIGN-SYSTEM`, repo separado). Este documento no reflejaba varios cierres ya presentes en el código — corregido tras verificación directa de cada fichero afectado.
 
-| Bug | Archivo | Impacto | Fix | Esfuerzo |
-|-----|---------|---------|-----|---------|
-| **BUG-01** | `context/apb/templates/WORKFLOW.md` | Cualquier workflow nuevo creado desde el template falla en CI — usa blockquotes en lugar de frontmatter YAML | Reemplazar encabezado blockquote por bloque YAML con campos de SCHEMA.md §3.4 | 20 min |
-| **BUG-02** | `scripts/generate_catalog.py` función `update_index_md` | El step de CI "Verificar sincronización de catálogo" lleva tiempo crasheando — cuantificador posesivo `\s*+` no válido en Python 3.10 | Cambiar `\s*+` → `\s*` en los 8 patrones afectados | 30 min |
-| **BUG-03** | `APB-DESIGN-SYSTEM/components/component-reference.md §9` | Sidebar color documentado como `#2c3e50` pero el CSS real es `--apb-sidebar-bg: #ffffff` (corregido en v1.3.0) | Actualizar §9 para referenciar `var(--apb-sidebar-bg)` | 5 min |
-| **BUG-04** | `adapters/claude/adapter-claude-v1.0.md` | Model string `claude-sonnet-4-20250514` obsoleto | Actualizar al model string actual | 5 min |
-| **BUG-05** | `SYSTEM.md §4.2` | Solo documenta 2 adapters; existen 4 (`claude`, `copilot`, `m365`, `rovo`) | Añadir filas de `adapters/m365/` y `adapters/rovo/` con estado `draft` | 10 min |
-| **BUG-06** | `.github/workflows/telemetry.yml` | El workflow hace `git push` directo a `main` para actualizar `telemetry/events.jsonl` — anti-patrón CI y vector de seguridad | Usar Azure Blob Storage como buffer (Opción A) o rama `telemetry-log` sin protección (Opción B) | 1 día |
-| **BUG-07** | `discovery/CONTINUIDAD_PROYECTO.md §8` | ✅ **RESUELTO (2026-07-07):** `generate_catalog.py` ejecutado, cifra real 365 componentes — corregido en este documento (cabecera + §2 + §3 + Estado global). `CONTINUIDAD_PROYECTO.md §8` **no requiere cambio**: su entrada histórica (208→341) es un BUG-07 distinto ya cerrado en su momento; la entrada de Sesión 27 ya refleja la cifra correcta. Nota de proceso: esta fila queda obsoleta cada vez que el catálogo se regenera tras añadir/quitar componentes — revisar contra `catalog/CATALOG.md` antes de asumir que sigue vigente. | — (sin acción pendiente) | — |
-| **BUG-08** | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` | `source_license: "unverified"` — riesgo legal si se usa en producción | Verificar LICENSE en `https://github.com/Lum1104/Understand-Anything`; si no existe, marcar como `rejected` | 30 min |
+| Bug | Archivo | Impacto | Fix | Estado |
+|-----|---------|---------|-----|--------|
+| **BUG-01** | `context/apb/templates/WORKFLOW.md` | Cualquier workflow nuevo creado desde el template fallaba en CI — usaba blockquotes en lugar de frontmatter YAML | Reemplazado por bloque YAML con campos de SCHEMA.md §3.4 | ✅ **RESUELTO** (commit `4f02f38`, verificado 2026-07-08) |
+| **BUG-02** | `scripts/generate_catalog.py` función `update_index_md` | El cuantificador posesivo `\s*+` no es válido en Python 3.10 y crasheaba el step de CI | Cambiado `\s*+` → `\s*` en los patrones afectados | ✅ **RESUELTO** (commit `4f02f38`, verificado 2026-07-08 — patrón ya no existe en el fichero) |
+| **BUG-03** | `APB-DESIGN-SYSTEM/components/component-reference.md §9` | Sidebar color documentado como `#2c3e50` pero el CSS real es `--apb-sidebar-bg: #ffffff` (corregido en v1.3.0) | Actualizar §9 para referenciar `var(--apb-sidebar-bg)` | ⬜ **Pendiente** — repo `APB-DESIGN-SYSTEM`, no accesible desde esta sesión |
+| **BUG-04** | `adapters/claude/adapter-claude-v1.0.md` | Model string `claude-sonnet-4-20250514` obsoleto | Actualizado a `claude-sonnet-4-6` | ✅ **RESUELTO** (verificado 2026-07-08) |
+| **BUG-05** | `SYSTEM.md §4.2` | Solo documentaba 2 adapters; existen 4 (`claude`, `copilot`, `m365`, `rovo`) | Añadidas filas de `adapters/m365/` y `adapters/rovo/` con estado `draft` | ✅ **RESUELTO** (commit `4f02f38`, verificado 2026-07-08) |
+| **BUG-06** | `.github/workflows/telemetry.yml` | El workflow hacía `git push` directo a `main` para actualizar `telemetry/events.jsonl` — anti-patrón CI y vector de seguridad | Reescrito: push a rama `chore/telemetry-sync` + `gh pr create` (requiere revisión humana antes de merge a `main`) | ✅ **RESUELTO** (verificado 2026-07-08 — ya no hace push directo a `main`) |
+| **BUG-07** | `discovery/CONTINUIDAD_PROYECTO.md §8` | ✅ **RESUELTO (2026-07-07):** `generate_catalog.py` ejecutado, cifra real 365 componentes — corregido en este documento (cabecera + §2 + §3 + Estado global). `CONTINUIDAD_PROYECTO.md §8` **no requiere cambio**: su entrada histórica (208→341) es un BUG-07 distinto ya cerrado en su momento; la entrada de Sesión 27 ya refleja la cifra correcta. Nota de proceso: esta fila queda obsoleta cada vez que el catálogo se regenera tras añadir/quitar componentes — revisar contra `catalog/CATALOG.md` antes de asumir que sigue vigente. | — (sin acción pendiente) | ✅ **RESUELTO** |
+| **BUG-08** | `skills/third_party/third-lum1104-knowledge-graph-v1.0.md` | `source_license: "unverified"` — riesgo legal si se usa en producción | Verificada vía API de GitHub: **MIT** | ✅ **RESUELTO** (2026-07-04, reverificado 2026-07-08 — nota: el repo se transfirió de `Lum1104` a la organización `Egonex-AI`; GitHub redirige automáticamente, licencia sin cambios) |
 
-**Criterio de éxito de BUG-01 + BUG-02:** `python scripts/validate_repo.py --strict` (exit 0) y `python scripts/generate_catalog.py --check` (sin drift) pasan en verde en CI.
+**Criterio de éxito de BUG-01 + BUG-02:** `python scripts/validate_repo.py --strict` (exit 0, verificado) y `python scripts/generate_catalog.py --check` (sin drift) pasan en verde en CI.
 
 ---
 
@@ -283,7 +283,7 @@ import { APBButton } from './components/core/APBButton';
 | # | Tarea | Urgencia | Responsable |
 |---|-------|---------|-------------|
 | S1 | **Co-aprobar los 5 componentes candidatos** (rol two-eyes obligatorio por GOVERNANCE.md) | Crítica | Ciberseguridad |
-| S2 | Verificar licencia `third-lum1104-knowledge-graph-v1.0` (ver BUG-08) | Alta | Ciberseguridad / Arquitectura APB |
+| S2 | ~~Verificar licencia `third-lum1104-knowledge-graph-v1.0`~~ (ver BUG-08) — ✅ **Resuelto**, MIT confirmada | Alta | Ciberseguridad / Arquitectura APB |
 | S3 | Auditar que el M365 plugin no expone credenciales AKV al runtime de Copilot | Alta | Ciberseguridad |
 | S4 | Definir scopes OAuth mínimos para adapter-rovo Forge App (scope `write:confluence-content` es amplio) | Alta | Ciberseguridad |
 | S5 | Ejecutar `apb-gov-org-risk-report-v1.0` sobre cada agente y skill antes del despliegue | Alta | Arquitectura APB |
@@ -396,12 +396,12 @@ aplicación (no el framework). Informes completos archivados en
 
 ```
 ESTA SEMANA (< 4h, cualquier desarrollador):
-  ├── BUG-02: Fix regex generate_catalog.py (30 min)
-  ├── BUG-01: Fix WORKFLOW.md template frontmatter (20 min)
-  ├── BUG-03: Fix sidebar color component-reference.md (5 min)
-  ├── BUG-04: Fix modelo adapter-claude-v1.0 (5 min)
-  ├── BUG-05: Fix SYSTEM.md §4.2 — 4 adapters (10 min)
-  └── DOC7: Documentar deprecación apb-ai-skills en README (30 min)
+  ├── ✅ BUG-02: Fix regex generate_catalog.py — RESUELTO
+  ├── ✅ BUG-01: Fix WORKFLOW.md template frontmatter — RESUELTO
+  ├── BUG-03: Fix sidebar color component-reference.md (5 min) — repo APB-DESIGN-SYSTEM
+  ├── ✅ BUG-04: Fix modelo adapter-claude-v1.0 — RESUELTO
+  ├── ✅ BUG-05: Fix SYSTEM.md §4.2 — 4 adapters — RESUELTO
+  └── ✅ DOC7: Documentar deprecación apb-ai-skills en README — RESUELTO (2026-07-08)
 
 ESTE MES (alta prioridad):
   ├── ✅ T1+T2: Wiring huérfanos Enriquecimiento B — COMPLETADO (FASE 0, 2026-06-30)
@@ -422,9 +422,9 @@ CUANDO insumos de Débora disponibles (ver `PLAN_FASES_FUTURAS.md §I`):
   └── DC1→DC3 (APB-DOMAIN-CATALOG primer dominio)
 
 ESTE TRIMESTRE:
-  ├── BUG-06: Rediseñar telemetry.yml (Dev + Plataforma)
-  ├── BUG-07: Actualizar CONTINUIDAD con recuento real
-  ├── BUG-08: Verificar licencia lum1104
+  ├── ✅ BUG-06: Rediseñar telemetry.yml — RESUELTO
+  ├── ✅ BUG-07: Actualizar CONTINUIDAD con recuento real — RESUELTO
+  ├── ✅ BUG-08: Verificar licencia lum1104 — RESUELTO
   ├── S3+S4: Auditorías de seguridad integraciones
   ├── DOC3→DOC6: Documentación por audiencias (Sesión 14)
   └── T3: Resolver duplicados del catálogo
