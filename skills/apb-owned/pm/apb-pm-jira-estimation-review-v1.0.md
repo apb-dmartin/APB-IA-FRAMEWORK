@@ -1,31 +1,40 @@
 ---
 id: "apb-pm-jira-estimation-review-v1.0"
-name: "Revisión de Estimación de Tickets Jira"
-description: "Explica en lenguaje no técnico un ticket técnico de Jira (refactorización, deuda técnica, actualización de librería, vulnerabilidad, incumplimiento de política), analiza su complejidad, busca precedentes históricos (Jira en vivo + catálogo del repo) y contrapropone una valoración en horas cuando la estimación actual supera en más de un 25% la media de precedentes comparables, siempre con argumentación verificable."
-version: "1.0.2"
+name: "Revisión de Estimación de Tickets Jira (Horas/Perfil)"
+description: "Valora o revisa en horas/perfil cualquier ticket Jira cuyo contrato de proveedor no use COSMIC — técnico (refactorización, deuda técnica, librerías, vulnerabilidades), profesional, o funcional cuando el contrato factura en horas (p.ej. proyectos Java/Sòstrat). Analiza complejidad con tablas de referencia reales (12 meses de histórico Jira), busca precedentes (Jira en vivo + catálogo del repo) y contrapropone valoración cuando la estimación actual supera en más de un 25% la media de precedentes comparables, siempre con argumentación verificable."
+version: "1.1.0"
 status: "draft"
 owner: "PMO APB <arquitectura@portdebarcelona.cat>"
 domain: "pm"
 autonomy_level: 1
 consumed_by:
   - "apb-agent-functional-technical-support-v1.0"
+  - "apb-agent-valoracion-tecnica-v1.0"
 created_date: "2026-07-06"
-review_date: "2026-07-06"
+review_date: "2026-07-08"
 depends_on:
   - "prov-atlassian-v1.0"
   - "prov-apb-knowledge-v1.0"
 
 ---
 
-# SKILL: Revisión de Estimación de Tickets Jira
+# SKILL: Revisión de Estimación de Tickets Jira (Horas/Perfil)
 
 ## 1. Responsabilidad
 
-Esta skill ayuda a perfiles sin conocimiento técnico profundo (analistas funcionales,
-jefes de proyecto, Product Owners) a entender y validar tickets técnicos de Jira:
+Esta skill implementa el sistema de valoración **Horas por perfil** para cualquier
+ticket cuyo contrato de proveedor no use COSMIC como unidad de facturación —
+técnico no catalogado, profesional, y **también desarrollo funcional cuando el
+contrato lo factura en horas** (caso real APB: los proyectos Java/Sòstrat se valoran
+en horas aunque introduzcan funcionalidad — el sistema aplicable depende del
+contrato concreto, no solo de la Naturaleza del trabajo). Ayuda a perfiles sin
+conocimiento técnico profundo (analistas funcionales, jefes de proyecto, Product
+Owners) a entender y validar estos tickets:
 
 - Explica la tarea en lenguaje no técnico (qué es, por qué, impacto de no hacerla).
-- Analiza la complejidad con criterios propios (no requiere código ya escrito).
+- Analiza la complejidad usando primero las **tablas de referencia reales** (§1bis,
+  datos de 12 meses de Jira) y, solo si el concepto no encaja en ninguna fila,
+  criterios libres 1-10 (volumen de cambio, testing, integración, riesgo).
 - Busca precedentes históricos comparables, combinando consulta en vivo a Jira y el
   catálogo acumulado del repo.
 - Calcula la media de horas de esos precedentes y **contrapropone una valoración**
@@ -35,6 +44,53 @@ jefes de proyecto, Product Owners) a entender y validar tickets técnicos de Jir
   las estimaciones futuras sean cada vez más rápidas de verificar.
 - Opcionalmente, publica el análisis como comentario en el ticket tras aprobación
   humana explícita.
+
+## 1bis. Tablas de referencia reales (12 meses de histórico Jira, aportadas por Débora)
+
+> Fuente primaria de complejidad — usar ANTES que los criterios libres 1-10. Confianza
+> ✅ = ≥50 tickets (fiable), ⚠️ = <50 (usar con cautela), ❌ = <25 (indicativo, no concluyente).
+
+**Tabla A — Desarrollo por stack/concepto:**
+
+| Concepto | Stack | Media | Mediana | Rango | Nº tickets | Confianza |
+|---|---|---|---|---|---|---|
+| Desarrollo funcional (merged) | Java (Sòstrat) | 26,7h | ~14h | 2–177h | 119 | ✅ |
+| Pantalla/UI (grid+formulario+TCON+filtro) | .NET/DevExtreme | 21,7h | ~12h | 2–102h | 56 | ✅ |
+| WS/API/endpoint | .NET | 22,0h | ~15h | 2–90h | 41 | ⚠️ |
+| Integración API REST/eventos/EntraID | Cross | 34,5h | ~28h | 12–69h | 22 | ❌ |
+| Trazabilidad/auditoría/alertas/logs | Cross | 20,8h | ~11h | 2–102h | 52 | ✅ |
+| Informe/dashboard/report/exportación | Cross | 21,7h | ~11h | 3,5–92h | 19 | ❌ |
+| Ref. global desarrollo .NET (todas categorías) | .NET | 19,8h | ~13h | 2–185h | 200+ | ✅ |
+
+**Tabla B — Tareas técnicas puras (unidad normalizada):**
+
+| Concepto | Unidad | Valor referencia | Fuente |
+|---|---|---|---|
+| Cambio de plantilla .NET | h/app-API | 8h (simple) · 15-24h (con migración .NET mayor) | 10 tickets |
+| Monorepo → multirepo | h/componente separado | 4-5h/componente | 8 tickets |
+| Sonar — issue simple (var. no usada, código comentado) | h/issue | 1-2h | derivado de epics |
+| Sonar — issue medio (refactor, duplicidad) | h/issue | 3-5h | derivado de epics |
+| Sonar — actualización APIBASE completa | h/API | 6-8h | ARQ-3628 (255h/42 APIs) |
+| Script BBDD — ALTER simple | h/script | 1-4h | 5 tickets EK |
+| Script BBDD — tabla nueva + lógica | h/script | 20-55h | EK-247, PIF-1653 |
+
+> ⚠️ **Discrepancia conocida:** el catálogo Excel `Catálogo de coste de tareas
+> técnicas APB — v1.xlsx` valora "Corrección de vulnerabilidades" en 8-24h, cifra
+> que **sobreestima** frente al dato real por issue individual (Tabla B: 1-8h según
+> tipo) — el Excel probablemente asume un paquete de varios issues, no uno suelto.
+> Ante esta categoría, usar siempre el dato real de Tabla B como fuente primaria; el
+> Excel solo como referencia secundaria si Jira no aporta precedente. Además, el
+> propio Excel es internamente inconsistente en "Actualización de librería menor"
+> (8-16h en una hoja, 8-12h en otra) — declarar la discrepancia si se usa, no elegir
+> un valor sin decirlo.
+>
+> Fuente secundaria (solo si Tablas A/B no cubren el concepto): catálogo Excel
+> `Catálogo de coste de tareas técnicas APB — v1.xlsx` (hoja "Tareas técnicas") —
+> actualización librería mayor 24-40h, upgrade framework major 40-80h, refactor
+> estructural 32-64h, hardening/hardening técnico 16-32h, rotación de
+> secretos/certificados 4-8h, entre otros. La guía obsoleta de 2020-2022
+> (`OBSOLETO - Guía de Criterios de valoración — versión genérica`) queda
+> **descartada por completo**, sustituida por estos datos reales.
 
 ## 2. Inputs
 
@@ -50,7 +106,7 @@ jefes de proyecto, Product Owners) a entender y validar tickets técnicos de Jir
 | Nombre | Tipo | Descripción |
 |--------|------|-------------|
 | `explicacion_accesible` | markdown | Qué es la tarea, por qué es necesaria, impacto de no hacerla — en lenguaje no técnico |
-| `analisis_complejidad` | markdown | Criterios de complejidad puntuados (1-10) con justificación |
+| `analisis_complejidad` | markdown | Fila de Tabla A/B (§1bis) que aplica, con su media/mediana/rango/confianza citada; o, si no encaja ninguna, criterios libres 1-10 con justificación |
 | `precedentes` | table | Tickets precedentes con horas reales y origen (Jira en vivo / catálogo del repo) |
 | `veredicto_valoracion` | markdown | Media de precedentes, valoración actual, desviación, contrapropuesta si aplica (regla >25%) |
 | `comentario_jira` | text | Texto propuesto para comentario en Jira, solo si `post_comment=true` y tras aprobación humana |
@@ -61,7 +117,8 @@ jefes de proyecto, Product Owners) a entender y validar tickets técnicos de Jir
 |------|-----|-------------|
 | provider | `prov-atlassian-v1.0` | `get_issue` (leer el ticket), `search_issues` (JQL, precedentes), `add_comment` (comentario opcional). REST API pura (no MCP, no Rovo). Provider único desde la fusión 2026-07-06 (antes `prov-jira-software-v1.0`, ahora deprecado). La capa de IA de Rovo (`adapter-rovo-v1.0`) es una integración distinta y aún no activa en APB (prevista julio 2026) — no es el transporte de esta skill |
 | provider | `prov-apb-knowledge-v1.0` | Contexto corporativo APB (dominio portuario, mapa de proyectos Jira) |
-| fichero | `discovery/ESTIMATION_REFERENCES.md` | Catálogo de referencias de valoraciones, alimentado incrementalmente por esta skill; complementa la consulta en vivo a Jira, no la sustituye, hasta reunir ≥20 entradas por categoría |
+| fichero | `discovery/ESTIMATION_REFERENCES.md` | Catálogo de referencias de valoraciones, sembrado con las Tablas A/B de §1bis (datos reales de 12 meses) y alimentado incrementalmente por esta skill tras cada análisis; complementa la consulta en vivo a Jira, no la sustituye |
+| fichero | `Catálogo de coste de tareas técnicas APB — v1.xlsx` | Fuente secundaria de horas de referencia para conceptos no cubiertos por las Tablas A/B — ver discrepancias conocidas en §1bis |
 
 ## 5. Prompt del Sistema
 
@@ -77,8 +134,12 @@ y mapa de proyectos Jira (ARQ, MISA, TECH, APBPIT, familia SÒSTRAT, etc.).
 GUARDRAIL: el legacy (SÒSTRAT/Java/Oracle/CAS/Alfresco) es contexto informacional.
 Nunca prescribas tecnologías no aprobadas. Stack aprobado: STANDARD_ARCHITECTURE.md
 
-Eres el skill "Revisión de Estimación de Tickets Jira" (apb-pm-jira-estimation-review-v1.0)
-del APB AI Framework.
+Eres el skill "Revisión de Estimación de Tickets Jira (Horas/Perfil)"
+(apb-pm-jira-estimation-review-v1.0) del APB AI Framework. Implementas el sistema
+de valoración Horas por perfil — para cualquier ticket cuyo contrato de proveedor
+no use COSMIC, incluido desarrollo funcional cuando el contrato factura en horas
+(el sistema aplicable depende del contrato, no se infiere solo de si el trabajo es
+funcional o técnico).
 
 ## Acceso a Jira
 Usa prov-atlassian-v1.0 (get_issue, search_issues con JQL, add_comment) — REST API
@@ -95,21 +156,24 @@ discovery/ESTIMATION_REFERENCES.md como fuente de precedentes.
 2. Explica la tarea EN LENGUAJE NO TÉCNICO: qué es (refactorización, deuda técnica,
    actualización de librería, vulnerabilidad, incumplimiento de política...), por qué
    es necesaria, qué pasaría si no se hace. Usa analogías no técnicas cuando ayuden.
-3. Analiza complejidad con criterios propios — NO delegues en apb-dev-code-review-v1.0
+3. Analiza complejidad usando primero las **Tablas A y B de §1bis** (datos reales de
+   12 meses de Jira) — identifica qué fila corresponde al ticket por concepto y
+   stack, cita su media/mediana/rango y su nivel de confianza (✅/⚠️/❌: con ❌ o ⚠️
+   trata el número como orientativo, no concluyente, y dilo explícitamente). Si el
+   concepto no encaja en ninguna fila, consulta la hoja "Tareas técnicas" del
+   catálogo Excel como referencia secundaria (declarando las discrepancias conocidas
+   de §1bis si aplica), y solo en último caso usa criterios libres 1-10 (volumen de
+   cambio, testing, integración, riesgo) — NO delegues en apb-dev-code-review-v1.0
    (esa skill revisa código C#/.NET ya escrito; aquí normalmente solo hay una
-   descripción, sin código adjunto): volumen estimado de cambio, necesidad de
-   testing, integración con sistemas externos, riesgo, dependencias de otros tickets.
-   Puntúa cada criterio 1-10 y justifica.
+   descripción, sin código adjunto).
 4. Busca precedentes de forma híbrida:
    a. SIEMPRE consulta Jira en vivo con search_issues (JQL sobre mismo proyecto y
       tipo de issue que el ticket, o el jql_scope si se aportó) buscando tickets
       similares ya resueltos con valoración registrada.
-   b. Consulta también discovery/ESTIMATION_REFERENCES.md por la misma categoría de
-      tarea.
-   c. Jira es la fuente de verdad mientras el catálogo tenga menos de 20 entradas
-      para esa categoría; a partir de ese umbral el catálogo puede citarse como
-      referencia rápida de primera mano, pero nunca deja de poder consultarse Jira
-      si el usuario lo pide o los datos del catálogo parecen insuficientes.
+   b. Consulta también discovery/ESTIMATION_REFERENCES.md (Tablas A/B + entradas
+      añadidas incrementalmente) por la misma categoría de tarea.
+   c. Las Tablas A/B con confianza ✅ (≥50 tickets) son ya una referencia fiable de
+      primera mano; con ⚠️/❌ complementa siempre con Jira en vivo antes de concluir.
 5. Determina la unidad de estimación real usada en el ticket y en los precedentes:
    HORAS (campo de time tracking o campo custom de horas del proyecto concreto) — NO
    story points, salvo que sea literalmente el único dato disponible, y en ese caso
@@ -159,6 +223,9 @@ discovery/ESTIMATION_REFERENCES.md como fuente de precedentes.
 {Qué es, por qué es necesaria, impacto de no hacerla — en lenguaje no técnico}
 
 #### 2. Análisis de complejidad
+{Si el concepto encaja en Tabla A o B (§1bis): "Concepto: {fila} · Media: {n}h ·
+Mediana: {n}h · Rango: {n}-{n}h · Confianza: {✅/⚠️/❌} ({n} tickets)". Si no encaja
+en ninguna, tabla de criterios libres:}
 | Criterio | Puntuación (1-10) | Justificación |
 |---|---|---|
 | Volumen de cambio | {n} | {justificación} |
@@ -188,7 +255,8 @@ llamativamente baja, observación sin contrapropuesta formal}
 
 | Agente | Contexto de uso |
 |--------|-----------------|
-| `apb-agent-functional-technical-support-v1.0` | Único consumidor actual — analistas funcionales/PM validando tickets técnicos |
+| `apb-agent-functional-technical-support-v1.0` | Analistas funcionales/PM validando tickets técnicos individuales |
+| `apb-agent-valoracion-tecnica-v1.0` | Orquestador de valoración técnica — invoca esta skill cuando el enfoque elegido (explícito o sugerido) es Horas/Perfil, incluyendo desarrollo funcional facturado en horas |
 
 ## 7. Human Review
 
@@ -212,6 +280,7 @@ llamativamente baja, observación sin contrapropuesta formal}
 | 1.0.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Creación. Sustituye la dependencia inadecuada de `apb-dev-code-review-v1.0` que tenía el borrador de `apb-agent-functional-technical-support-v1.0` (esa skill es para código ya escrito, no para estimar a partir de la descripción de un ticket) |
 | 1.0.1 | 2026-07-06 | Claude (Anthropic), a petición de Débora (reconciliación de providers Atlassian) | Corregida una afirmación incorrecta: esta skill decía que `prov-jira-software-v1.0` se transporta vía "conector MCP de Atlassian (Rovo)". Al investigar la reconciliación con `prov-atlassian-v1.0` se encontró `adapters/rovo/adapter-rovo-v1.0.md`, que documenta que Rovo es una integración de IA de Atlassian aparte (búsqueda semántica, Rovo Agents), pendiente de activación en APB (julio 2026) — no el mecanismo de transporte de ninguno de los dos providers REST |
 | 1.0.2 | 2026-07-06 | Claude (Anthropic), a petición de Débora (fusión de providers) | `prov-jira-software-v1.0` fusionado en `prov-atlassian-v1.0` v2.0.0 — actualizada la dependencia (`depends_on`, tabla de dependencias, comportamiento ante inputs incompletos) al provider único |
+| 1.1.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Ampliado el alcance de "solo tickets técnicos" a todo el sistema Horas/Perfil, incluyendo desarrollo funcional cuando el contrato de proveedor no usa COSMIC (caso real: proyectos Java/Sòstrat). Añadida §1bis con Tablas A/B de datos reales de 12 meses de Jira (aportadas por Débora) como fuente primaria de complejidad, sustituyendo la guía obsoleta 2020-2022. Documentada discrepancia conocida entre el catálogo Excel y el dato real de Sonar/vulnerabilidades. Nuevo consumidor: `apb-agent-valoracion-tecnica-v1.0` |
 
 ## ⚠️ Comportamiento ante inputs incompletos
 

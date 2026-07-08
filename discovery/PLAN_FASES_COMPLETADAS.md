@@ -3488,3 +3488,34 @@ cada subagente declara el `parent_agent` correcto, y cada agente padre ya lo lis
 propio array `subagents:`. La entrada original del backlog quedó desactualizada respecto
 al estado real del repo — no requirió ninguna edición de código, solo la corrección del
 propio plan (movida aquí y tachada en `PLAN_FASES_FUTURAS.md`).
+
+## Gap #8 (horas históricas para calibrar COSMIC↔horas) — 🟡 APORTADO, no cerrado del todo (2026-07-08)
+
+`PLAN_FASES_FUTURAS.md §A` pedía a Débora "horas históricas reales de la organización
+para calibrar conversión puntos↔horas" (calibración `apb-disc-cosmic-v1.0`). Débora
+aportó en esta sesión:
+
+- 3 documentos oficiales de metodología: `Guía para valoración de desarrollos con
+  Cosmic — v1` (Feb-2025, vigente), `ANEXO - Criterios de valoración servicios y
+  proyectos APB — v1`, y `Catálogo de coste de tareas técnicas APB — v1.xlsx`.
+- Un análisis real de 12 meses de Jira (7 categorías de desarrollo por stack + 4
+  categorías de tareas técnicas puras, con medias/medianas/rangos/nº de tickets y
+  nivel de confianza ya calculado por ella misma: ✅ ≥50 tickets, ⚠️ <50, ❌ <25).
+
+Resultado de esta sesión:
+- `apb-disc-cosmic-v1.0` reescrita v2.0.0 con las reglas reales de la Guía COSMIC APB
+  (antes era ISO/IEC 19761 genérico, sin ninguna regla de APB).
+- `apb-pm-jira-estimation-review-v1.0` ampliada v1.1.0 con las tablas reales como
+  fuente primaria de complejidad (sustituyendo la guía obsoleta de 2020-2022).
+- `apb-pm-catalogo-servicios-v1.0` (nueva) con el catálogo real USM/UEC/UTA.
+- `apb-agent-valoracion-tecnica-v1.0` (nuevo) orquesta las tres skills.
+- `discovery/ESTIMATION_REFERENCES.md` sembrado con las tablas reales.
+
+**Por qué no se marca 100% resuelto:** las categorías con confianza ⚠️/❌ (<50
+tickets, algunas <25) siguen siendo indicativas, no concluyentes — la propia Débora
+lo etiquetó así. El histórico seguirá creciendo con datos reales vía
+`apb-agent-valoracion-tecnica-v1.0` hasta que todas las categorías superen el
+umbral de fiabilidad. Además, el factor h/CFP del informe Rovo (Repetitividad/
+Integración/Novedad/Dominio) sigue sin verificar — Débora lo indicó explícitamente
+("no estoy segura de que sean correctos") y se documentó como tal en
+`apb-disc-cosmic-v1.0 §Referencia de calibración interna`.

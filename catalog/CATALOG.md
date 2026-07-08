@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 365
+- **Total Components**: 367
 
 ## Component Breakdown
 
-### Skills APB-Owned (183 total)
+### Skills APB-Owned (184 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -152,6 +152,7 @@
 | `apb-plat-secret-rotation-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-secret-rotation-v1.0.md` |
 | `apb-plat-sharepoint-io-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-sharepoint-io-v1.0.md` |
 | `apb-plat-terraform-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-terraform-v1.0.md` |
+| `apb-pm-catalogo-servicios-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-catalogo-servicios-v1.0.md` |
 | `apb-pm-implementation-planning-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-implementation-planning-v1.0.md` |
 | `apb-pm-jira-estimation-review-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-jira-estimation-review-v1.0.md` |
 | `apb-pm-parallel-execution-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-parallel-execution-v1.0.md` |
@@ -259,7 +260,7 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (39 total)
+### Agentes (40 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -301,6 +302,7 @@
 | `apb-agent-tech-discovery-v1.0` | Technology Discovery Agent | draft | `agents/apb-agent-tech-discovery-v1.0.md` |
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
+| `apb-agent-valoracion-tecnica-v1.0` | Agente de Valoración Técnica | draft | `agents/apb-agent-valoracion-tecnica-v1.0.md` |
 | `apb-agent-vendor-manager-v1.0` | Vendor Manager | draft | `agents/apb-agent-vendor-manager-v1.0.md` |
 
 ### Subagentes (35 total)
