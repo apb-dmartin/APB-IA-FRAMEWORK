@@ -11,7 +11,7 @@
 > 57 third-party, 40 agentes, 35 subagentes, 17 workflows, 23 providers, 7 wrappers,
 > 4 adapters. 37 `approved` (todos terceros/wrapper de contexto, 0 apb-owned), 4
 > `deprecated`, resto `draft`. Pendiente despliegue e inicio del ciclo de gobernanza
-> sobre componentes propios. 7 de 8 bugs resueltos (BUG-03 pendiente confirmación color).
+> sobre componentes propios. 8 de 8 bugs resueltos.
 >
 > **Nota de proceso (2026-07-06):** este documento es el único lugar donde debe
 > vivir trabajo de puesta en producción real. No crear documentos de handoff
@@ -45,13 +45,13 @@
 
 ## 1. Bugs críticos — acción inmediata
 
-**Estado (2026-07-08, verificado contra código real): 7 de 8 resueltos.** Solo **BUG-03** sigue pendiente (vive en `APB-DESIGN-SYSTEM`, repo separado). Este documento no reflejaba varios cierres ya presentes en el código — corregido tras verificación directa de cada fichero afectado.
+**Estado (2026-07-08, verificado contra código real): 8 de 8 resueltos.** Este documento no reflejaba varios cierres ya presentes en el código — corregido tras verificación directa de cada fichero afectado.
 
 | Bug | Archivo | Impacto | Fix | Estado |
 |-----|---------|---------|-----|--------|
 | **BUG-01** | `context/apb/templates/WORKFLOW.md` | Cualquier workflow nuevo creado desde el template fallaba en CI — usaba blockquotes en lugar de frontmatter YAML | Reemplazado por bloque YAML con campos de SCHEMA.md §3.4 | ✅ **RESUELTO** (commit `4f02f38`, verificado 2026-07-08) |
 | **BUG-02** | `scripts/generate_catalog.py` función `update_index_md` | El cuantificador posesivo `\s*+` no es válido en Python 3.10 y crasheaba el step de CI | Cambiado `\s*+` → `\s*` en los patrones afectados | ✅ **RESUELTO** (commit `4f02f38`, verificado 2026-07-08 — patrón ya no existe en el fichero) |
-| **BUG-03** | `APB-DESIGN-SYSTEM/components/component-reference.md §9` | Sidebar color documentado como `#2c3e50` pero el CSS real es `--apb-sidebar-bg: #ffffff` (corregido en v1.3.0) | Actualizar §9 para referenciar `var(--apb-sidebar-bg)` | ⬜ **Pendiente** — repo `APB-DESIGN-SYSTEM`, no accesible desde esta sesión |
+| **BUG-03** | `APB-DESIGN-SYSTEM/components/component-reference.md §9` | Sidebar color documentado como `#2c3e50` pero el CSS real es `--apb-sidebar-bg: #ffffff` (corregido en v1.3.0) | §9 ahora referencia `var(--apb-sidebar-bg)` = `#ffffff`; corregido también el fallback CSS obsoleto en `ui_kits/aplicaciones-apb/index-dx.html` | ✅ **RESUELTO** (2026-07-08, commit `802eef9` en `APB-DESIGN-SYSTEM`, v1.4.1) |
 | **BUG-04** | `adapters/claude/adapter-claude-v1.0.md` | Model string `claude-sonnet-4-20250514` obsoleto | Actualizado a `claude-sonnet-4-6` | ✅ **RESUELTO** (verificado 2026-07-08) |
 | **BUG-05** | `SYSTEM.md §4.2` | Solo documentaba 2 adapters; existen 4 (`claude`, `copilot`, `m365`, `rovo`) | Añadidas filas de `adapters/m365/` y `adapters/rovo/` con estado `draft` | ✅ **RESUELTO** (commit `4f02f38`, verificado 2026-07-08) |
 | **BUG-06** | `.github/workflows/telemetry.yml` | El workflow hacía `git push` directo a `main` para actualizar `telemetry/events.jsonl` — anti-patrón CI y vector de seguridad | Reescrito: push a rama `chore/telemetry-sync` + `gh pr create` (requiere revisión humana antes de merge a `main`) | ✅ **RESUELTO** (verificado 2026-07-08 — ya no hace push directo a `main`) |
@@ -398,7 +398,7 @@ aplicación (no el framework). Informes completos archivados en
 ESTA SEMANA (< 4h, cualquier desarrollador):
   ├── ✅ BUG-02: Fix regex generate_catalog.py — RESUELTO
   ├── ✅ BUG-01: Fix WORKFLOW.md template frontmatter — RESUELTO
-  ├── BUG-03: Fix sidebar color component-reference.md (5 min) — repo APB-DESIGN-SYSTEM
+  ├── ✅ BUG-03: Fix sidebar color component-reference.md — RESUELTO (repo APB-DESIGN-SYSTEM)
   ├── ✅ BUG-04: Fix modelo adapter-claude-v1.0 — RESUELTO
   ├── ✅ BUG-05: Fix SYSTEM.md §4.2 — 4 adapters — RESUELTO
   └── ✅ DOC7: Documentar deprecación apb-ai-skills en README — RESUELTO (2026-07-08)

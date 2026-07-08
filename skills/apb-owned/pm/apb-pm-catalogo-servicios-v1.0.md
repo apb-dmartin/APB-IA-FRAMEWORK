@@ -1,8 +1,8 @@
 ---
 id: "apb-pm-catalogo-servicios-v1.0"
 name: "Catálogo de Servicios Técnicos Desatendidos (USM/UEC/UTA)"
-description: "Clasifica una tarea o servicio técnico automatizado/desatendido dentro del catálogo real de servicios APB (USM/UEC/UTA), identificando la unidad económica aplicable, el tramo de volumetría y el volumen de horas de referencia de esa unidad. El framework APB solo valora en horas (Horas/Perfil) o en CFP (COSMIC) — este catálogo nunca introduce un precio de mercado propio: entrega horas, y la conversión a euros se hace aplicando la tarifa/hora real del proveedor concreto del contrato, no una estimación de mercado externa."
-version: "1.1.0"
+description: "Clasifica una tarea o servicio técnico automatizado/desatendido dentro del catálogo real de servicios APB (USM/UEC/UTA), identificando la unidad económica aplicable, el tramo de volumetría y el volumen de horas de referencia de esa unidad. El framework APB solo valora en horas (Horas/Perfil) o en CFP (COSMIC) — este catálogo nunca introduce un precio de mercado propio: entrega horas, y la conversión a euros se hace aplicando la tarifa/hora real del proveedor concreto del contrato, no una estimación de mercado externa. Para categorías sin dato real todavía, delega la estimación puntual (con criterio técnico, nunca de mercado) al agente consumidor, que registra el resultado real como histórico."
+version: "1.2.0"
 status: "draft"
 owner: "PMO APB <arquitectura@portdebarcelona.cat>"
 domain: "pm"
@@ -77,10 +77,17 @@ propia — su función es:
 > esfuerzo de **implementación/evolución puntual** (no está confirmada su
 > periodicidad exacta como coste recurrente mensual) — se citan como punto de
 > partida, nunca como cifra recurrente cerrada. Los servicios sin concepto
-> equivalente en el Excel se declaran explícitamente "sin dato real" — **no se
-> estiman horas de mercado externas para rellenar el hueco**; se completan con el
-> tiempo vía `discovery/ESTIMATION_REFERENCES.md` a medida que haya precedentes
-> reales.
+> equivalente en el Excel se declaran explícitamente "sin dato real" — **esta
+> skill nunca estima horas de mercado externas para rellenar el hueco.**
+>
+> **Mecanismo de precedente (Débora, 2026-07-08):** para las categorías "sin dato
+> real", esta skill se limita a señalar el gap — es responsabilidad del **agente
+> consumidor** (`apb-agent-valoracion-tecnica-v1.0`) hacer, en el momento de un
+> caso real concreto, una estimación puntual con criterio técnico (nunca de
+> mercado — ver su propio Prompt de Sistema) y registrar el resultado real de
+> cierre en `discovery/ESTIMATION_REFERENCES.md`. Cuando una categoría acumule
+> ≥20 entradas reales (mismo umbral que `apb-pm-jira-estimation-review-v1.0`),
+> esta fila deja de decir "sin dato real" y cita el rango acumulado.
 
 | Servicio | Definición (alcance operativo) | Periodicidad | Unidad | Tramos de referencia | Horas de referencia (fuente real) | Exclusiones explícitas |
 |---|---|---|---|---|---|---|
@@ -162,7 +169,12 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 6. Cita el volumen de horas de referencia de la fila del catálogo (§4) SOLO si
    tiene fuente real (Excel "Tareas técnicas") — nunca inventes ni estimes horas
    a partir de referencias de mercado externas. Si la fila dice "sin dato real —
-   pendiente", devuelve exactamente eso; no rellenes el hueco con una suposición.
+   pendiente", devuelve exactamente eso, junto con la nota: "Esta skill no
+   estima — si necesitas una cifra para este caso concreto, pide a
+   apb-agent-valoracion-tecnica-v1.0 que haga la estimación puntual con criterio
+   técnico (nunca de mercado) y registre el resultado real como precedente en
+   discovery/ESTIMATION_REFERENCES.md." No hagas tú esa estimación — es
+   responsabilidad del agente consumidor, no de esta skill.
 7. Si se aportó `tarifa_hora_proveedor` Y hay horas de referencia reales: calcula
    el importe = horas × tarifa. Si falta cualquiera de los dos, el output se
    limita a horas (o a "sin dato real"), declarando explícitamente qué falta.
@@ -220,6 +232,7 @@ técnico recurrente, estandarizable o automatizable, NUNCA desarrollo funcional
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Creación a partir de la hoja real "Servicios desatendidos" de `Catálogo de coste de tareas técnicas APB — v1.xlsx` (12 servicios + 11 servicios "bajo evento" del ciclo de construcción + IaC/CaC) |
 | 1.1.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Corrección de rumbo: el catálogo NO estima €/unidad de mercado (rechazado explícitamente por Débora). Ahora estima **volumen de horas de referencia** por servicio/tramo, citando datos reales de la hoja "Tareas técnicas" del Excel donde existe concepto equivalente (Platform Engineering, Observabilidad, SRE, QA equipos de desarrollo) y declarando "sin dato real — pendiente" en el resto (Gobierno Técnico/Cloud, CMDB, FinOps, Operación Técnica, Continuidad/DR, Guardias, Administración terceros, QA Gobierno). La conversión horas→€ se deja a `tarifa_hora_proveedor`, dato real que ya tiene APB de su contrato — nunca una tarifa de mercado estimada por esta skill |
+| 1.2.0 | 2026-07-08 | Claude (Anthropic), a petición de Débora | Débora confirmó que no tiene datos reales para las 8 categorías "sin dato real" y pidió que el **agente consumidor** (`apb-agent-valoracion-tecnica-v1.0`) estime en el momento con criterio técnico y registre el resultado real como histórico. Esta skill ahora declara explícitamente esa delegación (§4 + Prompt de Sistema paso 6) — sigue sin estimar nada ella misma, solo señala el gap y remite al agente |
 
 ## ⚠️ Comportamiento ante inputs incompletos
 

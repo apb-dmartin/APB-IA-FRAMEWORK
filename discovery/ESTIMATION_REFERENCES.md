@@ -78,6 +78,28 @@ clasificación teórica.
 | Informe/dashboard/report/exportación | 19 | 3,5–92h | No |
 | Tareas técnicas puras (plantilla/monorepo/Sonar/BBDD) | 40 (agregado) | 1-55h según concepto | No (cada subcategoría <25) |
 
+### Categorías del Catálogo USM/UEC/UTA sin dato real (pendientes de acumular)
+
+> Débora confirmó (2026-07-08) que no tiene datos reales para estas 8 categorías.
+> `apb-agent-valoracion-tecnica-v1.0` estima puntualmente con criterio técnico
+> cuando surge un caso real (nunca con benchmarks de mercado — ver
+> `apb-pm-catalogo-servicios-v1.0` §4) y registra el resultado real de cierre
+> aquí como primer precedente. Estas filas pasan a la tabla principal de arriba
+> en cuanto acumulen entradas reales.
+
+| Categoría (Catálogo USM/UEC/UTA) | Nº de entradas | Estado |
+|---|---|---|
+| Gobierno Técnico, Cloud y de Arquitectura | 0 | Pendiente de acumular vía uso real del agente |
+| Gobierno Integral de CMDB y Documentación Operativa Automatizada | 0 | Pendiente de acumular vía uso real del agente |
+| FinOps — Gobierno y Optimización | 0 | Pendiente de acumular vía uso real del agente |
+| Operación Técnica de Infraestructura, Plataformas y Redes | 0 | Pendiente de acumular vía uso real del agente |
+| Continuidad Técnica: Backup, Recuperación, HA y DR | 0 | Pendiente de acumular vía uso real del agente |
+| Guardias Técnicas Automatizadas y Respuesta Automática | 0 | Pendiente de acumular vía uso real del agente |
+| Administración de Plataformas y Productos (Terceros) | 0 | Pendiente de acumular vía uso real del agente |
+| QA — Oficina de Gobierno y Calidad | 0 | Pendiente de acumular vía uso real del agente |
+| IaC/CaC — Automatizaciones reutilizables bajo demanda (UTA) | 0 | Pendiente de acumular vía uso real del agente |
+| IaC/CaC — Prestación continua de capacidades (USM) | 0 | Pendiente de acumular vía uso real del agente |
+
 ## Entradas individuales
 
 > A partir de aquí, cada fila la añade la skill tras un análisis nuevo (no incluido
