@@ -16,6 +16,8 @@ Uso:
 
 Requerimientos:
     - pip install requests pandas openpyxl python-pptx
+    - Opcional: pip install python-dotenv (para cargar SONAR_URL/SONAR_TOKEN
+      desde un fichero .env local en vez de pasarlos por CLI)
 
 Autor: Claude Code (APB AI Framework)
 Fecha: 2026-07-06
@@ -31,6 +33,13 @@ import requests
 import pandas as pd
 from datetime import datetime, timedelta
 import base64
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv es opcional; sin él, usar variables de entorno ya exportadas
 
 # Asegurar UTF-8 en Windows
 if sys.platform == "win32":
@@ -60,7 +69,10 @@ class PowerBIDashboardGenerator:
         self.output_dir.mkdir(exist_ok=True)
 
         # Headers para APIs
-        self.sonar_headers = {"Authorization": f"Bearer {sonar_token}"}
+        # SonarQube self-hosted usa Basic Auth con el User Token como usuario
+        # y password vacía (verificado contra la instancia real de APB)
+        sonar_basic = base64.b64encode(f"{sonar_token}:".encode()).decode()
+        self.sonar_headers = {"Authorization": f"Basic {sonar_basic}"}
         self.github_headers = {
             "Authorization": f"Bearer {github_token}",
             "Accept": "application/vnd.github.graphql-preview+json",
@@ -104,6 +116,7 @@ class PowerBIDashboardGenerator:
 
             # Recopilar métricas
             sonar_data = []
+            metric_keys = ["coverage", "bugs", "vulnerabilities", "code_smells", "sqale_index"]
             for project in projects[:20]:  # Limitar a 20 para demo
                 proj_key = project["key"]
                 proj_name = project.get("name", proj_key)
@@ -112,35 +125,54 @@ class PowerBIDashboardGenerator:
                 measures_url = f"{self.sonar_url}/api/measures/search_history"
                 params = {
                     "component": proj_key,
-                    "metrics": "coverage,bugs,vulnerabilities,code_smells,ncloc",
+                    "metrics": ",".join(metric_keys),
                 }
                 resp = requests.get(
                     measures_url, headers=self.sonar_headers, params=params, timeout=10
                 )
 
-                if resp.status_code == 200:
-                    measures = resp.json().get("measures", [])
-                    if measures:
-                        # Tomar el más reciente
-                        latest = measures[0]
-                        history = latest.get("history", [{}])[-1]
+                if resp.status_code != 200:
+                    continue
 
-                        sonar_data.append(
-                            {
-                                "ApplicationKey": proj_key,
-                                "ApplicationName": proj_name,
-                                "CoveragePct": float(history.get("value", 0)) / 100,
-                                "BugCount": int(history.get("value", 0)),
-                                "BugCountHigh": max(
-                                    0, int(history.get("value", 0) or 0) - 2
-                                ),
-                                "BugCountCritical": max(0, int(history.get("value", 0) or 0) - 5),
-                                "VulnerabilityCount": int(history.get("value", 0)),
-                                "CodeSmellCount": int(history.get("value", 0)),
-                                "TechnicalDebtDays": float(history.get("value", 0)) / 100,
-                                "MeasuredDate": datetime.now().date(),
-                            }
-                        )
+                # La API devuelve una entrada por métrica solicitada, cada una con
+                # su propio historial — hay que indexar por "metric", no asumir
+                # que measures[0] es la única/todas las métricas
+                measures = resp.json().get("measures", [])
+                latest_by_metric: Dict[str, float] = {}
+                latest_date = None
+                for measure in measures:
+                    history = measure.get("history", [])
+                    if not history:
+                        continue
+                    point = history[-1]
+                    latest_by_metric[measure["metric"]] = float(point.get("value", 0) or 0)
+                    latest_date = point.get("date", latest_date)
+
+                if not latest_by_metric:
+                    continue
+
+                severity_counts = self._fetch_bug_severity_counts(proj_key)
+
+                sonar_data.append(
+                    {
+                        "ApplicationKey": proj_key,
+                        "ApplicationName": proj_name,
+                        "CoveragePct": latest_by_metric.get("coverage", 0) / 100,
+                        "BugCount": int(latest_by_metric.get("bugs", 0)),
+                        "BugCountHigh": severity_counts["high"],
+                        "BugCountCritical": severity_counts["critical"],
+                        "VulnerabilityCount": int(latest_by_metric.get("vulnerabilities", 0)),
+                        "CodeSmellCount": int(latest_by_metric.get("code_smells", 0)),
+                        # sqale_index viene en minutos de deuda técnica; se convierte
+                        # a días de trabajo asumiendo jornada de 8h (convención de Sonar)
+                        "TechnicalDebtDays": latest_by_metric.get("sqale_index", 0) / 480,
+                        "MeasuredDate": (
+                            pd.to_datetime(latest_date).date()
+                            if latest_date
+                            else datetime.now().date()
+                        ),
+                    }
+                )
 
             df = pd.DataFrame(sonar_data)
             self.logger.info(f"✓ {len(df)} registros de Sonar descargados")
@@ -149,6 +181,43 @@ class PowerBIDashboardGenerator:
         except requests.RequestException as e:
             self.logger.error(f"✗ Error conectando a Sonar: {e}")
             return self._mock_sonar_data()
+
+    def _fetch_bug_severity_counts(self, proj_key: str) -> Dict[str, int]:
+        """Contar bugs High (MAJOR) y Critical (BLOCKER+CRITICAL) reales vía api/issues/search"""
+        counts = {"high": 0, "critical": 0}
+        try:
+            resp = requests.get(
+                f"{self.sonar_url}/api/issues/search",
+                headers=self.sonar_headers,
+                params={
+                    "componentKeys": proj_key,
+                    "types": "BUG",
+                    "severities": "MAJOR",
+                    "ps": 1,
+                },
+                timeout=10,
+            )
+            if resp.status_code == 200:
+                counts["high"] = resp.json().get("total", 0)
+
+            resp = requests.get(
+                f"{self.sonar_url}/api/issues/search",
+                headers=self.sonar_headers,
+                params={
+                    "componentKeys": proj_key,
+                    "types": "BUG",
+                    "severities": "BLOCKER,CRITICAL",
+                    "ps": 1,
+                },
+                timeout=10,
+            )
+            if resp.status_code == 200:
+                counts["critical"] = resp.json().get("total", 0)
+        except requests.RequestException as e:
+            self.logger.warning(
+                f"⚠️  No se pudo obtener desglose de severidad para {proj_key}: {e}"
+            )
+        return counts
 
     def _mock_sonar_data(self) -> pd.DataFrame:
         """Datos de prueba si Sonar no está disponible"""
@@ -637,8 +706,19 @@ Credenciales requeridas:
         default="discovery/qa-compliance-powerbi-spec.json",
         help="Ruta al archivo de especificación (default: discovery/qa-compliance-powerbi-spec.json)",
     )
-    parser.add_argument("--sonar-url", required=True, help="URL de Sonar (e.g., https://sonar.apb.internal)")
-    parser.add_argument("--sonar-token", required=True, help="Token API de Sonar")
+    parser.add_argument(
+        "--sonar-url",
+        default=os.getenv("SONAR_URL") or os.getenv("SONARQUBE_URL"),
+        help="URL de Sonar (o variable de entorno SONAR_URL/SONARQUBE_URL)",
+    )
+    parser.add_argument(
+        "--sonar-token",
+        default=os.getenv("SONAR_TOKEN") or os.getenv("SONARQUBE_TOKEN"),
+        help=(
+            "Token API de Sonar. Preferible pasarlo vía variable de entorno "
+            "SONAR_TOKEN en vez de este flag (queda en el historial de shell)."
+        ),
+    )
     parser.add_argument("--github-token", required=True, help="GitHub Personal Access Token")
     parser.add_argument("--jira-url", required=True, help="URL de Jira (e.g., https://apb.atlassian.net)")
     parser.add_argument("--jira-token", required=True, help="Token API de Jira")
@@ -649,6 +729,20 @@ Credenciales requeridas:
     )
 
     args = parser.parse_args()
+
+    if not args.sonar_url:
+        print(
+            "❌ Error: falta la URL de Sonar. Pásala con --sonar-url o define "
+            "SONAR_URL/SONARQUBE_URL (en el entorno o en .env)."
+        )
+        sys.exit(1)
+
+    if not args.sonar_token:
+        print(
+            "❌ Error: falta el token de Sonar. Pásalo con --sonar-token o define "
+            "SONAR_TOKEN/SONARQUBE_TOKEN (en el entorno o en .env)."
+        )
+        sys.exit(1)
 
     # Verificar que el archivo de especificación existe
     if not Path(args.spec).exists():
