@@ -116,6 +116,19 @@ el paso concreto que falta.
 
 ---
 
+## 5.1 Nota (2026-07-10): preferir Docker si el proxy corporativo bloquea la instalación nativa
+
+En un PC dentro de la red APB, `npx playwright install` puede fallar con
+`DEPTH_ZERO_SELF_SIGNED_CERT` porque el proxy corporativo intercepta el TLS de la descarga directa
+del CDN de Playwright. Docker Desktop sí atraviesa ese proxy sin problema (usa los registries
+oficiales, no el CDN de descarga de navegadores de Playwright). Si te pasa esto, en vez de pelear
+con `NODE_EXTRA_CA_CERTS`/`--use-system-ca`, usa directamente las imágenes ya construidas en
+`infra/azure-qa-runtime/` (`playwright/` y `k6/`, ver su `README.md`) — es exactamente lo que
+`QA3-2` (`discovery/HANDOFF_TECNICOS.md`) resuelve: cero dependencia del puesto de trabajo. El k6
+CLI nativo (`winget install GrafanaLabs.k6` — el ID correcto en winget, no `k6.k6`) sí suele
+instalar sin problema si lo prefieres para chequeos rápidos, pero para consistencia con el resto del
+framework se recomienda usar también la imagen Docker de k6.
+
 ## 6. Cuándo NO usar local
 
 | Situación | Destino recomendado |

@@ -2,7 +2,7 @@
 id: "adapter-claude-v1.0"
 name: "Claude (Anthropic) Adapter"
 description: "Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de Claude (Anthropic). Soporta Claude Code, Claude Desktop, y API de Anthropic."
-version: "1.3.0"
+version: "1.4.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -50,7 +50,7 @@ Claude 3.5/4 Sonnet/Opus via Anthropic API, Claude Code CLI, Claude Desktop App.
 | Provider | `prov-azure-v1.0` | ✅ MCP | Azure MCP nativo |
 | Provider | `prov-atlassian-v1.0` | ⚠️ Parcial | Sin conector MCP de Atlassian confirmado en este runtime a fecha 2026-07-06 — usar REST directo (api_token vía AKV) hasta confirmar disponibilidad de un servidor MCP de Atlassian en el tenant APB. Actualizar esta fila en cuanto se confirme |
 | Provider | `prov-confluence-v1.0` | ⚠️ Parcial | Mismo estado que `prov-atlassian-v1.0` — REST v2/OAuth2 directo hasta confirmar MCP |
-| Provider | `prov-sonar-v1.0` | ⚠️ Pendiente de verificar | Servidor MCP oficial de SonarSource (`sonarsource/sonarqube-mcp`) identificado y provisionado contra la instancia real de APB (`gisplanolpre.port.apb.es:9001`, conexión REST directa ya verificada con datos reales). Falta verificar el contenedor en modo `streamable-http` — bloqueado a fecha 2026-07-09 por el primer arranque del motor de Docker Desktop en la máquina de Débora. Actualizar a "✅ MCP" y añadir entrada en `.mcp.json` en cuanto se complete |
+| Provider | `prov-sonar-v1.0` | ✅ MCP | Servidor MCP oficial de SonarSource (`sonarsource/sonarqube-mcp`) verificado en vivo (2026-07-10) contra la instancia real de APB (`gisplanolpre.port.apb.es:9001`): handshake `initialize`, `tools/list` y llamada real a `search_my_sonarqube_projects` con datos reales. Corre sobre Docker Engine nativo en WSL (no el motor de Docker Desktop — choque de subred con la VPN de APB, ver `prov-sonar-v1.0.md`). Registrado en `.mcp.json` (`sonar`, `type: http`, `localhost:8080`) |
 
 ## 🔌 Interface de Adaptación
 
@@ -216,6 +216,7 @@ config:
 | 1.1.0 | 2026-07-03 | Arquitectura APB | Aclarado que `CLAUDE.md` deriva de `AGENTS.md` (routing file raíz agnóstico, `SYSTEM.md §10.1`); check #22 de `validate_repo.py` verifica que no diverjan. |
 | 1.2.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Corregido un hueco: `prov-atlassian-v1.0`/`prov-confluence-v1.0` no aparecían en este adapter pese a que Azure/GitHub/Sonar sí tenían su mapeo MCP explícito. Añadidos como "⚠️ Parcial" (REST directo, sin conector MCP de Atlassian confirmado en este runtime) — no confundir con `adapter-rovo-v1.0`, un mecanismo distinto y aún no activo en APB. |
 | 1.3.0 | 2026-07-09 | Claude (Anthropic), a petición de Débora | `prov-sonar-v1.0` pasa de mención suelta en texto a fila propia en la tabla de componentes adaptados: se identificó y provisionó el servidor MCP **oficial de SonarSource**, no un mecanismo custom, contra la instancia real de APB. Marcado "⚠️ Pendiente de verificar" (REST directo ya confirmado con datos reales; falta la prueba en vivo del contenedor `streamable-http`, bloqueada por el primer arranque de Docker Desktop en la máquina de Débora). |
+| 1.4.0 | 2026-07-10 | Claude (Anthropic), a petición de Débora | `prov-sonar-v1.0` pasa a "✅ MCP": servidor verificado en vivo con datos reales. Nota de infraestructura: corre sobre Docker Engine nativo en WSL, no el motor de Docker Desktop, por un choque real de subredes con la VPN de APB — ver `prov-sonar-v1.0.md` para el detalle si hay que reproducirlo en otra máquina. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

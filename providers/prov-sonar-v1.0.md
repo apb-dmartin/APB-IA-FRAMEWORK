@@ -2,8 +2,8 @@
 id: "prov-sonar-v1.0"
 name: "Provider: SonarQube (MCP oficial SonarSource)"
 description: "Proveedor de acción de solo lectura para análisis de calidad de código con SonarQube. Consulta métricas, issues, security hotspots y estado de quality gate de la instancia real de APB a través del servidor MCP oficial de SonarSource."
-version: "2.0.0"
-status: "draft"
+version: "2.1.0"
+status: "candidate"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
 provider_type: "action"
@@ -28,13 +28,34 @@ review_date: "2026-07-09"
 > [SonarSource/sonarqube-mcp-server](https://github.com/SonarSource/sonarqube-mcp-server)),
 > no un mecanismo custom. Alcance acotado a solo lectura.
 >
-> **Estado de verificación (2026-07-09):** la conexión REST directa contra la
-> instancia real está verificada (autenticación con User Token vía Basic Auth,
-> 100 proyectos reales listados, usada por
+> **Estado de verificación (2026-07-10): completada.** La conexión REST directa
+> contra la instancia real está verificada (autenticación con User Token vía
+> Basic Auth, usada por
 > [`generate_powerbi_dashboard.py`](../scripts/generate_powerbi_dashboard.py)).
-> La verificación del servidor MCP oficial en modo `streamable-http` está
-> **pendiente** de que el motor de Docker Desktop termine su primer arranque
-> en la máquina de Débora — `status` se mantiene en `draft` hasta completarla.
+> Nota: `api/projects/search` pagina a 100 resultados por defecto — el total
+> real de proyectos en la instancia es 224 (`ps=500` sin paginar), confirmado
+> en el cruce de project keys de `HANDOFF_TECNICOS.md` QA3-3.
+> El servidor MCP oficial también está verificado en vivo en modo
+> `streamable-http`: handshake `initialize`, `tools/list` y una llamada real a
+> `search_my_sonarqube_projects` devolvieron datos reales (`APB.API.AGE`) desde
+> Windows y desde WSL.
+>
+> **Detalle de infraestructura real (importante para reproducir):** el
+> contenedor **no** corre sobre el motor de Docker Desktop directamente — se
+> instaló Docker Engine nativo dentro de la distro **Ubuntu de WSL2**
+> (`sudo apt-get install docker.io`). Motivo: la subred de bridge por defecto
+> de Docker **choca con una ruta real de la VPN corporativa de APB** que
+> contiene la instancia de Sonar — cualquier tráfico del contenedor hacia esa
+> subred se enrutaba mal y fallaba con `NoRouteToHostException`, tanto en
+> Docker Desktop (bridge y `--network host`, con "Enable host networking"
+> activado) como en el Docker nativo antes de reconfigurar la subred. Se
+> resolvió cambiando el bridge de Docker a un rango privado no usado por la
+> VPN (identificado revisando `ip route` en la distro WSL) vía
+> `/etc/docker/daemon.json` (`bip` + `default-address-pools`), recreando
+> `docker0`. Ver checklist completo más abajo si hay que reproducir esto en
+> otra máquina/servidor (las subredes concretas usadas no se documentan aquí
+> por política de no exponer direccionamiento interno — confirmar con el
+> equipo de Arquitectura/IT de APB el rango correcto para cada red).
 
 ## Descripción
 
@@ -112,16 +133,43 @@ para "Non-Competitive Purpose" — aplicable a uso interno de APB.
 >      `docker run` ni en variables de entorno de usuario persistentes.
 >    - [ ] Revocar/rotar el User Token usado durante esta fase de pruebas una
 >      vez la cuenta de servicio esté operativa.
-> 5. Arranque del servidor MCP (modo remoto multi-cliente):
->    ```
->    docker run --init --pull=always -p 8080:8080 \
->      -e SONARQUBE_TRANSPORT=http \
->      -e SONARQUBE_HTTP_HOST=0.0.0.0 \
->      -e SONARQUBE_HTTP_PORT=8080 \
->      -e SONARQUBE_TOKEN=<User Token> \
->      -e SONARQUBE_URL=http://gisplanolpre.port.apb.es:9001 \
->      sonarsource/sonarqube-mcp
->    ```
+> 5. Arranque del servidor MCP (modo remoto multi-cliente, verificado 2026-07-10):
+>    - Si el motor de contenedores tiene ruta directa a la red de la VPN de APB
+>      (`172.17.x.x`), esto basta:
+>      ```
+>      docker run -d --name sonar-mcp --init --restart unless-stopped -p 8080:8080 \
+>        -e SONARQUBE_TRANSPORT=http \
+>        -e SONARQUBE_HTTP_HOST=0.0.0.0 \
+>        -e SONARQUBE_HTTP_PORT=8080 \
+>        -e SONARQUBE_TOKEN=<User Token> \
+>        -e SONARQUBE_URL=http://gisplanolpre.port.apb.es:9001 \
+>        sonarsource/sonarqube-mcp
+>      ```
+>    - Si falla con `NoRouteToHostException` (choque de subred Docker/VPN, como
+>      en la máquina de Débora): reconfigurar el bridge de Docker antes del
+>      `docker run` de arriba:
+>      ```
+>      # /etc/docker/daemon.json — sustituir <N> por un segundo octeto 172.<N>.0.0/16
+>      # que NO aparezca en la salida de "ip route" dentro de la distro/host
+>      {"bip": "172.<N>.0.1/24", "default-address-pools": [{"base": "172.<N>.0.0/16", "size": 24}]}
+>      ```
+>      ```
+>      sudo systemctl stop docker docker.socket && sudo ip link delete docker0 && sudo systemctl start docker
+>      ```
+>      (revisar `ip route` primero para confirmar qué subred /16 está realmente
+>      libre en cada red — el rango libre puede variar entre máquinas).
+>    - En Windows con Docker Desktop + VPN corporativa, puede hacer falta además:
+>      WSL2 en modo `networkingMode=mirrored` (`%USERPROFILE%\.wslconfig`) y/o
+>      instalar Docker Engine nativo dentro de una distro WSL (no el motor de
+>      Docker Desktop) si el problema persiste — ver nota de infraestructura
+>      real arriba.
+>    - Verificación rápida (handshake MCP):
+>      ```
+>      curl -X POST http://localhost:8080/mcp \
+>        -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
+>        -H "Authorization: Bearer <User Token>" \
+>        -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+>      ```
 
 ## Inputs
 
@@ -179,6 +227,7 @@ ProjectKey: "APB.API.APPS"
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-20 | Arquitectura APB | Creación inicial (aspiracional, sin mecanismo real) |
 | 2.0.0 | 2026-07-09 | Claude (Anthropic), a petición de Débora | Reescritura completa: endpoint real (`gisplanolpre.port.apb.es:9001`), mecanismo real (MCP oficial SonarSource, no custom), alcance acotado a solo lectura (`permissions: ["read"]`, se retira `"analysis"`), tabla de acciones con gates humanos, nota de aprovisionamiento, verificación REST directa confirmada con datos reales |
+| 2.1.0 | 2026-07-10 | Claude (Anthropic), a petición de Débora | `status` pasa a `candidate`: servidor MCP oficial verificado en vivo (`initialize`, `tools/list`, `search_my_sonarqube_projects` con datos reales). Documentado el hallazgo de infraestructura: la subred de bridge de Docker por defecto choca con una ruta real de la VPN de APB — solución documentada (subred alternativa + Docker Engine nativo en WSL en vez del motor de Docker Desktop). Registrado en `.mcp.json` (`sonar`, `type: http`) |
 
 ---
 *Registrado en APB AI Framework.*
