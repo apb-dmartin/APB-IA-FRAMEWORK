@@ -31,6 +31,9 @@ except ImportError:
     print("ERROR: PyYAML no está instalado. Ejecute: pip install pyyaml")
     sys.exit(1)
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _frontmatter import scan_components  # noqa: E402
+
 COMPONENT_FOLDERS = {
     "skills/apb-owned": "skill_apb",
     "skills/third_party": "skill_third",
@@ -48,37 +51,20 @@ DOMAIN_COLORS = {
     "documentation": "⚪", "orchestration": "🟤", "pm": "🟢", "design": "🎨",
 }
 
-FRONTMATTER = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
-IGNORED_DIRS = {"templates", ".git", "node_modules"}
-
-
-def load_component(filepath: Path, repo_path: Path):
-    content = filepath.read_text(encoding="utf-8")
-    m = FRONTMATTER.match(content)
-    if not m:
-        return None
-    try:
-        data = yaml.safe_load(m.group(1))
-    except yaml.YAMLError:
-        return None
-    if not isinstance(data, dict):
-        return None
-    data["_rel_path"] = filepath.relative_to(repo_path).as_posix()
-    return data
-
 
 def collect_all(repo_path: Path):
+    scanned = scan_components(repo_path, COMPONENT_FOLDERS)
     components = defaultdict(list)
-    for folder, kind in COMPONENT_FOLDERS.items():
-        folder_path = repo_path / folder
-        if not folder_path.exists():
+    for record in scanned.values():
+        if not record.found:
             continue
-        for filepath in sorted(folder_path.rglob("*.md")):
-            if any(part in IGNORED_DIRS for part in filepath.parts):
-                continue
-            data = load_component(filepath, repo_path)
-            if data:
-                components[kind].append(data)
+        # Copia, no reutilizar record.metadata directamente: es compartido y
+        # nunca debe mutarse (ver scripts/_frontmatter.py). '_rel_path' aquí
+        # es deliberadamente POSIX (a diferencia de record.rel_path, que usa
+        # el separador nativo del SO) porque alimenta enlaces Markdown.
+        data = dict(record.metadata)
+        data["_rel_path"] = record.path.relative_to(repo_path).as_posix()
+        components[record.component_type].append(data)
     return components
 
 

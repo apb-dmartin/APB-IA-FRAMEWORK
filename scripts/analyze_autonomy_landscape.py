@@ -9,7 +9,6 @@ Salida: tabla CSV + análisis de riesgos.
 import os
 import sys
 import json
-import yaml
 from pathlib import Path
 from collections import defaultdict
 from typing import Dict, List, Tuple
@@ -18,32 +17,21 @@ from typing import Dict, List, Tuple
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding="utf-8")
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _frontmatter  # noqa: E402
+import validate_repo  # noqa: E402 — reutiliza COMPONENT_FOLDERS (fuente única de
+                       # carpetas de componentes) y validate_no_circular_dependencies
+
+
 class ComponentAnalyzer:
     def __init__(self, framework_root: str):
         self.root = Path(framework_root)
         self.components = []
+        self.scanned = {}
+        self.all_ids: Dict[str, str] = {}
         self.autonomy_stats = defaultdict(list)
         self.candidates_level_2 = []
         self.risks = []
-
-    def load_yaml_frontmatter(self, filepath: Path) -> Dict:
-        """Extract YAML frontmatter from .md file."""
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                content = f.read()
-                if not content.startswith('---'):
-                    return {}
-
-                # Find closing ---
-                end_idx = content.find('\n---\n', 4)
-                if end_idx == -1:
-                    return {}
-
-                yaml_str = content[4:end_idx]
-                return yaml.safe_load(yaml_str) or {}
-        except Exception as e:
-            print(f"⚠️  Error parsing {filepath}: {e}")
-            return {}
 
     def classify_component(self, metadata: Dict) -> Tuple[str, str, str]:
         """
@@ -96,49 +84,43 @@ class ComponentAnalyzer:
         return 'unknown'
 
     def scan_catalog(self):
-        """Scan agents/, skills/, subagents/, workflows/, providers/ directories."""
-        directories = [
-            'agents',
-            'skills/apb-owned',
-            'skills/third_party',
-            'skills/wrappers',
-            'subagents',
-            'workflows',
-            'providers'
-        ]
+        """Scan agents/, skills/, subagents/, workflows/, providers/, wrappers/,
+        adapters/ directories -- derivadas de validate_repo.COMPONENT_FOLDERS
+        (fuente única) en vez de una lista propia mantenida a mano, que había
+        divergido silenciosamente ('skills/wrappers' inexistente en vez de
+        'wrappers', y sin 'adapters') y omitía 11 componentes reales."""
+        self.scanned = _frontmatter.scan_components(self.root, validate_repo.COMPONENT_FOLDERS)
+        self.all_ids = {}
 
         total = 0
-        for directory in directories:
-            dirpath = self.root / directory
-            if not dirpath.exists():
+        for rel_path, record in self.scanned.items():
+            if record.path.name == '_index.md':
                 continue
 
-            for md_file in dirpath.rglob('*.md'):
-                if md_file.name == '_index.md':
-                    continue
+            metadata = record.metadata
+            if not metadata or 'id' not in metadata:
+                continue
 
-                metadata = self.load_yaml_frontmatter(md_file)
-                if not metadata or 'id' not in metadata:
-                    continue
+            self.all_ids[metadata['id']] = rel_path
 
-                comp_type, work_type, criticality = self.classify_component(metadata)
-                autonomy_level = metadata.get('autonomy_level', 1)
+            comp_type, work_type, criticality = self.classify_component(metadata)
+            autonomy_level = metadata.get('autonomy_level', 1)
 
-                component = {
-                    'id': metadata['id'],
-                    'name': metadata.get('name', ''),
-                    'type': comp_type,
-                    'work': work_type,
-                    'criticality': criticality,
-                    'current_level': autonomy_level,
-                    'domain': metadata.get('domain', 'unknown'),
-                    'status': metadata.get('status', 'unknown'),
-                    'file': str(md_file.relative_to(self.root))
-                }
+            component = {
+                'id': metadata['id'],
+                'name': metadata.get('name', ''),
+                'type': comp_type,
+                'work': work_type,
+                'criticality': criticality,
+                'current_level': autonomy_level,
+                'domain': metadata.get('domain', 'unknown'),
+                'status': metadata.get('status', 'unknown'),
+                'file': rel_path
+            }
 
-                self.components.append(component)
-                self.autonomy_stats[autonomy_level].append(component['id'])
-                total += 1
+            self.components.append(component)
+            self.autonomy_stats[autonomy_level].append(component['id'])
+            total += 1
 
         print(f"✅ Scanned {total} components from APB catalog")
         return total
@@ -209,11 +191,10 @@ class ComponentAnalyzer:
         implementar (Gap B1 de enforcement de autonomía, cerrado 2026-07-07) —
         ahora reutiliza la única implementación real en vez de duplicarla.
         """
-        sys.path.insert(0, str(Path(__file__).parent))
-        import validate_repo
-
         result = validate_repo.ValidationResult()
-        validate_repo.validate_no_circular_dependencies(self.root, result)
+        validate_repo.validate_no_circular_dependencies(
+            self.root, result, all_ids=self.all_ids, scanned=self.scanned,
+        )
         return [issue.message for issue in result.errors]
 
     def print_summary(self):
