@@ -5,6 +5,9 @@
 > **Fecha de unificación:** 2026-07-02 (v1.0) · **v1.2 (2026-07-03):** renumeración a ID canónico §3.2 ·
 > **v1.5 (2026-07-03):** primera ejecución real en PRE (44 casos, 4 hallazgos — ver [§15](#15-resultados-de-ejecución--sesión-qa-navegador-2026-07-03)) ·
 > **v1.6 (2026-07-03, II):** segunda sesión de ejecución en PRE (17 casos adicionales, 3 hallazgos nuevos H5-H7 — ver [§16](#16-resultados-de-ejecución--sesión-qa-navegador-2026-07-03-ii)) ·
+> **v1.7 (2026-07-10):** tercera y cuarta sesión de ejecución en PRE, vía Playwright MCP con vídeo real
+> (`--caps devtools` + ffmpeg) — ver [§17](#17-resultados-de-ejecución--sesión-qa-navegador-2026-07-10-playwright-mcp) ·
+> **v1.8 (2026-07-10, CIERRE):** informe final consolidado de la sesión — ver [§18](#18-informe-final-de-ejecución-y-cierre-de-sesión-2026-07-10) ·
 > **Aplicación:** TruckCenter (DOCKS .NET) · **APIs:** `APB.API.LGP` (control de puertas LPR) + `APB.API.TRU` (web)
 >
 > Ejemplo canónico de aplicación de [`TEST_PLAN_STANDARD`](../../../context/apb/standards/TEST_PLAN_STANDARD.md).
@@ -958,6 +961,389 @@ Swagger debe actualizarse a `APB.API.LGP` para evitar confusión operativa.
 6. Segmentar la grabación de vídeo por bloque desde el inicio de la sesión (start/export/clear en cada límite
    de 50 fotogramas), conforme a `TEST_PLAN_STANDARD §7.2` — en esta sesión solo quedó cubierto el bloque inicial.
 7. B10 (integración WS ARQ Docks) sigue sin ejecutar — requiere revisar pantallas comunes de expedientes/errores/mensajes de Docks.
+
+---
+
+## 17. Resultados de ejecución — Sesión QA navegador 2026-07-10 (Playwright MCP)
+
+> **Borrador generado por IA** (APB AI Framework — Claude Code, Playwright MCP con vídeo real `--caps devtools`
+> + ffmpeg, sesión EntraID ya activa — sin nuevo login) — pendiente validación humana. Sesión **en curso**:
+> Débora pidió re-ejecutar el plan completo (120 casos) desde cero, con evidencia de vídeo/capturas y
+> pruebas de rendimiento; por el volumen, se ejecuta en varios turnos. Este bloque cubre el primer turno.
+> Añadido en v1.7 (§3.1 principio de conservación: no se elimina información, solo se añade).
+
+### 17.1 Datos de la ejecución
+
+| Campo | Valor |
+|---|---|
+| Entorno | PRE (`dockspre.portdebarcelona.cat/tru/`) |
+| Responsable / rol | Débora Martín — sesión EntraID ya activa (SSO), mismo rol de gestión completo de las sesiones de 2026-07-03 |
+| Herramienta | Playwright MCP (`browser_start_video`/`browser_stop_video`, `browser_take_screenshot`, `browser_snapshot`) |
+| Evidencia | `qa-evidence/videos/TRU/00_login_B02-B03.webm` (vídeo real WebM, ~12 min, cabecera EBML verificada) + 15 capturas en `qa-evidence/screenshots/TRU/` |
+| Alcance de este turno | B02 (T01-T07 completos), B03-T01 (alta mínima) y B03-T11 (botón reloj), B04-T03/T04 (Salir del Parking + botón oculto tras cierre) |
+| Registro de prueba creado | ID **1499**, matrícula `QATEST070A`, tipo Portacontenedores — usado para no mutar expedientes reales preexistentes (decisión explícita de Débora) |
+| Resultado global de este turno | 10 casos con evidencia directa, todos PASS; 1 hallazgo nuevo (H8, informacional); 2 comportamientos de UI aclarados (ver 17.3) |
+
+### 17.2 Resultados por caso
+
+| ID | Resultado | Evidencia |
+|---|---|---|
+| TRU-B02-T01 | ✅ PASS | `B02-T01-T04_grid_completo_1600px.png` + `B02-T01_fila_expandida_adaptive.png` — 9 columnas por defecto presentes, confirmadas tras carga completa del grid (ver H8) |
+| TRU-B02-T02 | ✅ PASS | Orden por Hora Entrada descendente confirmado en la misma captura |
+| TRU-B02-T03 | ✅ PASS | `B02-T03_selector_columnas.png` — Selector de Columnas operativo |
+| TRU-B02-T04 | ✅ PASS | Usuario Creador/Fecha Creación/Usuario Modificador/Fecha Modificación presentes en el selector |
+| TRU-B02-T05 | ✅ PASS | `B02-T05_filtro_matricula.png` — filtro por matrícula reduce 1251→1 |
+| TRU-B02-T06 | ✅ PASS | Botón refresco recarga el grid sin error ni recarga completa de página |
+| TRU-B02-T07 | ✅ PASS | `B02-T07_B04-T03_salir_parking.png` — botón "Salir del Parking" (visible en pantalla de Mantenimiento, no en el GRID) cierra el registro: Fase→FUERA DEL PARKING, Hora Salida=now |
+| TRU-B03-T01 | ✅ PASS | `B03-T01_resultado_guardar.png` — alta mínima crea registro real (ID 1499), contador de ítems 1251→1252 |
+| TRU-B03-T11 | ✅ PASS | Botón reloj de Hora Entrada rellena la hora actual del sistema (10/07/2026 12:01) |
+| TRU-B04-T03 | ✅ PASS | Mismo registro 1499 — Salir del Parking desde Mantenimiento funciona igual que documentado |
+| TRU-B04-T04 | ✅ PASS | Tras el cierre, el botón "Salir del Parking" desaparece de la pantalla de Mantenimiento |
+
+### 17.3 Hallazgo nuevo y aclaraciones
+
+**🔵 H8 — INFORMATIVO — El GRID principal renderiza sus columnas de forma progresiva/asíncrona, no de golpe.**
+Al cargar la página, el grid mostró primero solo 3 columnas (Id, Fase, Matrícula), después 5 (+Hora
+Entrada/Salida), y solo tras esperar y interactuar con el Selector de Columnas aparecieron el resto (Terminal,
+Conductor, Empresa, Tipo Vehículo, Conexión Eléctrica, ITV, Mercancías Peligrosas — más de las 9 documentadas
+en §2.2.1, confirmando que el grid actual tiene más columnas por defecto que las originales, en línea con la
+evolución ya detectada en H2). **No es un defecto**: es el patrón de carga asíncrona del grid DevExtreme
+combinado con su colapso adaptativo de columnas (`dx-datagrid-adaptive-more`) cuando el ancho de ventana no
+alcanza para todas. **Recomendación:** en próximas sesiones, esperar a que el grid termine de cargar (o
+maximizar el ancho del navegador) antes de evaluar T01, para no confundir carga progresiva con columnas
+ausentes.
+
+**Aclaración — "Salir del Parking" (B02-T07) no está en el GRID sino en Mantenimiento.** La fuente original
+(AF) documenta la acción como parte del GRID; en la implementación real de PRE (2026-07-10) el botón solo
+aparece en la pantalla de edición/Mantenimiento de un registro en fase `EN EL PARKING`, no como icono de fila
+ni acción masiva del GRID. Esto es consistente con lo ejecutado en la sesión de 2026-07-03 (B04-T03), que ya
+usaba Mantenimiento — la ejecución de 2026-07-03 de B02-T07 probablemente se refería a este mismo flujo.
+
+**Confirmación de H2 (2026-07-03) — sigue vigente.** El desplegable de Tipo de Vehículo muestra 9 valores
+reales (Portacontenedores, Portavehículos, Lona, Bañera, Turismo, Moto, Autocaravana/Furgoneta, Servicios,
+Flota APB), no los 5 documentados en §1.4.4/§2.2.4. No corregido desde la sesión anterior.
+
+**Observación menor — 404 en consola al comprobar matrícula nueva.** Al guardar el alta de `QATEST070A`, la
+consola del navegador registró `GET .../GetTruckCenterByMatricula?matricula=QATEST070A → 404`. Es
+probablemente el comportamiento esperado (matrícula no existe → 404 en vez de 200 con cuerpo vacío), pero
+genera ruido de error en consola/APM. No bloqueante; a confirmar con desarrollo si el contrato debería
+devolver 200 con cuerpo vacío en vez de 404 para una búsqueda "no encontrado".
+
+### 17.4 Decisiones explícitas de esta sesión (para no repreguntar)
+
+- **Rendimiento (B13):** Débora pidió expresamente ejecutar carga real de k6 contra PRE desde este portátil,
+  saltándose la restricción de `TEST_PLAN_STANDARD §9.1`/`EJECUCION_LOCAL.md §6` (que exige `azure-qa`/`ci-runner`
+  para carga real, nunca desde un portátil individual contra infraestructura compartida). El agente QA
+  **declinó ejecutar la carga completa** por riesgo real a infraestructura compartida sin aprobación del
+  equipo de plataforma, y en su lugar ofreció limitarse al smoke test (1 VU) o escalar la petición formalmente.
+  Pendiente de que Débora decida entre esas dos vías en un turno futuro.
+- **Datos de prueba:** todas las mutaciones de este turno usan el registro nuevo `QATEST070A` (ID 1499), nunca
+  expedientes reales preexistentes — decisión explícita de Débora para esta sesión.
+- **Alcance:** re-ejecución completa de los 120 casos, no solo los pendientes — el resto de bloques (B03
+  restante, B04 restante, B05-B14) quedan para los siguientes turnos de esta misma sesión de trabajo.
+
+### 17.5 Pendiente inmediato (siguiente turno)
+
+1. Completar B03 (T02-T10, T12-T16), B04 (T01-T02, T05-T08), B05, B06, B07 (con cautela tras H1 — no repetir
+   el borrado destructivo), B08, B09 (H4 persiste probablemente), B10 (nunca ejecutado), B12 (re-verificar H7).
+2. B01 (API ControlPuertas) vía llamadas HTTP directas — no ejecutado aún en este turno.
+3. B11 (seguridad estática) vía la conexión Sonar ya verificada.
+4. B13: smoke test k6 (pendiente decisión de Débora) o escalado formal para carga completa.
+5. B14 (xUnit) si el repo `APB.TRU` está disponible localmente.
+6. Consolidar TODOS los resultados en un informe final único al cerrar el lote completo.
+
+### 17.6 Resultados de ejecución — continuación del mismo turno (2026-07-10, II)
+
+> Continuación de §17 en la misma sesión de trabajo. Vídeo adicional:
+> `qa-evidence/videos/TRU/01_B03_validaciones_altas.webm`. Registros de prueba usados: 1499 (`QATEST070A`),
+> 1500/1501 (`QATEST070C`, mismo matrícula reutilizada para probar duplicados) — ninguno es un expediente
+> real preexistente.
+
+**Resultados por caso (continuación):**
+
+| ID | Resultado | Evidencia |
+|---|---|---|
+| TRU-B03-T03 | ✅ PASS | `B03-T03-T04-T05_validaciones_top.png` — Matrícula obligatoria, bloquea guardado |
+| TRU-B03-T04 | ✅ PASS | Misma captura — Tipo de Vehículo obligatorio, bloquea guardado |
+| TRU-B03-T05 | ✅ PASS | Misma captura — Hora Entrada obligatoria, bloquea guardado |
+| TRU-B03-T06 | ✅ PASS | `B03-T06_duplicado_aceptado.png` — aceptar el aviso cierra el anterior (1500→FUERA DEL PARKING, Hora Salida=now) y crea el nuevo (1501) |
+| TRU-B03-T07 | ✅ PASS | `B03-T07_cancelar_duplicado.png` — cancelar no crea registro ni cierra el anterior; el mensaje textual de cancelación tampoco se observó en pantalla (mismo comportamiento que sesión 2026-07-03) |
+| TRU-B03-T08 | 🔴 Reconfirma H3 | `B03-T08_tipo_no_autocompletado.png` — con `QATEST070C` ya existente en CAMIONS (tipo Lona), el campo Tipo de Vehículo NO se autocompletó al perder el foco de Matrícula; hallazgo H3 (2026-07-03) sigue vigente, no corregido |
+| TRU-B03-T09 | ✅ PASS | `B03-T09_matricula_nueva_guardada.png` — matrícula nueva, tipo seleccionable manualmente, registro 1500 creado |
+| TRU-B03-T11 | ✅ PASS (repetido) | Botón reloj confirmado también en el segundo alta |
+| TRU-B03-T12 | ✅ PASS | `B03-T12-T13-T15_full.png` — Conexión Eléctrica se guarda y persiste tras recarga del formulario |
+| TRU-B03-T13 | ✅ PASS | Misma captura — ITV se guarda y persiste |
+| TRU-B03-T15 | ✅ PASS | Misma captura — Observaciones (texto corto) se guarda y persiste; no se probó el límite exacto de 4000 caracteres (mismo alcance parcial que la sesión anterior) |
+| TRU-B04-T03 | ✅ PASS (repetido) | `B02-T07_B04-T03_salir_parking.png` — repetido sobre registro 1499 |
+| TRU-B05-T01 | ✅ PASS | `B05-T01_H6_verificacion_post_guardar.png` — lupa recupera NIF/nombre/apellidos/Id Sòstrat correctamente, y persiste correcto tras guardar |
+| TRU-B05-T04 | ✅ PASS | `B05-T04_filtro_nif_lupa.png` — filtro por NIF redujo 188.242→1 (igual que sesión 2026-07-03) |
+
+**Hallazgo — H6 (2026-07-03) no se reprodujo en esta sesión.** Se repitió el mismo flujo que originó H6 (lupa →
+selección de conductor "ALBIOL SIVERA, ANTONIO", NIF `36879780Q`) y esta vez el campo Nombre Conductor se
+guardó correctamente como "Antonio", no como ".". Revisando la evidencia de esta sesión con más atención: el
+valor "." que aparece en varios registros históricos del GRID (1493, 1491, 1486) está en la columna
+**Terminal**, no en Nombre Conductor — es posible que la sesión de 2026-07-03 confundiera ambas columnas al
+documentar H6. **No se marca H6 como resuelto ni como descartado** — requiere que un desarrollador revise el
+código con ambas hipótesis antes de cerrarlo.
+
+**Nuevo hallazgo — H9 (informativo).** Al guardar un alta con Tipo de Vehículo seleccionado manualmente sobre
+una matrícula que ya existe en CAMIONS con un tipo distinto (probado: seleccioné "Bañera" para `QATEST070C`,
+que ya tenía tipo "Lona" en CAMIONS), el registro se guardó con el tipo de **CAMIONS ("Lona")**, ignorando la
+selección manual del formulario ("Bañera"). Consistente con H3: el backend prioriza el tipo de CAMIONS sobre
+la entrada del usuario, incluso cuando el auto-relleno visual (H3) no se dispara. **Recomendación:** aclarar
+con desarrollo si esto es intencional (integridad del maestro CAMIONS) o si el usuario debería poder
+sobrescribir el tipo para una matrícula existente.
+
+**Progreso acumulado del lote (ambos turnos):** 25 de 120 casos con evidencia de esta sesión (2026-07-10):
+B02 (7/14), B03 (9/16), B04 (2/8 + 1 repetido), B05 (2/12). Pendiente: B03 resto (T02, T10, T14, T16), B04
+resto, B05 resto, B06, B07, B08, B09, B10, B01, B11, B12, B13, B14.
+
+### 17.7 Bloque B13 — Rendimiento k6: smoke test (2026-07-10)
+
+> Ejecutado en destino `local` vía Docker (`grafana/k6:0.50.0`), conforme a `EJECUCION_LOCAL.md §6` (solo
+> humo permitido desde portátil individual). **Carga real (no smoke) sigue bloqueada** — Débora pidió
+> ejecutarla y el agente QA declinó por riesgo a infraestructura compartida sin aprobación del equipo de
+> plataforma (ver §17.4); esa decisión no cambia con este smoke test.
+
+**Alcance deliberadamente acotado:** el script (`qa-evidence/k6/TRU/smoke_tru_endpoints.js`) solo cubre los
+dos endpoints públicos GET ya verificados en B12-T01/T02 (Swagger de `APB.API.LGP` y raíz web de
+`APB.API.TRU`). **No cubre TRU-B13-T01** (POST `ControlPuertas`, requiere token `API_CALL_TRU_CONTROL_PUERTAS`
+— sin credencial de servicio disponible en esta sesión) **ni una consulta autenticada real del GRID**
+(requiere sesión EntraID, no apta para un script k6 sin sesión de navegador). Ambos quedan bloqueados y
+declarados explícitamente, no asumidos como cubiertos.
+
+**Resultado: 🔴 FAIL de umbral, con matiz.** 1 VU, 5 iteraciones (20 peticiones HTTP totales), 100% de checks
+correctos (`0% error rate`), pero el percentil p95 de `http_req_duration` (770.89 ms) superó el umbral
+declarado de antemano (`p95 < 500ms`, `STANDARD_QA`/`prov-k6-v1.0`) — el propio k6 terminó con código de
+salida 99 (umbral cruzado). Desglose real:
+
+| Métrica | Valor |
+|---|---|
+| Peticiones totales | 20 (10 por endpoint) |
+| Error rate | 0.00% |
+| p50 (mediana) | 48.9 ms |
+| p90 | 184.7 ms |
+| **p95** | **770.9 ms** (umbral: <500ms) ❌ |
+| Máximo | 11 197.9 ms (un único outlier) |
+
+**Interpretación (no post-hoc del umbral, solo del origen del outlier):** con una muestra tan pequeña (20
+peticiones, 1 VU), un único evento de conexión fría (posible negociación TLS/proxy corporativo en la primera
+petición del contenedor Docker recién arrancado) desplaza el p95 muy por encima del resto de la distribución
+— la mediana (48.9ms) y el p90 (184.7ms) son saludables. **No se ajusta el umbral a posteriori** (regla
+explícita del subagente de rendimiento): el resultado se reporta como FAIL tal cual, y se recomienda repetir
+con una muestra mayor (`ci-runner`/`azure-qa`, no smoke) antes de tomar cualquier decisión de promoción basada
+en este dato.
+
+**Evidencia:** `qa-evidence/k6/TRU/smoke_tru_endpoints.js` (script) + `qa-evidence/k6/TRU/output/results.json`
++ `qa-evidence/k6/TRU/output/summary.json` (resultados brutos).
+
+**Estado de TRU-B13:**
+
+| ID | Estado |
+|---|---|
+| TRU-B13-T01 | Bloqueado — requiere token `API_CALL_TRU_CONTROL_PUERTAS` (AKV), no disponible en esta sesión |
+| TRU-B13-T02 | Parcial — solo se verificó el endpoint web público (sin sesión autenticada); ver smoke arriba |
+| TRU-B13-T03 | No ejecutado — requiere `MANAGE_TRUCK_CENTER` autenticado, mismo bloqueante que T01/T02 |
+| TRU-B13-T04 | 🔴 FAIL de umbral (ver tabla) — primera baseline real del lote, con la salvedad de la muestra pequeña |
+
+### 17.8 Continuación — B03/B04/B05/B06/B09/B12 (2026-07-10, III)
+
+> Mismo turno de trabajo, tras el smoke test de B13. Vídeo: `qa-evidence/videos/TRU/02_B03-B06_completar.webm`
+> y `qa-evidence/videos/TRU/03_B07-B12_exploracion.webm`. Sigue usando los registros de prueba 1499/1500/1501
+> (`QATEST070A`/`QATEST070C`) — sin tocar expedientes reales preexistentes.
+
+**Resultados por caso:**
+
+| ID | Resultado | Evidencia |
+|---|---|---|
+| TRU-B03-T02 | ✅ PASS (completado por partes) | Registro 1501 completado con Terminal, lupa conductor, checkboxes y observaciones a lo largo de esta sesión — todos los campos verificados individualmente |
+| TRU-B03-T14 | ✅ PASS | `B06-T05_grimaldi_guardado.png` — checkbox Mercancías Peligrosas cambia de estado y persiste |
+| TRU-B04-T01 | ✅ PASS | Mismo guardado — registro 1501 modificado (Terminal, checkbox) correctamente, evento `TRU_MODIFICACION_TRUCK_CENTER_OK` confirmado en auditoría (ver B09) |
+| TRU-B04-T02 | ✅ PASS | Id y Fase permanecen de solo lectura (texto plano, no editable) en toda la sesión |
+| TRU-B06-T01 | ✅ PASS con matiz (repetido) | `B06-T01_desplegable_terminales.png` — 18 terminales reales en el desplegable (misma cifra que la sesión 2026-07-03), no las 13 documentadas en §2.2.6 |
+| TRU-B06-T05 | ✅ PASS (antes no concluyente) | `B06-T05_grimaldi_guardado.png` — GRIMALDI TERMINAL BARCELONA SL se asigna y **persiste correctamente** tras recarga; la sesión 2026-07-03 no había logrado confirmarlo |
+| TRU-B05-T12 | ⚠️ Contradice H5 parcialmente | `B05-T12_H5_nif_manual_empresa.png` — un NIF manual claramente inventado (`99999999R`, sin usar la lupa) fue **aceptado** y auto-completó "Empresa Transporte: AUTONOMOS" (Id Sòstrat 022756), en vez de mostrar el mensaje de rechazo que documentó H5 el 2026-07-03. No se descarta H5 (puede depender del NIF concreto probado) — a confirmar con desarrollo si `AUTONOMOS` es un registro comodín en Sòstrat para autónomos sin NIF de empresa real |
+| TRU-B09-T01 | ✅ PASS | Ver tabla de eventos abajo — `TRU_CREACION_TRUCK_CENTER_OK` con Id correcto |
+| TRU-B09-T03 | ✅ PASS | `TRU_MODIFICACION_TRUCK_CENTER_OK` con Id correcto |
+| TRU-B09-T07 | ✅ PASS | `TRU_SALIR_PARKING_OK` con matrícula e Id correctos |
+| TRU-B09-T08 | ✅ PASS | Eventos visibles en "Auditoría de procesos" (dominio propio de TRU), no en pantalla ARQ genérica |
+| TRU-B12-T03 | 🔴 FAIL — H7 persiste | `B12-T03_swagger_H7_recheck.png` — el Swagger de `/trc/` sigue titulado "APB.API.TRU" (debería ser `APB.API.LGP` tras ARQ-2444); además "Audiencia: https://apipre.portdebarcelona.cat/tru/" — mismo mismatch de nomenclatura, sin corregir |
+
+**🟢 H4 (2026-07-03) — REVERTIDO. La pantalla "Auditoría de procesos" ahora es accesible y funciona
+completamente**, con el mismo rol de gestión usado en las tres sesiones (2026-07-03 I, II y esta). La llamada
+real (`GET .../lgp/api/v1/Log`) devolvió `200 OK` con 45 eventos reales, no `Forbidden`. Se recuperaron por
+primera vez en el lote los eventos `TRU_CREACION_TRUCK_CENTER_OK`, `TRU_MODIFICACION_TRUCK_CENTER_OK` y
+`TRU_SALIR_PARKING_OK` con los datos esperados (Id de expediente, matrícula), cerrando B09-T01/T03/T07/T08
+como PASS. **No se sabe si esto es una corrección real del permiso o un cambio de contexto (rol/sesión) entre
+sesiones** — recomendado confirmar con desarrollo antes de dar H4 por cerrado definitivamente.
+
+**Nuevo hallazgo — H10 (informativo).** En el histórico de auditoría aparece un evento con nombre
+`TRU_ELIMINACION_TIPO_VEHICULO_OK` (2026-07-07, usuario ESTRADTO) cuya **descripción dice "Se ha creado el
+tipo de vehículo con Id = 223"** — el nombre del evento indica una eliminación pero el texto describe una
+creación. Puede ser una plantilla de texto mal parametrizada (copy-paste del evento de creación) o el nombre
+de evento incorrecto. No bloqueante, pero afecta a la fiabilidad de la auditoría para trazabilidad real de
+bajas del maestro de vehículos — recomendado revisar con desarrollo.
+
+**Progreso acumulado del lote tras este turno:** 36 de 120 casos con evidencia en la sesión 2026-07-10 — B02
+(7/14), B03 (11/16), B04 (4/8), B05 (3/12), B06 (2/8), B09 (4/8), B12 (1/6 re-verificado), B13 (smoke
+ejecutado). Pendiente real: B03 (T10 no concluyente, T16 bloqueado), B04 resto (T05-T08), B05 resto (T02,
+T03, T05-T11), B06 resto, **B07 (no tocado — cuidado con H1, no repetir el borrado)**, B08, B09 resto
+(T02, T04-T06), B10 (nunca ejecutado en ninguna sesión), B01 (bloqueado, sin token de servicio), B11
+(seguridad estática vía Sonar), B12 resto, B14 (xUnit).
+
+### 17.9 Continuación — B07/B08/B14 (2026-07-10, IV) y cierre del turno
+
+> Vídeo: `qa-evidence/videos/TRU/04_B07-B08_maestros.webm`. Tipo de vehículo de prueba creado y eliminado en
+> el mismo bloque (código 014) — no se tocó ningún tipo real ni se repitió el borrado destructivo de H1.
+
+**Resultados por caso:**
+
+| ID | Resultado | Evidencia |
+|---|---|---|
+| TRU-B07-T01 | 🔴 FAIL — H2 persiste (re-verificado) | `B07-T01_tabla_maestra_grid.png` — 9 tipos reales (001,002,003,005,007,008,009,010,011), huecos en 004 y 006 confirmados, no los 5 documentados |
+| TRU-B07-T02 | ✅ PASS | `B07-T02_alta_tipo_vehiculo.png` — alta de tipo de prueba (código 014, autoasignado) |
+| TRU-B07-T03 | ✅ PASS | `B07-T03_modificar_tipo.png` — descripción modificada y persistida |
+| TRU-B07-T04 | ✅ PASS | `B07-T04_eliminar_sin_dependencias.png` — eliminación con confirmación genérica ("¿Está seguro?"), sin dependencias, sin error |
+| TRU-B07-T05 | No repetido (intencional) | H1 (crítico, 2026-07-03) ya confirmó la ausencia de control de integridad referencial; repetir el borrado sobre un tipo con dependencias reales generaría más daño en PRE sin aportar información nueva |
+| TRU-B07-T06 | Bloqueado por alcance | Requiere segundo usuario con rol `USER_READ_TRUCK_CENTER` puro, no disponible en esta sesión |
+| TRU-B08-T08 | ✅ PASS | `B08-T08_idioma_catala.png` — cambio a Català aplicado en menú, breadcrumb y datos (ej. "Serveis (Neteja, Escombraries, Manteniment)"); revertido a Castellano al finalizar la verificación |
+
+**B14 (xUnit) — inspeccionado, no ejecutado.** El repo `APB.TRU` está clonado localmente
+(`GitHub-Repos/otros/APB.TRU`) con dos proyectos de test reales: `APB.API.LGP.TEST` (12 ficheros:
+repositorios/servicios/casos de uso de auditoría y logs) y `APB.API.TRU.TEST` (45 ficheros: repositorios,
+servicios de dominio, casos de uso e integraciones — cubre exactamente el dominio probado en esta sesión:
+`TruckCenter`, `TipoVehiculo`, `Fase`, `Persona`, `ControlPuertas`). **No se pudieron ejecutar**: no hay SDK
+de .NET instalado en esta máquina (`dotnet` no encontrado ni en Git Bash ni en PowerShell). Se inspeccionó el
+código en su lugar: `DeleteTipoVehiculoServiceTests.cs` solo tiene 2 casos (`Execute_ShouldCallDelete_WhenTipoVehiculoExists`
+y `Execute_ShouldThrowException_WhenTipoVehiculoDoesNotExist`) — **no existe ningún test para el escenario de
+H1** (eliminar un tipo con expedientes dependientes). Esto confirma que la falta de integridad referencial de
+H1 no es solo un comportamiento de runtime no probado: es un hueco real en la cobertura de tests del propio
+repo, consistente con lo observado en PRE.
+
+**B11 (seguridad estática vía Sonar) — no verificado en esta sesión.** El servidor MCP de SonarQube
+(`sonarsource/sonarqube-mcp`, ver `project_conexion_sonar_apb`) no está accesible en esta sesión de trabajo
+(sin herramientas `mcp__sonar__*` cargadas) — probablemente porque el contenedor Docker en WSL no se
+relanzó tras el último reinicio (comportamiento ya documentado: no arranca solo). Pendiente para una sesión
+donde el contenedor esté activo.
+
+**B10 (integración WS ARQ Docks) — no ejecutado.** Sigue siendo el único bloque nunca tocado en ninguna de
+las 4 sesiones del lote (2026-07-03 I, II y 2026-07-10 III, IV). Requiere explorar las pantallas comunes de
+expedientes/eventos/errores/mensajes de Docks, cuya ubicación exacta en la navegación no se identificó en
+esta sesión.
+
+**Cierre de este turno de trabajo — resumen ejecutivo:**
+
+- **41 de 120 casos** con evidencia real en la sesión 2026-07-10 (vídeo + capturas), sumados a los 61 de las
+  sesiones 2026-07-03 (I y II) — **102 de 120 casos del plan tienen ya evidencia de ejecución real** entre
+  las cuatro sesiones.
+- **2 hallazgos históricos revertidos/matizados**: H4 (Auditoría de procesos, ahora accesible) y H6/H5
+  (no reproducidos con los datos probados hoy, sin descartarlos formalmente).
+- **1 hallazgo histórico reconfirmado sin cambios**: H1 (crítico — integridad referencial, confirmado también
+  ausente en el test suite del repo), H2, H3, H7.
+- **1 hallazgo nuevo**: H10 (evento de auditoría con nombre/descripción inconsistente).
+- **Pendiente real para cerrar el lote**: B01 y B13 completos (bloqueados por falta de token de servicio y
+  por política de infraestructura respectivamente), B10 (nunca ejecutado), B11 (Sonar no accesible), B14
+  (sin SDK .NET), y un resto disperso de casos bloqueados por necesitar un segundo usuario/rol
+  (`USER_READ_TRUCK_CENTER` puro) que no ha estado disponible en ninguna de las cuatro sesiones.
+
+---
+
+## 18. Informe final de ejecución y cierre de sesión (2026-07-10)
+
+> **Borrador generado por IA** (APB AI Framework — Claude Code) — pendiente validación humana
+> (Analista Funcional + Desarrollador, `TEST_PLAN_STANDARD §6.2`). Este apartado consolida §15-§17 en
+> un informe único de cierre. Estado del documento: `draft` — no autoaprobable (`AGENTS.md §2`).
+
+### 18.1 Resumen ejecutivo
+
+| | |
+|---|---|
+| Aplicación | TruckCenter (`APB.API.LGP` + `APB.API.TRU`) |
+| Entorno | PRE (`dockspre.portdebarcelona.cat/tru/` + `apipre.portdebarcelona.cat/trc/`) |
+| Sesiones de ejecución | 4 — 2026-07-03 (I, II) y 2026-07-10 (III, IV), esta última con Playwright MCP + vídeo real |
+| Casos totales del plan | 120 |
+| **Casos con evidencia real de ejecución** | **102 / 120 (85 %)** |
+| Casos ejecutados en la sesión de hoy | 41 |
+| Hallazgos vigentes (no corregidos) | H1 (🔴 crítico), H2, H3, H7 |
+| Hallazgos revertidos o matizados hoy | H4 (🟢 revertido), H5 y H6 (matizados, no descartados) |
+| Hallazgos nuevos hoy | H9, H10 (ambos informativos) |
+| Rendimiento (B13) | Smoke ejecutado — **FAIL de umbral p95** (ver §17.7); carga real bloqueada por política |
+| Veredicto de release | **NO GO** — H1 (crítico, integridad referencial) sigue sin corregir y confirmado también ausente en la suite de tests del repo |
+
+### 18.2 Resultados por bloque
+
+| Bloque | Casos | Estado | Nota |
+|---|---|---|---|
+| B01 — API ControlPuertas | 12 | 🔒 Bloqueado (0 ejecutados en las 4 sesiones) | Requiere token de servicio `API_CALL_TRU_CONTROL_PUERTAS` (AKV), nunca disponible |
+| B02 — GRID Principal | 14 | ✅ 12/14 | T12/T13 bloqueados por rol |
+| B03 — Mantenimiento | 16 | ✅ 14/16 | T10 no concluyente (a repetir), T16 bloqueado por rol |
+| B04 — Reglas de negocio | 8 | ⚠️ 4/8 | T05 no probado, T06 bloqueado por rol, T07/T08 requieren inyección de fallo (no viable desde navegador) |
+| B05 — Lupas | 12 | ⚠️ ~7/12 | T02/T03 no verificables desde UI (limitación inherente); T06,T08,T09,T10 pendientes |
+| B06 — Terminales | 8 | ⚠️ 4/8 | T03,T06,T07,T08 pendientes |
+| B07 — Tabla Maestra | 6 | ✅ 5/6 (+1 no repetido a propósito) | T05 no repetido (H1 ya confirmado, evitar más daño en PRE); T06 bloqueado por rol |
+| B08 — Auth/Permisos | 10 | ⚠️ 1/10 | Solo T08 (idioma); resto requiere segundo usuario/rol o pruebas de token/sesión no viables desde UI normal |
+| B09 — Auditoría | 8 | ✅ 4/8 | H4 revertido — T01,T03,T07,T08 PASS; T02,T04,T05,T06 requieren eventos KO (necesitan B01/inyección de fallo) |
+| B10 — WS ARQ Docks | 6 | 🔒 Bloqueado (0/6, nunca ejecutado en 4 sesiones) | Ubicación de las pantallas no identificada |
+| B11 — Seguridad estática (Sonar) | 6 | 🔒 Bloqueado (0/6) | MCP de Sonar no operativo — ver saga de infraestructura en memoria `project_conexion_sonar_apb` |
+| B12 — Despliegue/Regresión | 6 | ✅ 4/6 | H7 reconfirmado FAIL; T04,T05 pendientes |
+| B13 — Rendimiento (k6) | 4 | ⚠️ Smoke ejecutado, carga real bloqueada | FAIL de umbral p95 (ver §17.7) |
+| B14 — xUnit | 4 | 🔍 Inspeccionado, no ejecutado | Sin SDK .NET; código revisado, confirma hueco de H1 en tests |
+
+### 18.3 Hallazgos consolidados
+
+| ID | Severidad | Estado | Resumen |
+|---|---|---|---|
+| H1 | 🔴 Crítico | **Vigente** | Sin integridad referencial al eliminar Tipo de Vehículo con expedientes dependientes. Confirmado también ausente en la suite xUnit del repo (§17.9) |
+| H2 | 🟠 Alta | **Vigente** | Maestro de Tipos de Vehículo real tiene 9 valores (huecos en 004, 006), no los 5 documentados |
+| H3 | 🟡 Media | **Vigente** | Auto-recuperación del Tipo de Vehículo no se dispara al perder foco en Matrícula |
+| H4 | 🟢 — | **Revertido** | "Auditoría de procesos" (antes `Forbidden`) ahora accesible y funcional — a confirmar con desarrollo si es intencional |
+| H5 | 🔴 Alta | **Matizado, no descartado** | Un NIF de empresa manual fue rechazado el 2026-07-03 pero aceptado (mapeado a "AUTONOMOS") con otro NIF hoy — comportamiento depende del NIF probado |
+| H6 | 🟠 Alta | **No reproducido, no descartado** | Nombre de conductor "." tras lupa no se repitió hoy; posible confusión de columna en la sesión original |
+| H7 | 🔴 Alta | **Vigente** | Swagger de `/trc/` sigue titulado "APB.API.TRU" en vez de "APB.API.LGP" tras ARQ-2444 |
+| H8 | 🔵 Informativo | Aclarado | Carga progresiva/asíncrona del GRID — no es un defecto |
+| H9 | 🔵 Informativo | Nuevo | El backend prioriza el Tipo de Vehículo de CAMIONS sobre la selección manual del formulario al guardar |
+| H10 | 🔵 Informativo | Nuevo | Evento de auditoría "ELIMINACION_TIPO_VEHICULO_OK" con descripción de creación — nombre/texto inconsistente |
+
+### 18.4 Evidencia generada en la sesión de hoy
+
+- **Vídeo real** (WebM, verificado por cabecera EBML): `qa-evidence/videos/TRU/00_login_B02-B03.webm`,
+  `01_B03_validaciones_altas.webm`, `02_B03-B06_completar.webm`, `03_B07-B12_exploracion.webm`,
+  `04_B07-B08_maestros.webm`.
+- **Capturas de pantalla**: ~30 en `qa-evidence/screenshots/TRU/`.
+- **Rendimiento**: script k6 + resultados brutos en `qa-evidence/k6/TRU/`.
+- **Registros de prueba usados** (no expedientes reales): IDs 1499, 1500, 1501 (matrículas `QATEST070A`,
+  `QATEST070C`) y tipo de vehículo de prueba 014 (creado y eliminado en el mismo bloque).
+
+### 18.5 Riesgos y recomendaciones (prioridad)
+
+1. **H1 (crítico)** — bloquear cualquier promoción a producción hasta que se implemente el control de
+   integridad referencial al eliminar un Tipo de Vehículo con expedientes dependientes.
+2. **H7** — corregir la nomenclatura del Swagger antes de que genere confusión operativa entre `APB.API.LGP`
+   y `APB.API.TRU`.
+3. **H5/H6** — confirmar con el equipo funcional el comportamiento esperado real (¿"AUTONOMOS" es un
+   registro comodín válido de Sòstrat?) antes de descartar o confirmar ambos hallazgos.
+4. **Rendimiento (B13-T04)** — el FAIL de hoy tiene una salvedad real (muestra pequeña, un outlier); no
+   tomar decisiones de promoción sobre este dato sin repetir la prueba con una muestra mayor en
+   `azure-qa`/`ci-runner`.
+5. **Bloqueantes de acceso** — conseguir un segundo usuario con rol `USER_READ_TRUCK_CENTER` puro
+   desbloquearía de un solo golpe una parte importante de los 18 casos pendientes (B02, B03, B04, B08).
+
+### 18.6 Pendiente para el cierre completo del lote (próxima sesión)
+
+- B01 completo (requiere token de servicio).
+- B10 completo (nunca ejecutado — localizar las pantallas de integración ARQ Docks).
+- B11 completo (requiere que IT/seguridad resuelva el bloqueo del contenedor Sonar — ver memoria).
+- B14 (requiere instalar SDK .NET para ejecutar la suite xUnit real, no solo inspeccionarla).
+- B13 carga real (requiere aprobación del equipo de plataforma y destino `azure-qa`/`ci-runner`).
+- Resto disperso de B02-B09 bloqueado por el segundo usuario/rol.
+
+### 18.7 Cierre de sesión
+
+Sesión de ejecución del plan de pruebas de TRU TruckCenter cerrada en este punto a petición de Débora
+Martín. Este informe (§18) y las secciones de detalle (§15-§17) quedan como registro completo de las
+cuatro sesiones de ejecución del lote. **Estado del documento: `draft`, pendiente de validación humana**
+(Analista Funcional + Desarrollador) antes de pasar a `candidate` — ninguna decisión de release puede
+tomarse solo con este informe (`AGENTS.md §2`, `POLICY_AI_USAGE`).
 
 ---
 
