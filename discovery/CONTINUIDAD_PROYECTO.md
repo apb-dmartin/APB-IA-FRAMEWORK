@@ -1441,3 +1441,109 @@ tecnica-v1.0`], 35 subagentes, 17 workflows, 23 providers, 7 wrappers, 4 adapter
 ---
 
 *Cierre de Sesión 28 (2026-07-08).*
+
+## Sesión 29 — Cierre del lote de 32 planes de pruebas + auditoría y definición de infraestructura de ejecución (2026-07-10)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Continuación de sesión QA (uso del framework, no construcción) + corrección
+de gobernanza documental tras un hallazgo real de la propia sesión
+
+**Solicitud:** continuar el lote de 32 planes de pruebas (`quiero-que-ejecuten-el-
+valiant-castle.md`, sesión anterior) desde donde quedó (INS); tras cerrarlo, Débora
+preguntó "si quiero ejecutar un plan de pruebas completo, ¿tengo todo lo necesario?
+k6, sonar, unitarias…" — la respuesta a esa pregunta reveló un gap de gobernanza real
+que Débora pidió corregir con dos enfoques (inmediato/futuro), y después señaló
+correctamente que ese contenido también debía reflejarse en `PLAN_FASES_FUTURAS.md`
+y `HANDOFF_TECNICOS.md`, no solo en el estándar.
+
+### Workstream 1: Cierre del lote de 32 planes de pruebas (fuera del repo del framework)
+
+**Ejecutado (deliverable externo, no versionado en este repo):** los 32 planes de
+pruebas del lote QA-continuación viven en `Proyectos\SDD - Framework desarrollo
+asistido por IA\planes de pruebas\` (fuera de este repo, sin control de versiones).
+Cerrados en esta sesión:
+- **INS:** el `.md` (120 KB, con hallazgos de código reales sobre `APB.INS`) ya
+  estaba completo de la sesión anterior; solo faltaba generar el `.html`
+  (`scripts/generate_test_plan_html.py`).
+- **MPT (AEATService):** única app del lote de 32 sin ninguna carpeta de salida.
+  Generada desde cero cruzando la fuente Jira (42 casos) con el código real de
+  `APB.API.MPT` (commit `d9ee4ea`): hallazgos relevantes incluyen que el "sello
+  electrónico" documentado es en realidad autenticación mTLS de transporte (el
+  método de firma WS-Security existe pero es código muerto), un contrato de
+  respuesta real con 6 campos no documentados, un `AutoMapper`/DTO nunca invocado,
+  y una contradicción confirmada por el propio test suite del repo entre el caso
+  `MPT-R04` de la fuente Jira y el comportamiento real ante XML malformado.
+- **Verificación de integridad de las 32 apps:** existencia de `.md`+`.html`,
+  tamaño no-stub, footer estándar, cierre HTML correcto, `assets/` generado,
+  matriz de pruebas con bloques reales — 32/32 conformes (33 carpetas de salida,
+  la 33ª es `AOM_ARGOS-MDE`, el piloto original conservado sin tocar).
+- `python scripts/validate_repo.py --strict` ejecutado como cierre del lote:
+  0 errores, mismos 10 warnings exentos de siempre — repo del framework intacto
+  (esta parte del trabajo no toca ningún fichero del framework).
+
+### Workstream 2: Auditoría de infraestructura de ejecución + corrección de gobernanza (COMPLETADO)
+
+**Hallazgo de la auditoría** (2 subagentes de investigación, verificación
+componente a componente contra el repo real, no asumida):
+- **k6:** `prov-k6-v1.0` en `draft`, `endpoint: "local://k6"` (CLI local, no cuenta
+  k6 Cloud). `infra/azure-qa-runtime/k6/` es un runner Docker **genérico** —
+  ningún script `.js` de ninguna aplicación existe todavía.
+- **SonarQube:** conexión REST real y verificada (`http://gisplanolpre.port.apb.es:9001`,
+  100 proyectos reales listados vía User Token) — pero es el **token personal de
+  Débora** como variable de entorno local, solo consumido hoy por
+  `scripts/generate_powerbi_dashboard.py`, sin gate de calidad ni confirmación de
+  qué apps del lote de 32 tienen project key registrado.
+- **Tests unitarios:** el CI del framework (`validate.yml`) solo valida el propio
+  repo (`validate_repo.py`, `tests/`) — no orquesta ejecución de tests de ninguna
+  app. Verificado por inspección directa: la mayoría de los ~68 repos clonados en
+  `GitHub-Repos\otros\` sí tienen carpeta de tests propia; `APB.INS` es una
+  excepción confirmada sin ningún test automatizado.
+- **AKV:** `prov-akv-v1.0` con `endpoint` placeholder literal (`https://<vault-name>...`),
+  cero vault provisionado, cero código resolutor — la referencia `AKV://<secret>`
+  que todo plan de pruebas cita como "usuario de ejecución por defecto" **no es
+  operativa hoy**.
+
+**Ejecutado (corrección de gobernanza, en el repo del framework):**
+- `context/apb/standards/TEST_PLAN_STANDARD.md` v1.6.1→**1.7.0**: nueva **§9.5
+  "Estado real de la infraestructura de ejecución — inmediato vs. futuro"**, con
+  dos tablas explícitas (qué es operativo hoy con destino `local` vs. qué falta
+  aprovisionar para `ci-runner`/`azure-qa`). §9.2 enlazado (aviso de que la vía
+  AKV no es operativa). Ítem nuevo en el checklist §10. Entrada en `Historial`.
+- `context/apb/templates/TEST_PLAN.md`: §1.6 actualizado para no describir
+  `AKV://<secret>` como resoluble por defecto sin remitir a §9.5.
+- `discovery/HANDOFF_TECNICOS.md`: **QA2-1** y **QA3-2** ampliados para dejar
+  explícito que ya no bloquean solo a TruckCenter, sino a los 32 planes del lote.
+  **QA3-3** (nuevo): pasar Sonar de token personal a cuenta de servicio real —
+  tarea de Plataforma/Ciberseguridad, no ejecutable por Claude.
+- `discovery/PLAN_FASES_FUTURAS.md` Sección B (lo que Claude puede ejecutar sin
+  más insumos): 2 filas nuevas — escribir los 32 scripts k6 reales, y confirmar
+  qué apps del lote tienen project key en Sonar (ambas con la REST API ya
+  verificada, sin depender de que Plataforma aprovisione nada). Ninguna se
+  duplicó en `HANDOFF_TECNICOS.md` (regla explícita del propio documento: trabajo
+  ejecutable por Claude va a Sección B, trabajo manual de Plataforma/Ciberseguridad
+  va a `HANDOFF_TECNICOS.md`).
+- Catálogo regenerado (`generate_catalog.py`): drift detectado en `INDEX.md`/
+  `catalog/CATALOG.md` — no de esta sesión, venía de un cambio previo sin
+  commitear en `providers/prov-sonar-v1.0.md` (fecha del MCP oficial SonarSource);
+  sincronizado.
+
+### Calidad & Validación
+
+`scripts/validate_repo.py --strict` → **0 errores**, 10 warnings exentos
+(`source_commit: unverified`) · **68/68 tests** · catálogo regenerado sin drift
+tras la sincronización.
+
+**Inventario al cierre:** sin cambio de componentes (367) — esta sesión modificó
+gobernanza (estándar, plantilla, handoff, plan de fases) y generó contenido de
+negocio fuera del repo (32 planes de pruebas), no creó/eliminó componentes del
+catálogo.
+
+**Pendiente real, no de esta sesión:** ver `HANDOFF_TECNICOS.md` QA2-1/QA3-2/QA3-3
+(Plataforma/Ciberseguridad) y `PLAN_FASES_FUTURAS.md` Sección B (Claude, a demanda)
+para el detalle de qué falta antes de poder ejecutar los 32 planes con
+infraestructura centralizada en vez de local/manual.
+
+---
+
+*Cierre de Sesión 29 (2026-07-10).*

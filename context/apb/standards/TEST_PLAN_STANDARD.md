@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.6.1"
+version: "1.7.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -410,7 +410,8 @@ concreto** ejecuta.
   `GOVERNANCE.md §5.2`):
   1. **Guardado en Key Vault** — referencia simbólica `AKV://<secret>` resuelta en runtime vía
      [`prov-akv-v1.0`](../../../providers/prov-akv-v1.0.md) (Managed Identity). Es la vía por defecto para
-     ejecución autónoma (workflow / `azure-qa`).
+     ejecución autónoma (workflow / `azure-qa`). **No operativa hoy** (vault sin provisionar — ver §9.5,
+     enfoque futuro); mientras tanto, usar siempre la vía 2.
   2. **Proporcionado por el usuario** — introducido interactivamente en tiempo de ejecución (p. ej. login
      asistido EntraID que produce un `storageState`). Ni la credencial ni el `storageState` con secretos se
      **persisten** en el repo.
@@ -431,6 +432,52 @@ Para "pruebas completas sin que el usuario ni el workflow instalen nada", el des
 **suscripción QA de Azure** con Playwright + k6 pre-instalados, **Managed Identity → AKV** para credenciales
 y `storageState`, acceso de red a PRE/QA y salida de evidencias. **Diseño en `draft`**; el despliegue real
 de la infraestructura es trabajo de la sesión QA-3.
+
+### 9.5 Estado real de la infraestructura de ejecución (auditoría 2026-07-10) — inmediato vs. futuro
+
+> Auditoría realizada al cerrar el lote de 32 planes de pruebas (sesión QA-continuación), a petición de
+> Débora ("¿tengo todo lo necesario para ejecutar? k6, sonar, unitarias…"). Verificado componente a
+> componente contra el repo real, no asumido. Este `§9.5` es la referencia que cualquier plan generado a
+> partir de ahora debe citar en su §1.6/§8/§9 en vez de asumir que `AKV://<secret>` o `azure-qa` ya están
+> operativos — **no lo están**. Dos enfoques, sin mezclarlos en el mismo plan sin decirlo explícitamente:
+
+#### Enfoque inmediato (hoy — ejecución `local`)
+
+Lo único realmente operativo sin trabajo previo de infraestructura. Cualquier plan que declare destino
+`local` debe asumir **estas** limitaciones, no las del enfoque futuro:
+
+| Dimensión | Estado real hoy | Qué significa para el plan |
+|---|---|---|
+| **Credenciales / usuario de ejecución** | `prov-akv-v1.0` **no tiene vault provisionado** — el `endpoint` en su ficha es un placeholder literal (`https://<vault-name>.vault.azure.net`), sin código resolutor en el repo. La vía 1 de §9.2 (`AKV://<secret>`) **no es usable hoy**. | Usar **siempre la vía 2 de §9.2**: credencial proporcionada por la persona en runtime (login asistido → `storageState`), nunca persistida. Cualquier plan que hoy escriba `AKV://<secret>` como si fuera resoluble debe marcarlo explícitamente como `(no operativo — ver §9.5)`. |
+| **k6 (rendimiento)** | `prov-k6-v1.0` es un wrapper CLI local (`endpoint: "local://k6"`, sin cuenta k6 Cloud) — correcto para `local`. `infra/azure-qa-runtime/k6/` es un **runner Docker genérico** (Dockerfile + entrypoint que envuelve la imagen oficial de k6): no incluye ningún script `.js` de ninguna aplicación. | Solo **smoke** (1-2 VUs, §8.1) — nunca carga real desde el portátil. El script `.js` concreto de cada app **no existe todavía**; hay que escribirlo antes de poder ejecutar siquiera el smoke. |
+| **SonarQube (calidad de código)** | Conexión REST real y verificada (`prov-sonar-v1.0`, User Token, `http://gisplanolpre.port.apb.es:9001`, 100 proyectos reales listados) — pero es el **token personal de Débora** guardado como variable de entorno local, y hoy solo lo consume `scripts/generate_powerbi_dashboard.py`. No está confirmado qué apps del lote de 32 tienen project key registrado en esa instancia. | Consultable **ad-hoc y manualmente** (no es un gate automático) para las apps que sí tengan project key confirmado — no asumir cobertura Sonar disponible para toda la lista sin comprobarlo app por app antes de citarla en un informe. |
+| **Tests unitarios** | **Fuera del alcance de este estándar.** `TEST_PLAN_STANDARD` cubre funcional (Playwright) + rendimiento (k6), no unitarios. El framework **no orquesta** ejecución de tests unitarios de ninguna app — cada repo de aplicación tiene (o no) su propia suite y su propio pipeline (Jenkins/GitHub Actions), ajeno a este framework. Verificado: la mayoría de los repos `APB.API.*` clonados sí tienen carpeta de tests propia; **`APB.INS` es una excepción confirmada sin ningún test automatizado** (ver plan INS §17.3, punto 9). | Si el plan necesita evidencia de cobertura unitaria, **remitir al pipeline propio de la app**, no inventar una ejecución centralizada que no existe. Señalar explícitamente cuándo una app (como INS) no tiene ninguna base de tests unitarios sobre la que apoyarse. |
+| **Playwright** | Sí operativo hoy vía `prov-playwright-v1.0` + instalación local guiada (§9.3, `docs/qa/EJECUCION_LOCAL.md`). | Es la única pata de este §9.5 sin gap real — funciona tal como está descrito en §9.3. |
+
+#### Enfoque futuro (infraestructura centralizada — `ci-runner` / `azure-qa`)
+
+Trabajo de aprovisionamiento pendiente, no de generación de planes. No se ejecuta hasta que exista:
+
+1. **AKV real provisionado** — vault + Managed Identity + resolución `AKV://<secret>` en tiempo de
+   ejecución (`prov-akv-v1.0` pasa de `draft` con endpoint placeholder a `active` con endpoint real).
+   Desbloquea la vía 1 de §9.2 y elimina la dependencia de credenciales manuales por persona.
+2. **`azure-qa` desplegado de verdad** — el diseño y los contenedores (`infra/azure-qa-runtime/`, Playwright
+   + k6) ya existen; falta el despliegue real en la suscripción QA de Azure (`prov-azure-qa-runtime-v1.0`
+   sigue en `draft`; ver `HANDOFF_TECNICOS.md` QA3-2). Con esto, la carga k6 real (`load`/`stress`/`spike`/
+   `soak`) deja de estar bloqueada por §8.1.
+3. **Scripts k6 reales por aplicación** — el runner Docker es genérico; cada API del lote de 32 necesita su
+   propio script `.js` (endpoints, VUs, umbrales) antes de que el punto 2 tenga algo que ejecutar.
+4. **Sonar con cuenta de servicio + project keys confirmados** — sustituir el token personal de Débora por
+   una credencial de servicio (vía AKV, punto 1), y confirmar/registrar el project key de cada una de las 32
+   apps del lote para poder citar cobertura real en cada plan, no solo en el dashboard Power BI.
+5. **Tests unitarios: fuera de alcance incluso en el enfoque futuro** — su ejecución sigue viviendo en el
+   pipeline propio de cada app; este framework no absorbe esa responsabilidad. Si en el futuro se decide
+   centralizar también esto, es una decisión nueva de Débora/Arquitectura, no una extensión implícita de
+   `azure-qa`.
+
+**Regla para cualquier plan que cite este §9.5:** declarar explícitamente cuál de los dos enfoques asume, y
+si es el inmediato, no describir AKV/k6-carga-real/Sonar-gate como si funcionaran hoy — remitir a esta
+sección en vez de repetir el detalle completo en cada documento.
 
 ---
 
@@ -469,6 +516,9 @@ Un plan de pruebas es conforme cuando:
       secreto ni `storageState` con credenciales está en fichero versionado**.
 - [ ] **Destino de ejecución (§9.1):** el plan declara `local` / `ci-runner` / `azure-qa`; la carga k6 no
       se lanza desde el portátil contra infra compartida.
+- [ ] **Enfoque inmediato vs. futuro declarado (§9.5):** si el plan asume ejecución hoy, no describe
+      `AKV://<secret>`, carga k6 real ni gate de Sonar como operativos — usa credencial en runtime, k6 solo
+      smoke y Sonar como consulta manual (project key confirmado), o remite a §9.5 en vez de repetirlo.
 - [ ] **Fuente spec en flujo SDD (§1):** si el plan nace de un flujo SDD, la spec es input y cada caso
       traza a su criterio de aceptación.
 - [ ] **Acta de aprobación del informe (§6.2):** el informe de ejecución incluye el acta (Funcional +
@@ -492,3 +542,4 @@ Un plan de pruebas es conforme cuando:
 | 1.5.1 | 2026-07-07 | **§7.2 Verificación pre-vuelo de Playwright MCP** — obligatorio confirmar, antes de iniciar cualquier sesión de ejecución con evidencia visual, que las tools de Playwright MCP están cargadas (reabrir la sesión si hace falta); si no lo están, no se procede y se declara el bloqueante en vez de asumir vídeo real. Ítem añadido al checklist §10. Fix estructural señalado: desplegar `prov-azure-qa-runtime-v1.0` (`HANDOFF_TECNICOS.md` QA3-2) para eliminar la dependencia del puesto de trabajo por completo. Origen: feedback de Débora tras confirmar que la última ejecución de un plan de pruebas volvió a generar solo GIF, no vídeo, por repetir el mismo fallo de sesión no reabierta (punto #88). |
 | 1.6.0 | 2026-07-07 | **§8.1 Verificación pre-vuelo de k6** (nueva subsección) — antes de generar/ejecutar una prueba de rendimiento real, confirmar el destino de ejecución: `local` limita a smoke, carga real requiere `ci-runner`/`azure-qa` o se declara el bloqueante explícitamente (nunca sustituido en silencio por un smoke test). Ítem añadido al checklist §10. Origen: Débora preguntó qué hacía falta para que la próxima ejecución de un plan incluyera también rendimiento — se confirmó que el diseño (skill + subagente + bloque B13 de TruckCenter) ya existe, pero falta el mismo runtime de Azure QA (QA3-2) que resuelve también el vídeo. |
 | 1.6.1 | 2026-07-07 | **§9.1 Default explícito `local`** para el destino de ejecución — deja de preguntarse a ciegas en cada invocación; `azure-qa`/`ci-runner` se eligen explícitamente. Referencia a la implementación real de `azure-qa` ya generada en `infra/azure-qa-runtime/` (Dockerfiles Playwright + k6). Origen: Débora pidió que el agente de QA permita elegir entre local (predeterminado) y Azure QA, tras confirmar que ya tiene el entorno Container Apps creado. |
+| 1.7.0 | 2026-07-10 | **§9.5 Estado real de la infraestructura de ejecución — inmediato vs. futuro** (nueva subsección). Tras el cierre del lote de 32 planes de pruebas, Débora preguntó si había "todo lo necesario para ejecutar: k6, sonar, unitarias…" — auditoría componente a componente confirmó que `prov-akv-v1.0` no tiene vault provisionado (endpoint placeholder), que `infra/azure-qa-runtime/k6/` es un runner Docker genérico sin ningún script `.js` de aplicación, que la conexión Sonar real (`prov-sonar-v1.0`) usa el token personal de Débora y solo la consume el dashboard Power BI (sin gate de calidad ni project keys de las 32 apps confirmados), y que los tests unitarios están fuera del alcance de este estándar (viven en el pipeline propio de cada app — `APB.INS` confirmado sin ninguno). §9.2 y el checklist §10 quedan enlazados a §9.5 para no describir estas piezas como operativas cuando el plan asume ejecución inmediata. Origen: feedback de Débora. |

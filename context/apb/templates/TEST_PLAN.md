@@ -65,13 +65,17 @@ ID anterior (nunca se pierde la trazabilidad con informes ya emitidos).
 > resuelve por **referencia AKV** (`AKV://<secret>`, vía `prov-akv-v1.0`) **o** se **proporciona en runtime**
 > (login asistido → `storageState`). **Nunca** se escribe usuario/contraseña/token/`storageState` con
 > secretos en este documento ni en ningún fichero versionado (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
+> **Enfoque inmediato vs. futuro (§9.5):** hoy la vía AKV **no es operativa** (vault sin provisionar) — usar
+> la vía «proporcionado en runtime» salvo que §9.5 esté resuelto; no describir `AKV://<secret>` como
+> ejecutable sin esa comprobación.
 
 | Rol / Permiso | Alcance | Bloques / casos que lo requieren |
 |---|---|---|
 | {rol} | {qué puede hacer} | {B02, B05…} |
 
-**Usuario de ejecución:** {`AKV://<secret>` (por defecto, ejecución autónoma) | proporcionado por el
-usuario en runtime}. **Destino de ejecución (§9.1):** {`local` | `ci-runner` | `azure-qa`}.
+**Usuario de ejecución:** {`AKV://<secret>` (por defecto, ejecución autónoma — no operativo hoy, ver §9.5)
+| proporcionado por el usuario en runtime (vía real hoy)}. **Destino de ejecución (§9.1):** {`local`
+(enfoque inmediato) | `ci-runner` | `azure-qa` (enfoque futuro, ver §9.5)}.
 
 ### 1.7 Referencia a Spec / Análisis Funcional
 {Documentos de origen, versión, fecha. Si el plan nace de un flujo SDD, **enlazar la spec** —

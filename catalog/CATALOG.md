@@ -393,7 +393,7 @@
 | `prov-otel-v1.0` | Provider: OpenTelemetry (instrumentación y telemetría) | draft | `providers/prov-otel-v1.0.md` |
 | `prov-playwright-v1.0` | Provider: Playwright MCP | draft | `providers/prov-playwright-v1.0.md` |
 | `prov-sentinel-v1.0` | Provider: Microsoft Sentinel | draft | `providers/prov-sentinel-v1.0.md` |
-| `prov-sonar-v1.0` | Provider: SonarQube MCP | draft | `providers/prov-sonar-v1.0.md` |
+| `prov-sonar-v1.0` | Provider: SonarQube (MCP oficial SonarSource) | draft | `providers/prov-sonar-v1.0.md` |
 
 ### Wrappers (7 total)
 
