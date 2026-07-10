@@ -129,6 +129,30 @@ CLI nativo (`winget install GrafanaLabs.k6` — el ID correcto en winget, no `k6
 instalar sin problema si lo prefieres para chequeos rápidos, pero para consistencia con el resto del
 framework se recomienda usar también la imagen Docker de k6.
 
+## 5.2 Vídeo real con Playwright MCP (verificado 2026-07-10)
+
+`TEST_PLAN_STANDARD §7.2` prefiere vídeo real a GIF para evidencia de navegación exploratoria. Esto
+**no** es automático — hacen falta 2 pasos previos y luego 2 llamadas de herramienta por bloque:
+
+1. **Confirma que `.mcp.json` tiene `--caps devtools`** en los args del servidor `playwright` (si lo
+   acabas de añadir, **reabre Claude Code** — los args del servidor MCP no se recargan en caliente).
+2. **Instala ffmpeg** (aparte de los navegadores, `playwright install` normal no lo trae):
+   ```powershell
+   npx playwright install ffmpeg
+   ```
+3. Por cada bloque del plan, en la sesión de Claude Code:
+   ```
+   browser_start_video({ filename: "qa-evidence/videos/{APP}/{bloque}.webm" })
+   ... navegación del bloque ...
+   browser_stop_video()
+   ```
+   **Importante:** `filename` se resuelve relativo a la raíz del repo (el directorio de trabajo del
+   proceso MCP), no relativo a `--output-dir` — pasa siempre una ruta explícita bajo `qa-evidence/`
+   (ya cubierta por `.gitignore`) para no dejar `.webm` sueltos en la raíz del repo.
+
+Verificación rápida de que el vídeo es real: abrir el `.webm` en cualquier reproductor, o comprobar que
+sus primeros 4 bytes son la cabecera EBML `1A 45 DF A3` (formato WebM válido).
+
 ## 6. Cuándo NO usar local
 
 | Situación | Destino recomendado |

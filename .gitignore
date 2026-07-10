@@ -22,3 +22,7 @@ venv/
 # Salidas temporales de scripts (si se generan en local)
 *.tmp
 *.log
+
+# Evidencia de ejecución QA (vídeo/trazas/capturas de Playwright MCP) — nunca a git,
+# puede contener datos de sesión reales (TEST_PLAN_STANDARD §7.2)
+qa-evidence/

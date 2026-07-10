@@ -1,7 +1,7 @@
 ---
 id: "std-test-plan-v1.0"
 name: "Estándar Corporativo de Planes de Pruebas"
-version: "1.7.0"
+version: "1.7.1"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 policy_ref: "STANDARD_QA (context/apb/standards/STANDARD_QA.md)"
@@ -310,8 +310,12 @@ Tanto el **plan** como el **informe de ejecución** se generan siempre en **dos 
   sin que quede claro para el lector qué parte de la sesión falta.
 - **Alternativa preferente:** cuando la ejecución se conduce vía **Playwright MCP** (una de las
   implementaciones de referencia de [`prov-browser-agent-v1.0`](../../../providers/prov-browser-agent-v1.0.md)),
-  usar su grabación de vídeo nativa (`video: 'on'`), igual que ya hace `prov-playwright-v1.0` para
-  regresión scriptada.
+  usar su grabación de vídeo real. **Corrección 2026-07-10:** no es un flag de arranque `video:'on'` (así
+  lo describía esta sección antes de verificarlo) — son dos tools MCP, `browser_start_video` /
+  `browser_stop_video`, que hay que invocar explícitamente al empezar/terminar cada bloque, y que solo
+  existen si el servidor arrancó con `--caps devtools` y el binario `ffmpeg` está instalado
+  (`npx playwright install ffmpeg`). Detalle completo, incluida la ruta relativa del fichero de salida,
+  en `prov-playwright-v1.0.md`.
   - Si no hay grabador de vídeo real disponible en el entorno (ni Playwright MCP, ni un grabador de
     pantalla local), **segmentar** la evidencia GIF por bloque de la matriz (parar/exportar/limpiar la
     grabación en cada límite de bloque) en vez de una única grabación continua que pueda truncarse sin
@@ -543,3 +547,4 @@ Un plan de pruebas es conforme cuando:
 | 1.6.0 | 2026-07-07 | **§8.1 Verificación pre-vuelo de k6** (nueva subsección) — antes de generar/ejecutar una prueba de rendimiento real, confirmar el destino de ejecución: `local` limita a smoke, carga real requiere `ci-runner`/`azure-qa` o se declara el bloqueante explícitamente (nunca sustituido en silencio por un smoke test). Ítem añadido al checklist §10. Origen: Débora preguntó qué hacía falta para que la próxima ejecución de un plan incluyera también rendimiento — se confirmó que el diseño (skill + subagente + bloque B13 de TruckCenter) ya existe, pero falta el mismo runtime de Azure QA (QA3-2) que resuelve también el vídeo. |
 | 1.6.1 | 2026-07-07 | **§9.1 Default explícito `local`** para el destino de ejecución — deja de preguntarse a ciegas en cada invocación; `azure-qa`/`ci-runner` se eligen explícitamente. Referencia a la implementación real de `azure-qa` ya generada en `infra/azure-qa-runtime/` (Dockerfiles Playwright + k6). Origen: Débora pidió que el agente de QA permita elegir entre local (predeterminado) y Azure QA, tras confirmar que ya tiene el entorno Container Apps creado. |
 | 1.7.0 | 2026-07-10 | **§9.5 Estado real de la infraestructura de ejecución — inmediato vs. futuro** (nueva subsección). Tras el cierre del lote de 32 planes de pruebas, Débora preguntó si había "todo lo necesario para ejecutar: k6, sonar, unitarias…" — auditoría componente a componente confirmó que `prov-akv-v1.0` no tiene vault provisionado (endpoint placeholder), que `infra/azure-qa-runtime/k6/` es un runner Docker genérico sin ningún script `.js` de aplicación, que la conexión Sonar real (`prov-sonar-v1.0`) usa el token personal de Débora y solo la consume el dashboard Power BI (sin gate de calidad ni project keys de las 32 apps confirmados), y que los tests unitarios están fuera del alcance de este estándar (viven en el pipeline propio de cada app — `APB.INS` confirmado sin ninguno). §9.2 y el checklist §10 quedan enlazados a §9.5 para no describir estas piezas como operativas cuando el plan asume ejecución inmediata. Origen: feedback de Débora. |
+| 1.7.1 | 2026-07-10 | **§7.2 corrige la suposición de vídeo real vía Playwright MCP.** Débora preguntó si la grabación de vídeo estaba resuelta; al comprobarlo, `video:'on'` (como lo describía esta sección) no existe como tal — son dos tools MCP, `browser_start_video`/`browser_stop_video`, ocultas tras la capability `devtools` (no activa por defecto) y que además requieren el binario `ffmpeg` instalado aparte de los navegadores. Verificado end-to-end con un servidor de prueba aislado: con `--caps devtools` + `ffmpeg` instalado, produce un `.webm` real y válido. `.mcp.json` y `prov-playwright-v1.0.md` actualizados con la configuración real y la instrucción exacta de uso (incluida la ruta relativa del fichero, que se resuelve contra el directorio de trabajo del proceso, no contra `--output-dir`). Origen: pregunta de Débora tras el cierre de la sesión anterior. |
