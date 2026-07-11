@@ -1,0 +1,144 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Concesiones API
+  description: |
+    Gestión de títulos de ocupación/actividad portuaria y sus garantías
+    económicas asociadas. Mapea a `dom-concesiones-v1` (ya existente en el
+    catálogo real de dominios de APB, CONCB/GESGAR). Grounded en
+    `dataaccess/dto/Titol.java` (tabla TITOL, PK idsubport+idtitol) y
+    `dataaccess/dto/Garantia.java` (tabla GARANTIA, PK idsubport+seqgarantia).
+    Servicio separado de Facturación y Liquidaciones (decisión 2026-07-11,
+    ver adr-sostrat-decomposition-strategy.md punto 6) — consume el evento
+    `TituloActualizado` publicado por este servicio en lugar de acceso
+    directo a BBDD (anti-patrón detectado en el legacy: `CN_Liquidacion_Impl`
+    escribía directamente en `TITOL_MINIM_DADES`).
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-concesiones-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/Titol.java, Garantia.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/concesiones/v1
+security: [ { entraId: [] } ]
+tags: [ { name: port-occupation-titles }, { name: guarantees } ]
+paths:
+  /port-occupation-titles:
+    get:
+      operationId: listTitles
+      tags: [port-occupation-titles]
+      parameters:
+        - { name: idestattitol, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de títulos, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/PortOccupationTitle" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createTitle
+      tags: [port-occupation-titles]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/PortOccupationTitleCreate" } } } }
+      responses:
+        "201": { description: Título otorgado, content: { application/json: { schema: { $ref: "#/components/schemas/PortOccupationTitle" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /port-occupation-titles/{idsubport}/{idtitol}:
+    parameters:
+      - { name: idsubport, in: path, required: true, schema: { type: string } }
+      - { name: idtitol, in: path, required: true, schema: { type: integer } }
+    get:
+      operationId: getTitle
+      tags: [port-occupation-titles]
+      responses:
+        "200": { description: Título encontrado, content: { application/json: { schema: { $ref: "#/components/schemas/PortOccupationTitle" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /port-occupation-titles/{idsubport}/{idtitol}/guarantees:
+    parameters:
+      - { name: idsubport, in: path, required: true, schema: { type: string } }
+      - { name: idtitol, in: path, required: true, schema: { type: integer } }
+    get:
+      operationId: listGuarantees
+      tags: [guarantees]
+      responses:
+        "200": { description: Garantías del título, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Guarantee" } } } } }
+    post:
+      operationId: createGuarantee
+      tags: [guarantees]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/GuaranteeCreate" } } } }
+      responses:
+        "201": { description: Garantía registrada, content: { application/json: { schema: { $ref: "#/components/schemas/Guarantee" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { concesiones.read: Lectura, concesiones.write: Escritura } } }
+  schemas:
+    PortOccupationTitle:
+      type: object
+      required: [idsubport, idtitol]
+      properties:
+        idsubport: { type: string, description: "Grounded: Titol.idsubport (PK parte 1, tabla TITOL)" }
+        idtitol: { type: integer, description: "Grounded: Titol.idtitol (PK parte 2)" }
+        datlliurament: { type: string, format: date-time, nullable: true, description: "Grounded: Titol.datlliurament" }
+        datatorgament: { type: string, format: date-time, nullable: true, description: "Grounded: Titol.datatorgament" }
+        datsolicitud: { type: string, format: date-time, nullable: true, description: "Grounded: Titol.datsolicitud" }
+        idtitolprecedent: { type: integer, nullable: true, description: "Grounded: Titol.idtitolprecedent" }
+        idestattitol: { type: string, nullable: true, description: "Grounded: Titol.idestattitol — dominio de valores real en tabla TITOL_ESTAT, no confirmado en esta extracción" }
+        idperiodicitat: { type: string, nullable: true, description: "Grounded: Titol.idperiodicitat" }
+        garantia: { type: string, nullable: true, description: "Grounded: Titol.garantia" }
+      example:
+        idsubport: "B"
+        idtitol: 4471
+        datatorgament: "2020-03-15T00:00:00Z"
+        idestattitol: "VIGENT"
+        idperiodicitat: "ANUAL"
+    PortOccupationTitleCreate:
+      type: object
+      required: [idsubport]
+      properties:
+        idsubport: { type: string }
+        datsolicitud: { type: string, format: date-time }
+        idtitolprecedent: { type: integer }
+        idperiodicitat: { type: string }
+        garantia: { type: string }
+    Guarantee:
+      type: object
+      required: [idsubport, seqgarantia, idtitol]
+      properties:
+        idsubport: { type: string, description: "Grounded: Garantia.idsubport (PK parte 1, tabla GARANTIA)" }
+        seqgarantia: { type: integer, format: int64, description: "Grounded: Garantia.seqgarantia (PK parte 2)" }
+        idtitol: { type: integer, description: "Grounded: Garantia.idtitol (FK)" }
+        nomgarantia: { type: string, nullable: true, description: "Grounded: Garantia.nomgarantia" }
+        idestatgarantia: { type: string, nullable: true, description: "Grounded: Garantia.idestatgarantia" }
+        tipus: { type: string, nullable: true, description: "Grounded: Garantia.tipus" }
+        impgarexiactual: { type: number, format: double, nullable: true, description: "Grounded: Garantia.impgarexiactual" }
+        impgarconstituit: { type: number, format: double, nullable: true, description: "Grounded: Garantia.impgarconstituit" }
+        datinivigencia: { type: string, format: date-time, nullable: true, description: "Grounded: Garantia.datinivigencia" }
+        datfivigencia: { type: string, format: date-time, nullable: true, description: "Grounded: Garantia.datfivigencia" }
+      example:
+        idsubport: "B"
+        seqgarantia: 218
+        idtitol: 4471
+        nomgarantia: "Aval bancario CaixaBank"
+        idestatgarantia: "VIGENT"
+        tipus: "AVAL"
+        impgarexiactual: 45000.00
+        impgarconstituit: 45000.00
+        datinivigencia: "2026-01-01T00:00:00Z"
+        datfivigencia: "2026-12-31T23:59:59Z"
+    GuaranteeCreate:
+      type: object
+      required: [nomgarantia, tipus, impgarconstituit]
+      properties:
+        nomgarantia: { type: string }
+        tipus: { type: string }
+        impgarconstituit: { type: number, format: double }
+        datinivigencia: { type: string, format: date-time }
+        datfivigencia: { type: string, format: date-time }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

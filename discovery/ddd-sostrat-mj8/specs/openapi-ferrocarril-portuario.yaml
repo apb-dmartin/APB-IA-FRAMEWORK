@@ -1,0 +1,209 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Ferrocarril Portuario API
+  description: |
+    Gestión del tráfico ferroviario portuario: operaciones (entrada, salida,
+    maniobra, intervención), vías y su relación con la escala del buque.
+
+    Grounded en `sostrat/src/org/apb/sostrat/dataaccess/dto/ferrocarril/OperacioFerroviaria.java`
+    (tabla `OP_FERROVIARIA`, PK `seqoperacio`). El DTO real tiene ~60 campos;
+    este contrato expone el subconjunto de negocio relevante para consumidores
+    externos — el resto (auditoría interna, campos de validación de márgenes de
+    tiempo) queda en el modelo de persistencia, no en la API pública.
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-ferrocarril-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/ferrocarril/OperacioFerroviaria.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/ferrocarril/v1
+    description: APIM (producción)
+  - url: https://apim-pre.portdebarcelona.cat/ferrocarril/v1
+    description: APIM (preproducción)
+security:
+  - entraId: []
+tags:
+  - name: rail-operations
+    description: Operaciones ferroviarias
+paths:
+  /rail-operations:
+    get:
+      operationId: listRailOperations
+      summary: Listar operaciones ferroviarias
+      tags: [rail-operations]
+      parameters:
+        - name: idsubport
+          in: query
+          schema: { type: string }
+        - name: anyescala
+          in: query
+          schema: { type: integer }
+        - name: numescala
+          in: query
+          schema: { type: integer }
+        - name: idtipoperacio
+          in: query
+          schema: { $ref: "#/components/schemas/TipoOperacion" }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de operaciones ferroviarias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/RailOperation" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+    post:
+      operationId: createRailOperation
+      summary: Registrar una operación ferroviaria
+      tags: [rail-operations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RailOperationCreate" }
+      responses:
+        "201":
+          description: Operación registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RailOperation" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /rail-operations/{seqoperacio}:
+    parameters:
+      - name: seqoperacio
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getRailOperation
+      summary: Consultar una operación ferroviaria
+      tags: [rail-operations]
+      responses:
+        "200":
+          description: Operación encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RailOperation" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /rail-operations/{seqoperacio}/cancel:
+    parameters:
+      - name: seqoperacio
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      operationId: cancelRailOperation
+      summary: Anular una operación ferroviaria
+      tags: [rail-operations]
+      responses:
+        "200":
+          description: Operación anulada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RailOperation" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: La operación ya está en un estado terminal (anulada o finalizada)
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/ProblemDetails" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            ferrocarril.read: Lectura de operaciones ferroviarias
+            ferrocarril.write: Escritura de operaciones ferroviarias
+  schemas:
+    TipoOperacion:
+      type: string
+      enum: [ENTRADA, SALIDA, MANIOBRA, INTERVENCION]
+      description: "Grounded: OperacioFerroviaria.idtipoperacio, valores confirmados por Constantes.OPERACIONES_FERROVIARIAS_TIPO_OPERACION_*"
+    RailOperation:
+      type: object
+      required: [seqoperacio, idtipoperacio]
+      properties:
+        seqoperacio: { type: integer, format: int64, description: "Grounded: PK real (seqoperacio)" }
+        datoperacio: { type: string, format: date-time, description: "Grounded: OperacioFerroviaria.datoperacio" }
+        idtipoperacio: { $ref: "#/components/schemas/TipoOperacion" }
+        lontren: { type: integer, nullable: true, description: "Grounded: OperacioFerroviaria.lontren — longitud del tren" }
+        taratren: { type: integer, nullable: true, description: "Grounded: OperacioFerroviaria.taratren — tara del tren" }
+        idopeferroviari: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.idopeferroviari" }
+        idopeterminal: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.idopeterminal" }
+        portescalatren: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.portescalatren — traducción prevista de EscalaPk.idsubport, no confirmada 1:1 por nombre" }
+        anyescalatren: { type: integer, nullable: true, description: "Grounded: OperacioFerroviaria.anyescalatren" }
+        numescalatren: { type: integer, nullable: true, description: "Grounded: OperacioFerroviaria.numescalatren" }
+        carrega: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.carrega" }
+        descarrega: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.descarrega" }
+        facturable: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.facturable" }
+        observacions: { type: string, nullable: true, description: "Grounded: OperacioFerroviaria.observacions" }
+      example:
+        seqoperacio: 88213
+        datoperacio: "2026-07-14T08:30:00Z"
+        idtipoperacio: "ENTRADA"
+        lontren: 620
+        taratren: 1450
+        idopeferroviari: "RENFE-MERC"
+        idopeterminal: "TC-FERROVIARIA"
+        portescalatren: "B"
+        anyescalatren: 2026
+        numescalatren: 4821
+        carrega: "S"
+        descarrega: "N"
+        facturable: "S"
+    RailOperationCreate:
+      type: object
+      required: [idtipoperacio, portescalatren, anyescalatren, numescalatren]
+      properties:
+        idtipoperacio: { $ref: "#/components/schemas/TipoOperacion" }
+        lontren: { type: integer }
+        taratren: { type: integer }
+        idopeferroviari: { type: string }
+        portescalatren: { type: string }
+        anyescalatren: { type: integer }
+        numescalatren: { type: integer }
+        carrega: { type: string }
+        descarrega: { type: string }
+        observacions: { type: string }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

@@ -1,0 +1,172 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Depotsis API
+  description: |
+    Gestión de solicitudes y operaciones de depósito en muelle libre T6.
+
+    Grounded en `sostrat/src/org/apb/sostrat/dataaccess/dto/depotsis/DepotsisSolicitud.java`
+    (tabla `T6_SOLICITUT_OP`, PK `idsolicitud`, raíz delgada versionada) y
+    `DepotsisSolicitudVersio.java` (tabla `T6_SOLICITUT_OP_VERSIO`, PK
+    `idsolicitut+versio`, contiene el detalle real de la solicitud).
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-mercancias-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/depotsis/DepotsisSolicitud.java, DepotsisSolicitudVersio.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/depotsis/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: free-yard-requests
+    description: Solicitudes de depósito en muelle libre T6
+paths:
+  /free-yard-requests:
+    get:
+      operationId: listFreeYardRequests
+      summary: Listar solicitudes de depósito
+      tags: [free-yard-requests]
+      parameters:
+        - name: estat
+          in: query
+          schema: { type: string }
+        - name: anyescala
+          in: query
+          schema: { type: integer }
+        - name: numescala
+          in: query
+          schema: { type: integer }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de solicitudes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/FreeYardRequest" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createFreeYardRequest
+      summary: Registrar una solicitud de depósito
+      tags: [free-yard-requests]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/FreeYardRequestCreate" }
+      responses:
+        "201":
+          description: Solicitud creada (versión inicial, `versio=1`)
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FreeYardRequest" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /free-yard-requests/{idsolicitud}:
+    parameters:
+      - name: idsolicitud
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getFreeYardRequest
+      summary: Consultar la versión vigente de una solicitud
+      tags: [free-yard-requests]
+      responses:
+        "200":
+          description: Solicitud encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/FreeYardRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            depotsis.read: Lectura
+            depotsis.write: Escritura
+  schemas:
+    FreeYardRequest:
+      type: object
+      required: [idsolicitud, versio, estat]
+      properties:
+        idsolicitud: { type: integer, format: int64, description: "Grounded: DepotsisSolicitud.idsolicitud (PK, columna IDSOLICITUD)" }
+        versio: { type: integer, description: "Grounded: DepotsisSolicitudVersio.versio (PK parte 2, columna VERSIO)" }
+        idocupacio: { type: integer, format: int64, nullable: true, description: "Grounded: DepotsisSolicitudVersio.idocupacio (columna IDOCUPACIO)" }
+        numescala: { type: integer, nullable: true, description: "Grounded: DepotsisSolicitudVersio.numescala (columna NUMESCALA)" }
+        anyescala: { type: integer, nullable: true, description: "Grounded: DepotsisSolicitudVersio.anyescala (columna ANYESCALA)" }
+        idsubport: { type: string, nullable: true, description: "Grounded: DepotsisSolicitudVersio.idsubport (columna IDSUBPORT)" }
+        idestibador: { type: string, nullable: true, description: "Grounded: DepotsisSolicitudVersio.idestibador (columna IDESTIBADOR)" }
+        codaranzprod: { type: string, nullable: true, description: "Grounded: DepotsisSolicitudVersio.codaranzprod (columna CODARANZPROD)" }
+        estat: { type: string, description: "Grounded: DepotsisSolicitudVersio.estat (columna ESTAT) — dominio de valores no confirmado en esta extracción" }
+        quantitat: { type: number, format: double, nullable: true, description: "Grounded: DepotsisSolicitudVersio.quantitat (columna QUANTITAT)" }
+        datainioperacions: { type: string, format: date-time, nullable: true, description: "Grounded: DepotsisSolicitudVersio.datainioperacions (columna DATAINIOPERACIONS)" }
+        datafioperacions: { type: string, format: date-time, nullable: true, description: "Grounded: DepotsisSolicitudVersio.datafioperacions (columna DATAFIOPERACIONS)" }
+        comentaris: { type: string, nullable: true, description: "Grounded: DepotsisSolicitudVersio.comentaris (columna COMENTARIS)" }
+      example:
+        idsolicitud: 30044
+        versio: 2
+        idocupacio: 812
+        numescala: 5521
+        anyescala: 2026
+        idsubport: "B"
+        idestibador: "ESTIBA-01"
+        codaranzprod: "8703"
+        estat: "EN_CURS"
+        quantitat: 120.5
+        datainioperacions: "2026-07-14T09:00:00Z"
+        datafioperacions: null
+    FreeYardRequestCreate:
+      type: object
+      required: [idocupacio, numescala, anyescala, idsubport]
+      properties:
+        idocupacio: { type: integer, format: int64 }
+        numescala: { type: integer }
+        anyescala: { type: integer }
+        idsubport: { type: string }
+        idestibador: { type: string }
+        codaranzprod: { type: string }
+        quantitat: { type: number, format: double }
+        datainioperacions: { type: string, format: date-time }
+        datafioperacions: { type: string, format: date-time }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

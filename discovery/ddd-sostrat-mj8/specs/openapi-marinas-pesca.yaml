@@ -1,0 +1,139 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Marinas y Pesca API
+  description: |
+    Gestión de atraques en marinas deportivas y albaranes de descarga de
+    actividad pesquera. Grounded en `dataaccess/dto/marinas/MarinaDadesAtracada.java`
+    (tabla MARINA_DADES_ATRACADA, PK seqdades) y `dataaccess/dto/gpesca/Albara.java`
+    (+AlbaraBase.java, tabla ALBARA, PK idport+idalbara).
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-pesca-marinas-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/marinas/MarinaDadesAtracada.java, dataaccess/dto/gpesca/Albara.java, AlbaraBase.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/marinas-pesca/v1
+security: [ { entraId: [] } ]
+tags: [ { name: marina-berths }, { name: fishing-landing-notes } ]
+paths:
+  /marina-berths:
+    get:
+      operationId: listMarinaBerths
+      tags: [marina-berths]
+      parameters:
+        - { name: matricula, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de atraques, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/MarinaBerth" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createMarinaBerth
+      tags: [marina-berths]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/MarinaBerthCreate" } } } }
+      responses:
+        "201": { description: Atraque registrado, content: { application/json: { schema: { $ref: "#/components/schemas/MarinaBerth" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /marina-berths/{seqdades}:
+    parameters: [ { name: seqdades, in: path, required: true, schema: { type: integer, format: int64 } } ]
+    get:
+      operationId: getMarinaBerth
+      tags: [marina-berths]
+      responses:
+        "200": { description: Atraque encontrado, content: { application/json: { schema: { $ref: "#/components/schemas/MarinaBerth" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /fishing-landing-notes:
+    get:
+      operationId: listFishingLandingNotes
+      tags: [fishing-landing-notes]
+      parameters:
+        - { name: idport, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de albaranes, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/FishingLandingNote" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createFishingLandingNote
+      tags: [fishing-landing-notes]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/FishingLandingNoteCreate" } } } }
+      responses:
+        "201": { description: Albarán registrado, content: { application/json: { schema: { $ref: "#/components/schemas/FishingLandingNote" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { marinas-pesca.read: Lectura, marinas-pesca.write: Escritura } } }
+  schemas:
+    MarinaBerth:
+      type: object
+      required: [seqdades, nomvaixell]
+      properties:
+        seqdades: { type: integer, format: int64, description: "Grounded: MarinaDadesAtracada.seqdades (PK, tabla MARINA_DADES_ATRACADA)" }
+        idusuari: { type: string, nullable: true, description: "Grounded: MarinaDadesAtracada.idusuari" }
+        idsubport: { type: string, nullable: true, description: "Grounded: MarinaDadesAtracada.idsubport" }
+        idtitol: { type: integer, nullable: true, description: "Grounded: MarinaDadesAtracada.idtitol" }
+        nomvaixell: { type: string, description: "Grounded: MarinaDadesAtracada.nomvaixell" }
+        matricula: { type: string, nullable: true, description: "Grounded: MarinaDadesAtracada.matricula" }
+        nompropietari: { type: string, nullable: true, description: "Grounded: MarinaDadesAtracada.nompropietari" }
+        eslora: { type: number, format: double, nullable: true, description: "Grounded: MarinaDadesAtracada.eslora" }
+        maniga: { type: number, format: double, nullable: true, description: "Grounded: MarinaDadesAtracada.maniga" }
+        dataentrada: { type: string, format: date-time, nullable: true, description: "Grounded: MarinaDadesAtracada.dataentrada" }
+        datasortida: { type: string, format: date-time, nullable: true, description: "Grounded: MarinaDadesAtracada.datasortida" }
+      example:
+        seqdades: 8801
+        idsubport: "B"
+        nomvaixell: "SIRENA AZUL"
+        matricula: "7BA-1234"
+        nompropietari: "Juan Pérez"
+        eslora: 12.4
+        maniga: 3.8
+        dataentrada: "2026-07-14T10:00:00Z"
+    MarinaBerthCreate:
+      type: object
+      required: [nomvaixell]
+      properties:
+        idusuari: { type: string }
+        idsubport: { type: string }
+        idtitol: { type: integer }
+        nomvaixell: { type: string }
+        matricula: { type: string }
+        nompropietari: { type: string }
+        eslora: { type: number, format: double }
+        maniga: { type: number, format: double }
+    FishingLandingNote:
+      type: object
+      required: [idalbara, idport]
+      properties:
+        idalbara: { type: string, description: "Grounded: AlbaraBase.idalbara (PK parte 1, tabla ALBARA)" }
+        idport: { type: string, description: "Grounded: AlbaraBase.idport (PK parte 2)" }
+        data: { type: string, format: date-time, nullable: true, description: "Grounded: AlbaraBase.data" }
+        importtotal: { type: number, format: double, nullable: true, description: "Grounded: AlbaraBase.importtotal" }
+        idarmador: { type: integer, format: int64, nullable: true, description: "Grounded: AlbaraBase.idarmador" }
+        idvaixell: { type: integer, format: int64, nullable: true, description: "Grounded: AlbaraBase.idvaixell" }
+        numalbara: { type: string, nullable: true, description: "Grounded: AlbaraBase.numalbara" }
+        dataliquidacio: { type: string, format: date-time, nullable: true, description: "Grounded: AlbaraBase.dataliquidacio" }
+        esborrador: { type: string, nullable: true, description: "Grounded: AlbaraBase.esborrador" }
+      example:
+        idalbara: "ALB-2026-0044"
+        idport: "B"
+        data: "2026-07-14T06:00:00Z"
+        importtotal: 890.50
+        idarmador: 331
+        idvaixell: 209
+        numalbara: "44"
+        esborrador: "N"
+    FishingLandingNoteCreate:
+      type: object
+      required: [idarmador, idvaixell, importtotal]
+      properties:
+        idarmador: { type: integer, format: int64 }
+        idvaixell: { type: integer, format: int64 }
+        importtotal: { type: number, format: double }
+        numalbara: { type: string }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

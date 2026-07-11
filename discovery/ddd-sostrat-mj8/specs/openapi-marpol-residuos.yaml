@@ -1,0 +1,155 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB MARPOL / Residuos API
+  description: |
+    Gestión de recogida de residuos de buques (MARPOL). Grounded en
+    `dataaccess/dto/marpol/ResidusEscala.java` (tabla RESIDUS_ESCALA, PK idresidu),
+    `ResidusLot.java` (RESIDUS_LOT), `ResidusFact.java` (RESIDUS_FACT),
+    `ResidusLinea.java` (RESIDUS_LINEA, PK idlinea+idresidu).
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-medio-ambiente-marpol-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/marpol/ResidusEscala.java, ResidusLot.java, ResidusFact.java, ResidusLinea.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/marpol-residuos/v1
+security: [ { entraId: [] } ]
+tags: [ { name: ship-waste-collections } ]
+paths:
+  /ship-waste-collections:
+    get:
+      operationId: listShipWasteCollections
+      tags: [ship-waste-collections]
+      parameters:
+        - { name: idestat, in: query, schema: { $ref: "#/components/schemas/EstatResidu" } }
+        - { name: idsubport, in: query, schema: { type: string } }
+        - { name: anyescala, in: query, schema: { type: integer } }
+        - { name: numescala, in: query, schema: { type: integer } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: Página de recogidas
+          content:
+            application/json:
+              schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/ShipWasteCollection" } }, pagination: { $ref: "#/components/schemas/Pagination" } } }
+    post:
+      operationId: createShipWasteCollection
+      tags: [ship-waste-collections]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShipWasteCollectionCreate" }
+      responses:
+        "201": { description: Recogida registrada, content: { application/json: { schema: { $ref: "#/components/schemas/ShipWasteCollection" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /ship-waste-collections/{idresidu}:
+    parameters: [ { name: idresidu, in: path, required: true, schema: { type: integer, format: int64 } } ]
+    get:
+      operationId: getShipWasteCollection
+      tags: [ship-waste-collections]
+      responses:
+        "200": { description: Recogida encontrada, content: { application/json: { schema: { $ref: "#/components/schemas/ShipWasteCollection" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /ship-waste-collections/{idresidu}/weighings:
+    parameters: [ { name: idresidu, in: path, required: true, schema: { type: integer, format: int64 } } ]
+    post:
+      operationId: createWeighing
+      tags: [ship-waste-collections]
+      description: Grounded en ResidusLinea.java (tabla RESIDUS_LINEA)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WeighingCreate" }
+      responses:
+        "201": { description: Pesaje registrado, content: { application/json: { schema: { $ref: "#/components/schemas/Weighing" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { marpol.read: Lectura, marpol.write: Escritura } } }
+  schemas:
+    EstatResidu:
+      type: integer
+      enum: [1, 2, 3, 4, 5, 6, 7]
+      description: "Grounded: ResidusEscala.idestat. Solo el valor 1 (ID_ESTAT_RECIBIDO) tiene nombre de constante confirmado literalmente en el código — los nombres 2-7 (Anulado/No pagado/Confirmado/Enviado/Pagado/Reclamado) son interpretación del orden observado, no citas textuales de constante Java. Confirmar con negocio antes de fijar este enum como definitivo."
+    ShipWasteCollection:
+      type: object
+      required: [idresidu, idsubport, anyescala, numescala]
+      properties:
+        idresidu: { type: integer, format: int64, description: "Grounded: ResidusEscala.idresidu (PK, tabla RESIDUS_ESCALA)" }
+        idestat: { $ref: "#/components/schemas/EstatResidu" }
+        idsubport: { type: string, description: "Grounded: ResidusEscala.idsubport" }
+        anyescala: { type: integer, description: "Grounded: ResidusEscala.anyescala" }
+        numescala: { type: integer, description: "Grounded: ResidusEscala.numescala" }
+        idmitja: { type: string, nullable: true, description: "Grounded: ResidusEscala.idmitja" }
+        empresa: { type: string, nullable: true, description: "Grounded: ResidusEscala.empresa" }
+        iniservei: { type: string, format: date-time, nullable: true, description: "Grounded: ResidusEscala.iniservei" }
+        fiservei: { type: string, format: date-time, nullable: true, description: "Grounded: ResidusEscala.fiservei" }
+        quantlliuradadeclarada: { type: number, format: double, nullable: true, description: "Grounded: ResidusEscala.quantlliuradadeclarada" }
+        observacions: { type: string, nullable: true, description: "Grounded: ResidusEscala.observacions" }
+      example:
+        idresidu: 44201
+        idestat: 4
+        idsubport: "B"
+        anyescala: 2026
+        numescala: 5521
+        idmitja: "CAMIO"
+        empresa: "ECOIMSA"
+        iniservei: "2026-07-14T06:00:00Z"
+        fiservei: "2026-07-14T08:30:00Z"
+        quantlliuradadeclarada: 12.4
+    ShipWasteCollectionCreate:
+      type: object
+      required: [idsubport, anyescala, numescala]
+      properties:
+        idsubport: { type: string }
+        anyescala: { type: integer }
+        numescala: { type: integer }
+        idmitja: { type: string }
+        empresa: { type: string }
+        iniservei: { type: string, format: date-time }
+        fiservei: { type: string, format: date-time }
+    Weighing:
+      type: object
+      required: [idlinea, idresidu, idtipus, quantitat]
+      properties:
+        idlinea: { type: integer, description: "Grounded: ResidusLinea.idlinea (PK parte 1, tabla RESIDUS_LINEA)" }
+        idresidu: { type: integer, format: int64, description: "Grounded: ResidusLinea.idresidu (PK parte 2, FK)" }
+        idtipus: { type: string, description: "Grounded: ResidusLinea.idtipus" }
+        idsubtipus: { type: string, nullable: true, description: "Grounded: ResidusLinea.idsubtipus" }
+        idunitat: { type: string, nullable: true, description: "Grounded: ResidusLinea.idunitat" }
+        quantitat: { type: number, format: double, description: "Grounded: ResidusLinea.quantitat" }
+        ncamions: { type: integer, nullable: true, description: "Grounded: ResidusLinea.ncamions" }
+        ncont: { type: integer, nullable: true, description: "Grounded: ResidusLinea.ncont" }
+        importe: { type: number, format: double, nullable: true, description: "Grounded: ResidusLinea.importe" }
+      example:
+        idlinea: 1
+        idresidu: 44201
+        idtipus: "OLEOSOS"
+        idunitat: "M3"
+        quantitat: 8.2
+        ncamions: 1
+        importe: 245.00
+    WeighingCreate:
+      type: object
+      required: [idtipus, quantitat]
+      properties:
+        idtipus: { type: string }
+        idsubtipus: { type: string }
+        idunitat: { type: string }
+        quantitat: { type: number, format: double }
+        ncamions: { type: integer }
+        ncont: { type: integer }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

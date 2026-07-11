@@ -1,0 +1,161 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Aduanas / Control de Contenedores API
+  description: |
+    Control de tránsito y traslado de contenedores en régimen aduanero, y
+    conciliación de datos de terminales. Grounded en
+    `dataaccess/dto/MovimientoContenedor.java`, vista
+    `dataaccess/views/dto/aduanas/VTcMAduanaContenidor.java`, y (conciliación)
+    `dataaccess/dto/terminales/ProtermCont.java` (tabla PROTERM_CONT, PK
+    idregistre) + `ErrorProcConc.java` (errores/warnings de conciliación).
+    Requiere consolidación interna previa de `service/aduanas` +
+    `service/terminales` (ver jira-backlog.md EPIC-11) — hoy repartido entre
+    ambos paquetes en el monolito.
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-mercancias-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/MovimientoContenedor.java, views/dto/aduanas/VTcMAduanaContenidor.java, dataaccess/dto/terminales/ProtermCont.java, ErrorProcConc.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/aduanas-contenedores/v1
+security: [ { entraId: [] } ]
+tags: [ { name: container-movements }, { name: reconciliation } ]
+paths:
+  /container-movements:
+    get:
+      operationId: listContainerMovements
+      tags: [container-movements]
+      parameters:
+        - { name: matricula, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de movimientos, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/ContainerMovement" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createContainerMovement
+      tags: [container-movements]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ContainerMovementCreate" } } } }
+      responses:
+        "201": { description: Movimiento registrado, content: { application/json: { schema: { $ref: "#/components/schemas/ContainerMovement" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /container-movements/customs-status:
+    get:
+      operationId: listCustomsStatus
+      tags: [container-movements]
+      description: Grounded en la vista VTcMAduanaContenidor — solo lectura
+      parameters:
+        - { name: matricula, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de situación aduanera, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/CustomsStatus" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+  /reconciliation/terminal-data:
+    get:
+      operationId: listReconciliationData
+      tags: [reconciliation]
+      description: Grounded en ProtermCont.java (tabla PROTERM_CONT), gap cerrado 2026-07-11
+      parameters:
+        - { name: numescala, in: query, schema: { type: integer } }
+        - { name: refequipament, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de datos de terminal conciliados, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/TerminalReconciliationData" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+  /reconciliation/errors:
+    get:
+      operationId: listReconciliationErrors
+      tags: [reconciliation]
+      description: Grounded en ErrorProcConc.java
+      parameters:
+        - { name: tipuserror, in: query, schema: { $ref: "#/components/schemas/TipoErrorConciliacion" } }
+        - { name: errorwarning, in: query, schema: { type: string, enum: [E, W] } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de errores/warnings de conciliación, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/ReconciliationError" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { aduanas.read: Lectura, aduanas.write: Escritura } } }
+  schemas:
+    TipoErrorConciliacion:
+      type: string
+      enum: [CN, CV, TER, SSI, CNC, STI, ALI, COA]
+      description: "Grounded: ErrorProcConc constantes TIPERR_*"
+    ContainerMovement:
+      type: object
+      required: [identificador, tipoMovimiento]
+      properties:
+        identificador: { type: string, description: "Grounded: MovimientoContenedor.identificador" }
+        tipoMovimiento: { type: string, description: "Grounded: MovimientoContenedor.tipoMovimiento" }
+        fechaCargaDescarga: { type: string, format: date-time, nullable: true, description: "Grounded: MovimientoContenedor.fechaCargaDescarga" }
+        fechaEntradaSalida: { type: string, format: date-time, nullable: true, description: "Grounded: MovimientoContenedor.fechaEntradaSalida" }
+        viaEntradaSalida: { type: string, nullable: true, description: "Grounded: MovimientoContenedor.viaEntradaSalida" }
+        codResultado: { type: integer, nullable: true, description: "Grounded: MovimientoContenedor.codResultado" }
+      example:
+        identificador: "MSCU1234567"
+        tipoMovimiento: "TRASLLAT"
+        fechaCargaDescarga: "2026-07-14T07:00:00Z"
+        viaEntradaSalida: "MARITIMA"
+    ContainerMovementCreate:
+      type: object
+      required: [identificador, tipoMovimiento]
+      properties:
+        identificador: { type: string }
+        tipoMovimiento: { type: string }
+        fechaCargaDescarga: { type: string, format: date-time }
+        viaEntradaSalida: { type: string }
+    CustomsStatus:
+      type: object
+      description: "Grounded: VTcMAduanaContenidor.java (vista, solo lectura)"
+      properties:
+        escala: { type: string, nullable: true }
+        referencia: { type: string, nullable: true }
+        estado: { type: string, nullable: true }
+        muelle: { type: string, nullable: true }
+        dua: { type: string, nullable: true }
+        matricula: { type: string, nullable: true }
+        idequipament: { type: string, nullable: true }
+    TerminalReconciliationData:
+      type: object
+      required: [idregistre]
+      properties:
+        idregistre: { type: integer, format: int64, description: "Grounded: ProtermCont.idregistre (PK, tabla PROTERM_CONT)" }
+        idsubport: { type: string, nullable: true, description: "Grounded: ProtermCont.idsubport" }
+        anyescala: { type: integer, format: int64, nullable: true, description: "Grounded: ProtermCont.anyescala" }
+        numescala: { type: integer, format: int64, nullable: true, description: "Grounded: ProtermCont.numescala" }
+        numescalaterminal: { type: string, nullable: true, description: "Grounded: ProtermCont.numescalaterminal" }
+        refequipament: { type: string, nullable: true, description: "Grounded: ProtermCont.refequipament" }
+        operacio: { type: string, nullable: true, description: "Grounded: ProtermCont.operacio" }
+        dataoperacio: { type: string, format: date-time, nullable: true, description: "Grounded: ProtermCont.dataoperacio" }
+        estado: { type: string, nullable: true, description: "Grounded: ProtermCont.estado" }
+        estibador: { type: string, nullable: true, description: "Grounded: ProtermCont.estibador" }
+      example:
+        idregistre: 340221
+        idsubport: "B"
+        numescala: 5521
+        refequipament: "REF-000145820"
+        operacio: "DESCARREGA"
+        estado: "CONCILIAT"
+    ReconciliationError:
+      type: object
+      required: [iderror, tipuserror]
+      properties:
+        iderror: { type: integer, format: int64, description: "Grounded: ErrorProcConc.iderror (PK)" }
+        tipuserror: { $ref: "#/components/schemas/TipoErrorConciliacion" }
+        errorwarning: { type: string, enum: [E, W], description: "Grounded: ErrorProcConc.errorwarning" }
+        coderror: { type: integer, format: int64, nullable: true, description: "Grounded: ErrorProcConc.coderror — catálogo extenso (~40 constantes CODERR_*), no replicado aquí por volumen, ver ErrorProcConc.java" }
+        descripcio: { type: string, nullable: true, description: "Grounded: ErrorProcConc.descripcio" }
+        refequipament: { type: string, nullable: true, description: "Grounded: ErrorProcConc.refequipament" }
+      example:
+        iderror: 9012
+        tipuserror: "CNC"
+        errorwarning: "W"
+        coderror: 1005
+        descripcio: "Discrepancia de peso entre manifiesto y terminal"
+        refequipament: "REF-000145820"
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

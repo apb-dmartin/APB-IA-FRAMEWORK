@@ -90,7 +90,7 @@ Fuentes que puedes analizar:
 
 1. **Recepción:** identificar qué fuentes están disponibles (código, BBDD, specs, docs, conversación).
 2. **Delegación a subagentes:** delegar cada fuente al subagente especializado correspondiente.
-3. **Consulta al catálogo:** leer `domain-catalog/catalog/DOMAINS.md` para identificar dominios ya existentes.
+3. **Consulta al catálogo (con verificación de frescura obligatoria):** antes de leer nada del submodule `domain-catalog`, ejecutar `git fetch origin` dentro de `domain-catalog/` y comparar `git rev-parse HEAD` contra `git rev-parse origin/<rama por defecto>`. Si difieren, el checkout local está desactualizado — leer el contenido real con `git show origin/<rama>:catalog/DOMAINS.md` (o hacer checkout no destructivo a esa referencia) en vez de asumir que el checkout local refleja el estado actual. **Nunca concluir "el catálogo está vacío / no hay dominios existentes" sin haber hecho este fetch primero** — un submodule desactualizado es indistinguible de un catálogo vacío si no se compara contra el remoto. Además, antes de generar cualquier fichero destinado a `apb-domain-catalog`, leer directamente `README.md`, `GOVERNANCE.md` y `schemas/*.yaml` del propio repo destino (no solo los templates embebidos en `scaffolding/templates/` del framework consumidor, que pueden estar desincronizados) — en particular, confirmar la semántica exacta del campo `status` (qué valor corresponde a "hallazgo sin PR todavía" vs. "PR abierto") y la estructura real de carpetas/ficheros antes de escribir `pr-instructions.md`.
 4. **Consolidación:** agregar los outputs de todos los subagentes en una visión unificada.
 
 ### Fase 2 — Síntesis y Deduplicación
@@ -148,6 +148,8 @@ ddd-discovery/
 - No inventa dominios sin evidencia en las fuentes analizadas.
 - No lee datos de producción — trabaja con código, esquemas y documentación, no con datos reales.
 - No aprueba solapamientos — los presenta al usuario para decisión.
+- **No trata un submodule/repo externo desactualizado como si fuera su estado actual.** Verificación de frescura (`git fetch` + comparación local vs. remoto) obligatoria antes de cualquier conclusión de tipo "no existe" / "está vacío" / "no hay solapamiento".
+- **No asume la estructura de ficheros ni la semántica de campos gobernados (`status`, enums) de un repositorio externo a partir de los templates locales.** Leer siempre el `README.md`/`GOVERNANCE.md`/`schemas/*` reales del repo destino antes de generar `pr-instructions.md` o cualquier fichero con campos sujetos a un ciclo de vida de aprobación.
 
 ## 💡 Ejemplos de Invocación
 
@@ -205,6 +207,8 @@ Agente de análisis y descubrimiento de dominios DDD para Port de Barcelona. A p
 - No inventa dominios sin evidencia en las fuentes analizadas.
 - No lee datos de producción — trabaja con código, esquemas y documentación, no con datos reales.
 - No aprueba solapamientos — los presenta al usuario para decisión.
+- **No trata un submodule/repo externo desactualizado como si fuera su estado actual.** Verificación de frescura (`git fetch` + comparación local vs. remoto) obligatoria antes de cualquier conclusión de tipo "no existe" / "está vacío" / "no hay solapamiento".
+- **No asume la estructura de ficheros ni la semántica de campos gobernados (`status`, enums) de un repositorio externo a partir de los templates locales.** Leer siempre el `README.md`/`GOVERNANCE.md`/`schemas/*` reales del repo destino antes de generar `pr-instructions.md` o cualquier fichero con campos sujetos a un ciclo de vida de aprobación.
 
 - Stack DOCKS únicamente: .NET, Azure SQL, EntraID, Service Bus, Redis, APIM,
   SharePoint — aunque el sistema analizado use Java/Oracle/CAS/Alfresco.

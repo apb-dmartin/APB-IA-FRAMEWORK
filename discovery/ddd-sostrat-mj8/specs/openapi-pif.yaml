@@ -1,0 +1,117 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB PIF (Punto de Inspección Fronteriza) API
+  description: |
+    Control fronterizo/aduanero de mercancías en muelle. Grounded en
+    `dataaccess/dto/OperacioPif.java` (tabla OPERACIO_PIF2, PK
+    anyoperaciopif+seqoperaciopif) y `dataaccess/dto/MollsPif.java` (tabla
+    MOLLS_PIF, PK idfinger). La ruta `dataaccess/dto/pif/` no existe — las
+    clases reales viven en `dataaccess/dto/` directamente, ver
+    `events-catalog.md` §10 para el detalle del gap cerrado.
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-inspeccion-control-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/OperacioPif.java, MollsPif.java, dataaccess/views/dto/VDataSelectorareapif.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/pif/v1
+security: [ { entraId: [] } ]
+tags: [ { name: border-inspection-operations }, { name: pif-areas } ]
+paths:
+  /border-inspection-operations:
+    get:
+      operationId: listBorderInspectionOperations
+      tags: [border-inspection-operations]
+      parameters:
+        - { name: idestatoperaciopif, in: query, schema: { $ref: "#/components/schemas/EstatOperacioPif" } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de operaciones, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/BorderInspectionOperation" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createBorderInspectionOperation
+      tags: [border-inspection-operations]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/BorderInspectionOperationCreate" } } } }
+      responses:
+        "201": { description: Operación registrada, content: { application/json: { schema: { $ref: "#/components/schemas/BorderInspectionOperation" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /border-inspection-operations/{anyoperaciopif}/{seqoperaciopif}:
+    parameters:
+      - { name: anyoperaciopif, in: path, required: true, schema: { type: integer } }
+      - { name: seqoperaciopif, in: path, required: true, schema: { type: integer } }
+    get:
+      operationId: getBorderInspectionOperation
+      tags: [border-inspection-operations]
+      responses:
+        "200": { description: Operación encontrada, content: { application/json: { schema: { $ref: "#/components/schemas/BorderInspectionOperation" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /pif-areas:
+    get:
+      operationId: listPifAreas
+      tags: [pif-areas]
+      description: Grounded en la vista V_DATA_SELECTORAREAPIF — solo lectura
+      parameters:
+        - { name: estado, in: query, schema: { type: string } }
+        - { name: finger, in: query, schema: { type: integer } }
+      responses:
+        "200": { description: Página de áreas PIF, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/PifArea" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { pif.read: Lectura, pif.write: Escritura } } }
+  schemas:
+    EstatOperacioPif:
+      type: string
+      enum: [CR, AP, PF, FI, AN, AF]
+      description: "Grounded: OperacioPif.idestatoperaciopif — valores confirmados en código, nombres completos no documentados en el DTO, confirmar con negocio"
+    BorderInspectionOperation:
+      type: object
+      required: [anyoperaciopif, seqoperaciopif]
+      properties:
+        anyoperaciopif: { type: integer, description: "Grounded: OperacioPif.anyoperaciopif (PK parte 1, tabla OPERACIO_PIF2)" }
+        seqoperaciopif: { type: integer, description: "Grounded: OperacioPif.seqoperaciopif (PK parte 2)" }
+        idestatoperaciopif: { $ref: "#/components/schemas/EstatOperacioPif" }
+        matriculacamio: { type: string, nullable: true, description: "Grounded: OperacioPif.matriculacamio" }
+        finger: { type: integer, nullable: true, description: "Grounded: OperacioPif.finger" }
+        dataassignaciomoll: { type: string, format: date-time, nullable: true, description: "Grounded: OperacioPif.dataassignaciomoll" }
+        tempstotal: { type: number, format: double, nullable: true, description: "Grounded: OperacioPif.tempstotal" }
+        tempsoperativa: { type: number, format: double, nullable: true, description: "Grounded: OperacioPif.tempsoperativa" }
+        importtotal: { type: number, format: double, nullable: true, description: "Grounded: OperacioPif.importtotal" }
+      example:
+        anyoperaciopif: 2026
+        seqoperaciopif: 4021
+        idestatoperaciopif: "AP"
+        matriculacamio: "1234ABC"
+        finger: 3
+        dataassignaciomoll: "2026-07-14T09:15:00Z"
+        tempstotal: 45.5
+        importtotal: 62.00
+    BorderInspectionOperationCreate:
+      type: object
+      properties:
+        matriculacamio: { type: string }
+        finger: { type: integer }
+        dataassignaciomoll: { type: string, format: date-time }
+    PifArea:
+      type: object
+      description: "Grounded: VDataSelectorareapif.java (vista de solo lectura)"
+      properties:
+        numcontenidor: { type: string, nullable: true }
+        horaasignada: { type: string, format: date-time, nullable: true }
+        finger: { type: integer, nullable: true }
+        matriculacamio: { type: string, nullable: true }
+        estado: { type: string, nullable: true }
+      example:
+        numcontenidor: "MSCU1234567"
+        horaasignada: "2026-07-14T09:15:00Z"
+        finger: 3
+        estado: "OCUPADO"
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
