@@ -1,11 +1,12 @@
-# Evaluación de preparación — ¿puede arrancar la transformación de SÒSTRAT? (v3, todas las fases)
+# Evaluación de preparación — ¿puede arrancar la transformación de SÒSTRAT? (v4, con auditoría de cobertura)
 
 > **Borrador generado por IA** (APB AI Framework - apb-agent-ddd-v1.0) — pendiente validación humana. No distribuir sin revisión.
 > **v3 (2026-07-11, mismo día)**: extendido el cierre de la v2 (que cubría solo Fase 0-1) a las 14 aplicaciones de Fase 0-4. Fase 5 (Escalas) se trata aparte por naturaleza distinta — ver `migration-readiness-fase5.md`.
+> **v4 (2026-07-13) — CORRECCIÓN IMPORTANTE**: la v3 afirmaba "todo lo que se podía cerrar sin personas ya está cerrado". Era **prematuro**. Una auditoría de cobertura (`coverage-audit.md`), ejecutada tras una pregunta directa sobre si el backlog migraba el 100% de la funcionalidad real, encontró que el análisis original cubría solo **~78% de las 1135 rutas Struts reales** de SÒSTRAT — el resto vivía en paquetes de código sin ticket Jira de módulo asociado, por lo que nunca entró en el alcance analizado. Se han añadido 6 bounded contexts nuevos y sigue habiendo un residuo real (~150-180 rutas) sin clasificar. La respuesta directa de abajo queda **sustituida** por la de esta versión.
 
-## Respuesta directa
+## Respuesta directa (v4)
 
-**Todo lo que se podía cerrar sin personas ya está cerrado, para las 14 aplicaciones de Fase 0-4.** Lo único que queda pendiente es, en su totalidad, **validación humana real** (Arquitectura APB, domain experts, equipo de ARGOS) — no hay más análisis de código, más specs ni más documentación que pueda sustituirla.
+**No, no todo lo analizable sin personas estaba cerrado — quedaba trabajo de análisis de código real por hacer, y una parte sigue pendiente.** Lo que sí es cierto ahora: el trabajo de análisis adicional posible (identificar qué código corresponde a qué bounded context, o marcarlo como código muerto) se ha hecho hasta ~84% de cobertura medible (BC + infraestructura clasificada), con un ~16% restante explícitamente nombrado como pendiente (no oculto). Ver `coverage-audit.md` para el detalle completo y las cifras. Los specs/testing/threat-model de las Fases 0-4 (§ más abajo) siguen siendo válidos **para lo que cubren** — pero no se puede seguir afirmando que cubren "toda" la Fase 0-4 hasta cerrar ese residuo. Sobre validación humana: sigue siendo necesaria, pero ya no es el único bloqueo — hay trabajo de IA real todavía pendiente (ver Recomendación de secuencia, punto 0).
 
 ## Lo que SÍ está — completo para Fase 0-4 (14 aplicaciones)
 
@@ -37,12 +38,13 @@ La migración de Escalas hacia ARGOS necesita una sesión formal con el equipo d
 - Infraestructura detallada ejecutable (namespaces de Service Bus, pipelines CI/CD, provisioning de Container Apps) — están como tareas en EPIC-00, no como runbook.
 - Validación de negocio de los ~15 campos/enums marcados `"dominio de valores no confirmado"` en las specs (p.ej. estados de MARPOL 2-7, PIF, `idestattitol`) — son hipótesis razonables sobre nombres, no confirmaciones.
 
-## Recomendación de secuencia (final)
+## Recomendación de secuencia (v4)
 
-1. **Checkpoint de validación humana** con Arquitectura APB y domain experts sobre `catalog-comparison.md` y `discovery-summary.md` §5 — **el único bloqueo real que queda para Fase 0-4**.
+0. **NUEVO, antes que nada — cerrar el residuo de `coverage-audit.md`**: investigar los ~150-180 elementos aún sin clasificar (en particular `efficiencyNetwork`, 18 rutas, y el residuo de 105 rutas del paquete raíz de Struts), completar la auditoría de los 100 jobs batch (no hecha job a job), y cerrar los 3 gaps SOAP. Esto es trabajo de IA/análisis de código todavía posible, no bloqueado por personas — no debería tratarse como "ya hecho".
+1. **Checkpoint de validación humana** con Arquitectura APB y domain experts sobre `catalog-comparison.md`, `discovery-summary.md` §5 **y `coverage-audit.md`** — incluye ahora también validar los 6 bounded contexts nuevos de la auditoría de cobertura, en particular la decisión de dominio pendiente para `efficiencyNetwork`.
 2. En paralelo: recuperar el código fuente real de Aguada con IN2 (bloquea solo esa pieza).
 3. Sesión formal con el equipo de ARGOS sobre Escalas (bloquea solo la Fase 5, no el resto).
-4. **Una vez validado el punto 1**: sprint planning real con el equipo, usando `jira-backlog.md` + `specs/` + `testing-strategy-*.md` + `threat-model-*.md` como base de referencia — ya completa para las 14 apps de Fase 0-4.
+4. **Una vez cerrados los puntos 0 y 1**: sprint planning real con el equipo, usando `jira-backlog.md` + `specs/` + `testing-strategy-*.md` + `threat-model-*.md` como base de referencia — completos para lo que cubren hoy (~78-84% de la superficie real medida), no para el 100%.
 5. Separar la lógica de liquidación de `EscalaAction.java` (única pieza de Fase 5 ejecutable ya, no depende de la sesión con ARGOS).
 
-**En una frase**: no queda trabajo de análisis de código, diseño de contratos, testing ni seguridad pendiente para Fase 0-4 — lo único que falta es que personas reales revisen y decidan. Fase 5 tiene su propio camino, distinto por naturaleza (migración, no extracción).
+**En una frase**: sí queda trabajo de análisis de código pendiente para Fase 0-4 (punto 0) — la afirmación anterior de que "no quedaba" era prematura. Una vez cerrado ese residuo, el resto de la recomendación se mantiene: validación humana y sprint planning. Fase 5 tiene su propio camino, distinto por naturaleza (migración, no extracción).

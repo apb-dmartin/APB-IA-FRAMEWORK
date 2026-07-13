@@ -117,6 +117,36 @@
 
 ---
 
+## Fase 6 (nueva, 2026-07-13) — Bounded contexts descubiertos en la auditoría de cobertura
+
+> Ver `coverage-audit.md`. Estas 6 apps candidatas no pasaron por el mismo proceso de refinamiento que las Fases 0-4 — tratar como primera pasada, sujeta al mismo checkpoint humano.
+
+### App: Buques — mapea a `dom-operaciones-maritimas-v1`
+1. **Listado de Buques** (`dxDataGrid`) — columnas: `nomvaixell`, `callsign`, `mmsi`, `bandera`, `tipvaixell`, `maxeslora/maxcalat/maxmaniga`.
+2. **Ficha de Buque** (`dxForm` + `dxTabPanel`) — pestañas "Datos generales", "Certificados" (`dxDataGrid` maestro-detalle), "ISPS", "Lloyd's".
+
+### App: Operadores Portuarios — mapea a `dom-operaciones-maritimas-v1` (tentativo, ⚠️ bloqueado por decisión de dominio, ver EPIC-17)
+1. **Listado de Operadores** (`dxDataGrid`) — columnas: `nom`, `nif`, `eori`, `codiagent`, `tippersona`.
+2. **Ficha de Operador** (`dxForm`) — datos fiscales, direcciones, facturación electrónica (FACe).
+
+### App: Servicios Auxiliares de Cruceros — mapea a `dom-cruceros-v1`
+1. **Listado de Buses de Traslado** (`dxDataGrid`) — columnas: `numescala/anyescala`, `ocupacio`.
+2. **Listado de Puntos de Vigilancia** (`dxDataGrid`) — columnas: `idpuntvigilancia`, `moll`, `numescala/anyescala`.
+
+### App: Capacidad e Inspección Fronteriza (SCPP) — mapea a `dom-inspeccion-control-v1` (⚠️ evaluar fusión con PIF, ver EPIC-19)
+1. **Listado de Lugares de Inspección** (`dxDataGrid`) — columnas: `idllocinspeccio`, `capmaxstddia`, `descripcio`.
+2. **Calendario de Turnos** (`dxScheduler`) — grounded en `LlocDInspeccioTorn`.
+
+### App: Trámites de Cliente — mapea a `dom-administracion-electronica-v1`
+1. **Listado de Trámites** (`dxDataGrid`) — columnas: `idtramit`, `idtipustramit`, `idestat`, `datcreacio`.
+2. **Ficha de Trámite** (`dxForm` + adjuntos) — documentación obligatoria por tipo de trámite.
+
+### App: Suministro Eléctrico a Buques — mapea a `dom-suministros-buques-v1`
+1. **Listado de Lecturas** (`dxDataGrid`) — columnas: `numescala/anyescala`, `idarmador`, `consumototal`, `tiempoconexion/tiempoatraque`.
+2. **Ficha de Lectura** (`dxForm`) — acciones "Liquidar"/"Desliquidar"/"Anular" (⚠️ sin enum de estados confirmado, spike pendiente).
+
+---
+
 ## Fase 5 — Escalas: NO es una app nueva (revisado 2026-07-11)
 
 > **Cambio de naturaleza confirmado por evidencia de código** (ver `decomposition-roadmap.md` Fase 5): ARGOS (`APB.API.TES`) ya consume en producción los eventos de escala/atraque de SÒSTRAT. Esta fase deja de ser "construir un frontend de Escalas nuevo" y pasa a ser "migrar la maestría del dato hacia el ecosistema ARGOS ya existente (`APB.APP.ARG`)". **No se proponen pantallas nuevas para Escalas en este documento** — cualquier pantalla de escalas/atraques/cruceros que haga falta debe evaluarse dentro del frontend de ARGOS (`APB.APP.ARG`, ya en producción), no como una app nueva del portal SÒSTRAT.
@@ -147,16 +177,21 @@ Sin pantallas de negocio propias en SÒSTRAT — infraestructura ya cubierta por
 | 3 | MMPP, Manifiestos, Aduanas, PIF | 11 | — |
 | 4 | Concesiones (Título+Garantías) + Facturación y Liquidaciones + Clavegueram — **3 apps separadas** | 9 | — |
 | 5 | Escalas — **ya no cuenta como app nueva**, ver nota arriba | 0 | — |
+| 6 (nueva, auditoría de cobertura 2026-07-13) | Buques, Operadores Portuarios, Servicios Auxiliares de Cruceros, Capacidad e Inspección Fronteriza, Trámites de Cliente, Suministro Eléctrico a Buques, **Efficiency Network** (corregida, ya no "sin dominio") | 14 | Operadores Portuarios y Efficiency Network (comparten el mismo bloqueante de decisión de dominio, EPIC-17/EPIC-22) |
 
-**Total: 15 aplicaciones backend confirmadas** (Concesiones y Facturación separados; Mano de Estiba y Clavegueram con dominio propio; Escalas retirada del recuento por ser migración hacia ARGOS, no extracción — decisiones del 2026-07-11), cada una con su propio frontend independiente, **~45 pantallas de negocio propuestas** (PIF ya no bloqueada, gap cerrado 2026-07-11), todas integradas en el portal operativo único descrito a continuación.
+**Total: 15 aplicaciones backend confirmadas (Fases 0-5) + hasta 7 nuevas de la auditoría de cobertura = hasta 22** (Concesiones y Facturación separados; Mano de Estiba y Clavegueram con dominio propio; Escalas retirada del recuento por ser migración hacia ARGOS, no extracción — decisiones del 2026-07-11), cada una con su propio frontend independiente, **~59 pantallas de negocio propuestas** (45 de Fases 0-4 + 14 de Fase 6), todas integradas en el portal operativo único descrito a continuación. **Sigue sin ser el recuento final** — `coverage-audit.md` deja un residuo de ~130-160 rutas Struts sin bounded context asignado (el resto del paquete raíz, `efficiencyNetwork` ya no forma parte de este residuo) que podría añadir más apps o pantallas.
+
+### App: Efficiency Network (Business Club) — mapea a `dom-operaciones-maritimas-v1` (tentativo, ⚠️ bloqueada, comparte bloqueante con Operadores Portuarios)
+1. **Listado de Empresas Adheridas** (`dxDataGrid`) — columnas: `raosocialbc`, `codibc`, `codiactivitatbc`, `anybc`, `visitesport`.
+2. **Ficha de Empresa BC** (`dxForm` + `dxTabPanel`) — pestañas "Datos generales" (hereda de Operador Portuario), "Certificaciones" (`dxDataGrid` maestro-detalle: `codicertif`, `datainici/datafi/datafivalidesa`), "Auditorías", "Conocimientos".
 
 ---
 
 ## Portal Operativo (arquitectura de presentación, decidida 2026-07-11)
 
-**Decisión del usuario**: los 15 frontends son aplicaciones independientes (despliegue, pipeline y ciclo de vida propios — cada una registrada como app propia en el catálogo DOCKS, análogo a como `APB.API.APPS` cataloga las APIs), pero **se integran en un portal operativo único** de cara al usuario final, **solo a efectos de visualización** — la integración es de presentación, no de arquitectura.
+**Decisión del usuario**: los frontends son aplicaciones independientes (despliegue, pipeline y ciclo de vida propios — cada una registrada como app propia en el catálogo DOCKS, análogo a como `APB.API.APPS` cataloga las APIs), pero **se integran en un portal operativo único** de cara al usuario final, **solo a efectos de visualización** — la integración es de presentación, no de arquitectura.
 
-### Las 15 aplicaciones que se integran en el portal (con su dominio real de `apb-domain-catalog`)
+### Las 15 aplicaciones originales + hasta 6 nuevas de la auditoría de cobertura (con su dominio real de `apb-domain-catalog`)
 
 | # | Aplicación | Dominio (`apb-domain-catalog`) | Fase |
 |---|---|---|---|
@@ -175,6 +210,15 @@ Sin pantallas de negocio propias en SÒSTRAT — infraestructura ya cubierta por
 | 13 | Aduanas/Control de Contenedores | `dom-mercancias-v1` | 3 |
 | 14 | Concesiones (Título+Garantías) | `dom-concesiones-v1` | 4 |
 | 15 | Facturación y Liquidaciones | `dom-facturacion-v1` | 4 |
+| 16 | Buques | `dom-operaciones-maritimas-v1` | 6 (nueva) |
+| 17 | Operadores Portuarios | `dom-operaciones-maritimas-v1` (tentativo) ⚠️ bloqueada (decisión de dominio) | 6 (nueva) |
+| 18 | Servicios Auxiliares de Cruceros | `dom-cruceros-v1` | 6 (nueva) |
+| 19 | Capacidad e Inspección Fronteriza (SCPP) | `dom-inspeccion-control-v1` ⚠️ evaluar fusión con PIF | 6 (nueva) |
+| 20 | Trámites de Cliente | `dom-administracion-electronica-v1` | 6 (nueva) |
+| 21 | Suministro Eléctrico a Buques | `dom-suministros-buques-v1` | 6 (nueva) |
+| 22 | Efficiency Network (Business Club) | `dom-operaciones-maritimas-v1` (tentativo) ⚠️ bloqueada — comparte bloqueante con #17 (`EmpresaBC extends Usuari`) | 6 (nueva) |
+
+**Corrección 2026-07-13**: `efficiencyNetwork` (18 rutas Struts, EPIC-22) inicialmente se dejó fuera de esta tabla por no tener dominio de encaje confirmado. Una verificación adicional encontró que `EmpresaBC.java` extiende `Usuari.java` — es especialización de Operadores Portuarios (#17), no un dominio aislado. Se añade como app #22, con el mismo bloqueante que #17 (no uno nuevo).
 
 **No forman parte de esta lista de 15**: Clavegueram tiene dominio propio (`dom-clavegueram-v1`) pero se ha integrado como app dentro del portal en Fase 4 junto a Facturación por simplicidad operativa — revisar si debe contarse como 16ª app independiente antes de comprometer el recuento final. Escalas/Cruceros no forma parte de esta lista — ver nota de Fase 5 arriba (migración hacia ARGOS, no app nueva). Notificaciones y Autenticación/SSO se reutilizan de `dom-transversal-arq-v1`, no son apps propias.
 

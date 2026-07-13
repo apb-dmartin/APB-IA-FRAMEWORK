@@ -1,0 +1,148 @@
+# [IA-GEN] Generado por APB AI Framework (apb-doc-event-specs-v1.0 / apb-arch-event-driven-v1.0) - pendiente revision humana
+asyncapi: "2.6.0"
+info:
+  title: APB SÒSTRAT — Eventos de Fase 6 (bounded contexts de la auditoría de cobertura)
+  version: "1.0.0"
+  description: |
+    Contratos de evento para los 6 bounded contexts descubiertos en la
+    auditoría de cobertura 2026-07-13 (`coverage-audit.md`) — Buques,
+    Operadores Portuarios, Servicios Auxiliares de Cruceros, Capacidad e
+    Inspección Fronteriza (SCPP), Trámites de Cliente y Suministro Eléctrico a
+    Buques. A diferencia de las Fases 0-5, estos BCs no pasaron por el mismo
+    análisis de acoplamiento — ver `decomposition-roadmap.md` Fase 6 antes de
+    comprometer fechas de implementación.
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-doc-event-specs-v1.0"
+defaultContentType: application/json
+servers:
+  serviceBus: { url: "apb-sostrat.servicebus.windows.net", protocol: amqp, description: Azure Service Bus }
+channels:
+  evt.sostrat.buques:
+    subscribe:
+      operationId: onBuquesEvent
+      message: { oneOf: [ { $ref: "#/components/messages/BuqueRegistrado" }, { $ref: "#/components/messages/BuqueActualizado" }, { $ref: "#/components/messages/BuqueDadoDeBaja" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.buques.dlq" } }
+  evt.sostrat.operadores-portuarios:
+    subscribe:
+      operationId: onOperadoresPortuariosEvent
+      message: { oneOf: [ { $ref: "#/components/messages/OperadorPortuarioRegistrado" }, { $ref: "#/components/messages/OperadorPortuarioActualizado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.operadores-portuarios.dlq" } }
+  evt.sostrat.servicios-auxiliares-cruceros:
+    subscribe:
+      operationId: onServiciosAuxiliaresCrucerosEvent
+      message: { oneOf: [ { $ref: "#/components/messages/ServicioBusCruceroAsignado" }, { $ref: "#/components/messages/ServicioVigilanciaCruceroRegistrado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.servicios-auxiliares-cruceros.dlq" } }
+  evt.sostrat.inspeccion-scpp:
+    subscribe:
+      operationId: onInspeccionScppEvent
+      message: { oneOf: [ { $ref: "#/components/messages/InspeccionRegistrada" }, { $ref: "#/components/messages/CapacidadPifActualizada" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.inspeccion-scpp.dlq" } }
+  evt.sostrat.tramites-cliente:
+    subscribe:
+      operationId: onTramitesClienteEvent
+      message: { oneOf: [ { $ref: "#/components/messages/TramiteClienteIniciado" }, { $ref: "#/components/messages/TramiteClienteResuelto" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.tramites-cliente.dlq" } }
+  evt.sostrat.suministro-electrico-buques:
+    subscribe:
+      operationId: onSuministroElectricoBuquesEvent
+      message: { oneOf: [ { $ref: "#/components/messages/LecturaElectricidadRegistrada" }, { $ref: "#/components/messages/ConsumoElectricidadLiquidado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.suministro-electrico-buques.dlq" } }
+components:
+  messages:
+    BuqueRegistrado:
+      name: BuqueRegistrado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/VesselData" }
+    BuqueActualizado:
+      name: BuqueActualizado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/VesselData" }
+      x-business-rules:
+        - "Solo debe disparar revalidación en Cruceros cuando cambian nomvaixell/maxmaniga/maxcalat/maxeslora (evidencia: array arrModifCruEscOOPP en el código legacy)."
+    BuqueDadoDeBaja:
+      name: BuqueDadoDeBaja
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/VesselData" }
+    OperadorPortuarioRegistrado:
+      name: OperadorPortuarioRegistrado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PortOperatorData" }
+      x-error-handling:
+        - scenario: "parent_domain aún no confirmado por Arquitectura APB"
+          handling: "No publicar en producción hasta cerrar el bloqueante de EPIC-17 (ver jira-backlog.md)"
+    OperadorPortuarioActualizado:
+      name: OperadorPortuarioActualizado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PortOperatorData" }
+    ServicioBusCruceroAsignado:
+      name: ServicioBusCruceroAsignado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/CruiseBusData" }
+    ServicioVigilanciaCruceroRegistrado:
+      name: ServicioVigilanciaCruceroRegistrado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/CruiseSecurityPointData" }
+    InspeccionRegistrada:
+      name: InspeccionRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/InspectionData" }
+    CapacidadPifActualizada:
+      name: CapacidadPifActualizada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/BorderInspectionSiteData" }
+    TramiteClienteIniciado:
+      name: TramiteClienteIniciado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ClientProcedureData" }
+    TramiteClienteResuelto:
+      name: TramiteClienteResuelto
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ClientProcedureData" }
+    LecturaElectricidadRegistrada:
+      name: LecturaElectricidadRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ShorePowerReadingData" }
+    ConsumoElectricidadLiquidado:
+      name: ConsumoElectricidadLiquidado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ShorePowerReadingData" }
+      x-business-rules:
+        - "Sin enum de estados confirmado — el legacy expone acciones (liquidacionMasiva/desliquidar/anular) pero no un campo de estado explícito documentado. Spike de confirmación con negocio pendiente."
+  schemas:
+    CloudEventEnvelope:
+      type: object
+      required: [specversion, type, source, id, time, data]
+      properties: { specversion: { type: string, enum: ["1.0"] }, type: { type: string }, source: { type: string, format: uri-reference }, id: { type: string, format: uuid }, time: { type: string, format: date-time }, data: { type: object } }
+    VesselData:
+      type: object
+      required: [idvaixell, nomvaixell]
+      properties: { idvaixell: { type: integer, format: int64 }, nomvaixell: { type: string }, callsign: { type: string, nullable: true }, mmsi: { type: string, nullable: true }, maxeslora: { type: number, format: double, nullable: true }, maxcalat: { type: number, format: double, nullable: true }, maxmaniga: { type: number, format: double, nullable: true } }
+    PortOperatorData:
+      type: object
+      required: [idusuari, nif]
+      properties: { idusuari: { type: string }, nif: { type: string }, eori: { type: string, nullable: true }, codiagent: { type: string, nullable: true } }
+    CruiseBusData:
+      type: object
+      required: [idcreuerbus, numescala, anyescala]
+      properties: { idcreuerbus: { type: integer, format: int64 }, numescala: { type: integer }, anyescala: { type: integer }, ocupacio: { type: integer, nullable: true } }
+    CruiseSecurityPointData:
+      type: object
+      required: [idpuntvigilancia, numescala, anyescala]
+      properties: { idpuntvigilancia: { type: string }, numescala: { type: integer }, anyescala: { type: integer } }
+    InspectionData:
+      type: object
+      required: [idinspeccio]
+      properties: { idinspeccio: { type: integer, format: int64 }, idllocinspeccio: { type: string, nullable: true }, resultat: { type: string, nullable: true } }
+    BorderInspectionSiteData:
+      type: object
+      required: [idllocinspeccio]
+      properties: { idllocinspeccio: { type: string }, capmaxstddia: { type: integer, nullable: true } }
+    ClientProcedureData:
+      type: object
+      required: [idtramit, idusuari]
+      properties: { idtramit: { type: integer, format: int64 }, idusuari: { type: string }, idtipustramit: { type: string, nullable: true }, idestat: { type: string, nullable: true } }
+    ShorePowerReadingData:
+      type: object
+      required: [idlectura, anyescala, numescala]
+      properties: { idlectura: { type: integer, format: int64 }, anyescala: { type: integer }, numescala: { type: integer }, idarmador: { type: string, nullable: true }, consumototal: { type: number, format: double, nullable: true }, imptotal: { type: number, format: double, nullable: true } }

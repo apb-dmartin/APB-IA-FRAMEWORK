@@ -54,3 +54,14 @@
 4. Escalar explícitamente a Arquitectura APB, antes de cualquier PR, el conflicto del núcleo financiero (Concesiones vs. Facturación como dominios separados, pero desplegados como un único servicio técnico) y el hallazgo de que ARGOS ya podría cubrir Escalas.
 
 Esto es un cambio de alcance importante respecto a lo ya generado en `proposals/` — no lo he aplicado todavía porque afecta a las 28 propuestas y a una decisión de arquitectura que ya confirmaste (núcleo financiero unificado). Pendiente de tu decisión sobre cómo proceder.
+
+> **Nota (2026-07-11, posterior)**: esta recomendación de proceso SÍ se aplicó — ver `pr-instructions.md` v4 y el reparenting de los 21 `bc-*.md`/8 `dom-*.md` finales en `proposals/`. El bloque de arriba se conserva sin editar como registro histórico de la decisión.
+
+## D. Auditoría de cobertura 2026-07-13 — hallazgos que amplían esta comparación
+
+Ver `coverage-audit.md` para el detalle completo y las cifras exactas. Resumen relevante para este documento:
+
+- **`dom-integraciones-edi-v1`** — el punto abierto en "Otros hallazgos relevantes" de arriba ("¿EDI es un dominio propio o un patrón repartido?") queda **resuelto con evidencia de código**: el paquete `MissatgeEDI/CircuitEDI/AlarmaEDI/ErrorEDI` (26 rutas Struts en el paquete raíz) es importado directamente por los helpers EDI de negocio de MARPOL, Transporte Terrestre y Manifiestos — es infraestructura transversal (gateway EDI genérico), confirmando que `dom-integraciones-edi-v1` es el dominio correcto y no debe modelarse como bounded context de negocio dentro de cada dominio consumidor.
+- **`dom-estadisticas-v1`** — sigue **sin confirmar con evidencia de código** (27 rutas Struts del paquete raíz, familia Àrea/Zona/Localitat/País/Estadístic, con nombre plausible pero sin investigación dedicada esta sesión). Pendiente de una pasada de código específica, tal como ya apuntaba la nota original de este documento.
+- **6 bounded contexts nuevos** descubiertos en la auditoría de cobertura, no presentes en la comparación original porque vivían en paquetes Struts sin ticket Jira de módulo funcional asociado: `bc-buques-v1` (encaja con el subdominio "Buques"/SHP ya anticipado en `dom-operaciones-maritimas-v1`), `bc-operadores-portuarios-v1`, `bc-servicios-auxiliares-cruceros-v1`, `bc-inspeccion-scpp-v1`, `bc-tramites-cliente-v1`, `bc-suministro-electrico-buques-v1` (corrección de `bc-aguada-v1`).
+- **`efficiencyNetwork`** (18 rutas Struts, Business Club/certificaciones de empresas) — **corrección 2026-07-13, misma sesión**: inicialmente clasificado como "no encaja en ningún dominio de los 20 revisados", pero una verificación adicional (solicitada explícitamente por el usuario para descartar solapamientos) encontró que `EmpresaBC.java` **extiende** `Usuari.java` — es una especialización de Operadores Portuarios (`bc-operadores-portuarios-v1`), no una laguna del catálogo top-down. Ver `bc-efficiency-network-v1.md`.

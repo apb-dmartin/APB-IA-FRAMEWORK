@@ -1,0 +1,210 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Suministro Eléctrico a Buques (Shore Power) API
+  description: |
+    Lecturas, consumo y liquidación del suministro eléctrico a buques atracados
+    (cold-ironing/Shore Power) — descubierto en la auditoría de cobertura
+    2026-07-13, corrige `bc-aguada-v1.md` (afirmaba incorrectamente que esta
+    funcionalidad no existía). Grounded en
+    `sostrat/src/org/apb/sostrat/dataaccess/dto/suministres/electricitat/SeLectura.java`
+    (vista `V_TC_LECTURA_ELECTRICITAT`, ticket FACTSTD-878).
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-suministros-buques-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/suministres/electricitat/SeLectura.java, SeConsum.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/shore-power-readings/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: shore-power-readings
+    description: Lecturas de suministro eléctrico a buques
+paths:
+  /shore-power-readings:
+    get:
+      operationId: listShorePowerReadings
+      summary: Listar lecturas de suministro eléctrico
+      tags: [shore-power-readings]
+      parameters:
+        - name: numescala
+          in: query
+          schema: { type: integer }
+        - name: anyescala
+          in: query
+          schema: { type: integer }
+        - name: idarmador
+          in: query
+          schema: { type: string }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de lecturas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ShorePowerReading" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createShorePowerReading
+      summary: Registrar una lectura de consumo eléctrico
+      tags: [shore-power-readings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShorePowerReadingCreate" }
+      responses:
+        "201":
+          description: Lectura registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShorePowerReading" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /shore-power-readings/{idlectura}:
+    parameters:
+      - name: idlectura
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getShorePowerReading
+      summary: Consultar una lectura
+      tags: [shore-power-readings]
+      responses:
+        "200":
+          description: Lectura encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShorePowerReading" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /shore-power-readings/{idlectura}/settle:
+    parameters:
+      - name: idlectura
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      operationId: settleShorePowerReading
+      summary: Liquidar la lectura (grounded: liquidacionMasiva)
+      description: |
+        ⚠️ Sin enum de estados confirmado en el código — el legacy expone
+        acciones (liquidacionMasiva/desliquidar/anular) pero no un campo de
+        estado explícito documentado. Requiere spike de confirmación con
+        negocio antes de implementar la máquina de estados real.
+      tags: [shore-power-readings]
+      responses:
+        "200":
+          description: Lectura liquidada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShorePowerReading" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /shore-power-readings/{idlectura}/unsettle:
+    parameters:
+      - name: idlectura
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      operationId: unsettleShorePowerReading
+      summary: Desliquidar la lectura (grounded: desliquidar)
+      tags: [shore-power-readings]
+      responses:
+        "200":
+          description: Lectura desliquidada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShorePowerReading" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            shore-power-readings.read: Lectura
+            shore-power-readings.write: Escritura
+  schemas:
+    ShorePowerReading:
+      type: object
+      required: [idlectura, anyescala, numescala]
+      properties:
+        idlectura: { type: integer, format: int64, description: "Grounded: SeLectura (vista V_TC_LECTURA_ELECTRICITAT)" }
+        anyescala: { type: integer, description: "Grounded: SeLectura.anyescala" }
+        numescala: { type: integer, description: "Grounded: SeLectura.numescala" }
+        idconsignatario: { type: string, nullable: true, description: "Grounded: SeLectura.idconsignatario" }
+        idarmador: { type: string, nullable: true, description: "Grounded: SeLectura.idarmador" }
+        navinternacional: { type: boolean, nullable: true, description: "Grounded: SeLectura.navinternacional" }
+        tiempoconexion: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.tiempoconexion" }
+        tiempoatraque: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.tiempoatraque" }
+        lecturainici: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.lecturainici" }
+        lecturafi: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.lecturafi" }
+        consumototal: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.consumototal (kWh)" }
+        idtarifa: { type: string, nullable: true, description: "Grounded: SeLectura.idtarifa" }
+        imptotal: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.imptotal" }
+        impfinaltotal: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.impfinaltotal" }
+      example:
+        idlectura: 771034
+        anyescala: 2026
+        numescala: 8821
+        idarmador: "ARM-0091"
+        navinternacional: true
+        tiempoconexion: 18.5
+        tiempoatraque: 20.0
+        lecturainici: 1042300.0
+        lecturafi: 1044890.0
+        consumototal: 2590.0
+        idtarifa: "T-SP-01"
+        imptotal: 512.30
+        impfinaltotal: 619.88
+    ShorePowerReadingCreate:
+      type: object
+      required: [anyescala, numescala]
+      properties:
+        anyescala: { type: integer }
+        numescala: { type: integer }
+        idconsignatario: { type: string }
+        idarmador: { type: string }
+        lecturainici: { type: number, format: double }
+        lecturafi: { type: number, format: double }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

@@ -89,6 +89,19 @@ Criterio: alto valor / bajo acoplamiento / bajo riesgo / momentum ya existente.
   4. **Escalar explícitamente este hallazgo al equipo de ARGOS (AOM: Alberto Ponseti, Jose Joaquin Mena — ver `APB_KNOWLEDGE_BASE.md`) antes de tocar código** — esto no se ejecuta solo con el equipo de SÒSTRAT.
 - **Impacto en el recuento de aplicaciones**: al dejar de ser una extracción a servicio nuevo, el total de aplicaciones backend del roadmap baja de 16 a **15** (ver `ui-screens-backlog.md`).
 
+### Fase 6 (nueva, 2026-07-13) — Bounded contexts descubiertos en la auditoría de cobertura
+
+> **Esta fase no pasó por el mismo análisis de acoplamiento cualitativo que las Fases 0-5** — se añade tras `coverage-audit.md`, que encontró que el análisis original (basado en el inventario de módulos Jira de `APB_KNOWLEDGE_BASE.md`) cubría solo ~78% de las rutas Struts reales. Estos 6 bounded contexts vivían en paquetes de código sin ticket Jira asociado. Ver `jira-backlog.md` EPIC-16 a EPIC-21 para el detalle de historias.
+
+- **Buques** (`bc-buques-v1`) — dato maestro consumido por Escalas/Cruceros/MMPP; extraer temprano (candidato realista a Fase 0-1, junto al resto de datos maestros) más que al final, dado su carácter de referencia transversal — **revisar secuenciación**, esta fase 6 es un cajón de sastre provisional, no la posición definitiva de cada BC.
+- **Operadores Portuarios** (`bc-operadores-portuarios-v1`) — bloqueado por decisión de `parent_domain` (ver EPIC-17); no secuenciar en firme hasta cerrar esa decisión.
+- **Servicios Auxiliares de Cruceros** (`bc-servicios-auxiliares-cruceros-v1`) — natural junto a la extracción de Cruceros (Fase 5/ARGOS).
+- **Capacidad e Inspección Fronteriza / SCPP** (`bc-inspeccion-scpp-v1`) — candidato a fusionarse con PIF (Fase 3); si se confirma la fusión, no es una fase nueva sino una ampliación de alcance de EPIC-09.
+- **Trámites de Cliente** (`bc-tramites-cliente-v1`) — bajo riesgo, depende solo de Operadores Portuarios.
+- **Suministro Eléctrico a Buques** (`bc-suministro-electrico-buques-v1`) — candidato a agruparse con Aguada (Fase 2), mismo dominio padre.
+
+**Recomendación explícita**: antes de comprometer fechas para esta fase, repetir el ejercicio de matriz de acoplamiento (§1) para estos 6 BCs, y decidir con Arquitectura APB si varios de ellos deben re-secuenciarse dentro de las Fases 0-5 existentes en vez de tratarse como una fase 6 independiente. Además, `coverage-audit.md` deja un residuo de ~150-180 rutas Struts aún sin bounded context asignado (`efficiencyNetwork` y el resto del paquete raíz) — este roadmap **no está completo** hasta cerrar ese residuo.
+
 ## 4. Diseño de datos
 
 - Oracle compartido es el bloqueador estructural principal. Estrategia: **CDC (Change Data Capture) desde Oracle hacia Azure SQL** para cada servicio extraído, manteniendo Oracle como fuente de verdad durante la transición de cada dominio, con corte de escritura (cutover) al final de cada fase — nunca antes.

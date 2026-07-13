@@ -1,0 +1,189 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Servicios Auxiliares de Cruceros API
+  description: |
+    Buses de traslado y vigilancia en muelle para escalas de crucero —
+    descubierto en la auditoría de cobertura 2026-07-13. Grounded en
+    `sostrat/src/org/apb/sostrat/dataaccess/dto/serviciosAuxiliares/CreuerBus.java`
+    (tabla `CREUER_BUS`) y `CreuerVigilanciaPunt.java` (tabla `CREUER_VIGILANCIA_PUNT`).
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-cruceros-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/serviciosAuxiliares/CreuerBus.java, CreuerVigilanciaPunt.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/cruise-auxiliary-services/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: cruise-buses
+    description: Buses de traslado de pasajeros de crucero
+  - name: cruise-security-points
+    description: Puntos de vigilancia en muelle
+paths:
+  /cruise-buses:
+    get:
+      operationId: listCruiseBuses
+      summary: Listar buses de traslado
+      tags: [cruise-buses]
+      parameters:
+        - name: numescala
+          in: query
+          schema: { type: integer }
+        - name: anyescala
+          in: query
+          schema: { type: integer }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de buses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/CruiseBus" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createCruiseBus
+      summary: Registrar un bus de traslado con su ocupación
+      tags: [cruise-buses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CruiseBusCreate" }
+      responses:
+        "201":
+          description: Bus registrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CruiseBus" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /cruise-security-points:
+    get:
+      operationId: listCruiseSecurityPoints
+      summary: Listar puntos de vigilancia de una escala de crucero
+      tags: [cruise-security-points]
+      parameters:
+        - name: numescala
+          in: query
+          schema: { type: integer }
+        - name: anyescala
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Página de puntos de vigilancia
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/CruiseSecurityPoint" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createCruiseSecurityPoint
+      summary: Registrar un punto de vigilancia en muelle
+      tags: [cruise-security-points]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CruiseSecurityPointCreate" }
+      responses:
+        "201":
+          description: Punto de vigilancia registrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CruiseSecurityPoint" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            cruise-auxiliary-services.read: Lectura
+            cruise-auxiliary-services.write: Escritura
+  schemas:
+    CruiseBus:
+      type: object
+      required: [idcreuerbus, numescala, anyescala]
+      properties:
+        idcreuerbus: { type: integer, format: int64, description: "Grounded: CreuerBus (PK compuesta, tabla CREUER_BUS)" }
+        numescala: { type: integer, description: "Grounded: CreuerBus.numescala" }
+        anyescala: { type: integer, description: "Grounded: CreuerBus.anyescala" }
+        ocupacio: { type: integer, nullable: true, description: "Grounded: CreuerBusDetall, tabla CREUER_BUS_DETALL" }
+      example:
+        idcreuerbus: 5501
+        numescala: 8821
+        anyescala: 2026
+        ocupacio: 42
+    CruiseBusCreate:
+      type: object
+      required: [numescala, anyescala]
+      properties:
+        numescala: { type: integer }
+        anyescala: { type: integer }
+        ocupacio: { type: integer }
+    CruiseSecurityPoint:
+      type: object
+      required: [idpuntvigilancia, numescala, anyescala]
+      properties:
+        idpuntvigilancia: { type: string, description: "Grounded: CreuerVigilanciaPunt (tabla CREUER_VIGILANCIA_PUNT)" }
+        numescala: { type: integer }
+        anyescala: { type: integer }
+        moll: { type: string, nullable: true, description: "Grounded: CreuerVigilanciaPuntMoll (tabla CREUER_VIGILANCIA_PUNT_MOLL)" }
+      example:
+        idpuntvigilancia: "PV-04"
+        numescala: 8821
+        anyescala: 2026
+        moll: "Moll Adossat"
+    CruiseSecurityPointCreate:
+      type: object
+      required: [numescala, anyescala]
+      properties:
+        numescala: { type: integer }
+        anyescala: { type: integer }
+        moll: { type: string }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

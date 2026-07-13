@@ -248,6 +248,52 @@ Consume `/api/v1/container-equipment` solo si la solicitud referencia un contene
 
 ---
 
+## Fase 6 (nueva) — Bounded contexts descubiertos en la auditoría de cobertura 2026-07-13
+
+> Ver `coverage-audit.md` para el contexto completo y `jira-backlog.md` EPIC-16 a EPIC-21.
+
+### `/api/v1/vessels` — Buques
+**Fuente:** `dataaccess/dto/Vaixell.java` (PK `idvaixell`)
+```json
+{ "nomvaixell": "string", "callsign": "string", "bandera": "string", "mmsi": "string", "numlloyds": "string", "gt": "decimal", "tpm": "decimal", "maxeslora": "decimal", "maxcalat": "decimal", "maxmaniga": "decimal", "tipvaixell": "string" }
+```
+`GET /vessels/{idvaixell}/certificates` → sub-recurso, evidencia `VaixellCertificat.java`/`VaixellCertificats.java`.
+
+### `/api/v1/port-operators` — Operadores Portuarios
+**Fuente:** `dataaccess/dto/Usuari.java` (PK `idusuari`)
+```json
+{ "tippersona": "string", "nom": "string", "cognom1": "string", "nif": "string", "eori": "string", "cnae": "string", "codiagent": "string" }
+```
+**No incluir en ningún endpoint**: credenciales/password — confirmado que no existen en el DTO fuente.
+
+### `/api/v1/cruise-buses`, `/api/v1/cruise-security-points` — Servicios Auxiliares de Cruceros
+**Fuente:** `dataaccess/dto/serviciosAuxiliares/CreuerBus.java`, `CreuerVigilanciaPunt.java`
+```json
+{ "numescala": "integer", "anyescala": "integer", "ocupacio": "integer", "idpuntvigilancia": "string" }
+```
+
+### `/api/v1/border-inspection-sites` — Capacidad e Inspección Fronteriza (SCPP)
+**Fuente:** `dataaccess/dto/LlocDInspeccio.java` (campo `CAPMAXSTDDIA`)
+```json
+{ "idllocinspeccio": "string", "capmaxstddia": "integer", "descripcio": "string" }
+```
+`GET /border-inspection-sites/{id}/shifts` → sub-recurso, evidencia `LlocDInspeccioTorn.java`.
+
+### `/api/v1/client-procedures` — Trámites de Cliente
+**Fuente:** `dataaccess/dto/TramitClient.java` (PK `idtramit`)
+```json
+{ "idusuari": "string", "idtipustramit": "string", "assumpte": "string", "datcreacio": "date" }
+```
+
+### `/api/v1/shore-power-readings` — Suministro Eléctrico a Buques
+**Fuente:** `dataaccess/dto/suministres/electricitat/SeLectura.java` (vista `V_TC_LECTURA_ELECTRICITAT`)
+```json
+{ "anyescala": "integer", "numescala": "integer", "idarmador": "string", "lecturainici": "decimal", "lecturafi": "decimal", "consumototal": "decimal" }
+```
+`POST /shore-power-readings/{id}/settle` → `liquidacionMasiva`; `POST /shore-power-readings/{id}/unsettle` → `desliquidar` (sin enum de estado confirmado, ver gap).
+
+---
+
 ## Resumen de gaps de evidencia (igual que en `events-catalog.md`, aplicado a nivel de API)
 
 | Recurso | Gap | No implementar hasta |

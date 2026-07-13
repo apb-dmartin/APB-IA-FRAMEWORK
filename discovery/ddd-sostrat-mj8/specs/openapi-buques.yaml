@@ -1,0 +1,209 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Buques (Ship Master Data) API
+  description: |
+    Maestro de referencia de buques — descubierto en la auditoría de cobertura
+    2026-07-13 (`coverage-audit.md`). Grounded en
+    `sostrat/src/org/apb/sostrat/dataaccess/dto/Vaixell.java` (tabla `VAIXELL`).
+    Consumido como referencia por Escalas, Cruceros y MMPP.
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-operaciones-maritimas-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/Vaixell.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/vessels/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: vessels
+    description: Maestro de buques
+paths:
+  /vessels:
+    get:
+      operationId: listVessels
+      summary: Listar buques
+      tags: [vessels]
+      parameters:
+        - name: mmsi
+          in: query
+          schema: { type: string }
+        - name: callsign
+          in: query
+          schema: { type: string }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de buques
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Vessel" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createVessel
+      summary: Dar de alta un buque (caso de uso legacy "01.01.13 Mantenimiento de Buques")
+      tags: [vessels]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VesselCreate" }
+      responses:
+        "201":
+          description: Buque creado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /vessels/{idvaixell}:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getVessel
+      summary: Consultar la ficha técnica de un buque
+      tags: [vessels]
+      responses:
+        "200":
+          description: Buque encontrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: updateVessel
+      summary: Modificar ficha técnica del buque
+      description: |
+        Grounded: dispara el evento BuqueActualizado; Cruceros solo revalida si
+        cambian nomvaixell/maxmaniga/maxcalat/maxeslora (evidencia:
+        arrModifCruEscOOPP en el código legacy).
+      tags: [vessels]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VesselCreate" }
+      responses:
+        "200":
+          description: Buque actualizado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/deactivate:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      operationId: deactivateVessel
+      summary: Dar de baja el buque (grounded: darDeBaja/restaurar)
+      tags: [vessels]
+      responses:
+        "200":
+          description: Buque dado de baja
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            vessels.read: Lectura
+            vessels.write: Escritura
+  schemas:
+    Vessel:
+      type: object
+      required: [idvaixell, nomvaixell]
+      properties:
+        idvaixell: { type: integer, format: int64, description: "Grounded: Vaixell.idvaixell (PK, columna IDVAIXELL)" }
+        nomvaixell: { type: string, description: "Grounded: Vaixell.nomvaixell (columna NOMVAIXELL)" }
+        callsign: { type: string, nullable: true, description: "Grounded: Vaixell.callsign (columna CALLSIGN)" }
+        bandera: { type: string, nullable: true, description: "Grounded: Vaixell.bandera (columna BANDERA)" }
+        mmsi: { type: string, nullable: true, description: "Grounded: Vaixell.mmsi (columna MMSI)" }
+        numlloyds: { type: string, nullable: true, description: "Grounded: Vaixell.numlloyds (columna NUMLLOYDS)" }
+        gt: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.gt (columna GT, tonelaje bruto)" }
+        tpm: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.tpm (columna TPM)" }
+        maxeslora: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.maxeslora (columna MAXESLORA) — dispara BuqueActualizado hacia Cruceros" }
+        maxcalat: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.maxcalat (columna MAXCALAT) — dispara BuqueActualizado hacia Cruceros" }
+        maxmaniga: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.maxmaniga (columna MAXMANIGA) — dispara BuqueActualizado hacia Cruceros" }
+        tipvaixell: { type: string, nullable: true, description: "Grounded: Vaixell.tipvaixell (columna TIPVAIXELL)" }
+        lng: { type: boolean, nullable: true, description: "Grounded: Vaixell.lng (columna LNG, propulsión gas licuado, añadido por ticket ESCA-1789)" }
+        datbaixa: { type: string, format: date-time, nullable: true, description: "Grounded: Vaixell.datbaixa (columna DATBAIXA)" }
+      example:
+        idvaixell: 88421
+        nomvaixell: "MSC BELLISSIMA"
+        callsign: "3FOE9"
+        bandera: "PA"
+        mmsi: "356123000"
+        numlloyds: "9770579"
+        gt: 171598
+        maxeslora: 315.2
+        maxcalat: 8.6
+        maxmaniga: 43.0
+        tipvaixell: "CRUCERO"
+        lng: false
+        datbaixa: null
+    VesselCreate:
+      type: object
+      required: [nomvaixell]
+      properties:
+        nomvaixell: { type: string }
+        callsign: { type: string }
+        bandera: { type: string }
+        mmsi: { type: string }
+        numlloyds: { type: string }
+        gt: { type: number, format: double }
+        tpm: { type: number, format: double }
+        maxeslora: { type: number, format: double }
+        maxcalat: { type: number, format: double }
+        maxmaniga: { type: number, format: double }
+        tipvaixell: { type: string }
+        lng: { type: boolean }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

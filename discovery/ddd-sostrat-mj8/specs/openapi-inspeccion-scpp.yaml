@@ -1,0 +1,185 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Capacidad e Inspección Fronteriza (SCPP) API
+  description: |
+    Gestión de capacidad de los lugares de inspección fronteriza (PIF): turnos,
+    tipos/niveles de inspección y resultados — descubierto en la auditoría de
+    cobertura 2026-07-13. Grounded en
+    `sostrat/src/org/apb/sostrat/dataaccess/dto/LlocDInspeccio.java` (tabla
+    `LLOC_D_INSPECCIO`) e `Inspeccio.java` (tabla `INSPECCIO`).
+
+    ⚠️ Evaluar con Arquitectura APB si debe fusionarse con el servicio PIF
+    (`openapi-pif.yaml`) — comparten dominio (dom-inspeccion-control-v1) y
+    ticket de origen (PIF-1429). Esta spec se mantiene separada hasta esa
+    decisión.
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-inspeccion-control-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/LlocDInspeccio.java, Inspeccio.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/border-inspection-sites/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: border-inspection-sites
+    description: Lugares de inspección fronteriza y su capacidad
+paths:
+  /border-inspection-sites:
+    get:
+      operationId: listBorderInspectionSites
+      summary: Listar lugares de inspección fronteriza
+      tags: [border-inspection-sites]
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de lugares de inspección
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/BorderInspectionSite" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+  /border-inspection-sites/{idllocinspeccio}:
+    parameters:
+      - name: idllocinspeccio
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getBorderInspectionSite
+      summary: Consultar capacidad de un lugar de inspección
+      tags: [border-inspection-sites]
+      responses:
+        "200":
+          description: Lugar encontrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BorderInspectionSite" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /border-inspection-sites/{idllocinspeccio}/shifts:
+    parameters:
+      - name: idllocinspeccio
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: listBorderInspectionShifts
+      summary: Consultar turnos del lugar de inspección
+      description: "Grounded: LlocDInspeccioTorn.java (tabla LLOC_D_INSPECCIO_TORN)"
+      tags: [border-inspection-sites]
+      responses:
+        "200":
+          description: Página de turnos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/InspectionShift" }
+  /inspections:
+    post:
+      operationId: createInspection
+      summary: Registrar un resultado de inspección
+      description: "Grounded: Inspeccio.java (tabla INSPECCIO), columna SPTPOSICIONAMENT enlaza con Posicionament"
+      tags: [border-inspection-sites]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InspectionCreate" }
+      responses:
+        "201":
+          description: Inspección registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Inspection" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            border-inspection-sites.read: Lectura
+            border-inspection-sites.write: Escritura
+  schemas:
+    BorderInspectionSite:
+      type: object
+      required: [idllocinspeccio]
+      properties:
+        idllocinspeccio: { type: string, description: "Grounded: LlocDInspeccio.idllocinspeccio (PK, tabla LLOC_D_INSPECCIO)" }
+        capmaxstddia: { type: integer, nullable: true, description: "Grounded: LlocDInspeccio.capmaxstddia (columna CAPMAXSTDDIA, capacidad diaria)" }
+        descripcio: { type: string, nullable: true, description: "Grounded: LlocDInspeccio.descripcio" }
+        datactnoupif: { type: string, format: date-time, nullable: true, description: "Grounded: LlocDInspeccio.datactnoupif (columna DATACTNOUPIF, referencia al PIF)" }
+      example:
+        idllocinspeccio: "PIF-BCN-01"
+        capmaxstddia: 24
+        descripcio: "PIF Zona Franca"
+    InspectionShift:
+      type: object
+      properties:
+        idtorn: { type: string, description: "Grounded: LlocDInspeccioTorn (tabla LLOC_D_INSPECCIO_TORN)" }
+        horainici: { type: string, format: date-time, nullable: true }
+        horafi: { type: string, format: date-time, nullable: true }
+    Inspection:
+      type: object
+      required: [idinspeccio]
+      properties:
+        idinspeccio: { type: integer, format: int64, description: "Grounded: Inspeccio.idinspeccio (PK, tabla INSPECCIO)" }
+        idllocinspeccio: { type: string, nullable: true }
+        sptposicionament: { type: string, nullable: true, description: "Grounded: Inspeccio.sptposicionament (columna SPTPOSICIONAMENT, enlaza con Posicionament)" }
+        resultat: { type: string, nullable: true, description: "Grounded: ResultatDInspeccio — dominio de valores no confirmado en esta extracción" }
+      example:
+        idinspeccio: 90211
+        idllocinspeccio: "PIF-BCN-01"
+        resultat: "CONFORME"
+    InspectionCreate:
+      type: object
+      required: [idllocinspeccio]
+      properties:
+        idllocinspeccio: { type: string }
+        sptposicionament: { type: string }
+        resultat: { type: string }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

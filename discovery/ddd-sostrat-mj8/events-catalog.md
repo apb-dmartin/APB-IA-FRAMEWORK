@@ -702,6 +702,52 @@ Valores reales confirmados de `entidad`: `T` (Títulos, vía `CN_TitolCI`), `A` 
 
 ---
 
+## Fase 6 (nueva) — Eventos de los bounded contexts descubiertos en la auditoría de cobertura 2026-07-13
+
+> Ver `coverage-audit.md` para el contexto completo. Estos 6 BCs vivían en paquetes de código sin ticket Jira de módulo asociado, por eso no estaban en el catálogo de eventos original.
+
+### BuqueRegistrado / BuqueActualizado / BuqueDadoDeBaja
+**Fuente:** `dataaccess/dto/Vaixell.java` (tabla `VAIXELL`), servicio `CN_Vaixell.crear/modificar/darDeBaja/restaurar`.
+```json
+{ "idvaixell": "long", "nomvaixell": "string", "callsign": "string", "mmsi": "string", "numlloyds": "string", "maxeslora": "decimal", "maxcalat": "decimal", "maxmaniga": "decimal" }
+```
+**Regla de negocio real**: `BuqueActualizado` solo debe disparar revalidación en Cruceros cuando cambian `nomvaixell`/`maxmaniga`/`maxcalat`/`maxeslora` — evidencia directa del array `arrModifCruEscOOPP` en el código legacy.
+
+### OperadorPortuarioRegistrado / OperadorPortuarioActualizado
+**Fuente:** `dataaccess/dto/Usuari.java` (tabla `USUARI`).
+```json
+{ "idusuari": "string", "nif": "string", "eori": "string", "codiagent": "string", "tippersona": "string" }
+```
+**Nota de seguridad**: confirmado por lectura completa del DTO (2253 líneas) que no existe ningún campo de credencial/password — este evento nunca debe incluir datos de autenticación.
+
+### ServicioBusCruceroAsignado / ServicioVigilanciaCruceroRegistrado
+**Fuente:** `dataaccess/dto/serviciosAuxiliares/CreuerBus.java` (tabla `CREUER_BUS`), `CreuerVigilanciaPunt.java` (tabla `CREUER_VIGILANCIA_PUNT`).
+```json
+{ "idcreuerbus": "long", "numescala": "integer", "anyescala": "integer", "ocupacio": "integer" }
+```
+
+### InspeccionRegistrada / CapacidadPifActualizada
+**Fuente:** `dataaccess/dto/Inspeccio.java` (tabla `INSPECCIO`), `LlocDInspeccio.java` (tabla `LLOC_D_INSPECCIO`, campo `CAPMAXSTDDIA`).
+```json
+{ "idinspeccio": "long", "idllocinspeccio": "string", "capmaxstddia": "integer", "resultat": "string" }
+```
+**Sin confirmar**: nombre exacto de los valores posibles de `resultat` — no se ha extraído un enum explícito en esta pasada.
+
+### TramiteClienteIniciado / TramiteClienteResuelto
+**Fuente:** `dataaccess/dto/TramitClient.java` (tabla `TRAMIT_CLIENT`).
+```json
+{ "idtramit": "long", "idusuari": "string", "idtipustramit": "string", "datcreacio": "date", "datresolucio": "date" }
+```
+
+### LecturaElectricidadRegistrada / ConsumoElectricidadLiquidado
+**Fuente:** `dataaccess/dto/suministres/electricitat/SeLectura.java` (vista `V_TC_LECTURA_ELECTRICITAT`).
+```json
+{ "anyescala": "integer", "numescala": "integer", "idarmador": "string", "lecturainici": "decimal", "lecturafi": "decimal", "consumototal": "decimal", "tiempoconexion": "decimal", "tiempoatraque": "decimal" }
+```
+**Sin confirmar**: enum de estados de una lectura — el código expone acciones (`liquidacionMasiva`/`desliquidar`/`anular`) pero no un campo de estado explícito documentado.
+
+---
+
 ## Resumen de gaps de evidencia (honestidad explícita, no inventado)
 
 | Evento | Gap | Acción pendiente |

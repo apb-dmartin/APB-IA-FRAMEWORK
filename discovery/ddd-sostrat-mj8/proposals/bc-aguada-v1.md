@@ -47,7 +47,9 @@ Responsable de la gestión de solicitudes de suministro de agua potable a buques
 
 ## Lo que NO incluye
 
-No incluye Shore Power/electricidad ni Bunkering (combustible) — aunque el dominio de negocio real (`dom-suministros-buques-v1`) los agrupa junto a Aguada, no se ha encontrado evidencia de esos dos servicios en el código de `SOSTRAT-Sostrat-MJ8` (BUNKER confirmado ausente tras búsqueda exhaustiva; Shore Power no se ha buscado en detalle).
+No incluye Bunkering (combustible, confirmado ausente tras búsqueda exhaustiva) **ni Shore Power/electricidad**.
+
+> **Corrección 2026-07-13**: la versión anterior de esta sección afirmaba que tampoco se había encontrado evidencia de Shore Power/electricidad. Es **incorrecto** — existe un subdominio funcional completo y activo bajo `service/suministros/electricitat/` (ticket `FACTSTD-878`), con Actions (`SeLecturaAction`, `SeLecturaAuditAction`, `SeConsumoAction`), DTOs (`SeLectura`, `SeConsum`, mapeando `V_TC_LECTURA_ELECTRICITAT`/`V_TC_CONSUM_ELECTRICITAT`) y flujo de negocio completo (lectura de contador → consumo → tarifación → liquidación → factura → auditoría), vinculado a la escala/atraque del buque (`anyescala`/`numescala`, `idarmador`, `tiempoatraque`). Ver el bounded context nuevo `bc-suministro-electrico-buques-v1`, separado de Aguada por tener agregado y flujo propios (aunque comparte el mismo dominio padre `dom-suministros-buques-v1`).
 
 ## Modelo de Dominio
 
@@ -73,3 +75,4 @@ Implementado en SÒSTRAT bajo `service/aguada/` (`CN_SolicitudAguada.java`, `CN_
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Propuesta inicial, como parte de bc-servicios-auxiliares-buque-v1 |
 | 1.1.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Separado como bounded context propio y reparentado a dom-suministros-buques-v1 (dominio real del catálogo) |
+| 1.2.0 | 2026-07-13 | APB AI Framework (auditoría de cobertura) | Corregida la sección "Lo que NO incluye": Shore Power/electricidad SÍ existe en el código (`suministros.electricitat`, FACTSTD-878) — separado como `bc-suministro-electrico-buques-v1` |

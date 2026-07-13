@@ -1,8 +1,10 @@
-# Instrucciones de PR — Bounded Contexts de SÒSTRAT en apb-domain-catalog (v3, reparentado)
+# Instrucciones de PR — Bounded Contexts de SÒSTRAT en apb-domain-catalog (v5, con auditoría de cobertura)
 
 > **Borrador generado por IA** (APB AI Framework - apb-agent-ddd-v1.0) — pendiente validación humana. No distribuir sin revisión.
 > **v3 (2026-07-11)**: tras confirmar que `apb-domain-catalog` remoto (no la copia local, que estaba desactualizada — ver `catalog-comparison.md`) ya tiene 21 dominios de negocio `proposed`, este PR deja de proponer dominios nuevos en bloque y pasa a **añadir bounded contexts, con evidencia de código, a dominios ya existentes**. Se retiraron los 6 dominios inventados en la v1/v2 de este análisis y 2 bounded contexts duplicados (Notificaciones, Autenticación/SSO — ya cubiertos por `dom-transversal-arq-v1`). El núcleo financiero, que en la v2 se había decidido desplegar como un único servicio, **se separa de nuevo** en dos dominios y dos servicios: Concesiones y Facturación (decisión del usuario, 2026-07-11).
 > **v4 (2026-07-11, mismo día)**: `bc-mano-estiba-v1` y `bc-clavegueram-v1` habían quedado reparentados por la fuerza bajo dominios que no encajaban bien (Transporte Terrestre y Facturación respectivamente). El usuario confirmó que merecen dominio propio — se crean `dom-mano-estiba-v1` y `dom-clavegueram-v1` como **2 propuestas de dominio nuevas**, además de la adición de bounded contexts a los 13 dominios ya existentes.
+> **v5 (2026-07-13)**: auditoría de cobertura (`coverage-audit.md`) encontró 6 bounded contexts nuevos que no estaban en el alcance analizado originalmente (vivían en paquetes de código sin ticket Jira asociado) + 1 corrección factual sobre `bc-aguada-v1.md`. Se añaden a este PR — ver §2.1 (bloque nuevo) y §2.3. Uno de ellos (`bc-operadores-portuarios-v1`) tiene `parent_domain` tentativo, marcado como bloqueante.
+> **v6 (2026-07-13, misma sesión, corrección)**: `efficiencyNetwork` (18 rutas Struts) **sí tiene ahora `bc-efficiency-network-v1.md`** — una verificación adicional encontró que `EmpresaBC.java` extiende `Usuari.java`, es especialización de `bc-operadores-portuarios-v1`, no un dominio sin encaje. Hereda su mismo bloqueante (`parent_domain` tentativo) — se envía al PR junto con él, ver §2.3.
 
 > **Restricción `autonomy_level 1`**: este agente **no abre el PR por sí mismo**. Estas son instrucciones para que una persona del equipo lo haga tras validar el contenido.
 
@@ -38,6 +40,10 @@
 | `pesca-marinas/` | `marinas-pesca.md` ← `bc-marinas-pesca-v1.md` |
 | `transporte-terrestre/` | `transporte-terrestre.md` ← `bc-transporte-terrestre-v1.md` |
 | `acceso-seguridad-fisica/` | `pps.md` ← `bc-pps-v1.md` |
+| `operaciones-maritimas/` (bloque nuevo, §2.3) | `buques.md` ← `bc-buques-v1.md` — **sí enviar**, a diferencia de `escalas.md` (no requiere validación con ARGOS, es un maestro de referencia independiente) |
+| `cruceros/` (bloque nuevo, §2.3) | `servicios-auxiliares-cruceros.md` ← `bc-servicios-auxiliares-cruceros-v1.md` |
+| `inspeccion-control/` (bloque nuevo, §2.3) | `capacidad-scpp.md` ← `bc-inspeccion-scpp-v1.md` (⚠️ evaluar con Arquitectura APB si debe fusionarse con `pif.md` en vez de ir como fichero separado) |
+| `suministros-buques/` (bloque nuevo, §2.3) | `suministro-electrico-buques.md` ← `bc-suministro-electrico-buques-v1.md` |
 
 ### 2.2 Dominios nuevos a crear (con su propio `domain.md` + 1 contexto)
 
@@ -46,19 +52,27 @@
 | `mano-estiba/` | ← `dom-mano-estiba-v1.md` | `mano-estiba.md` ← `bc-mano-estiba-v1.md` |
 | `clavegueram/` | ← `dom-clavegueram-v1.md` | `clavegueram.md` ← `bc-clavegueram-v1.md` |
 
-**No enviar al catálogo**: `bc-carga-inicial-etl-v1.md` (no es un bounded context de negocio) y `bc-escalas-v1.md` (pendiente de validación con ARGOS, ver §1.4 — no es un "no enviar nunca", es "no enviar todavía").
+### 2.3 Bloque nuevo (auditoría de cobertura 2026-07-13) — carpeta ya existe en el catálogo, sin `bounded_contexts` de SÒSTRAT todavía
 
-**Total: 18 ficheros de contexto → 13 carpetas de dominio existentes, + 2 dominios nuevos completos (domain.md + contexto).**
+| Carpeta existente `domains/<nombre>/` | `contexts/*.md` a añadir |
+|---|---|
+| `administracion-electronica/` | `tramites-cliente.md` ← `bc-tramites-cliente-v1.md` |
+
+**⚠️ NO enviar todavía — bloqueante de decisión (comparte los 2 ficheros)**: `bc-operadores-portuarios-v1.md` tiene `parent_domain: "dom-operaciones-maritimas-v1"` marcado como **tentativo** en su propio frontmatter (`notes`) — es dato maestro consumido también por Facturación (mismo patrón cross-domain que `bc-datos-maestros-equipamiento-v1`). `bc-efficiency-network-v1.md` **hereda el mismo bloqueante** — `EmpresaBC extends Usuari` (herencia real de clase), por lo que su dominio depende directamente de dónde acabe `bc-operadores-portuarios-v1`. Confirmar el dominio real con Arquitectura APB antes de incluir ninguno de los dos en el PR, para no repetir el error de reparenting forzado ya corregido una vez en esta sesión (Mano de Estiba/Clavegueram, v4 arriba).
+
+**No enviar al catálogo todavía**: `bc-carga-inicial-etl-v1.md` (no es un bounded context de negocio), `bc-escalas-v1.md` (pendiente de validación con ARGOS, ver §1.4) y `bc-operadores-portuarios-v1.md` + `bc-efficiency-network-v1.md` (ambos comparten el mismo bloqueante de `parent_domain`, ver §2.3 — resolver uno resuelve el otro).
+
+**Total: 24 ficheros de contexto → 17 carpetas de dominio existentes (13 originales + 4 del bloque nuevo), + 2 dominios nuevos completos (domain.md + contexto). 2 ficheros (`bc-operadores-portuarios-v1.md`, `bc-efficiency-network-v1.md`) quedan fuera del PR hasta resolver su bloqueante compartido.**
 
 ## 3. Estado de cada fichero: `discovered`, no `proposed`
 
-Los 21 ficheros ya tienen `status: "discovered"` en su frontmatter (`GOVERNANCE.md` §2: `proposed` solo se asigna al abrir PR). El equipo que abra el PR debe cambiar `status` a `"proposed"` en cada fichero como parte de ese PR.
+Los 26 ficheros elegibles (21 originales + 5 del bloque nuevo enviable, excluyendo `bc-operadores-portuarios-v1.md`) ya tienen `status: "discovered"` en su frontmatter (`GOVERNANCE.md` §2: `proposed` solo se asigna al abrir PR). El equipo que abra el PR debe cambiar `status` a `"proposed"` en cada fichero como parte de ese PR.
 
 ## 4. Al abrir el PR
 
 - Título sugerido: `[ai-gen] Bounded contexts de SÒSTRAT (SOSTRAT-Sostrat-MJ8) para dominios ya propuestos`.
 - Commit con prefijo `[ai-gen]` y `Co-Authored-By: APB AI Framework <framework@portdebarcelona.cat>`.
-- Cambiar `status: "discovered"` → `status: "proposed"` en los 21 ficheros.
+- Cambiar `status: "discovered"` → `status: "proposed"` en los 26 ficheros elegibles (no en `bc-operadores-portuarios-v1.md`, ver §2.3).
 - **No tocar `catalog/DOMAINS.md`** — lo actualiza Arquitectura APB tras aprobar (`GOVERNANCE.md` §3.1 paso 7).
 - Señalar explícitamente en la descripción del PR los 4 puntos de `catalog-comparison.md` categoría B (conflictos de modelado) para que el revisor los vea sin tener que leer todo el análisis.
 

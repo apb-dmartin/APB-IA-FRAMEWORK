@@ -341,6 +341,134 @@
 
 ---
 
+## EPIC-16 — Extracción Buques (Ship Master Data)
+
+> **Añadida en la auditoría de cobertura 2026-07-13** — `bc-buques-v1` vivía en el paquete raíz de Struts sin ticket Jira de módulo asociado, por eso no tenía épica hasta ahora.
+
+- **Fase:** 6 | **Valor de negocio:** alto (dato maestro consumido por 3 dominios) | **Riesgo técnico:** medio (cambio de maestría de dato consumido transversalmente) | **Dependencias:** EPIC-00
+- **Objetivo:** extraer el maestro de buques (`Vaixell`) como servicio de referencia, consumido por Escalas, Cruceros y MMPP.
+- **Criterios de éxito (DoD):** `/api/v1/vessels` en producción con los campos reales de `Vaixell.java`; Escalas/Cruceros/MMPP consumen el maestro vía API en vez de acceso directo a `VAIXELL`; caso de uso "01.01.13 Mantenimiento de Buques" (ABM completo) migrado.
+
+**Historias de usuario**
+1. *Como* operador portuario, *quiero* dar de alta un buque (`POST /vessels` con `nomvaixell`, `callsign`, `bandera`, `mmsi`, `numlloyds`), *para* dejar de usar `VaixellAction.java`. (8 pts)
+2. *Como* sistema de Cruceros, *quiero* recibir el evento `BuqueActualizado` cuando cambien `maxcalat`/`maxeslora`/`maxmaniga`/`nomvaixell`, *para* revalidar la planificación de escalas de crucero afectadas (mismo comportamiento que `arrModifCruEscOOPP` en el legacy). (5 pts) — **Criterio de aceptación**: solo estos 4 campos disparan el evento, no cualquier cambio del maestro.
+3. *Como* sistema de MMPP, *quiero* consultar la ficha técnica de un buque por IMO, *para* validar transporte de mercancías peligrosas sin duplicar el maestro. (5 pts)
+4. *Como* operador portuario, *quiero* dar de baja/restaurar un buque (`darDeBaja`/`restaurar`), *para* gestionar el ciclo de vida del maestro sin borrado físico. (3 pts)
+
+**Tareas técnicas**
+- Confirmar si PIF debe consumir también este maestro — no se encontró evidencia de consumo directo en el código, pero el dominio de negocio podría requerirlo.
+- Migrar certificados/ISPS/Lloyd's (`VaixellCertificat*`, `VaixellISPS`, `VaixellLloyds`) como sub-recursos o entidades propias — a decidir en diseño detallado.
+
+---
+
+## EPIC-17 — Extracción Operadores Portuarios / Terceros (Usuari)
+
+> **Añadida en la auditoría de cobertura 2026-07-13.** `bc-operadores-portuarios-v1` tiene `parent_domain` tentativo — **requiere confirmación de Arquitectura APB antes de sprint planning** (ver nota en el propio `bc-operadores-portuarios-v1.md`).
+
+- **Fase:** 6 | **Valor de negocio:** alto (sujeto facturado + asignación a escalas) | **Riesgo técnico:** medio | **Dependencias:** EPIC-00
+- **Objetivo:** extraer el maestro de negocio de "terceros" (consignatarios, armadores, agentes de aduanas) — **no confundir con IAM/login**, que ya cubre `dom-transversal-arq-v1`/EntraID sin necesidad de migración de lógica.
+- **Criterios de éxito (DoD):** `/api/v1/port-operators` en producción con NIF/EORI/CNAE/direcciones; Escalas y Liquidación consumen este maestro para asignar consignatario/armador y sujeto facturado respectivamente.
+
+**Historias de usuario**
+1. *Como* operador portuario, *quiero* dar de alta un tercero (`POST /port-operators` con `NIF`, `EORI`, `CNAE`, `CODIAGENT`), *para* dejar de usar `UsuariAction.java`. (8 pts) — **Criterio de aceptación**: valida DNI/EORI/código de agente igual que `comprobarDNI`/`comprobarEORI`/`comprobarCodiAgent` en el legacy.
+2. *Como* sistema de Escalas, *quiero* asignar un consignatario/armador a un servicio marítimo (`ServeiMaritimVaixellUsuari`), *para* saber quién es responsable de la escala. (5 pts)
+3. *Como* sistema de Liquidación, *quiero* obtener los datos fiscales/dirección del sujeto facturado, *para* generar la liquidación sin duplicar el maestro. (5 pts)
+
+**Tareas técnicas**
+- **[BLOQUEANTE DE DISEÑO]** Confirmar con Arquitectura APB el `parent_domain` real — candidato tentativo `dom-operaciones-maritimas-v1`, pero es consumido también por Facturación (mismo patrón cross-domain que `bc-datos-maestros-equipamiento-v1`, EPIC-00).
+- Confirmar si la capa IAM (`Operador`/`Rol`, fuera de este checkout) necesita algún puente con este maestro más allá de los campos de auditoría genérica (`IDOPEALTA`/`IDOPEMODIFICACIO`).
+
+---
+
+## EPIC-18 — Extracción Servicios Auxiliares de Cruceros
+
+> **Añadida en la auditoría de cobertura 2026-07-13.**
+
+- **Fase:** 6 | **Valor de negocio:** medio | **Riesgo técnico:** bajo | **Dependencias:** EPIC-00, extracción de Cruceros (no tiene épica propia — Cruceros sigue en Fase 5/ARGOS junto a Escalas)
+- **Objetivo:** extraer buses de traslado, vigilancia en muelle y tarifas asociadas a escalas de crucero.
+- **Criterios de éxito (DoD):** `/api/v1/cruise-buses` y `/api/v1/cruise-security-points` en producción con los campos reales de `CreuerBus.java`/`CreuerVigilanciaPunt.java`.
+
+**Historias de usuario**
+1. *Como* gestor de servicios de crucero, *quiero* registrar un bus de traslado con su ocupación (`CreuerBusDetall`), *para* planificar el transporte de pasajeros. (5 pts)
+2. *Como* gestor de seguridad portuaria, *quiero* registrar puntos de vigilancia en muelle para una escala de crucero, *para* coordinar el servicio de seguridad. (5 pts)
+3. *Como* gestor de facturación, *quiero* exportar las facturas asociadas a servicios auxiliares de crucero (`ComprobarFacturasAction`), *para* conciliar contra Facturación. (3 pts)
+
+**Tareas técnicas**
+- Confirmar con negocio si esto se despliega como parte del mismo servicio que Cruceros (Fase 5/ARGOS) o como servicio independiente — ambos comparten dominio pero no tienen por qué compartir despliegue.
+
+---
+
+## EPIC-19 — Extracción Capacidad e Inspección Fronteriza (SCPP)
+
+> **Añadida en la auditoría de cobertura 2026-07-13.** `bc-inspeccion-scpp-v1` recomienda evaluar fusión con EPIC-09 (MMPP y PIF) — ver nota.
+
+- **Fase:** 6 (evaluar mover a Fase 3, junto a EPIC-09, si se confirma la fusión) | **Valor de negocio:** medio | **Riesgo técnico:** bajo | **Dependencias:** EPIC-09
+- **Objetivo:** extraer la gestión de capacidad del Puesto de Inspección Fronteriza (calendario, turnos, tipos/niveles de inspección) — distinto del registro operativo de cada inspección (`bc-pif-v1`).
+- **Criterios de éxito (DoD):** `/api/v1/border-inspection-sites` en producción con capacidad diaria (`CAPMAXSTDDIA`) y calendario de turnos.
+
+**Historias de usuario**
+1. *Como* gestor del PIF, *quiero* consultar la capacidad diaria disponible de un lugar de inspección, *para* planificar turnos. (5 pts)
+2. *Como* gestor del PIF, *quiero* registrar un resultado de inspección (`ResultatDInspeccio`), *para* cerrar el ciclo de control fronterizo. (5 pts)
+
+**Tareas técnicas**
+- **[DECISIÓN DE DISEÑO]** Evaluar con Arquitectura APB si este BC debe fusionarse con `bc-pif-v1` (EPIC-09) en un único servicio — comparten dominio (`dom-inspeccion-control-v1`) y ticket de origen (PIF-1429).
+
+---
+
+## EPIC-20 — Extracción Trámites de Cliente
+
+> **Añadida en la auditoría de cobertura 2026-07-13.**
+
+- **Fase:** 6 | **Valor de negocio:** bajo | **Riesgo técnico:** bajo | **Dependencias:** EPIC-17 (Operadores Portuarios)
+- **Objetivo:** extraer la gestión de trámites/gestiones que un cliente inicia ante el puerto.
+- **Criterios de éxito (DoD):** `/api/v1/client-procedures` en producción con los campos reales de `TramitClient.java`.
+
+**Historias de usuario**
+1. *Como* cliente/operador, *quiero* iniciar un trámite con su documentación obligatoria, *para* gestionar una solicitud ante el puerto sin papel. (5 pts)
+2. *Como* gestor del puerto, *quiero* consultar y resolver trámites pendientes, *para* dar respuesta a los clientes. (5 pts)
+
+**Tareas técnicas**
+- Confirmar que el portal `carpetaclientes` (plural, sin modelo de dominio propio) puede sustituirse directamente reutilizando las APIs de Facturación/Liquidación ya extraídas, sin desarrollo adicional — así lo indica la evidencia de código (`FacturasCCAction extends FacturasAction`, etc.).
+
+---
+
+## EPIC-21 — Extracción Suministro Eléctrico a Buques (Shore Power)
+
+> **Añadida en la auditoría de cobertura 2026-07-13** — corrige `bc-aguada-v1.md`, que afirmaba (incorrectamente) que esta funcionalidad no existía en el código.
+
+- **Fase:** 6 (evaluar agrupar con EPIC-06, Aguada — mismo dominio padre `dom-suministros-buques-v1`) | **Valor de negocio:** medio | **Riesgo técnico:** bajo | **Dependencias:** EPIC-00
+- **Objetivo:** extraer el suministro eléctrico a buques atracados (cold-ironing/Shore Power): lecturas, consumo, tarifación, liquidación.
+- **Criterios de éxito (DoD):** `/api/v1/shore-power-readings` en producción con los campos reales de `SeLectura.java` (`V_TC_LECTURA_ELECTRICITAT`).
+
+**Historias de usuario**
+1. *Como* operador de suministro eléctrico, *quiero* registrar una lectura de consumo (`lecturainici`, `lecturafi`, `tiempoconexion`), *para* calcular el consumo real del buque atracado. (8 pts)
+2. *Como* gestor de facturación, *quiero* liquidar/desliquidar/anular una lectura (`liquidacionMasiva`/`desliquidar`/`anular`), *para* gestionar el ciclo de facturación del suministro. (5 pts) — **Criterio de aceptación**: no hay enum de estados confirmado en el código, requiere spike de confirmación con negocio antes de implementar la máquina de estados.
+
+**Tareas técnicas**
+- **[SPIKE]** Confirmar con negocio el enum real de estados de una lectura (el código expone acciones pero no un campo de estado explícito documentado).
+- Evaluar desplegar como sub-recurso de Aguada (EPIC-06) o como servicio independiente — mismo dominio padre, agregados distintos.
+
+---
+
+## EPIC-22 — Efficiency Network (Business Club)
+
+> **Añadida en la auditoría de cobertura 2026-07-13. CORREGIDA el mismo día tras verificación adicional solicitada explícitamente por el usuario** ("asegúrate de que los nuevos dominios y apps no duplican o solapan con los identificados previamente"). La clasificación original decía *"no tiene bounded context formal, no encaja en ningún dominio revisado"* — era **incorrecta**: `EmpresaBC.java` (la entidad central de Efficiency Network) **extiende `Usuari.java`** (herencia real de clase, no solo relación FK) — es una especialización de Operadores Portuarios (EPIC-17), no un dominio aislado. Ya existe `proposals/bc-efficiency-network-v1.md`. 18 rutas Struts (conteo exacto), tablas `BC_CERTIFICACIONS`/`BC_AUDITORIA_USUARI`/`TIPUS_AUDITORIA_BC`/`TIPUS_CONEIXEMENT_BC`.
+
+- **Fase:** 6 (nueva) | **Valor de negocio:** bajo-medio | **Riesgo técnico:** bajo | **Dependencias:** EPIC-17 (Operadores Portuarios) — **hereda su mismo bloqueante de `parent_domain`, ya no es un bloqueante nuevo/distinto**.
+- **Objetivo:** extraer la gestión de empresas adheridas al programa Efficiency Network, sus certificaciones y auditorías, como extensión de Operadores Portuarios.
+- **Criterios de éxito (DoD):** `/api/v1/efficiency-network-companies` en producción, marcando `Usuari.eseffnetwork=true` al dar de alta una empresa BC.
+
+**Historias de usuario**
+1. *Como* gestor del programa Efficiency Network, *quiero* dar de alta una empresa adherida (`POST /efficiency-network-companies` con `raosocialbc`, `codibc`, `codiactivitatbc`), *para* dejar de usar `EmpresaENAction.java`. (5 pts)
+2. *Como* gestor del programa, *quiero* registrar una certificación (`POST /efficiency-network-companies/{idusuari}/certifications` con `idtipactivitat`, `codicertif`, `datacertif`), *para* llevar el histórico de certificaciones de la empresa. (5 pts)
+3. *Como* gestor del programa, *quiero* importar auditorías/certificados/conocimientos masivamente desde fichero, *para* no perder el flujo de importación ya existente (`ImportarAuditoriaENAction`/`ImportarCertificatENAction`/`ImportarConeixementENAction`). (8 pts)
+
+**Tareas técnicas**
+- **Ya NO bloqueado por falta de dominio** — bloqueado únicamente por la misma decisión pendiente de EPIC-17 (`parent_domain` de Operadores Portuarios). Resolver EPIC-17 resuelve este también.
+- Confirmar con Arquitectura APB si `EmpresaBC` debe modelarse en destino como una tabla de extensión de `Usuari` (mismo patrón que el legacy) o como un perfil/rol dentro del mismo agregado.
+
+---
+
 ## Resumen de secuenciación
 
 | Fase | Épicas |
@@ -348,11 +476,12 @@
 | 0 | EPIC-00, EPIC-15 (oportunista, en paralelo) |
 | 1 | EPIC-01, EPIC-02, EPIC-03 |
 | 2 | EPIC-04, EPIC-05, EPIC-06, EPIC-07 |
-| 3 | EPIC-08, EPIC-09, EPIC-10, EPIC-11 |
+| 3 | EPIC-08, EPIC-09, EPIC-10, EPIC-11, EPIC-19 (evaluar fusión con EPIC-09) |
 | 4 | EPIC-12, EPIC-13A, EPIC-13B |
 | 5 | EPIC-14 |
+| 6 (nueva, auditoría de cobertura 2026-07-13) | EPIC-16, EPIC-17, EPIC-18, EPIC-19, EPIC-20, EPIC-21, EPIC-22 (corregida, ya no "sin asignar") |
 
-**Total de servicios backend: 15** (13 extracciones a servicio nuevo + Concesiones + Facturación y Liquidaciones separados — Escalas ya NO cuenta como servicio nuevo, es una migración hacia ARGOS, ver `decomposition-roadmap.md` Fase 5 y EPIC-14). Mano de Estiba y Clavegueram cuentan cada uno con dominio de negocio propio (`dom-mano-estiba-v1`, `dom-clavegueram-v1`).
+**Total de servicios backend: 15 + hasta 7 nuevos de la auditoría de cobertura = hasta 22** (EPIC-22 se suma tras corregirse — no es un dominio nuevo, es extensión de EPIC-17), sujeto a las decisiones de diseño marcadas como "[DECISIÓN DE DISEÑO]"/"[BLOQUEANTE DE DISEÑO]" en EPIC-17/EPIC-18/EPIC-19/EPIC-21/EPIC-22 (varias podrían fusionarse con servicios ya existentes en vez de desplegarse independientes; EPIC-22 probablemente se despliega junto a EPIC-17, no como servicio separado). Mano de Estiba y Clavegueram cuentan cada uno con dominio de negocio propio (`dom-mano-estiba-v1`, `dom-clavegueram-v1`). **Este backlog sigue sin cubrir el 100% de SÒSTRAT** — ver `coverage-audit.md` para el residuo de ~150-180 rutas Struts aún sin bounded context asignado.
 
 ## Resumen de bloqueos activos (no inventados, confirmados por evidencia)
 
