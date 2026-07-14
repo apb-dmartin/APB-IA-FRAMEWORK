@@ -5,6 +5,8 @@
 > Este índice consolida los **24 dossiers** generados en `discovery/ddd-sostrat-mj8/app-dossiers/` (23 apps finales + 1 documento de migración/retirada para Escalas). Cada dossier es un documento autocontenido de 17 secciones (análisis funcional, técnico, modelo de datos, arquitectura, dominio DDD, pantallas, APIs, eventos, diagrama topológico C4, estrategia de convivencia, testing/seguridad, riesgos, estimación, checklist de validación) pensado para que el **equipo funcional valide el alcance** y el **equipo de desarrollo estime e implemente**.
 >
 > Cada dossier fue generado por un agente independiente con instrucción explícita de **re-verificar contra el código real de `SOSTRAT-Sostrat-MJ8`**, no de copiar sin comprobar los documentos de sesiones anteriores (`proposals/bc-*.md`, `coverage-audit.md`, specs, backlog). Esto produjo un número significativo de correcciones factuales, documentadas app por app en la sección 14 ("Riesgos y gaps de evidencia") de cada dossier y resumidas en §3 de este índice.
+>
+> **Para la síntesis ejecutiva de toda la serie (calidad verificada, bloqueantes reales, recomendación go/no-go)**, ver [`../INFORME_EJECUTIVO.md`](../INFORME_EJECUTIVO.md) — 2026-07-14.
 
 ## 1. Cómo usar este índice
 

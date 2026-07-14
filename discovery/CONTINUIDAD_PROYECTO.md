@@ -1756,6 +1756,22 @@ Cierre de la Tarea #7: en vez de re-derivar desde cero eventos/APIs/pantallas/mo
 
 **Conclusión de la Tarea #7**: la calidad interna de la serie es alta — el riesgo real para "pasar a desarrollo" no está en la exactitud campo a campo de los dossiers (ya verificada exhaustivamente durante su generación), sino en los 2 bloqueantes ya identificados: el residuo de cobertura/validación humana (`readiness-assessment.md` v5) y los 9 consumidores externos no documentados (§30.6).
 
+### 30.8 — Re-derivación completa desde código + informe ejecutivo (2026-07-14, misma sesión)
+
+El usuario pidió explícitamente la re-derivación completa desde código fuente de eventos/APIs/pantallas/backlog de las 24 dossiers (no solo consistencia cruzada entre documentos, como en 30.7), un informe ejecutivo y la actualización de toda la documentación necesaria.
+
+**Incidente de plataforma**: se lanzaron 8 agentes en paralelo (3 dossiers cada uno, mismo patrón que la auditoría de consumidores externos de 30.6) para cubrir las 24 dossiers. Los 8 fallaron a mitad de ejecución por un límite de sesión de la API ("session limit · resets 15:50 Europe/Madrid"); solo 2 devolvieron resultado parcial, marcado por el propio sistema como no fiable. Se preguntó al usuario cómo proceder (esperar al reset y relanzar / proceder directamente sin subagentes / reducir alcance); eligió **proceder directamente, sin más subagentes, de forma secuencial y priorizando los dossiers de mayor riesgo**.
+
+**Alcance ejecutado**: verificación directa contra el checkout real de `SOSTRAT-Sostrat-MJ8` (grep/lectura de `struts-config.xml` y satélites, DTOs Java) para 10 dossiers de los 14 priorizados como alto riesgo: #05 PPS, #09 Transporte Terrestre, #12 Manifiestos, #13 Aduanas, #14 Concesiones, #16 Clavegueram, #20 Trámites Cliente, #21 Suministro Eléctrico, #22 Efficiency Network, #23 Operadores Portuarios. Los 12 dossiers restantes (00,01,02,04,06,08,10,11,15,17,18,19) no se re-verificaron con este nivel de profundidad esta sesión, por presupuesto — decisión explícita del usuario, documentada con transparencia en `INFORME_EJECUTIVO.md §3`. De estos, #03/#07/#15 ya habían pasado la auditoría acotada de 30.7.
+
+**2 correcciones reales encontradas y aplicadas** (detalle completo en `INFORME_EJECUTIVO.md §4`):
+1. **`dossier-16-clavegueram.md`**: la corrección de 30.7 (4→9 campos en `ConsumClaveguerData`) fue insuficiente — el propio dossier-16 §5 ya documentaba 25 campos reales en `ClvgConsums.java` y señalaba `codiusaigua`/`idservei` como críticos y ausentes. Ampliado a 11 campos (`specs/asyncapi-fase4.yaml`, `events-catalog.md §19`, `dossier-16 §5/§10/§16`).
+2. **`dossier-23-operadores-portuarios.md`**: su checklist (§14/§16) seguía listando como pendientes 2 correcciones (`eseffnetwork`, `comptefaceenlace`) que ya se habían aplicado esa misma sesión sobre `specs/openapi-operadores-portuarios.yaml` — el documento contradecía el estado real del repositorio. Corregido.
+
+**8 de los 10 dossiers auditados no tenían ningún error** — incluida una verificación no trivial de la matemática de deduplicación de rutas Struts de dossier-09 (50 + 39 − 33 = 56 rutas únicas), confirmada exacta cifra a cifra contra el checkout real. No se encontró ningún caso de dato inventado sin base en código en toda la muestra.
+
+**Entregable nuevo**: `discovery/ddd-sostrat-mj8/INFORME_EJECUTIVO.md` — síntesis de toda la Sesión 30 con recomendación explícita: NO-GO para desarrollo, GO para validación humana formal, con agenda mínima de 6 puntos.
+
 ---
 
 *Cierre de Sesión 30 (2026-07-14).*

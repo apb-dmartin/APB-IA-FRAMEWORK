@@ -677,6 +677,7 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
 
 ### ConsumClaveguerLiquidado
 **Fuente:** `dataaccess/dto/clavegueram/ClvgConsums.java` (tabla `CLVG_CONSUMS`, PK `idconsum`)
+**Corregido 2026-07-14** (re-derivación completa, ver `dossier-16-clavegueram.md §5`): añadidos `codiusaigua` e `idservei`, identificados como campos críticos ausentes (determina la tarifa aplicada y la correlación con `Liquidacio`, respectivamente). Alineado con `specs/asyncapi-fase4.yaml` schema `ConsumClaveguerData`.
 ```json
 {
   "idconsum": "long",
@@ -687,7 +688,9 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
   "consum": "double",
   "lecturaant": "double",
   "lecturaact": "double",
-  "estat": "string"
+  "estat": "string",
+  "codiusaigua": "string",
+  "idservei": "long"
 }
 ```
 
