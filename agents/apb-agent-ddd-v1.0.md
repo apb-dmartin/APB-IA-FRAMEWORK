@@ -2,7 +2,7 @@
 id: "apb-agent-ddd-v1.0"
 name: "DDD Domain Discovery Agent"
 description: "Agente de análisis y descubrimiento de dominios DDD para Port de Barcelona. A partir de código fuente, esquemas de BBDD, specs (OpenAPI/AsyncAPI), documentación funcional/técnica o conversación estructurada, identifica dominios de negocio y bounded contexts, rastrea consumidores externos ya existentes del sistema de origen (Fase 0), cruza con el APB Domain Catalog para evitar duplicados, y genera domain-proposal.md y context-proposal.md listos para PR en apb-domain-catalog."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "architecture"
@@ -113,7 +113,8 @@ Fuentes que puedes analizar:
 8. **⚠️ CHECKPOINT HUMANO:** presentar el mapa de dominios candidatos al usuario. Esperar confirmación antes de generar los archivos finales.
 9. **Generación de archivos:** producir `domain-proposal.md` y `context-proposal.md` en el formato exacto del schema del catálogo.
 10. **Instrucciones de PR:** indicar exactamente dónde colocar cada archivo en `apb-domain-catalog` y cómo abrir el PR.
-11. **Telemetría:** emitir TELEMETRY_BLOCK con `apb-ops-telemetry-emit-v1.0`.
+11. **Actualizar `APB_KNOWLEDGE_BASE.md` (obligatorio, no opcional):** antes de cerrar el análisis, revisar si se ha descubierto terminología de negocio nueva, corregido un hecho ya documentado en `context/apb/knowledge/APB_KNOWLEDGE_BASE.md`, o identificado un sistema/integración/consumidor externo no listado ahí. Si es así, proponer la actualización correspondiente (sección afectada, término de diccionario, corrección puntual) como parte de esta misma sesión — nunca dejar ese conocimiento solo en el fichero de análisis de origen (`discovery/`). Este documento es la fuente de contexto de negocio que consultan **todos** los agentes del framework (no solo los de DDD), así que un hallazgo no propagado aquí no se reutiliza. Ver §14.14 del propio `APB_KNOWLEDGE_BASE.md`.
+12. **Telemetría:** emitir TELEMETRY_BLOCK con `apb-ops-telemetry-emit-v1.0`.
 
 ## 📥 Entradas
 
@@ -237,6 +238,7 @@ Agente de análisis y descubrimiento de dominios DDD para Port de Barcelona. A p
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-25 | Arquitectura APB / Claude Code | Creación inicial — Sesión 18 |
 | 1.1.0 | 2026-07-14 | Arquitectura APB / Claude Code (Sesión 30) | Añade **Fase 0 — Rastreo de consumidores externos**, mejora identificada tras la descomposición de SÒSTRAT: el agente nunca buscaba aplicaciones ya desplegadas que dependieran directamente de los datos del sistema analizado, lo que permitió que 9 aplicaciones .NET reales (3 con escritura directa) pasaran desapercibidas en 24 dossiers durante 2 días. Nuevo output `external-consumers-audit.md`. Nueva restricción: no concluir "sin acoplamiento externo" sin haber ejecutado la Fase 0. Ver `discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md` y `PLAN_FASES_FUTURAS.md` #99 (origen de esta mejora) |
+| 1.2.0 | 2026-07-15 | Arquitectura APB / Claude Code (Sesión 30) | Añade el paso 11 de Fase 3 (actualizar `APB_KNOWLEDGE_BASE.md` como parte obligatoria del cierre de cualquier análisis) — el conocimiento de negocio adquirido durante la descomposición de SÒSTRAT (24 dossiers, auditoría de consumidores externos, arquitectura EDI) nunca se había propagado a la base de conocimiento que consultan todos los agentes del framework, quedando aislado en `discovery/`. A petición explícita del usuario ("deberíamos asegurarnos que cada análisis de aplicaciones que hacemos actualiza ese archivo") |
 
 ---
 

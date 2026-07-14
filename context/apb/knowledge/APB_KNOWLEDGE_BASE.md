@@ -7,18 +7,19 @@ description: >
   (incluyendo sistemas legacy) necesario para dar respuestas de calidad.
   NO modifica los estándares DOCKS ni las políticas tecnológicas aprobadas:
   el legacy se documenta como contexto, nunca como patrón a seguir en desarrollos nuevos.
-version: "1.0.0"
+version: "1.1.0"
 status: "approved"
 owner: "Debora Martin <deboramv@gmail.com>"
 domain: "knowledge"
 provider_type: "knowledge"
 access_mode: "read-only"
 created_date: "2026-06-30"
-review_date: "2026-06-30"
+review_date: "2026-07-15"
 sources:
   - "APB_Knowledge_Base_IA.md (v1.0)"
   - "APB_Knowledge_Base_IA_v2.md (v2.0)"
   - "APB_Knowledge_Base_IA_v3.md (v3.0)"
+  - "discovery/ddd-sostrat-mj8/ (v1.1.0, 2026-07-15) — descomposición DDD de SÒSTRAT: 24 dossiers de aplicación verificados contra código real, auditoría de 9 consumidores externos, cierre de cobertura de código (coverage-audit.md), análisis de arquitectura de eventos para EDI/Ventanilla Única"
 ---
 
 # APB Knowledge Base — Contexto Corporativo
@@ -382,6 +383,12 @@ Ver §2.10 para detalle funcional.
 > ⚠️ **Legacy.** Stack Java no aprobado para nuevos desarrollos. Los agentes deben conocer
 > SÒSTRAT para entender integraciones, tickets y dominios funcionales, pero NO deben
 > recomendar su stack (Java/Struts/Oracle/CAS) para ningún nuevo artefacto.
+>
+> **Fuente de verdad detallada**: `discovery/ddd-sostrat-mj8/` contiene la descomposición DDD
+> completa de SÒSTRAT (24 dossiers de aplicación, uno por bounded context, cada uno
+> verificado campo a campo contra el código real — no solo generado). Empezar por
+> `discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md` y `INFORME_EJECUTIVO.md` antes de
+> analizar cualquier módulo de SÒSTRAT en profundidad — evita repetir análisis ya hecho.
 
 **Jira:** SOSO, SOSI, ESCA, ESCADOS, ESCAIIB, FACT, FACTSTD, CONCB, FER, MARPOL, MERC, MERCA, MERCB, MMPP, PIF, PESCA, PPS, TRANSTE, AIGUADA, CTA, MANEST, MEDI, TERC, EST, TREDI, COARRI, WASDIS, PAXLST, DEPOTSIS, MVM, INTDBPRO, MILL, CLAVEG, SOSGIS, BUNKER, MARDEP
 **GitHub:** SOSTRAT-Sostrat-MJ8, SOSTRAT-Sostrat-JEE
@@ -402,7 +409,7 @@ Ver §2.10 para detalle funcional.
 | MARPOL | Servicios MARPOL (recogida residuos buques) |
 | MERC / MERCA / MERCB | Mercancías (manifiestos EDI, liquidación T2/T3) |
 | MMPP | Mercancías Peligrosas (autorizaciones, notificaciones) |
-| PIF | SCPP — posicionamiento contenedores inspección aduanera |
+| PIF | Puesto de Inspección Fronteriza — operación real de camión/contenedor en el finger de muelle (agregado `OperacioPif`). Candidato confirmado a fusión con SCPP (capacidad/turnos/resultado de inspección, agregado `LlocDInspeccio`/`Inspeccio`) por acoplamiento síncrono transaccional real — ver `dossier-11-pif.md`/`dossier-19-inspeccion-scpp.md`. Ambos comparten además acoplamiento síncrono con **Posicionament** (`CN_Posicionament_Impl.java`, posicionamiento físico de contenedores), capacidad de negocio real identificada sin bounded context propio todavía (`PLAN_FASES_FUTURAS.md #102`) |
 | TRANSTE | Transporte terrestre (preavisos, autorizaciones) |
 | PPS | Pases y Permisos de acceso |
 | PESCA | Actividad pesquera |
@@ -414,6 +421,8 @@ Ver §2.10 para detalle funcional.
 | DEPOTSIS | Depósito en muelle libre T6 |
 | MANEST | Mans d'Estiba (control estibadores) |
 | MEDI | Medio Ambiente |
+
+**⚠️ Consumidores externos reales de la base de datos de SÒSTRAT (hallazgo 2026-07-14)**: al menos **9 aplicaciones .NET ya en producción** (`APB.API.CPR`, `APB.API.IPB`, `APB.API.CTS`/`APB.APP.CTA`, `APB.API.AUT`, `APB.API.REB`/`apb.p51`, `APB.API.LRT`, `APB.API.OPS`, ecosistema `APB.API.CRE`/`APB.APP.CRE`/`APB.API.VXL`/`APB.API.SLC`) leen o **escriben directamente** sobre tablas Oracle de SÒSTRAT sin pasar por ningún API/evento formal — 3 de ellas con escritura directa confirmada. Ningún análisis de dominio/bounded context de SÒSTRAT debe darse por completo sin comprobar este universo de aplicaciones externas primero (ver `discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md` para el detalle completo por app/tabla). Esta es precisamente la razón por la que `apb-agent-ddd-v1.0` incorporó una Fase 0 de rastreo de consumidores externos (ver §11).
 
 **Tablas clave de SÒSTRAT (solo para entender integraciones):**
 
@@ -430,7 +439,7 @@ Ver §2.10 para detalle funcional.
 | EQUIPAMENT | Contenedores / equipos |
 | OPS_B_SESSIONS (DSS_DWH) | Sesiones de Shore Power (facturación electricidad) |
 
-**Procesos batch especiales (SpringBatch):** ~80 tareas. Circuitos principales: BERMAN, WASDIS, COARRI/CODECO, GEISER/FACE, Notifica, TarifasResidus, Conciliación terrestre.
+**Procesos batch especiales (SpringBatch):** **90 jobs confirmados** por recuento exacto sobre 67 ficheros `sostrat-batch-*.xml` (auditoría 2026-07-14, `coverage-audit.md §8.3` — corrige la estimación previa de "~80"). Circuitos principales: BERMAN, WASDIS, COARRI, CODECO, COPINO, HAZMAT/IFTDGN (MMPP), IFCSUM/CUSCAR (Manifiestos), PAXLST, TarifasResidus (MARPOL), Conciliación de terminales, **VUA/SAPL** (Ventanilla Única Aduanera **española/AEAT**, el job más frecuente del sistema, cada 1 minuto) y **DMS** (Declaración Marítima de Sanidad — este es el circuito real de la **EMSWe europea**, no VUA). Ver §5.1 para el detalle de arquitectura EDI y la corrección VUA≠EMSWe.
 
 ### 4.4. APIs del Framework ARQ (DOCKS)
 
@@ -561,6 +570,13 @@ Plataforma de intercambio electrónico de la comunidad portuaria de Barcelona. H
 | IFCSUM | Manifiestos de carga |
 
 **Segmentos EDI clave:** UNB (cabecera intercambio), UNH (cabecera mensaje), BGM (tipo documento), DTM (fechas), RFF (referencias), LOC (ubicación), TDT (detalles transporte), NAD (nombres/direcciones), MEA (medidas: calado, peso), FTX (texto libre / ISPS).
+
+**Arquitectura real del "gateway EDI" en SÒSTRAT (analizada 2026-07-15, ver `discovery/ddd-sostrat-mj8/edi-event-architecture-analysis.md`)**: no es un único gateway — coexisten 3 arquitecturas bajo el mismo nombre:
+1. **Cola genérica `MISSATGE_EDI` + adaptador por dominio** (COARRI, CODECO, COPINO, WASDIS, HAZMAT, IFTDGN, IFCSUM/CUSCAR, PAXLST, BERMAN, Facturas). El transporte físico con Portic (`sendMessageOracle`, WSDL `ApbEdiWS.wsdl`/`PortICWS.wsdl`) y el modelo de auditoría (`MissatgeEdi`, `TipusMissatgeEdi` — tabla real de ruteo circuito→sentido, `CircuitEdi`, `ProcesEdi`, `ErrorEdi`) sí son genuinamente compartidos; el parsing de negocio y la generación de APERAK están duplicados por dominio (7 implementaciones distintas, sin clase base común).
+2. **Intercambio de ficheros XML ad-hoc**: **VUA/SAPL** (Ventanilla Única Aduanera **española**, AEAT — 4 XSD reales de la AEAT, batch cada 1 min) y **DMS** (Declaración Marítima de Sanidad — **este es el circuito real de la EMSWe europea**, formulario FAL). Ninguno de los dos usa `MISSATGE_EDI`.
+3. **Consulta SOAP síncrona bajo demanda** (parte de CODECO en transporte terrestre, vía `PortICWS`).
+
+**⚠️ Corrección importante de terminología**: VUA/SAPL (implementado en `service/pif/impl/sapl`) **no es** la Ventanilla Única Europea pese al nombre — es la aduana **nacional** española (AEAT). El circuito que sí implementa la *European Maritime Single Window environment* (EMSWe, Directiva UE 2019/1239) es **DMS**. No confundir ambos al hablar con negocio o al diseñar el bounded context correspondiente.
 
 ### 5.2. Administración General del Estado (AGE)
 
@@ -813,8 +829,12 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 | Gate-in / Gate-out | Entrada/salida de contenedores de terminal |
 | Contenedor | Unidad estándar de transporte (TEU = 20 pies, FEU = 40 pies) |
 | Precinto | Sello de seguridad en contenedores |
-| SCPP | Servicio de Control y Posicionamiento de Contenedores |
-| PIF | Puesto de Inspección Fronteriza |
+| SCPP | Servicio de Control y Posicionamiento de Contenedores — capacidad/turnos/resultado de inspección (`LlocDInspeccio`/`Inspeccio`), candidato a fusión con PIF |
+| PIF | Puesto de Inspección Fronteriza — operación real de camión/contenedor (`OperacioPif`), distinto de SCPP aunque acoplado |
+| Posicionament | Posicionamiento físico de un camión/contenedor en el recinto PIF — capacidad de negocio real identificada en SÒSTRAT sin bounded context propuesto todavía (`CN_Posicionament_Impl.java`) |
+| VUA / SAPL | Ventanilla Única Aduanera **española** (AEAT) — coordinación de alta/baja/notificación de entrada-salida de contenedores para aduana. **No es la EMSWe europea** pese al nombre similar |
+| DMS | Declaración Marítima de Sanidad (Maritime Declaration of Health) — este es el circuito real que implementa la **EMSWe** europea (formulario FAL) |
+| MissatgeEdi / TipusMissatgeEdi | Modelo genérico de mensajería EDI de SÒSTRAT — cabecera de mensaje y tabla real de ruteo circuito→sentido, compartidos por la mayoría de circuitos EDIFACT (no por VUA ni DMS) |
 | Preavis | Aviso previo de transporte terrestre |
 | ISPS | International Ship and Port Facility Security Code |
 | Liquidació | Cálculo de la tasa portuaria aplicable |
@@ -983,7 +1003,17 @@ Estas reglas complementan y nunca reemplazan las del framework (`STANDARD_ARCHIT
 11. **Contexto trilingüe** — adaptar al idioma del usuario; respetar nombres catalanes/ingleses de sistemas.
 12. **Sin secretos** — no generar ni sugerir tokens, passwords ni credenciales en ningún artefacto.
 13. **Legacy es contexto, no prescripción** — el conocimiento de SÒSTRAT, Alfresco y sistemas legacy sirve para entender el negocio e integraciones, nunca para copiar su patrón tecnológico.
+14. **Mantenimiento continuo obligatorio** — todo análisis de aplicación/dominio (DDD, arquitectura, testing, threat-model...) que descubra terminología de negocio nueva, corrija un hecho ya documentado aquí, o identifique un sistema/integración no listado, debe proponer la actualización correspondiente de este documento como parte del cierre de esa sesión — no dejarlo solo en el fichero de análisis de origen (`discovery/`). Ver `agents/apb-agent-ddd-v1.0.md` Fase 3 para el paso concreto en el caso DDD.
 
 ---
 
-*Documento generado el 2026-06-30. Fuentes: APB_Knowledge_Base_IA.md (v1.0), APB_Knowledge_Base_IA_v2.md (v2.0), APB_Knowledge_Base_IA_v3.md (v3.0) — 150 proyectos Jira, 520+ repos GitHub org:portdebarcelona, Confluence APLIS, tickets 2023-2026.*
+## Historial de Versiones
+
+| Versión | Fecha | Cambio |
+|---------|-------|--------|
+| 1.0.0 | 2026-06-30 | Creación — consolidación de APB_Knowledge_Base_IA.md v1-v3 (150 proyectos Jira, 520+ repos GitHub, Confluence APLIS, tickets 2023-2026) |
+| 1.1.0 | 2026-07-15 | Enriquecida con hallazgos de la descomposición DDD de SÒSTRAT (`discovery/ddd-sostrat-mj8/`, 24 dossiers + auditorías): distinción real PIF vs. SCPP y su candidatura a fusión; hallazgo `Posicionament` sin bounded context; recuento exacto de 90 jobs batch (corrige "~80"); arquitectura real de la mensajería EDI (modelo `MissatgeEdi`/`TipusMissatgeEdi` compartido, parsing de negocio repartido); corrección terminológica VUA (AEAT, nacional) vs. DMS (circuito real de la EMSWe europea); 9 aplicaciones externas con dependencia directa no documentada sobre datos de SÒSTRAT. Añadida regla de mantenimiento continuo (§14.14). |
+
+---
+
+*Documento generado el 2026-06-30, actualizado el 2026-07-15. Fuentes: APB_Knowledge_Base_IA.md (v1.0), APB_Knowledge_Base_IA_v2.md (v2.0), APB_Knowledge_Base_IA_v3.md (v3.0) — 150 proyectos Jira, 520+ repos GitHub org:portdebarcelona, Confluence APLIS, tickets 2023-2026 — y `discovery/ddd-sostrat-mj8/` (descomposición DDD de SÒSTRAT, Sesión 30, 2026-07-11 a 2026-07-15).*
