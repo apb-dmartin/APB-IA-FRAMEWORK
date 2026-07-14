@@ -171,10 +171,11 @@ relación con el MCP server:**
 confirmado, `consumed_by` vacío, no wirear a ningún agente sin que Arquitectura
 documente antes un caso de uso real.
 
-**Estrategia de optimización de tokens:** ya resuelta — ver
-[`ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md`](ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md)
-(10 estrategias, roadmap 3 fases, ahorro estimado 30-50%). No requiere
-trabajo nuevo.
+**Estrategia de optimización de tokens — corregido 2026-07-15, el análisis está hecho pero NADA se ha implementado**: la nota anterior ("ya resuelta... no requiere trabajo nuevo") era incorrecta — confundía "la estrategia está diseñada" con "la estrategia está aplicada". Verificado por inspección directa del repo: el propio checklist de [`ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md`](ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md) (Fases 1-3) tiene **todas las casillas sin marcar**, y ninguno de los artefactos que proponía crear existe en el repo (`scripts/cache-frontmatter.py`, `discovery/PLAN_FASES_FUTURAS_INDEX.md`, `discovery/WORKFLOW_PATTERNS.md`, `discovery/SUBAGENTS_REGISTRY.md`, carpeta `cache/` — ninguno). Reabierto como pendiente de implementación, priorizado por el propio documento (Fase 1, "quick wins", 🔴 crítica):
+- **Estrategia 1 — Caching de frontmatter YAML**: crear `scripts/cache-frontmatter.py`, integrar en `validate_repo.py`/`generate_catalog.py` (evita re-parsear 367 componentes en cada ejecución dentro de la misma sesión).
+- **Estrategia 2 — Paralelización vía Workflows**: usar la herramienta `Workflow` en vez de `Agent` secuencial cuando haya 3+ subtareas independientes (patrón ya usado de facto en varias sesiones DDD, pero no documentado como estándar).
+- **Estrategia 3 — Lazy loading con índices**: crear `discovery/PLAN_FASES_FUTURAS_INDEX.md` (este propio fichero ya supera las 300 líneas).
+Las estrategias 4-10 (prioridad alta/media/futura) quedan en el documento original, sin ejecutar, para una segunda pasada.
 
 ---
 
