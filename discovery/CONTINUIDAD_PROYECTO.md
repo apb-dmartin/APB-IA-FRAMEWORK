@@ -1772,6 +1772,19 @@ El usuario pidió explícitamente la re-derivación completa desde código fuent
 
 **Entregable nuevo**: `discovery/ddd-sostrat-mj8/INFORME_EJECUTIVO.md` — síntesis de toda la Sesión 30 con recomendación explícita: NO-GO para desarrollo, GO para validación humana formal, con agenda mínima de 6 puntos.
 
+### 30.9 — Continuación de la re-derivación tras "continuar" (2026-07-14, misma sesión)
+
+El usuario pidió explícitamente continuar el trabajo de 30.8. Se verificaron 6 dossiers adicionales en profundidad (#01 Datos Maestros de Equipamiento, #04 Depotsis, #11 PIF —verificación de PK, usada como referencia cruzada para #19—, #18 Servicios Auxiliares de Cruceros, más una segunda pasada más detallada sobre #09/#19 ya tocados en 30.8), llevando la cobertura total de re-derivación de esta sesión de 10 a **20 de los 24 dossiers**.
+
+**3 correcciones reales adicionales encontradas y aplicadas**:
+1. **`dossier-19-inspeccion-scpp.md`**: el encabezado de §3 afirmaba "23 rutas Struts confirmadas", pero el propio desglose del párrafo (16+1+3) sumaba 20 — inconsistencia interna nunca corregida en la generación original. Verificado de nuevo contra `struts-config.xml`: 20 es el número correcto.
+2. **`dossier-19-inspeccion-scpp.md`** (mismo dossier, error distinto): afirmaba dos veces que la PK de `Inspeccio` (3 partes) sigue "el mismo patrón" que `OperacioPif`. `OperacioPifPk.java` confirma que esa PK real es de **2 partes**, no 3 — el propio `dossier-11-pif.md §5` ya lo documentaba bien. Corregido en las 2 secciones donde aparecía la comparación errónea.
+3. **`dossier-01-datos-maestros-equipamiento.md` / `specs/openapi-datos-maestros-equipamiento.yaml`**: el propio dossier ya señalaba desde su generación (2026-07-13) que el campo `matriculaiso` estaba mal modelado en el contrato REST (tratado como matrícula ISO 6346 real con patrón `^[A-Z]{4}[0-9]{7}$}`, cuando el DTO real lo usa como flag `S`/`N`, confirmado sin excepción en 30+ puntos del checkout) — esta corrección, señalada como pendiente, nunca se había aplicado hasta ahora. Corregida: patrón movido a `refequipament`, `matriculaiso` retipado `enum: [S,N]`, retirado de `required` en el alta.
+
+**8 de los 10 dossiers restantes verificados en esta ronda no tenían ningún error** (incluida una confirmación exacta de la duplicación de 13/17 rutas entre Depotsis y Aduanas en `struts-config-depotsis.xml`). Ninguna de las 5 correcciones totales de la sesión (30.8+30.9) es un caso de dato inventado — todas son correcciones parciales previas no propagadas, o afirmaciones puntuales de comparación/recuento incorrectas.
+
+**Quedan sin re-derivar en profundidad esta sesión**: `#00` Escalas, `#06` MARPOL, `#08` Marinas/Pesca, `#10` MMPP (`PLAN_FASES_FUTURAS.md` #100, `HANDOFF_TECNICOS.md` DC8). `INFORME_EJECUTIVO.md` actualizado a v1.1.0 reflejando el alcance final.
+
 ---
 
 *Cierre de Sesión 30 (2026-07-14).*

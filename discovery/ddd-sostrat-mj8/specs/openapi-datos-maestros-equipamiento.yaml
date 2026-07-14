@@ -45,8 +45,8 @@ paths:
           schema: { type: string }
         - name: matriculaiso
           in: query
-          description: Filtro por matrícula ISO 6346
-          schema: { type: string }
+          description: "Corregido 2026-07-14 (dossier-01-datos-maestros-equipamiento.md §2/§14) — no es la matrícula, es un flag S/N que indica si refequipament cumple el formato ISO 6346"
+          schema: { type: string, enum: [S, N] }
         - name: cursor
           in: query
           description: Cursor de paginación (cursor-based, no offset)
@@ -89,7 +89,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "409":
-          description: Conflicto — `refequipament` o `matriculaiso` ya existe
+          description: "Conflicto — `refequipament` ya existe (corregido 2026-07-14: `matriculaiso` es un flag S/N calculado, no puede tener conflicto de unicidad)"
           content:
             application/problem+json:
               schema: { $ref: "#/components/schemas/ProblemDetails" }
@@ -149,12 +149,12 @@ components:
         refequipament:
           type: string
           maxLength: 50
-          description: "Grounded: Equipament.refequipament (columna REFEQUIPAMENT) — referencia de negocio"
+          pattern: "^[A-Z]{4}[0-9]{7}$"
+          description: "Corregido 2026-07-14 (dossier-01-datos-maestros-equipamiento.md §2/§9/§14) — es este campo, no matriculaiso, el que lleva la matrícula/referencia real del contenedor (p.ej. MSCU1234567); el patrón ISO 6346 (norma, no confirmado literalmente en el código) pertenece aquí. Grounded: Equipament.refequipament (columna REFEQUIPAMENT)."
         matriculaiso:
           type: string
-          maxLength: 11
-          pattern: "^[A-Z]{4}[0-9]{7}$"
-          description: "Grounded: Equipament.matriculaiso (columna MATRICULAISO) — matrícula ISO 6346. Patrón añadido por este spec (norma ISO 6346), no confirmado literalmente en el código — validar con negocio antes de aplicar como restricción dura."
+          enum: [S, N]
+          description: "Corregido 2026-07-14 — NO es la matrícula: es un flag S/N que indica si refequipament cumple el dígito de control ISO 6346 (AuxiliarISO6346.validarMatricula, mod-11). Confirmado sin excepciones en 30+ puntos de asignación de todo el checkout (dossier-01 §2). Grounded: Equipament.matriculaiso (columna MATRICULAISO)."
         idtipequipament:
           type: integer
           description: "Grounded: Equipament.idtipequipament (columna IDTIPEQUIPAMENT) — FK a TipusEquipament"
@@ -168,25 +168,24 @@ components:
           description: "Grounded: Equipament.idoridade (columna IDORIDADE)"
       example:
         idequipament: 145820
-        refequipament: "REF-000145820"
-        matriculaiso: "MSCU1234567"
+        refequipament: "MSCU1234567"
+        matriculaiso: "S"
         idtipequipament: 2
         propietari: "MSC MEDITERRANEAN SHIPPING COMPANY"
         idoridade: "ES"
     ContainerEquipmentCreate:
       type: object
-      required: [refequipament, matriculaiso, idtipequipament]
+      required: [refequipament, idtipequipament]
+      description: "matriculaiso no forma parte del alta (required) — corregido 2026-07-14: es un valor calculado por el servicio (AuxiliarISO6346), no un dato de entrada de negocio (dossier-01 §2/§3)."
       properties:
-        refequipament: { type: string, maxLength: 50 }
-        matriculaiso: { type: string, maxLength: 11 }
+        refequipament: { type: string, maxLength: 50, pattern: "^[A-Z]{4}[0-9]{7}$" }
         idtipequipament: { type: integer }
         propietari: { type: string, nullable: true }
         idoridade: { type: string, nullable: true }
     ContainerEquipmentUpdate:
       type: object
       properties:
-        refequipament: { type: string, maxLength: 50 }
-        matriculaiso: { type: string, maxLength: 11 }
+        refequipament: { type: string, maxLength: 50, pattern: "^[A-Z]{4}[0-9]{7}$" }
         idtipequipament: { type: integer }
         propietari: { type: string, nullable: true }
         idoridade: { type: string, nullable: true }

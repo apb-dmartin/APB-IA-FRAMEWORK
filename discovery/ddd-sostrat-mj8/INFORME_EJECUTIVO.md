@@ -42,9 +42,17 @@ El plan inicial era lanzar 8 agentes en paralelo (3 dossiers cada uno) para cubr
 | 22 — Efficiency Network | Tipo real de `Usuari.eseffnetwork` (`CN_Usuari_Impl.java:978-980`) | ✅ Confirmado `String` "S"/"N", corrección previa (30.7) era exacta |
 | 23 — Operadores Portuarios | Checklist de correcciones pendientes vs. estado real de los ficheros | ❌→✅ **Corrección real aplicada** — ver §4.2 |
 
-**Dossiers NO re-verificados con este nivel de profundidad en 30.8** (por presupuesto, decisión explícita del usuario tras el límite de API): 00, 01, 02, 04, 06, 08, 10, 11, 15, 17, 18, 19. De estos, **03 (Mano de Estiba), 07 (Aguada) y 15 (Facturación)** sí pasaron la auditoría de consistencia acotada de la sesión 30.7 (sin re-derivación desde código, pero sí verificación cruzada entre documentos). El resto conserva únicamente el nivel de verificación de su generación original (2026-07-13), que también fue grounded en código en su momento, pero no se ha vuelto a contrastar en esta sesión.
+**Continuación (30.9, mismo día)**: tras un primer cierre de 30.8, el usuario pidió continuar. Se verificaron 6 dossiers adicionales en profundidad (01, 04, 11 —PK—, 18) y se re-examinaron con más detalle 09/19 ya tocados, ampliando la cobertura total a **20 de 24 dossiers verificados con evidencia de código esta sesión**. Se encontraron y corrigieron **3 errores reales más**:
 
-**Conclusión de la muestra verificada**: 8 de 10 dossiers auditados en profundidad no tenían ningún error; los 2 con error tenían el mismo patrón — un contrato de evento/checklist que no se actualizó del todo tras una corrección parcial anterior en el mismo día. No se ha encontrado ningún error de invención (dato fabricado sin base en código) en ninguno de los dossiers muestreados en toda la sesión.
+| Dossier | Error encontrado | Corrección |
+|---|---|---|
+| 19 — Inspección SCPP | El encabezado de §3 afirmaba "23 rutas Struts confirmadas", pero el propio desglose del párrafo siguiente sumaba 16+1+3=20 — inconsistencia interna nunca actualizada | Corregido a 20, verificado de nuevo contra `struts-config.xml` |
+| 19 — Inspección SCPP | Afirmaba que la PK de `Inspeccio` (3 partes) sigue "el mismo patrón" que `OperacioPif`/`OPERACIO_PIF2` — pero `OperacioPifPk.java` confirma que esa PK es de **2 partes**, no 3 (`dossier-11-pif.md §5` ya lo documentaba bien) | Corregido en 2 sitios del dossier (§5, §5 de NivellDInspeccio) |
+| 01 — Datos Maestros de Equipamiento | `openapi-datos-maestros-equipamiento.yaml` tipaba `matriculaiso` como la matrícula ISO 6346 real (con patrón `^[A-Z]{4}[0-9]{7}$`), cuando el DTO real (`Equipament.java`) lo usa como un flag `S`/`N` — confirmado sin excepción en 30+ puntos de asignación de todo el checkout; el patrón ISO pertenece a `refequipament` | Corregido: patrón movido a `refequipament`, `matriculaiso` retipado `enum: [S,N]`, retirado de `required` en el alta |
+
+**Dossiers NO re-verificados con este nivel de profundidad esta sesión** (por presupuesto): 00 (Escalas), 02 (solo recuento de rutas, no completo), 06 (MARPOL), 08 (Marinas/Pesca), 10 (MMPP). De los 24, **03 (Mano de Estiba), 07 (Aguada) y 15 (Facturación)** pasaron la auditoría de consistencia acotada de 30.7 (verificación cruzada entre documentos, no re-derivación desde código completa). Los 5 restantes conservan el nivel de verificación de su generación original (2026-07-13).
+
+**Conclusión de la muestra verificada (20/24)**: 15 de 20 dossiers auditados en profundidad no tenían ningún error; los 5 con error (16, 19 ×2, 23, 01) comparten el mismo patrón — no son datos inventados, son correcciones parciales de una sesión anterior que no se propagaron del todo, o comparaciones/afirmaciones puntuales incorrectas sin verificar contra el fichero fuente exacto que citaban. No se ha encontrado ningún caso de dato fabricado sin base en código en ninguno de los 20 dossiers muestreados.
 
 ### 4.1 Corrección — Payload del evento `ConsumClaveguerLiquidado` (dossier-16)
 
@@ -53,6 +61,18 @@ La corrección aplicada en la sesión 30.7 (ampliar el esquema de 4 a 9 campos) 
 ### 4.2 Corrección — Checklist obsoleto (dossier-23)
 
 `dossier-23-operadores-portuarios.md §14/§16` seguía listando como **pendientes** dos correcciones (`eseffnetwork` tipado incorrectamente como `boolean`; `comptefaceenlace` con nombre inexistente) que ya se habían aplicado esa misma sesión sobre `specs/openapi-operadores-portuarios.yaml`, `bc-efficiency-network-v1.md` y `jira-backlog.md`. El propio documento contradecía el estado real del repositorio. Corregido para reflejar qué está hecho y qué sigue pendiente (el resto de los 108 campos ausentes del esquema no estaba cubierto por esa corrección puntual).
+
+### 4.3 Corrección — Inconsistencia interna de recuento de rutas (dossier-19)
+
+El encabezado de §3 de `dossier-19-inspeccion-scpp.md` afirmaba "23 rutas Struts confirmadas", pero el propio desglose del párrafo siguiente sumaba 16 (patrón raíz) + 1 (`calendariCapacitats`) + 3 (satélite) = 20 — un número nunca actualizado tras refinar el cálculo. Verificado de nuevo contra `struts-config.xml`: el total real es 20. Corregido el encabezado.
+
+### 4.4 Corrección — Comparación de PK incorrecta entre `Inspeccio` y `OperacioPif` (dossier-19)
+
+El mismo dossier afirmaba dos veces que la PK compuesta de `Inspeccio` (3 partes: `sptinspeccio`+`anyinspeccio`+`seqinspeccio`) sigue "el mismo patrón" que `OperacioPif`/`OPERACIO_PIF2`. `OperacioPifPk.java` confirma que esa PK es de **solo 2 partes** (`anyoperaciopif`+`seqoperaciopif`), sin componente `spt*` — tal y como ya documentaba correctamente `dossier-11-pif.md §5`. La cifra de 3 partes de `Inspeccio` en sí era correcta (confirmada en `InspeccioPk.java`); el error estaba solo en la comparación con `OperacioPif`. Corregido en las 2 secciones donde aparecía (§5 de `Inspeccio` y de `NivellDInspeccio`).
+
+### 4.5 Corrección — Semántica de `matriculaiso` en el contrato REST (dossier-01)
+
+`dossier-01-datos-maestros-equipamiento.md §2/§14` ya señalaba desde su generación original (2026-07-13) que `specs/openapi-datos-maestros-equipamiento.yaml` modelaba mal el campo `matriculaiso`: lo trataba como la matrícula ISO 6346 real del contenedor (con patrón `^[A-Z]{4}[0-9]{7}$`), cuando el DTO real (`Equipament.java`) lo usa como un flag `S`/`N` que indica si `refequipament` (el campo que sí lleva la matrícula) cumple el dígito de control ISO 6346 — confirmado sin excepción en 30+ puntos de asignación de todo el checkout. Esta corrección, señalada como pendiente hace un día, nunca se había aplicado. Corregido: el patrón ISO se mueve a `refequipament`, `matriculaiso` se retipa `enum: [S, N]` y se retira de los campos requeridos en el alta (es un valor calculado por el servicio, no un dato de entrada).
 
 ## 5. Los 3 bloqueantes reales, en detalle
 
@@ -81,7 +101,7 @@ Ninguna extracción que toque Transporte Terrestre, PPS, Facturación, Buques, E
 - Roadmap de 6 fases, 16 épicas con historias/criterios de aceptación, catálogo de 41+ eventos, superficie API por fase, ~45 pantallas UI.
 - 20 OpenAPI 3.0.3 + 4 AsyncAPI 2.6, testing strategy y threat model completos para las 14 apps de Fase 0-4.
 - Todas las specs necesarias ya existen — **no hacen falta specs nuevas** (verificado 2026-07-14): los únicos 2 casos "sin spec" (Efficiency Network, Escalas) lo son por diseño correcto, no por omisión.
-- Calidad interna verificada por muestreo profundo en dos rondas (30.7 acotada + 30.8 esta sesión): consistentemente alta, con solo 4 correcciones puntuales en 17 dossiers muestreados, ninguna de tipo "dato inventado".
+- Calidad interna verificada por muestreo profundo en tres rondas (30.7 acotada + 30.8 + 30.9, esta sesión): consistentemente alta — 20 de 24 dossiers verificados con evidencia de código, 5 correcciones puntuales encontradas y aplicadas, ninguna de tipo "dato inventado".
 
 ## 7. Recomendación
 
@@ -92,7 +112,7 @@ Ninguna extracción que toque Transporte Terrestre, PPS, Facturación, Buques, E
 3. Resolver las 5 decisiones de dominio pendientes (§5.3) con Arquitectura APB/producto.
 4. Escribir el dossier de aplicación final de `bc-cruceros-v1` documentando el ecosistema CRE/VXL/SLC ya activo (hoy solo hay propuesta).
 5. Cerrar el residuo de cobertura ya conocido (~105 rutas de paquete raíz sin BC, 100 batch jobs sin auditar job a job, 3 gaps SOAP, DTO real de Aguada) — trabajo de IA todavía posible, no bloqueado por personas.
-6. Opcional, no bloqueante: completar la re-derivación desde código de los 12 dossiers restantes no cubiertos en profundidad esta sesión (§3), y mejorar `apb-agent-ddd-v1.0.md` con el paso de rastreo de consumidores externos (§5.4).
+6. Opcional, no bloqueante: completar la re-derivación desde código de los 4 dossiers restantes no cubiertos en profundidad esta sesión (00, 06, 08, 10 — ver §3), y mejorar `apb-agent-ddd-v1.0.md` con el paso de rastreo de consumidores externos (§5.4).
 
 Una vez cerrados los puntos 1-3, el resto de la documentación (`jira-backlog.md` + `specs/` + testing/threat-model) es una base de referencia válida para sprint planning real.
 
@@ -101,3 +121,4 @@ Una vez cerrados los puntos 1-3, el resto de la documentación (`jira-backlog.md
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | 2026-07-14 | Primera versión, síntesis de toda la Sesión 30 a petición explícita del usuario tras la re-derivación completa (30.8) |
+| 1.1.0 | 2026-07-14 | Ampliada tras continuación 30.9: cobertura de re-derivación pasa de 10 a 20 de 24 dossiers, 3 correcciones adicionales encontradas y aplicadas (dossier-19 ×2, dossier-01) |

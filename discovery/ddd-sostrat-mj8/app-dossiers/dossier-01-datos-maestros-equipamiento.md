@@ -194,7 +194,7 @@ flowchart LR
 
 ## 14. Riesgos y gaps de evidencia conocidos
 
-- **`matriculaiso` mal modelado en el contrato REST actual** (hallazgo crítico de esta verificación, §2) — corregir antes de publicar `openapi-datos-maestros-equipamiento.yaml` como definitivo. Impacto: cualquier consumidor que integre contra el contrato actual esperando una matrícula ISO 6346 en ese campo fallará en producción.
+- **`matriculaiso` mal modelado en el contrato REST — corregido 2026-07-14** (re-derivación desde código): `openapi-datos-maestros-equipamiento.yaml` ahora tipa `matriculaiso` como `enum: [S, N]` y mueve el patrón ISO 6346 a `refequipament`; `ContainerEquipmentCreate` ya no exige `matriculaiso` como campo de entrada (es calculado por el servicio).
 - **`bc-pif-v1` como `downstream_context` no está soportado por evidencia de código activo** — única referencia es una línea comentada en `CN_Pif_Impl.java:284`. Recomendado corregir `proposals/bc-datos-maestros-equipamiento-v1.md` y añadir el hallazgo a `dead-code-register.md`.
 - **Cifra de ficheros consumidores**: 52 confirmados por grep exacto del import, no 54 (diferencia menor, no cambia la conclusión de acoplamiento extendido).
 - **`listacarga` y `coarri` (vía `Eqd01DTO.java`) no están mapeados a ningún `downstream_context` declarado** en la propuesta original del bounded context — pendiente de decidir si necesitan tratamiento propio o se agrupan bajo un consumidor existente (Aduanas/Manifiestos).
@@ -225,7 +225,7 @@ Ver `jira-backlog.md` EPIC-00 (4 historias, 31 pts):
 - [ ] Confirmar el uso real de `Equipament` desde Depotsis (no visible en el modelo de datos de `DepotsisSolicitudVersio` extraído hasta ahora).
 
 **Desarrollo**:
-- [ ] Corregir `specs/openapi-datos-maestros-equipamiento.yaml`: mover el patrón ISO 6346 (`^[A-Z]{4}[0-9]{7}$`) de `matriculaiso` a `refequipament`, y redefinir `matriculaiso` como `boolean`/`enum: [S, N]`.
+- [x] **Hecho 2026-07-14** — Corregido `specs/openapi-datos-maestros-equipamiento.yaml`: patrón ISO 6346 movido a `refequipament`, `matriculaiso` redefinido como `enum: [S, N]` y retirado de `required`/`ContainerEquipmentCreate`.
 - [ ] Diseñar las reglas de validación de negocio del nuevo servicio desde cero (`CN_Equipament_Impl.validar()` está vacío en el legacy — no hay nada que migrar ahí).
 - [ ] Diseñar la migración de los 7 paquetes de servicio consumidores en el orden de menor a mayor acoplamiento (`listacarga`/`depotsis`/`liquidadormm` primero, `manifiestos`/`mmpp` al final).
 - [ ] Confirmar con el equipo de COARRI/Terminales si la migración pasa por reemplazar la llamada Java directa a `CN_Equipament` por una llamada HTTP al nuevo servicio, o si conviene mantener un adaptador interno durante la transición.
