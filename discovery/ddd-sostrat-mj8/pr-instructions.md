@@ -1,12 +1,13 @@
-# Instrucciones de PR — Bounded Contexts de SÒSTRAT en apb-domain-catalog (v5, con auditoría de cobertura)
+# Instrucciones de PR — Bounded Contexts de SÒSTRAT en apb-domain-catalog (v7, con auditoría de consumidores externos)
 
 > **Borrador generado por IA** (APB AI Framework - apb-agent-ddd-v1.0) — pendiente validación humana. No distribuir sin revisión.
 > **v3 (2026-07-11)**: tras confirmar que `apb-domain-catalog` remoto (no la copia local, que estaba desactualizada — ver `catalog-comparison.md`) ya tiene 21 dominios de negocio `proposed`, este PR deja de proponer dominios nuevos en bloque y pasa a **añadir bounded contexts, con evidencia de código, a dominios ya existentes**. Se retiraron los 6 dominios inventados en la v1/v2 de este análisis y 2 bounded contexts duplicados (Notificaciones, Autenticación/SSO — ya cubiertos por `dom-transversal-arq-v1`). El núcleo financiero, que en la v2 se había decidido desplegar como un único servicio, **se separa de nuevo** en dos dominios y dos servicios: Concesiones y Facturación (decisión del usuario, 2026-07-11).
 > **v4 (2026-07-11, mismo día)**: `bc-mano-estiba-v1` y `bc-clavegueram-v1` habían quedado reparentados por la fuerza bajo dominios que no encajaban bien (Transporte Terrestre y Facturación respectivamente). El usuario confirmó que merecen dominio propio — se crean `dom-mano-estiba-v1` y `dom-clavegueram-v1` como **2 propuestas de dominio nuevas**, además de la adición de bounded contexts a los 13 dominios ya existentes.
 > **v5 (2026-07-13)**: auditoría de cobertura (`coverage-audit.md`) encontró 6 bounded contexts nuevos que no estaban en el alcance analizado originalmente (vivían en paquetes de código sin ticket Jira asociado) + 1 corrección factual sobre `bc-aguada-v1.md`. Se añaden a este PR — ver §2.1 (bloque nuevo) y §2.3. Uno de ellos (`bc-operadores-portuarios-v1`) tiene `parent_domain` tentativo, marcado como bloqueante.
 > **v6 (2026-07-13, misma sesión, corrección)**: `efficiencyNetwork` (18 rutas Struts) **sí tiene ahora `bc-efficiency-network-v1.md`** — una verificación adicional encontró que `EmpresaBC.java` extiende `Usuari.java`, es especialización de `bc-operadores-portuarios-v1`, no un dominio sin encaje. Hereda su mismo bloqueante (`parent_domain` tentativo) — se envía al PR junto con él, ver §2.3.
+> **v7 (2026-07-14) — auditoría de consumidores externos + re-derivación desde código completa**: 8 subagentes independientes rastrearon ~69 repos locales relacionados con SÒSTRAT (no analizados hasta ahora — ver §4 de `pr-instructions.md` §0bis) y encontraron **9 aplicaciones .NET reales con dependencia directa no documentada** sobre datos de SÒSTRAT, 3 de ellas con escritura directa. Detalle completo y evidencia de código en `EXTERNAL_CONSUMERS_AUDIT.md`; el mapeo fichero-por-fichero de qué contexto de este PR está afectado por cuál consumidor está en la nueva §2.4 de abajo — añadir esta info a la descripción del PR cuando se abra, para que el revisor de Arquitectura APB la vea sin tener que releer todo el análisis. Adicionalmente, una re-derivación completa desde código de las 24 dossiers de aplicación (no de estos ficheros de catálogo, que no tenían las mismas discrepancias) encontró y corrigió 7 inconsistencias puntuales — ver `INFORME_EJECUTIVO.md` para el detalle; no cambian el contenido de los ficheros `bc-*.md`/`dom-*.md` de este PR.
 
-> **Restricción `autonomy_level 1`**: este agente **no abre el PR por sí mismo**. Estas son instrucciones para que una persona del equipo lo haga tras validar el contenido.
+> **Restricción `autonomy_level 1`**: este agente **no abre el PR por sí mismo**. Estas son instrucciones para que una persona del equipo lo haga tras validar el contenido. **Verificado 2026-07-14**: las 30 propuestas de `discovery/ddd-sostrat-mj8/proposals/` siguen en `status: "discovered"`, ninguna en `"proposed"` — ninguna ha llegado nunca al repositorio real `apb-domain-catalog`, ni siquiera las que no tienen ningún bloqueante pendiente (ver §2.1/§2.2, la mayoría de las 17+2 carpetas listadas ahí no tiene ningún bloqueante y podría enviarse ya).
 
 ## 0. Estado real del catálogo (re-verificado 2026-07-11, contra `origin/main` tras `git fetch`)
 
@@ -20,6 +21,7 @@
 2. Confirmar `owner_team` real por bounded context (placeholder `equipo-sostrat` en los 21 ficheros).
 3. `bc-mano-estiba-v1` y `bc-clavegueram-v1` ya no tienen reparenting forzado — tienen dominio propio (`dom-mano-estiba-v1`, `dom-clavegueram-v1`), confirmado por el usuario 2026-07-11.
 4. **`bc-escalas-v1` NO debe enviarse al catálogo como bounded context de extracción** — evidencia de código confirma que ARGOS (`APB.API.TES`) ya consume la escala de SÒSTRAT en producción (evento real `MSG0004 SOSTRAT→TES`, DTO idéntico al modelo SÒSTRAT). Antes de tocar esto, requiere una sesión formal con el equipo de ARGOS/AOM — ver `decomposition-roadmap.md` Fase 5. Mientras tanto, `escalas.md` NO se añade a `domains/operaciones-maritimas/contexts/` en este PR.
+5. **Nuevo 2026-07-14 — revisar `EXTERNAL_CONSUMERS_AUDIT.md` y la tabla de §2.4 de abajo antes de abrir el PR**: 8 de los 17 ficheros de contexto elegibles (§2.1) tienen una dependencia real de una aplicación .NET externa no contemplada cuando se redactó su propuesta original. Esto no bloquea enviar el fichero al catálogo (documentar el bounded context sigue siendo correcto), pero **si Arquitectura APB aprueba y el equipo pasa a planificar la extracción física de cualquiera de esos 8 contextos, debe coordinarse primero con el equipo propietario de la aplicación externa correspondiente** (`HANDOFF_TECNICOS.md` DC7).
 
 ## 2. Dónde colocar cada fichero (estructura real, `domains/<nombre>/domain.md` + `domains/<nombre>/contexts/<contexto>.md`)
 
@@ -63,6 +65,23 @@
 **No enviar al catálogo todavía**: `bc-carga-inicial-etl-v1.md` (no es un bounded context de negocio), `bc-escalas-v1.md` (pendiente de validación con ARGOS, ver §1.4) y `bc-operadores-portuarios-v1.md` + `bc-efficiency-network-v1.md` (ambos comparten el mismo bloqueante de `parent_domain`, ver §2.3 — resolver uno resuelve el otro).
 
 **Total: 24 ficheros de contexto → 17 carpetas de dominio existentes (13 originales + 4 del bloque nuevo), + 2 dominios nuevos completos (domain.md + contexto). 2 ficheros (`bc-operadores-portuarios-v1.md`, `bc-efficiency-network-v1.md`) quedan fuera del PR hasta resolver su bloqueante compartido.**
+
+### 2.4 Consumidores externos no documentados por fichero de contexto (nuevo 2026-07-14)
+
+Añadir esta nota a la descripción del PR para cada fila que aplique, citando `EXTERNAL_CONSUMERS_AUDIT.md`:
+
+| Fichero de contexto (§2.1) | Consumidor externo | Lectura/Escritura | Riesgo |
+|---|---|---|---|
+| `capacidad-scpp.md` (`bc-inspeccion-scpp-v1.md`) | `APB.API.CPR` (Precintos) | Lectura + **escritura** sobre `INSPECCIO`/`INSPECCIO_AUDIT` | 🔴 Alto |
+| `transporte-terrestre.md` | `APB.API.IPB` (Pesaje/báscula) | **Escritura** en 15+ tablas (`PESATGE`, `CAMIO`, `CONTENIDOR`...) | 🔴 Alto |
+| `manifiestos.md` + `aduanas-contenedores.md` | `APB.API.CTS`/`APB.APP.CTA` (Gestión de Contenedores) | Solo lectura, ~50 tablas/vistas | 🔴 Alto (activo) |
+| `pps.md` | `APB.API.AUT` (tótems de acceso físico) | Lectura + **escritura en tiempo real** sobre `AUTORITZACIO` | 🔴 Crítico — bloquea Strangler Fig si no se coordina |
+| `facturacion.md` (`bc-facturacion-v1.md`) | `APB.API.REB` + `apb.p51` | Lectura + **escritura** (`REBUT_TRAM_NOTES`); P51 crea recibos vía SOAP | 🔴 Alto |
+| `buques.md` | `APB.API.LRT` | Lectura `VAIXELL` + **escritura** en `ESCALA` (riesgo de doble escritor con ARGOS) | 🔴 Alto |
+| `suministro-electrico-buques.md` | `APB.API.OPS` | Solo lectura (réplica DWH batch) | 🟡 Medio |
+| `cruceros.md` (`bc-cruceros-v1.md`) | `APB.API.CRE`/`APB.APP.CRE`/`APB.API.VXL`/`APB.API.SLC` | Mixto — implementación .NET real ya en producción (~3 meses), con alcance mayor que la propuesta actual | 🔴 Alto — **la propuesta `bc-cruceros-v1.md` debe ampliarse antes de enviarse** (ver nota abajo) |
+
+**Antes de enviar `cruceros.md` en este PR**: `proposals/bc-cruceros-v1.md` solo documenta el agregado `CreuerEscalaAudit` — no refleja que el ecosistema CRE/VXL/SLC ya es la implementación real de reserva de atraque de cruceros, con su propio modelo (`CreSolicitud`, `CreVaixell`, `CreTerminalBloqueado`, `CreLineaOperativaSolicitud`). Ampliar la propuesta (o escribir un dossier de aplicación final dedicado) antes de enviarla al catálogo, para no publicar una descripción del dominio que ya sabemos incompleta — ver `EXTERNAL_CONSUMERS_AUDIT.md §3`.
 
 ## 3. Estado de cada fichero: `discovered`, no `proposed`
 

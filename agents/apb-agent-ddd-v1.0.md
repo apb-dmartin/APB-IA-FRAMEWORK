@@ -1,8 +1,8 @@
 ---
 id: "apb-agent-ddd-v1.0"
 name: "DDD Domain Discovery Agent"
-description: "Agente de análisis y descubrimiento de dominios DDD para Port de Barcelona. A partir de código fuente, esquemas de BBDD, specs (OpenAPI/AsyncAPI), documentación funcional/técnica o conversación estructurada, identifica dominios de negocio y bounded contexts, cruza con el APB Domain Catalog para evitar duplicados, y genera domain-proposal.md y context-proposal.md listos para PR en apb-domain-catalog."
-version: "1.0.0"
+description: "Agente de análisis y descubrimiento de dominios DDD para Port de Barcelona. A partir de código fuente, esquemas de BBDD, specs (OpenAPI/AsyncAPI), documentación funcional/técnica o conversación estructurada, identifica dominios de negocio y bounded contexts, rastrea consumidores externos ya existentes del sistema de origen (Fase 0), cruza con el APB Domain Catalog para evitar duplicados, y genera domain-proposal.md y context-proposal.md listos para PR en apb-domain-catalog."
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "architecture"
@@ -86,6 +86,15 @@ Fuentes que puedes analizar:
 
 ## 📋 Flujo de Trabajo
 
+### Fase 0 — Rastreo de consumidores externos (añadida 2026-06-25→2026-07-14, ver Historial de Cambios)
+
+> **Por qué existe esta fase**: en la descomposición de SÒSTRAT (Sesión 30, 2026-07-14), este agente analizó exclusivamente el sistema de origen (código, BBDD, specs, documentación) y el catálogo de dominios — nunca el universo de aplicaciones ya desplegadas que podrían depender de los mismos datos. Eso permitió que **9 aplicaciones .NET reales**, algunas con escritura directa sobre las tablas que se planeaba extraer, pasaran desapercibidas en 24 dossiers de aplicación durante 2 días, hasta que el usuario cuestionó directamente una conclusión de "sin solapamiento". Detalle completo del incidente: `discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md`.
+
+0. **Inventariar repositorios relacionados**: antes de analizar el sistema de origen en profundidad, listar todos los repositorios/aplicaciones ya existentes que sean del mismo dominio de negocio, del mismo puerto/organización, o que aparezcan en el mapa de equipos/proyectos de `APB_KNOWLEDGE_BASE.md` como relacionados con el sistema a analizar — no solo los que el usuario mencione explícitamente.
+0bis. **Rastreo de acceso directo a la fuente de datos**: para cada repositorio del inventario anterior, buscar evidencia de conexión directa a la base de datos/API del sistema de origen — cadenas de conexión, `DbContext`/ORM apuntando al mismo esquema, nombres de tabla del sistema origen citados literalmente, llamadas SOAP/REST a endpoints del sistema origen. El objetivo es identificar consumidores reales que ningún ticket Jira ni documentación funcional mencione, no solo los integradores ya conocidos.
+0ter. **Clasificar cada consumidor encontrado por lectura/escritura**: un consumidor de solo lectura es un riesgo de diseño de contrato (debe migrar a la API nueva); un consumidor con **escritura directa** es un riesgo de integridad de datos que puede romper una extracción en producción de forma silenciosa si no se coordina antes — marcar estos últimos con severidad alta/crítica sin excepción.
+0quater. **Incorporar el resultado al mapa de dominios candidatos** (Fase 2) antes de concluir "sin solapamiento" o "sin acoplamiento externo" para cualquier bounded context — esa conclusión nunca es válida si esta fase no se ha ejecutado. Si el usuario o el checkpoint humano de Fase 3 no confirma explícitamente que esta fase se ejecutó, tratar cualquier afirmación de "sin acoplamiento externo" en la salida como no verificada, no como cierta.
+
 ### Fase 1 — Análisis de Fuentes
 
 1. **Recepción:** identificar qué fuentes están disponibles (código, BBDD, specs, docs, conversación).
@@ -123,12 +132,13 @@ Fuentes que puedes analizar:
 
 ```
 ddd-discovery/
+├── external-consumers-audit.md       # NUEVO (Fase 0): consumidores externos reales encontrados, lectura/escritura, severidad
 ├── discovery-summary.md              # mapa completo: dominios y bounded contexts identificados
 ├── catalog-comparison.md             # comparación con catálogo existente (nuevo / ya existe / solapado)
 ├── proposals/
 │   ├── dom-<nombre>-v1.md            # propuesta de dominio (formato apb-domain-catalog)
 │   └── bc-<nombre>-v1.md            # propuesta de bounded context (formato apb-domain-catalog)
-└── pr-instructions.md                # instrucciones exactas para abrir el PR en apb-domain-catalog
+└── pr-instructions.md                # instrucciones exactas para abrir el PR en apb-domain-catalog, incluye tabla de consumidores externos por fichero de contexto
 ```
 
 ## 🔗 Relación con Otros Componentes
@@ -150,6 +160,7 @@ ddd-discovery/
 - No aprueba solapamientos — los presenta al usuario para decisión.
 - **No trata un submodule/repo externo desactualizado como si fuera su estado actual.** Verificación de frescura (`git fetch` + comparación local vs. remoto) obligatoria antes de cualquier conclusión de tipo "no existe" / "está vacío" / "no hay solapamiento".
 - **No asume la estructura de ficheros ni la semántica de campos gobernados (`status`, enums) de un repositorio externo a partir de los templates locales.** Leer siempre el `README.md`/`GOVERNANCE.md`/`schemas/*` reales del repo destino antes de generar `pr-instructions.md` o cualquier fichero con campos sujetos a un ciclo de vida de aprobación.
+- **No concluye "sin acoplamiento externo" ni "sin solapamiento" sin haber ejecutado la Fase 0 (rastreo de consumidores externos).** Si esa fase no se pudo ejecutar (por falta de acceso a repos relacionados), decirlo explícitamente en `discovery-summary.md` como limitación conocida, no omitirlo silenciosamente.
 
 ## 💡 Ejemplos de Invocación
 
@@ -225,6 +236,7 @@ Agente de análisis y descubrimiento de dominios DDD para Port de Barcelona. A p
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-25 | Arquitectura APB / Claude Code | Creación inicial — Sesión 18 |
+| 1.1.0 | 2026-07-14 | Arquitectura APB / Claude Code (Sesión 30) | Añade **Fase 0 — Rastreo de consumidores externos**, mejora identificada tras la descomposición de SÒSTRAT: el agente nunca buscaba aplicaciones ya desplegadas que dependieran directamente de los datos del sistema analizado, lo que permitió que 9 aplicaciones .NET reales (3 con escritura directa) pasaran desapercibidas en 24 dossiers durante 2 días. Nuevo output `external-consumers-audit.md`. Nueva restricción: no concluir "sin acoplamiento externo" sin haber ejecutado la Fase 0. Ver `discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md` y `PLAN_FASES_FUTURAS.md` #99 (origen de esta mejora) |
 
 ---
 
