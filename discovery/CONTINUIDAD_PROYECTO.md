@@ -1797,6 +1797,18 @@ Tercera petición del usuario de "continuar". Se verificaron los 4 dossiers rest
 
 **Cierre definitivo de `PLAN_FASES_FUTURAS.md` #100 y `HANDOFF_TECNICOS.md` DC8**: la re-derivación desde código de las 24/24 dossiers está completa. Balance total de la sesión (30.7+30.8+30.9+30.10): **7 correcciones puntuales encontradas y aplicadas, 0 casos de dato inventado**. `INFORME_EJECUTIVO.md` actualizado a v1.2.0 con el cierre.
 
+### 30.11 — Cierre de pendientes no dependientes de revisión humana + preparación del catálogo de dominios (2026-07-14, misma sesión)
+
+El usuario preguntó directamente si el backlog/API/eventos/modelo de datos/pantallas cubrían el 100% de lo existente, si los dominios se habían actualizado tras el hallazgo de CTA, si el backlog estaba en Jira y si las specs estaban listas para SDD. Las respuestas (documentación honesta con huecos declarados, no oculta; dominios investigados pero nunca llevados al repositorio real; backlog solo en markdown, nunca creado en Jira; specs existentes pero en `status: "discovered"`) llevaron a pedir cerrar lo que no dependía de revisión humana.
+
+**1. Catálogo de dominios (`apb-domain-catalog`)**: confirmado que las 30 propuestas de esta serie nunca habían llegado al repositorio corporativo real — todas seguían en `status: "discovered"` desde su creación. `pr-instructions.md` documenta una restricción explícita del framework (`autonomy_level 1`: *"este agente no abre el PR por sí mismo"*). Tras confirmar el alcance exacto con el usuario (preparar y commitear localmente, sin push), se copiaron los 24 bounded contexts elegibles a la estructura real de `domain-catalog/domains/`, se cambió `status` a `"proposed"`, se actualizó `bounded_contexts:` en los 14 `domain.md` afectados, y se hizo commit local en una rama nueva (`feat/sostrat-bounded-contexts`, commit `7d8ebe3`) — sin push. El puntero del submodule en el repo principal queda intencionadamente sin commitear (apunta a un commit que no existe todavía en `origin`).
+
+**2. Mejora del propio agente**: `agents/apb-agent-ddd-v1.0.md` actualizado a v1.1.0 con una nueva Fase 0 ("Rastreo de consumidores externos", 4 pasos) que cierra la carencia estructural identificada en 30.6 (9 aplicaciones externas pasaron desapercibidas). `pr-instructions.md` actualizado a v7 con la tabla de consumidores externos por fichero de contexto. Cierra `PLAN_FASES_FUTURAS.md` #99.
+
+**3. Cierre del residuo de `coverage-audit.md`**: los 105 elementos del paquete raíz, los 8 módulos pequeños de §1.2, los 3 gaps SOAP y los jobs de Spring Batch (90 confirmados por recuento exacto, no la estimación previa de "100") se clasificaron uno a uno leyendo el import real de servicio/DTO de cada clase/tasklet — misma metodología que el resto de la serie. Residuo final: **1 sola ruta genuinamente sin clasificar** (`DatosBasicos`). **Hallazgo nuevo**: `Posicionament` (19 rutas Struts + 2 jobs batch, `CN_Posicionament_Impl.java`, 1.873 líneas) es una capacidad de negocio real sin ningún bounded context propuesto — confirma y amplía lo que `dossier-19-inspeccion-scpp.md §7` ya señalaba sobre el acoplamiento síncrono PIF/SCPP/Posicionament. No se ha escrito la propuesta de bounded context (es una investigación nueva, del mismo alcance que cualquiera de los 24 dossiers, no una tarea de clasificación) — registrado como `PLAN_FASES_FUTURAS.md` #102. Cierra `PLAN_FASES_FUTURAS.md` #101, `HANDOFF_TECNICOS.md` DC9.
+
+`readiness-assessment.md` actualizado a v7, `INFORME_EJECUTIVO.md` a v1.3.0. Validación estricta, 68/68 tests y catálogo del framework sin drift confirmados antes de cada commit.
+
 ---
 
 *Cierre de Sesión 30 (2026-07-14).*

@@ -123,16 +123,29 @@ Ninguna extracción que toque Transporte Terrestre, PPS, Facturación, Buques, E
 1. Checkpoint de validación humana con Arquitectura APB y domain experts (§5.1) — incluye los 6 BCs nuevos de Fase 6.
 2. Sesión de coordinación con los 8 equipos propietarios de los 9 consumidores externos (§5.2) — antes de comprometer fecha de cutover de cualquiera de las 10 apps afectadas.
 3. Resolver las 5 decisiones de dominio pendientes (§5.3) con Arquitectura APB/producto.
-4. Escribir el dossier de aplicación final de `bc-cruceros-v1` documentando el ecosistema CRE/VXL/SLC ya activo (hoy solo hay propuesta).
-5. Cerrar el residuo de cobertura ya conocido (~105 rutas de paquete raíz sin BC, 100 batch jobs sin auditar job a job, 3 gaps SOAP, DTO real de Aguada) — trabajo de IA todavía posible, no bloqueado por personas.
-6. Opcional, no bloqueante: mejorar `apb-agent-ddd-v1.0.md` con el paso de rastreo de consumidores externos (§5.4) — la re-derivación desde código de las 24 dossiers ya está completa (§3).
+4. Escribir el dossier de aplicación final de `bc-cruceros-v1` documentando el ecosistema CRE/VXL/SLC ya activo (hoy solo hay propuesta) — sigue pendiente.
+5. Revisar y empujar el catálogo de dominios (§9) — ya preparado localmente, solo falta `git push` + abrir el PR.
+
+**Cerrado en esta sesión (2026-07-14), ya no es parte de la agenda pendiente**: residuo de cobertura de código (~105 rutas de paquete raíz, 8 módulos pequeños, 3 gaps SOAP, 90 jobs batch — ver `coverage-audit.md §8`); mejora de `apb-agent-ddd-v1.0.md` con el paso de rastreo de consumidores externos (§5.4). DTO real de Aguada sigue sin cerrar — requiere al proveedor IN2, no es trabajo de IA.
 
 Una vez cerrados los puntos 1-3, el resto de la documentación (`jira-backlog.md` + `specs/` + testing/threat-model) es una base de referencia válida para sprint planning real.
 
-## 8. Historial
+## 8. Catálogo de dominios — preparado, pendiente de revisión y push (2026-07-14)
+
+A petición explícita del usuario, se prepararon los 24 bounded contexts elegibles (de los 30 propuestos: excluidos `bc-escalas-v1`, `bc-operadores-portuarios-v1` y `bc-efficiency-network-v1` por sus bloqueantes ya documentados) y se commitearon **localmente** en el submodule `domain-catalog`:
+
+- Rama `feat/sostrat-bounded-contexts`, commit `7d8ebe3` — **sin push** al remoto `apb-dmartin/APB-DOMAIN-CATALOG`.
+- 26 ficheros nuevos (24 `contexts/*.md` + 2 `domain.md` de dominios nuevos: `mano-estiba`, `clavegueram`) + 14 `domain.md` existentes actualizados con sus nuevos `bounded_contexts:`.
+- `status: "discovered"` → `"proposed"` en los 26 ficheros, siguiendo `pr-instructions.md`.
+- Antes de esta sesión, **ninguna de las 30 propuestas de esta serie había llegado nunca** al repositorio real `apb-domain-catalog` — todas seguían en `status: "discovered"` desde su creación (algunas desde 2026-07-11).
+
+**Por qué se quedó en commit local y no se abrió el PR**: `pr-instructions.md` documenta una restricción explícita del framework (`autonomy_level 1`): *"este agente no abre el PR por sí mismo"*. Confirmado con el usuario antes de proceder — el alcance autorizado fue exactamente "preparar y commitear localmente, sin push".
+
+## 9. Historial
 
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1.0.0 | 2026-07-14 | Primera versión, síntesis de toda la Sesión 30 a petición explícita del usuario tras la re-derivación completa (30.8) |
 | 1.1.0 | 2026-07-14 | Ampliada tras continuación 30.9: cobertura de re-derivación pasa de 10 a 20 de 24 dossiers, 3 correcciones adicionales encontradas y aplicadas (dossier-19 ×2, dossier-01) |
 | 1.2.0 | 2026-07-14 | Cierre tras continuación 30.10: re-derivación completa de las **24/24 dossiers**, 2 correcciones finales encontradas y aplicadas (dossier-06, dossier-00). Total de la sesión: 7 correcciones puntuales, ninguna de tipo "dato inventado" |
+| 1.3.0 | 2026-07-14 | Sesión 30.11: cierre del residuo de `coverage-audit.md` (105→1 rutas sin clasificar, 3 gaps SOAP, 90 jobs batch), hallazgo nuevo `Posicionament` sin BC propio, mejora de `apb-agent-ddd-v1.0` (Fase 0), y catálogo de dominios preparado localmente en `domain-catalog` (24 bounded contexts, sin push) |
