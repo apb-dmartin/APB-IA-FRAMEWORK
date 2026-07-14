@@ -7,14 +7,28 @@ info:
     descubierto en la auditoría de cobertura 2026-07-13. Grounded en
     `sostrat/src/org/apb/sostrat/dataaccess/dto/serviciosAuxiliares/CreuerBus.java`
     (tabla `CREUER_BUS`) y `CreuerVigilanciaPunt.java` (tabla `CREUER_VIGILANCIA_PUNT`).
-  version: "1.0.0"
+
+    **Corrección 2026-07-14** (`dossier-18-servicios-auxiliares-cruceros.md
+    §5/§9/§14`, corrección de modelo de datos de mayor impacto de este
+    dossier): la v1.0.0 modelaba `CruiseBus`/`CruiseSecurityPoint` con
+    `numescala`/`anyescala`/`ocupacio`/`moll` — **ninguno de estos 4 campos
+    existe en los DTOs reales**. `CreuerBus`/`CreuerVigilancia` son
+    agregados **por día natural** (`dia`/`data`), no por escala; el campo de
+    ocupación real es `CreuerBusDetall.quantitat`; `CreuerVigilanciaPunt` es
+    catálogo maestro sin columna de escala en absoluto (el campo más
+    cercano a "moll" es la relación `CreuerVigilanciaPuntMoll`, vía
+    `idsubport`+`idporta`). Contrato reconstruido sobre los 8 DTOs reales,
+    incluyendo `CreuerAuxiliarBus`/`CreuerVigilanciaServei` (la lógica de
+    negocio real: asignación de proveedor/tarifa, notificación), ausentes
+    de la v1.0.0 pese a concentrar la mayor parte de la lógica del BC.
+  version: "1.1.0"
   contact:
     name: Arquitectura APB
     email: arquitectura@portdebarcelona.cat
   x-ai-generated: true
   x-ai-skill: "apb-arch-api-contract-v1.0"
   x-source-domain: "dom-cruceros-v1"
-  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/serviciosAuxiliares/CreuerBus.java, CreuerVigilanciaPunt.java"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/serviciosAuxiliares/CreuerBus.java, CreuerBusDetall.java, CreuerAuxiliarBus.java, CreuerVigilancia.java, CreuerVigilanciaServei.java, CreuerVigilanciaPunt.java, CreuerVigilanciaPuntMoll.java, CreuerServeiTarifa.java"
 servers:
   - url: https://apim.portdebarcelona.cat/cruise-auxiliary-services/v1
     description: APIM (producción)
@@ -22,22 +36,24 @@ security:
   - entraId: []
 tags:
   - name: cruise-buses
-    description: Buses de traslado de pasajeros de crucero
+    description: Buses de traslado de pasajeros de crucero, por día
+  - name: cruise-security
+    description: Servicio de vigilancia en muelle, por día
   - name: cruise-security-points
-    description: Puntos de vigilancia en muelle
+    description: Catálogo maestro de puntos de vigilancia
+  - name: cruise-tariffs
+    description: Tarifas de servicios auxiliares
 paths:
   /cruise-buses:
     get:
       operationId: listCruiseBuses
-      summary: Listar buses de traslado
+      summary: Listar buses de traslado por día
       tags: [cruise-buses]
       parameters:
-        - name: numescala
+        - name: dia
           in: query
-          schema: { type: integer }
-        - name: anyescala
-          in: query
-          schema: { type: integer }
+          schema: { type: string, format: date }
+          description: "Corregido 2026-07-14 (antes numescala/anyescala, inexistentes) — Grounded: CreuerBus.dia. Es un agregado por día natural, no por escala."
         - name: cursor
           in: query
           schema: { type: string }
@@ -58,7 +74,7 @@ paths:
                   pagination: { $ref: "#/components/schemas/Pagination" }
     post:
       operationId: createCruiseBus
-      summary: Registrar un bus de traslado con su ocupación
+      summary: Registrar un bus de traslado para un día
       tags: [cruise-buses]
       requestBody:
         required: true
@@ -72,18 +88,126 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/CruiseBus" }
         "400": { $ref: "#/components/responses/BadRequest" }
+  /cruise-buses/{idcrebus}/auxiliary:
+    parameters:
+      - name: idcrebus
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getCruiseBusAuxiliary
+      summary: Consultar la asignación de proveedor/tarifa del bus (CreuerAuxiliarBus)
+      description: |
+        Añadido 2026-07-14 — Grounded: CreuerAuxiliarBus.java (tabla
+        CREUER_AUXILIAR_BUS, PK idcrebus). Concentra la lógica de negocio real
+        (asignación automática de proveedor vía
+        CN_CruceroAuxiliarBus.asignarAuxiliarAutomaticamente, notificación por
+        email en alta/baja) — ausente de la v1.0.0 de este contrato.
+      tags: [cruise-buses]
+      responses:
+        "200":
+          description: Asignación encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CruiseBusAuxiliary" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    put:
+      operationId: setCruiseBusAuxiliary
+      summary: Asignar proveedor/tarifa/horario auxiliar al bus
+      tags: [cruise-buses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CruiseBusAuxiliaryCreate" }
+      responses:
+        "200":
+          description: Asignación registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CruiseBusAuxiliary" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /cruise-security:
+    get:
+      operationId: listCruiseSecurityServices
+      summary: Listar servicios de vigilancia por día
+      tags: [cruise-security]
+      parameters:
+        - name: data
+          in: query
+          schema: { type: string, format: date }
+          description: "Corregido 2026-07-14 — Grounded: CreuerVigilancia.data. Mismo patrón 'por día' que CreuerBus, tampoco tiene numescala/anyescala."
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Página de servicios de vigilancia
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/CruiseSecurityService" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createCruiseSecurityService
+      summary: Registrar un servicio de vigilancia para un día
+      tags: [cruise-security]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CruiseSecurityServiceCreate" }
+      responses:
+        "201":
+          description: Servicio de vigilancia registrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CruiseSecurityService" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /cruise-security/{idcrevigilancia}/assignments:
+    parameters:
+      - name: idcrevigilancia
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: listCruiseSecurityAssignments
+      summary: Listar las asignaciones de proveedor por punto de vigilancia (CreuerVigilanciaServei)
+      description: |
+        Añadido 2026-07-14 — Grounded: CreuerVigilanciaServei.java (PK
+        idcrevigilancia+idpuntvigilancia). Ausente de la v1.0.0.
+      tags: [cruise-security]
+      responses:
+        "200":
+          description: Página de asignaciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/CruiseSecurityAssignment" }
   /cruise-security-points:
     get:
       operationId: listCruiseSecurityPoints
-      summary: Listar puntos de vigilancia de una escala de crucero
+      summary: Listar el catálogo maestro de puntos de vigilancia
+      description: |
+        Corregido 2026-07-14 — Grounded: CreuerVigilanciaPunt.java (tabla
+        CREUER_VIGILANCIA_PUNT). Es dato maestro reutilizable, **sin columna
+        de escala ni de día** — no ligado a una escala concreta.
       tags: [cruise-security-points]
       parameters:
-        - name: numescala
+        - name: idsubport
           in: query
-          schema: { type: integer }
-        - name: anyescala
+          schema: { type: string }
+        - name: cursor
           in: query
-          schema: { type: integer }
+          schema: { type: string }
       responses:
         "200":
           description: Página de puntos de vigilancia
@@ -98,7 +222,7 @@ paths:
                   pagination: { $ref: "#/components/schemas/Pagination" }
     post:
       operationId: createCruiseSecurityPoint
-      summary: Registrar un punto de vigilancia en muelle
+      summary: Dar de alta un punto de vigilancia en el catálogo maestro
       tags: [cruise-security-points]
       requestBody:
         required: true
@@ -112,6 +236,29 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/CruiseSecurityPoint" }
         "400": { $ref: "#/components/responses/BadRequest" }
+  /cruise-tariffs:
+    get:
+      operationId: listCruiseTariffs
+      summary: Listar tarifas de servicios auxiliares
+      description: |
+        Añadido 2026-07-14 — Grounded: CreuerServeiTarifa.java (PK
+        idprestador+idtarifa, tabla de enlace/catálogo sin más campos
+        propios). Ausente de la v1.0.0. **Nota de evidencia**: el precio
+        real (precioFijo/precioHoraNormal/precioHoraExtra, usados por
+        ComprobarFacturasAction/CreuerBusExcel) no se ha localizado en este
+        DTO — pendiente de rastrear su origen exacto (dossier-18 §14).
+      tags: [cruise-tariffs]
+      responses:
+        "200":
+          description: Página de tarifas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/CruiseTariff" }
 components:
   securitySchemes:
     entraId:
@@ -125,44 +272,142 @@ components:
   schemas:
     CruiseBus:
       type: object
-      required: [idcreuerbus, numescala, anyescala]
+      description: "Corregido 2026-07-14 — Grounded: CreuerBus.java (tabla CREUER_BUS, PK idcrebus). NO tiene numescala/anyescala/ocupacio como columnas propias (corrección de la v1.0.0)."
+      required: [idcrebus, dia]
       properties:
-        idcreuerbus: { type: integer, format: int64, description: "Grounded: CreuerBus (PK compuesta, tabla CREUER_BUS)" }
-        numescala: { type: integer, description: "Grounded: CreuerBus.numescala" }
-        anyescala: { type: integer, description: "Grounded: CreuerBus.anyescala" }
-        ocupacio: { type: integer, nullable: true, description: "Grounded: CreuerBusDetall, tabla CREUER_BUS_DETALL" }
+        idcrebus: { type: integer, format: int64, description: "Grounded: CreuerBus.idcrebus (PK)" }
+        dia: { type: string, format: date, description: "Corregido 2026-07-14 (antes numescala/anyescala) — Grounded: CreuerBus.dia" }
+        festiu: { type: string, nullable: true, description: "Grounded: CreuerBus.festiu (flag, String)" }
+        horenvsolicitud: { type: string, format: date-time, nullable: true, description: "Grounded: CreuerBus.horenvsolicitud" }
+        observacions: { type: string, nullable: true }
+        obsinternes: { type: string, nullable: true }
+        maxsubindex: { type: integer, nullable: true, description: "Grounded: CreuerBus.maxsubindex — control de subíndice máximo del servicio" }
+        detalls:
+          type: array
+          description: "Corregido 2026-07-14 (antes campo ocupacio, inexistente) — Grounded: CreuerBus.creuerBusDetall (1:N), tabla CREUER_BUS_DETALL. quantitat es el campo real de ocupación."
+          items: { $ref: "#/components/schemas/CruiseBusDetail" }
       example:
-        idcreuerbus: 5501
-        numescala: 8821
-        anyescala: 2026
-        ocupacio: 42
+        idcrebus: 5501
+        dia: "2026-07-20"
+        festiu: "N"
+        detalls:
+          - subindex: 1
+            quantitat: 42
+            idprestador: "PREST-04"
+    CruiseBusDetail:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: CreuerBusDetall.java (PK idcrebus+subindex)"
+      required: [subindex]
+      properties:
+        subindex: { type: integer }
+        quantitat: { type: integer, description: "Campo real de 'ocupación' — no existe un campo llamado ocupacio en el DTO" }
+        horainici: { type: integer, nullable: true }
+        horafin: { type: integer, nullable: true }
+        durada: { type: integer, nullable: true }
+        idprestador: { type: string, nullable: true }
+        idtarifa: { type: string, nullable: true }
     CruiseBusCreate:
       type: object
-      required: [numescala, anyescala]
+      description: "Corregido 2026-07-14 — mismo grounding que CruiseBus"
+      required: [dia]
       properties:
-        numescala: { type: integer }
-        anyescala: { type: integer }
-        ocupacio: { type: integer }
+        dia: { type: string, format: date }
+        festiu: { type: string }
+        horenvsolicitud: { type: string, format: date-time }
+        observacions: { type: string }
+    CruiseBusAuxiliary:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: CreuerAuxiliarBus.java (tabla CREUER_AUXILIAR_BUS, PK idcrebus)"
+      required: [idcrebus]
+      properties:
+        idcrebus: { type: integer, format: int64 }
+        idprestador: { type: string, nullable: true }
+        idtarifa: { type: string, nullable: true }
+        horainici: { type: integer, nullable: true }
+        horafin: { type: integer, nullable: true }
+        durada: { type: integer, nullable: true }
+        quantitat: { type: integer, nullable: true }
+        cobrador: { type: integer, nullable: true }
+    CruiseBusAuxiliaryCreate:
+      type: object
+      properties:
+        idprestador: { type: string }
+        idtarifa: { type: string }
+        horainici: { type: integer }
+        horafin: { type: integer }
+    CruiseSecurityService:
+      type: object
+      description: "Corregido 2026-07-14 — Grounded: CreuerVigilancia.java (tabla CREUER_VIGILANCIA, PK idcrevigilancia). NO tiene numescala/anyescala (corrección de la v1.0.0)."
+      required: [idcrevigilancia, data]
+      properties:
+        idcrevigilancia: { type: integer, format: int64 }
+        data: { type: string, format: date, description: "Corregido 2026-07-14 (antes numescala/anyescala)" }
+        festiu: { type: string, nullable: true }
+        horenvsolicitud: { type: string, format: date-time, nullable: true }
+        observacions: { type: string, nullable: true }
+    CruiseSecurityServiceCreate:
+      type: object
+      required: [data]
+      properties:
+        data: { type: string, format: date }
+        festiu: { type: string }
+        horenvsolicitud: { type: string, format: date-time }
+    CruiseSecurityAssignment:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: CreuerVigilanciaServei.java (PK idcrevigilancia+idpuntvigilancia)"
+      required: [idcrevigilancia, idpuntvigilancia]
+      properties:
+        idcrevigilancia: { type: integer, format: int64 }
+        idpuntvigilancia: { type: integer }
+        idprestador: { type: string, nullable: true }
+        idtarifa: { type: string, nullable: true }
+        horainici: { type: integer, nullable: true }
+        horafin: { type: integer, nullable: true }
+        durada: { type: integer, nullable: true }
+        quantitat: { type: integer, nullable: true }
+        auxvigilant: { type: integer, nullable: true }
     CruiseSecurityPoint:
       type: object
-      required: [idpuntvigilancia, numescala, anyescala]
+      description: "Corregido 2026-07-14 — Grounded: CreuerVigilanciaPunt.java (tabla CREUER_VIGILANCIA_PUNT, PK idpuntvigilancia). Catálogo maestro, sin numescala/anyescala/moll como columnas propias (corrección de la v1.0.0)."
+      required: [idpuntvigilancia]
       properties:
-        idpuntvigilancia: { type: string, description: "Grounded: CreuerVigilanciaPunt (tabla CREUER_VIGILANCIA_PUNT)" }
-        numescala: { type: integer }
-        anyescala: { type: integer }
-        moll: { type: string, nullable: true, description: "Grounded: CreuerVigilanciaPuntMoll (tabla CREUER_VIGILANCIA_PUNT_MOLL)" }
+        idpuntvigilancia: { type: integer, description: "Grounded: CreuerVigilanciaPunt.idpuntvigilancia (PK, Integer)" }
+        nompuntvigilancia: { type: string, nullable: true }
+        idsubport: { type: string, nullable: true }
+        idzonaport: { type: string, nullable: true }
+        datbaixa: { type: string, format: date-time, nullable: true, description: "Baja lógica" }
+        alineaciones:
+          type: array
+          description: "Corregido 2026-07-14 (antes campo moll, inexistente) — Grounded: CreuerVigilanciaPuntMoll[] (PK idpuntvigilancia+idsubport+idporta), enlaza el punto con una puerta/muelle física"
+          items: { $ref: "#/components/schemas/CruiseSecurityPointDock" }
       example:
-        idpuntvigilancia: "PV-04"
-        numescala: 8821
-        anyescala: 2026
-        moll: "Moll Adossat"
+        idpuntvigilancia: 4
+        nompuntvigilancia: "Punto Adossat Nord"
+        idsubport: "B"
+        alineaciones:
+          - idsubport: "B"
+            idporta: 12
+    CruiseSecurityPointDock:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: CreuerVigilanciaPuntMoll.java"
+      properties:
+        idsubport: { type: string }
+        idporta: { type: integer, format: int64 }
     CruiseSecurityPointCreate:
       type: object
-      required: [numescala, anyescala]
+      description: "Corregido 2026-07-14 — mismo grounding que CruiseSecurityPoint"
+      required: [nompuntvigilancia]
       properties:
-        numescala: { type: integer }
-        anyescala: { type: integer }
-        moll: { type: string }
+        nompuntvigilancia: { type: string }
+        idsubport: { type: string }
+        idzonaport: { type: string }
+    CruiseTariff:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: CreuerServeiTarifa.java (PK idprestador+idtarifa, tabla de enlace/catálogo sin más campos propios ni campo de precio confirmado en el DTO)"
+      required: [idprestador, idtarifa]
+      properties:
+        idprestador: { type: string }
+        idtarifa: { type: string }
     Pagination:
       type: object
       properties:

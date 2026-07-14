@@ -5,19 +5,23 @@ info:
   description: |
     Control de tránsito y traslado de contenedores en régimen aduanero, y
     conciliación de datos de terminales. Grounded en
-    `dataaccess/dto/MovimientoContenedor.java`, vista
+    `sostratWSCXF/.../dataaccess/dto/TrasllatContenidor.java` (tabla
+    TRASLLAT_CONTENIDOR, PK IDTRASLLATS — corregido 2026-07-14: el esquema
+    anterior modelaba `dataaccess/dto/MovimientoContenedor.java`, un DTO
+    huérfano sin DAO ni uso real confirmado en el checkout, ver
+    `app-dossiers/dossier-13-aduanas-contenedores.md §2/§14`), vista
     `dataaccess/views/dto/aduanas/VTcMAduanaContenidor.java`, y (conciliación)
     `dataaccess/dto/terminales/ProtermCont.java` (tabla PROTERM_CONT, PK
     idregistre) + `ErrorProcConc.java` (errores/warnings de conciliación).
     Requiere consolidación interna previa de `service/aduanas` +
     `service/terminales` (ver jira-backlog.md EPIC-11) — hoy repartido entre
     ambos paquetes en el monolito.
-  version: "1.0.0"
+  version: "1.1.0"
   contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
   x-ai-generated: true
   x-ai-skill: "apb-arch-api-contract-v1.0"
   x-source-domain: "dom-mercancias-v1"
-  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/MovimientoContenedor.java, views/dto/aduanas/VTcMAduanaContenidor.java, dataaccess/dto/terminales/ProtermCont.java, ErrorProcConc.java"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/TrasllatContenidor.java (TrasllatContenidorDaoImpl.java/TrasllatContenidorBase.java), views/dto/aduanas/VTcMAduanaContenidor.java, dataaccess/dto/terminales/ProtermCont.java, ErrorProcConc.java"
 servers:
   - url: https://apim.portdebarcelona.cat/aduanas-contenedores/v1
 security: [ { entraId: [] } ]
@@ -70,6 +74,14 @@ paths:
         - { name: cursor, in: query, schema: { type: string } }
       responses:
         "200": { description: Página de errores/warnings de conciliación, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/ReconciliationError" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+# GAP PENDIENTE (2026-07-14, dossier-13 §5/§9): Resguard/ResguardOperador
+# (tabla TRASLLAT_TERMINAL_RESGUARD, PK IDRESGUARD, servicios reales
+# CN_Resguard/CN_ResguardOperador, consumidos por TrasladosAction.java) es
+# parte real del flujo de traslado (getIdTerminalResguard) pero no tiene
+# ningún recurso API hoy. NO se modela aquí — su estructura de campos no
+# está confirmada en el checkout auditado (mismo gap de evidencia que
+# TrasllatContenidor tenía antes de esta corrección). Diseñar cuando se
+# confirme la estructura real de campos, no inventar un contrato.
 components:
   securitySchemes:
     entraId:
@@ -82,27 +94,48 @@ components:
       description: "Grounded: ErrorProcConc constantes TIPERR_*"
     ContainerMovement:
       type: object
-      required: [identificador, tipoMovimiento]
+      description: "Corregido 2026-07-14: redefinido sobre TrasllatContenidor.java (tabla TRASLLAT_CONTENIDOR, PK IDTRASLLATS) — el esquema anterior modelaba MovimientoContenedor.java, DTO huérfano sin uso real. Ver dossier-13-aduanas-contenedores.md §2/§5/§9."
+      required: [idtrasllats, matricula]
       properties:
-        identificador: { type: string, description: "Grounded: MovimientoContenedor.identificador" }
-        tipoMovimiento: { type: string, description: "Grounded: MovimientoContenedor.tipoMovimiento" }
-        fechaCargaDescarga: { type: string, format: date-time, nullable: true, description: "Grounded: MovimientoContenedor.fechaCargaDescarga" }
-        fechaEntradaSalida: { type: string, format: date-time, nullable: true, description: "Grounded: MovimientoContenedor.fechaEntradaSalida" }
-        viaEntradaSalida: { type: string, nullable: true, description: "Grounded: MovimientoContenedor.viaEntradaSalida" }
-        codResultado: { type: integer, nullable: true, description: "Grounded: MovimientoContenedor.codResultado" }
+        idtrasllats: { type: integer, format: int64, description: "Grounded: TrasllatContenidor.idtrasllats (PK, secuencia SEQ_TRASLLAT_CONTENIDOR)" }
+        idusuari: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.idusuari" }
+        matricula: { type: string, description: "Grounded: TrasllatContenidor.matricula (matrícula del vehículo/contenedor según el flujo)" }
+        origen: { type: integer, format: int64, nullable: true, description: "Grounded: TrasllatContenidor.origen (código)" }
+        dathoraorigen: { type: string, format: date-time, nullable: true, description: "Grounded: TrasllatContenidor.dathoraorigen" }
+        desti: { type: integer, format: int64, nullable: true, description: "Grounded: TrasllatContenidor.desti (código)" }
+        dathoradesti: { type: string, format: date-time, nullable: true, description: "Grounded: TrasllatContenidor.dathoradesti" }
+        idequipament: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.idequipament — FK a EQUIPAMENT (bc-datos-maestros-equipamiento-v1)" }
+        refequipament: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.refequipament (matrícula/referencia real del equipo)" }
+        idmanifest: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.idmanifest — FK a MANIFEST (bc-manifiestos-v1)" }
+        idpartida: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.idpartida — FK a PARTIDA (bc-manifiestos-v1)" }
+        numpartida: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.numpartida" }
+        estat: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.estat — catálogo de valores no confirmado en el checkout auditado" }
+        nif: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.nif (NIF del conductor)" }
+        idtransaccio: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.idtransaccio (correlación con el SOAP externo contenedoressecure)" }
+        observacions: { type: string, nullable: true, description: "Grounded: TrasllatContenidor.observacions" }
       example:
-        identificador: "MSCU1234567"
-        tipoMovimiento: "TRASLLAT"
-        fechaCargaDescarga: "2026-07-14T07:00:00Z"
-        viaEntradaSalida: "MARITIMA"
+        idtrasllats: 145820
+        matricula: "B-1234-CD"
+        origen: 12
+        desti: 45
+        idequipament: "MSCU1234567"
+        estat: "PENDENT"
+        nif: "12345678A"
     ContainerMovementCreate:
       type: object
-      required: [identificador, tipoMovimiento]
+      description: "Corregido 2026-07-14 — mismo grounding que ContainerMovement, ver nota superior"
+      required: [matricula]
       properties:
-        identificador: { type: string }
-        tipoMovimiento: { type: string }
-        fechaCargaDescarga: { type: string, format: date-time }
-        viaEntradaSalida: { type: string }
+        matricula: { type: string }
+        origen: { type: integer, format: int64 }
+        desti: { type: integer, format: int64 }
+        idequipament: { type: string }
+        refequipament: { type: string }
+        idmanifest: { type: string }
+        idpartida: { type: string }
+        numpartida: { type: string }
+        nif: { type: string }
+        observacions: { type: string }
     CustomsStatus:
       type: object
       description: "Grounded: VTcMAduanaContenidor.java (vista, solo lectura)"
@@ -116,24 +149,45 @@ components:
         idequipament: { type: string, nullable: true }
     TerminalReconciliationData:
       type: object
+      description: "Ampliado 2026-07-14 — ProtermCont tiene 34 campos reales (27 propios + 7 de auditoría), no ~10; faltaban 24 (identidad de buque, partes comerciales, pes, grua, trazabilidad de fichero). Ver dossier-13-aduanas-contenedores.md §5/§9."
       required: [idregistre]
       properties:
         idregistre: { type: integer, format: int64, description: "Grounded: ProtermCont.idregistre (PK, tabla PROTERM_CONT)" }
         idsubport: { type: string, nullable: true, description: "Grounded: ProtermCont.idsubport" }
         anyescala: { type: integer, format: int64, nullable: true, description: "Grounded: ProtermCont.anyescala" }
         numescala: { type: integer, format: int64, nullable: true, description: "Grounded: ProtermCont.numescala" }
+        dataescala: { type: string, format: date-time, nullable: true, description: "Grounded: ProtermCont.dataescala" }
         numescalaterminal: { type: string, nullable: true, description: "Grounded: ProtermCont.numescalaterminal" }
+        idvaixell: { type: string, nullable: true, description: "Grounded: ProtermCont.idvaixell — identidad de buque, acoplamiento no documentado previamente con Buques/Escalas" }
+        numllodys: { type: string, nullable: true, description: "Grounded: ProtermCont.numllodys (número Lloyd's del buque)" }
+        callsign: { type: string, nullable: true, description: "Grounded: ProtermCont.callsign" }
+        nomvaixell: { type: string, nullable: true, description: "Grounded: ProtermCont.nomvaixell" }
         refequipament: { type: string, nullable: true, description: "Grounded: ProtermCont.refequipament" }
         operacio: { type: string, nullable: true, description: "Grounded: ProtermCont.operacio" }
         dataoperacio: { type: string, format: date-time, nullable: true, description: "Grounded: ProtermCont.dataoperacio" }
-        estado: { type: string, nullable: true, description: "Grounded: ProtermCont.estado" }
+        manipulacio: { type: string, nullable: true, description: "Grounded: ProtermCont.manipulacio" }
+        digitcontrol: { type: string, nullable: true, description: "Grounded: ProtermCont.digitcontrol" }
+        codtamany: { type: string, nullable: true, description: "Grounded: ProtermCont.codtamany" }
+        frigorific: { type: boolean, nullable: true, description: "Grounded: ProtermCont.frigorific" }
+        plebuit: { type: boolean, nullable: true, description: "Grounded: ProtermCont.plebuit" }
+        consignatari: { type: string, nullable: true, description: "Grounded: ProtermCont.consignatari — parte comercial" }
+        armador: { type: string, nullable: true, description: "Grounded: ProtermCont.armador — parte comercial" }
+        tipuscodiarmador: { type: string, nullable: true, description: "Grounded: ProtermCont.tipuscodiarmador" }
+        pes: { type: number, nullable: true, description: "Grounded: ProtermCont.pes" }
+        grua: { type: string, nullable: true, description: "Grounded: ProtermCont.grua" }
+        nomfitxer: { type: string, nullable: true, description: "Grounded: ProtermCont.nomfitxer — trazabilidad del fichero de origen" }
+        dataproces: { type: string, format: date-time, nullable: true, description: "Grounded: ProtermCont.dataproces" }
         estibador: { type: string, nullable: true, description: "Grounded: ProtermCont.estibador" }
+        estado: { type: string, nullable: true, description: "Grounded: ProtermCont.estado" }
       example:
         idregistre: 340221
         idsubport: "B"
         numescala: 5521
+        idvaixell: "9876543"
+        numllodys: "9876543"
         refequipament: "REF-000145820"
         operacio: "DESCARREGA"
+        pes: 24500.5
         estado: "CONCILIAT"
     ReconciliationError:
       type: object
@@ -142,7 +196,7 @@ components:
         iderror: { type: integer, format: int64, description: "Grounded: ErrorProcConc.iderror (PK)" }
         tipuserror: { $ref: "#/components/schemas/TipoErrorConciliacion" }
         errorwarning: { type: string, enum: [E, W], description: "Grounded: ErrorProcConc.errorwarning" }
-        coderror: { type: integer, format: int64, nullable: true, description: "Grounded: ErrorProcConc.coderror — catálogo extenso (~40 constantes CODERR_*), no replicado aquí por volumen, ver ErrorProcConc.java" }
+        coderror: { type: integer, format: int64, nullable: true, description: "Grounded: ErrorProcConc.coderror — catálogo extenso (111 constantes CODERR_*, rango 100-6000; corregido 2026-07-14, no ~40), no replicado aquí por volumen, ver ErrorProcConc.java (366 líneas totales)" }
         descripcio: { type: string, nullable: true, description: "Grounded: ErrorProcConc.descripcio" }
         refequipament: { type: string, nullable: true, description: "Grounded: ErrorProcConc.refequipament" }
       example:

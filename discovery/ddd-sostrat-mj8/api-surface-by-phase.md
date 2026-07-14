@@ -267,15 +267,21 @@ Consume `/api/v1/container-equipment` solo si la solicitud referencia un contene
 **No incluir en ningún endpoint**: credenciales/password — confirmado que no existen en el DTO fuente.
 
 ### `/api/v1/cruise-buses`, `/api/v1/cruise-security-points` — Servicios Auxiliares de Cruceros
-**Fuente:** `dataaccess/dto/serviciosAuxiliares/CreuerBus.java`, `CreuerVigilanciaPunt.java`
+
+**Corregido 2026-07-14** (`dossier-18-servicios-auxiliares-cruceros.md §9/§14`): `numescala`/`anyescala`/`ocupacio` no existen en los DTOs fuente — `CreuerBus` es un agregado por día (`dia`), no por escala; `CreuerVigilanciaPunt` es catálogo maestro sin columna de escala en absoluto.
+
+**Fuente:** `dataaccess/dto/serviciosAuxiliares/CreuerBus.java` (PK `idcrebus`), `CreuerBusDetall.java`, `CreuerVigilanciaPunt.java` (PK `idpuntvigilancia`, Integer)
 ```json
-{ "numescala": "integer", "anyescala": "integer", "ocupacio": "integer", "idpuntvigilancia": "string" }
+{ "dia": "date", "quantitat": "integer", "idpuntvigilancia": "integer", "idsubport": "string" }
 ```
 
 ### `/api/v1/border-inspection-sites` — Capacidad e Inspección Fronteriza (SCPP)
+
+**Corregido 2026-07-14** (`dossier-19-inspeccion-scpp.md §5`): la PK real de `LlocDInspeccio` es `idlloc`, no `idllocinspeccio` (ese nombre solo existe como FK en tablas relacionadas).
+
 **Fuente:** `dataaccess/dto/LlocDInspeccio.java` (campo `CAPMAXSTDDIA`)
 ```json
-{ "idllocinspeccio": "string", "capmaxstddia": "integer", "descripcio": "string" }
+{ "idlloc": "string", "capmaxstddia": "integer", "descripcio": "string" }
 ```
 `GET /border-inspection-sites/{id}/shifts` → sub-recurso, evidencia `LlocDInspeccioTorn.java`.
 

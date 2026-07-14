@@ -1686,4 +1686,37 @@ del framework).
 
 ---
 
+### 30.5 — Continuación: corrección de specs + verificación de solapamiento + backlog readiness (2026-07-14, misma sesión)
+
+Tras el cierre inicial de la Sesión 30, Débora pidió ejecutar los pendientes que quedaron anotados en §30.4: corregir `dead-code-register.md` y las 9 specs/documentos, verificar que los nuevos dominios/apps no solapan con los ya identificados, revisar si los repos del lote de QA tienen dominio identificado, y evaluar si el backlog de SÒSTRAT está listo para que empiece la transformación (incluida la pregunta de si faltan specs por crear).
+
+**1. `dead-code-register.md` corregido** (verificado línea a línea contra el checkout real `GitHub-Repos/otros/SOSTRAT-Sostrat-MJ8/`, no solo contra el resumen de los dossiers):
+- **3 falsos positivos confirmados y corregidos** (items #9, #10, #13): `CN_LiquidadorMM_Pasajeros_Impl.java:245` (`preliquidarEquipo`) y dos métodos de `LiquidadorMM_Reglas_L2.java` (`calcularQUOTA`:823, `calcularNUM9`:838) son overrides activos y no comentados del patrón Strategy (`ILiquidadorMM_Reglas_Comunes`) — no código muerto. Verificado también que los items #11/#12 (mismo fichero) sí están genuinamente comentados — no se tocaron.
+- **6 candidatos nuevos añadidos** (items #23-27 en confianza ALTA, #10 en confianza MEDIA), todos verificados con `grep`/lectura directa: `decisionMensajeEnviarCUSREP` y código inalcanzable en `ProcesarMensaje_Impl.java` (Manifiestos); `getConsumosUltimos7Dias` y `obtenerConsumosElecFake` (Suministro Eléctrico); 3 Actions huérfanas (`CErrorEquipoAction`/`CErrorNivelEquipoAction`/`CErrorNivelTramoAction`) + wiring Spring comentado (Aduanas).
+- Numeración original preservada (no se renumeró nada) para no romper las referencias cruzadas por número desde otros dossiers (`#2`, `#3`, `#6`, `#7`, `#14`, `#19`).
+
+**2. 9 specs/documentos corregidos** (cada corrección verificada contra el dossier de origen y, en varios casos, releída contra el código fuente real para alcanzar certeza total, no solo confiar en el resumen del dossier):
+- `openapi-aduanas-contenedores.yaml` + `events-catalog.md §12`: `ContainerMovement` redefinido sobre `TrasllatContenidor` (no `MovimientoContenedor`, DTO huérfano); `TerminalReconciliationData` ampliado de ~10 a 34 campos de `ProtermCont`; catálogo `CODERR_*` corregido a 111 constantes (no ~40).
+- `openapi-buques.yaml`: ampliado de 14 a **68 campos reales** de `Vaixell.java` (tipos verificados uno a uno contra el fichero fuente, no solo el dossier); `bandera` corregido de `string` a `integer` (FK); `lng` corregido de `boolean` a `string` (hallazgo propio, verificado directamente en el código — no señalado explícitamente por el dossier); añadidos endpoint `/restore` y sub-recursos de certificados/ISPS/servicio regular de aduana.
+- `openapi-servicios-auxiliares-cruceros.yaml` + `events-catalog.md` + `api-surface-by-phase.md` + `ui-screens-backlog.md`: eliminados `numescala`/`anyescala`/`ocupacio`/`moll` (inexistentes); remodelado sobre `CreuerBus`/`CreuerVigilancia` (agregados por día, no por escala) y `CreuerBusDetall.quantitat` (campo real de ocupación); añadidos `CreuerAuxiliarBus`/`CreuerVigilanciaServei`/`CreuerServeiTarifa` (ausentes pese a concentrar la lógica de negocio real).
+- `openapi-inspeccion-scpp.yaml` + `events-catalog.md` + `api-surface-by-phase.md` + `ui-screens-backlog.md`: PK inventada `idinspeccio` corregida a la PK compuesta real (`sptinspeccio`+`anyinspeccio`+`seqinspeccio`); `idllocinspeccio`→`idlloc`; `resultat`→`resinspeccio`; añadidos `CalendariDeCapacitats`/`LlocTipusInspeccio` (mecanismo real que hace cumplir la capacidad, ausente).
+- `openapi-tramites-cliente.yaml` + `events-catalog.md` + `ui-screens-backlog.md`: nombres de campo sistemáticamente incorrectos corregidos (`idtipustramit`→`idtiptramit`, `idestat`→`idestattramit`, `datcreacio`→`datacreacio`, `datlectura`→`datalectura`; `assumpte` retirado, no existe — el dato libre real es `dadesaddicionals`).
+- `openapi-suministro-electrico-buques.yaml` + `events-catalog.md`: añadido `idestat` (gobierna la máquina de estados del BC, ausente); `navinternacional` corregido de `boolean` a `string`; añadidos recursos `SeConsum`/`SeConcesionari`/`SeLogSincronizacion`.
+- `openapi-operadores-portuarios.yaml`: `eseffnetwork` corregido de `boolean` a `string` (`"S"`/`"N"`); `comptefaceenlace` (inexistente) corregido a `compteface`; añadido sub-recurso `CompteBancari` (cuentas bancarias/mandato SEPA, dato financiero sensible, marcado explícitamente para cifrado/exclusión de eventos) y endpoints de baja/restauración.
+- `coverage-audit.md`: `transporteterrestre` corregido de 89 a 56 rutas únicas (33 duplicadas entre `struts-config.xml` y su satélite, sin deduplicar en la cifra original); subtotal ajustado.
+
+Los 7 ficheros OpenAPI corregidos se validaron sintácticamente con `yaml.safe_load` tras cada edición (2 errores de sintaxis YAML detectados y corregidos en el proceso — dos puntos sin comillas dentro de un `summary` en texto plano).
+
+**3. Verificación de solapamiento de dominio**: cruzados los 6 BCs de Fase 6 contra los 21 dominios de `apb-domain-catalog` y los 21 BCs de Fase 0-4 (`catalog-comparison.md §D`) — **ninguno duplica un dominio existente**. Hallazgo nuevo: `bc-tramites-cliente-v1` → `dom-administracion-electronica-v1` tiene un desajuste semántico sin resolver (el dominio real está definido en torno a integración AGE — GEISER/Notifica/FACe/Portafirmas —, Trámites de Cliente es sobre gestiones de un operador portuario ante APB, no ante el Estado). Añadido a `PLAN_FASES_FUTURAS.md` #93.
+
+**4. Verificación de dominio en el lote de 33 apps de QA**: cruzados contra `apb-domain-catalog` y `repo-domain-coverage.md` (auditoría previa de 69 repos, 2026-07-11). **26/33 con dominio identificado.** 7/33 sin él: `DGT`/`MPS`/`MPT`/`NTA` (ya trackeados como pendientes en `repo-domain-coverage.md`) y **`ADV`/`FLU`(`APB.API.FIL`)/`RCF`** (hallazgo nuevo — ni siquiera están clonados localmente, nunca entraron en ninguna auditoría de dominio).
+
+**5. Evaluación de preparación del backlog**: actualizado `readiness-assessment.md` a v5. Respuesta a "¿deberían crearse specs?": **no** — las 23 apps con extracción real ya tienen spec propio; Efficiency Network y Escalas correctamente no tienen spec por diseño (extensión de otro agregado / migración, no extracción). Respuesta a "¿tenemos todo lo necesario para empezar?": **no del todo** — la corrección de esta sesión mejora la exactitud de lo ya documentado, pero **no cierra el residuo real de cobertura** que el propio `coverage-audit.md`/`readiness-assessment.md` v4 ya señalaba como pendiente (105 rutas de paquete raíz sin BC asignado, 100 batch jobs sin auditar job a job, 3 gaps SOAP, y sobre todo: **cero validación humana** — todo el árbol sigue en `status: discovered`, sin revisión de Arquitectura APB ni de ningún domain expert).
+
+### Calidad y validación (cierre de la continuación, 2026-07-14)
+
+`scripts/validate_repo.py --strict` → 0 errores, 10 warnings exentos · `python -m unittest discover tests` → 68/68 OK (sin cambios — todo el trabajo de esta continuación vive en `discovery/`, no toca componentes del catálogo) · los 7 ficheros OpenAPI corregidos parsean sin error (`yaml.safe_load`).
+
+---
+
 *Cierre de Sesión 30 (2026-07-14).*

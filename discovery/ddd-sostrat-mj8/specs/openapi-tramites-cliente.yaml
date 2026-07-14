@@ -7,7 +7,16 @@ info:
     ante el puerto — descubierto en la auditoría de cobertura 2026-07-13.
     Grounded en `sostrat/src/org/apb/sostrat/dataaccess/dto/TramitClient.java`
     (tabla `TRAMIT_CLIENT`).
-  version: "1.0.0"
+
+    **Corrección 2026-07-14** (`dossier-20-tramites-cliente.md §9/§14`): la
+    v1.0.0 de este contrato usaba nombres de campo sistemáticamente
+    incorrectos — `assumpte` (no existe en el DTO real; el campo real más
+    cercano es `dadesaddicionals`, datos libres, no un "asunto"),
+    `idtipustramit`→`idtiptramit`, `idestat`→`idestattramit`,
+    `datcreacio`→`datacreacio`, `datlectura`→`datalectura`. Corregidos todos
+    contra el DTO real (`TramitClient.java`, `TramitClientTipus.java`,
+    `TramitClientEstat.java`).
+  version: "1.1.0"
   contact:
     name: Arquitectura APB
     email: arquitectura@portdebarcelona.cat
@@ -33,9 +42,10 @@ paths:
         - name: idusuari
           in: query
           schema: { type: string }
-        - name: idtipustramit
+        - name: idtiptramit
           in: query
           schema: { type: string }
+          description: "Corregido 2026-07-14 (antes idtipustramit)"
         - name: cursor
           in: query
           schema: { type: string }
@@ -119,30 +129,38 @@ components:
   schemas:
     ClientProcedure:
       type: object
+      description: "Corregido 2026-07-14 — nombres de campo alineados con TramitClient.java. Ver info.description y dossier-20-tramites-cliente.md §9."
       required: [idtramit, idusuari]
       properties:
         idtramit: { type: integer, format: int64, description: "Grounded: TramitClient.idtramit (PK, columna IDTRAMIT)" }
-        idusuari: { type: string, description: "Grounded: TramitClient — FK hacia Usuari/Operadores Portuarios" }
-        idtipustramit: { type: string, nullable: true, description: "Grounded: TramitClientTipus (tabla TRAMIT_CLIENT_TIPUS)" }
-        idestat: { type: string, nullable: true, description: "Grounded: TramitClientEstat (tabla TRAMIT_CLIENT_ESTAT)" }
-        assumpte: { type: string, nullable: true, description: "Grounded: TramitClient.assumpte" }
-        datcreacio: { type: string, format: date-time, nullable: true }
-        datlectura: { type: string, format: date-time, nullable: true }
-        datresolucio: { type: string, format: date-time, nullable: true }
+        idusuari: { type: string, description: "Grounded: TramitClient.idusuari — FK hacia Usuari/Operadores Portuarios" }
+        sentittramit: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: TramitClient.sentittramit (columna SENTITTRAMIT), valores S/E observados en código, semántica exacta no confirmada textualmente — pendiente de confirmar con el equipo SÒSTRAT" }
+        dadesaddicionals: { type: string, nullable: true, description: "Añadido 2026-07-14 — Grounded: TramitClient.dadesaddicionals (datos adicionales libres; NO es un campo 'assumpte'/asunto, ese campo no existe en el DTO real)" }
+        idtiptramit: { type: string, nullable: true, description: "Corregido 2026-07-14 (antes idtipustramit) — Grounded: TramitClient.idtiptramit, FK a TramitClientTipus (tabla TRAMIT_CLIENT_TIPUS)" }
+        idestattramit: { type: string, nullable: true, description: "Corregido 2026-07-14 (antes idestat) — Grounded: TramitClient.idestattramit, valores PD/LE/RA/RE de CN_TramitClientEstat (máquina de estados de 4 valores)" }
+        idtramitorigen: { type: integer, format: int64, nullable: true, description: "Añadido 2026-07-14 — Grounded: TramitClient.idtramitorigen, auto-referencia para la cadena 'trámite respuesta'" }
+        datacreacio: { type: string, format: date-time, nullable: true, description: "Corregido 2026-07-14 (antes datcreacio)" }
+        datalectura: { type: string, format: date-time, nullable: true, description: "Corregido 2026-07-14 (antes datlectura) — se rellena automáticamente al pasar a estado LE" }
+        dataresolucio: { type: string, format: date-time, nullable: true, description: "Se rellena automáticamente al pasar a RA/RE" }
+        observacions: { type: string, nullable: true }
       example:
         idtramit: 30982
         idusuari: "U0044213"
-        idtipustramit: "SOL-DOC"
-        idestat: "PENDENT"
-        assumpte: "Solicitud de duplicado de factura"
-        datcreacio: "2026-07-10T08:12:00Z"
+        sentittramit: "E"
+        idtiptramit: "SOL-DOC"
+        idestattramit: "PD"
+        datacreacio: "2026-07-10T08:12:00Z"
     ClientProcedureCreate:
       type: object
-      required: [idusuari, idtipustramit]
+      description: "Corregido 2026-07-14 — mismo grounding que ClientProcedure"
+      required: [idusuari, idtiptramit]
       properties:
         idusuari: { type: string }
-        idtipustramit: { type: string }
-        assumpte: { type: string }
+        idtiptramit: { type: string }
+        sentittramit: { type: string }
+        dadesaddicionals: { type: string }
+        idtramitorigen: { type: integer, format: int64 }
+        observacions: { type: string }
     Pagination:
       type: object
       properties:

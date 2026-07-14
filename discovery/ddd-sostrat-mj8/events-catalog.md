@@ -367,33 +367,63 @@ Este es un modelo de lectura (vista SQL), no un evento de escritura real — inc
 ## 12. Aduanas / Control de Contenedores
 
 ### TrasladoContenedorActualizado
-**Fuente:** `dataaccess/dto/MovimientoContenedor.java` — DTO simple sin tabla propia confirmada (probablemente objeto de transferencia entre capas, no entidad persistida directamente).
+
+**Corregido 2026-07-14** (dossier-13-aduanas-contenedores.md §2/§9/§14): la fuente anterior, `dataaccess/dto/MovimientoContenedor.java`, es un DTO huérfano — clase `Serializable` simple, sin anotación de persistencia, sin DAO propio, sin ningún punto de uso confirmado en todo el checkout. No representa el traslado real de un contenedor.
+
+**Fuente real:** `sostratWSCXF/.../dataaccess/dto/TrasllatContenidor.java` (tabla `TRASLLAT_CONTENIDOR`, PK `IDTRASLLATS`, confirmado por SQL literal `SQL_INSERT`/`SQL_UPDATE`/`SQL_SELECT` de `TrasllatContenidorDaoImpl.java`). Trigger: alta/actualización vía la UI interna (`TrasladosAction`) o el SOAP externo `contenedoressecure` (`CN_TrasllatContenidor.actualizarTrasladoContenedor`, mismo agregado, doble canal de escritura confirmado).
 ```json
 {
-  "identificador": "string",
-  "tipoMovimiento": "string",
-  "fechaCargaDescarga": "date",
-  "fechaEntradaSalida": "date",
-  "viaEntradaSalida": "string",
-  "codResultado": "integer"
+  "idtrasllats": "long",
+  "idusuari": "string",
+  "matricula": "string",
+  "origen": "long",
+  "dathoraorigen": "date",
+  "desti": "long",
+  "dathoradesti": "date",
+  "idequipament": "string",
+  "refequipament": "string",
+  "idmanifest": "string",
+  "idpartida": "string",
+  "numpartida": "string",
+  "estat": "string",
+  "nif": "string",
+  "idtransaccio": "string",
+  "observacions": "string"
 }
 ```
 Vista de consulta relacionada (solo lectura, útil para el modelo de query del nuevo servicio): `dataaccess/views/dto/aduanas/VTcMAduanaContenidor.java` — campos `escala, referencia, datentrada, declarante, estado, muelle, dua, mercancia, matricula, idequipament, anyescala, idsubport`.
 
-### DatosTerminalConciliados (gap cerrado 2026-07-11)
-**Fuente:** `service/terminales/impl/CN_ConciliacioController_Impl.java` (orquesta la conciliación; no persiste directamente) sobre `dataaccess/dto/terminales/ProtermCont.java` (tabla `PROTERM_CONT`, PK `idregistre`, clave de negocio real `refequipament+operacio+numescalaterminal`) y `dataaccess/dto/terminales/ErrorProcConc.java` (errores/warnings de conciliación, PK `iderror`).
+### DatosTerminalConciliados (gap cerrado 2026-07-11, payload ampliado 2026-07-14)
+**Fuente:** `service/terminales/impl/CN_ConciliacioController_Impl.java` (orquesta la conciliación; no persiste directamente) sobre `dataaccess/dto/terminales/ProtermCont.java` (tabla `PROTERM_CONT`, PK `idregistre`, clave de negocio real `refequipament+operacio+numescalaterminal`) y `dataaccess/dto/terminales/ErrorProcConc.java` (errores/warnings de conciliación, PK `iderror`). **Corregido 2026-07-14** (dossier-13 §5/§9): `ProtermCont` tiene 34 campos reales (27 propios + 7 de auditoría), no ~10 — faltaban 24 (identidad de buque, partes comerciales, `pes`, `grua`, trazabilidad de fichero).
 ```json
 {
   "idregistre": "long",
   "idsubport": "string",
   "anyescala": "long",
   "numescala": "long",
+  "dataescala": "date",
   "numescalaterminal": "string",
+  "idvaixell": "string",
+  "numllodys": "string",
+  "callsign": "string",
+  "nomvaixell": "string",
   "refequipament": "string",
   "operacio": "string",
   "dataoperacio": "date",
-  "estado": "string",
-  "estibador": "string"
+  "manipulacio": "string",
+  "digitcontrol": "string",
+  "codtamany": "string",
+  "frigorific": "boolean",
+  "plebuit": "boolean",
+  "consignatari": "string",
+  "armador": "string",
+  "tipuscodiarmador": "string",
+  "pes": "decimal",
+  "grua": "string",
+  "nomfitxer": "string",
+  "dataproces": "date",
+  "estibador": "string",
+  "estado": "string"
 }
 ```
 Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encuentra una discrepancia):
@@ -408,10 +438,9 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
   "numescala": "integer"
 }
 ```
-`tipuserror` — valores confirmados en código: `CN`, `CV`, `TER`, `SSI`, `CNC`, `STI`, `ALI`, `COA`. `errorwarning` — `E` (error) / `W` (warning). `coderror` tiene un catálogo extenso de constantes numéricas (`CODERR_*`, ~40 valores entre 1001-7001) — no se replica aquí por volumen, ver `ErrorProcConc.java` para el catálogo completo antes de fijar el enum definitivo del contrato.
+`tipuserror` — valores confirmados en código: `CN`, `CV`, `TER`, `SSI`, `CNC`, `STI`, `ALI`, `COA`. `errorwarning` — `E` (error) / `W` (warning). `coderror` tiene un catálogo extenso de constantes numéricas (`CODERR_*`, **111 constantes reales, rango 100-6000; corregido 2026-07-14, no ~40 entre 1001-7001**) — no se replica aquí por volumen, ver `ErrorProcConc.java` (366 líneas totales) para el catálogo completo antes de fijar el enum definitivo del contrato.
 
-### DatosTerminalConciliados
-**Fuente:** proceso batch `sostrat-BATCH/.../tasklet/terminales/ConciliarDades.java` — **no se ha extraído un DTO de evento específico en esta ronda**; la evidencia disponible es a nivel de proceso (job SpringBatch), no de entidad. Payload pendiente.
+**Nota (2026-07-14):** el proceso batch `sostrat-BATCH/.../tasklet/terminales/ConciliarDades.java`, citado en una versión anterior de este documento como fuente alternativa sin DTO de evento extraído, queda resuelto por el hallazgo de arriba — es el mismo flujo de conciliación de `CN_ConciliacioController_Impl.java`, no una fuente distinta pendiente.
 
 ---
 
@@ -721,30 +750,58 @@ Valores reales confirmados de `entidad`: `T` (Títulos, vía `CN_TitolCI`), `A` 
 **Nota de seguridad**: confirmado por lectura completa del DTO (2253 líneas) que no existe ningún campo de credencial/password — este evento nunca debe incluir datos de autenticación.
 
 ### ServicioBusCruceroAsignado / ServicioVigilanciaCruceroRegistrado
-**Fuente:** `dataaccess/dto/serviciosAuxiliares/CreuerBus.java` (tabla `CREUER_BUS`), `CreuerVigilanciaPunt.java` (tabla `CREUER_VIGILANCIA_PUNT`).
+
+**Corregido 2026-07-14** (`dossier-18-servicios-auxiliares-cruceros.md §10/§14`): `numescala`/`anyescala`/`ocupacio` no existen en los DTOs fuente — `CreuerBus`/`CreuerVigilancia` son agregados por día natural, no por escala; el campo real de ocupación es `CreuerBusDetall.quantitat`.
+
+**Fuente:** `dataaccess/dto/serviciosAuxiliares/CreuerBus.java` (tabla `CREUER_BUS`), `CreuerAuxiliarBus.java`, `CreuerVigilanciaServei.java`.
+
+`ServicioBusCruceroAsignado` (asignación de auxiliar a un bus):
 ```json
-{ "idcreuerbus": "long", "numescala": "integer", "anyescala": "integer", "ocupacio": "integer" }
+{ "idcrebus": "long", "dia": "date", "idprestador": "string", "idtarifa": "string", "horainici": "integer", "horafin": "integer", "quantitat": "integer" }
+```
+`ServicioVigilanciaCruceroRegistrado` (registro de servicio de vigilancia, payload real distinto del anterior — antes documentado erróneamente como el mismo):
+```json
+{ "idcrevigilancia": "long", "idpuntvigilancia": "integer", "idprestador": "string", "idtarifa": "string", "horainici": "integer", "horafin": "integer", "quantitat": "integer", "auxvigilant": "integer" }
 ```
 
 ### InspeccionRegistrada / CapacidadPifActualizada
+
+**Corregido 2026-07-14** (`dossier-19-inspeccion-scpp.md §5/§9/§10`): el payload usaba `idinspeccio`, un campo que no existe en `Inspeccio.java` — la PK real es compuesta (`sptinspeccio`+`anyinspeccio`+`seqinspeccio`, confirmada en `InspeccioPk.java`). También corrige `idllocinspeccio`→`idlloc` (nombre real de la FK en la tabla `INSPECCIO`) y `resultat`→`resinspeccio` (nombre real del campo, FK a `ResultatDInspeccio.idresinspeccio`).
+
 **Fuente:** `dataaccess/dto/Inspeccio.java` (tabla `INSPECCIO`), `LlocDInspeccio.java` (tabla `LLOC_D_INSPECCIO`, campo `CAPMAXSTDDIA`).
 ```json
-{ "idinspeccio": "long", "idllocinspeccio": "string", "capmaxstddia": "integer", "resultat": "string" }
+{ "sptinspeccio": "string", "anyinspeccio": "integer", "seqinspeccio": "integer", "idlloc": "string", "resinspeccio": "string" }
 ```
-**Sin confirmar**: nombre exacto de los valores posibles de `resultat` — no se ha extraído un enum explícito en esta pasada.
+Evento `CapacidadPifActualizada` (payload separado, sobre `LlocDInspeccio`):
+```json
+{ "idlloc": "string", "capmaxstddia": "integer" }
+```
+**Sin confirmar**: nombre exacto de los valores posibles de `resinspeccio` — no se ha extraído un enum explícito en esta pasada. **Gap pendiente señalado por el dossier**: `CapacidadPifActualizada` solo se dispara hoy desde la gestión manual del lugar, no desde `CN_CapacitatsInspeccio.ajustarCapacidades()` (la operación de negocio más frecuente del clúster, ejecutada en cada alta de `Posicionament` con `gescapacitat=S`) — no tiene evento de dominio propio todavía.
 
 ### TramiteClienteIniciado / TramiteClienteResuelto
+
+**Corregido 2026-07-14** (`dossier-20-tramites-cliente.md §9/§10`): el payload usaba `idtipustramit`/`datcreacio`, nombres no grounded — los reales son `idtiptramit`/`datacreacio` (`TramitClient.java`).
+
 **Fuente:** `dataaccess/dto/TramitClient.java` (tabla `TRAMIT_CLIENT`).
+
+`TramiteClienteIniciado` (alta, `CN_TramitClient_Impl.crear`):
 ```json
-{ "idtramit": "long", "idusuari": "string", "idtipustramit": "string", "datcreacio": "date", "datresolucio": "date" }
+{ "idtramit": "long", "idusuari": "string", "idtiptramit": "string", "sentittramit": "string", "datacreacio": "date" }
+```
+`TramiteClienteResuelto` (transición a RA/RE, `CN_TramitClient_Impl.modificar`):
+```json
+{ "idtramit": "long", "idestattramit": "string", "dataresolucio": "date" }
 ```
 
 ### LecturaElectricidadRegistrada / ConsumoElectricidadLiquidado
+
+**Corregido 2026-07-14** (`dossier-21-suministro-electrico-buques.md §4/§9/§14`): añadido `idestat` (campo que gobierna toda la máquina de estados del BC, ausente del payload) y `navinternacional` corregido a `string` (indicador S/N, no boolean).
+
 **Fuente:** `dataaccess/dto/suministres/electricitat/SeLectura.java` (vista `V_TC_LECTURA_ELECTRICITAT`).
 ```json
-{ "anyescala": "integer", "numescala": "integer", "idarmador": "string", "lecturainici": "decimal", "lecturafi": "decimal", "consumototal": "decimal", "tiempoconexion": "decimal", "tiempoatraque": "decimal" }
+{ "idlectura": "long", "anyescala": "integer", "numescala": "integer", "idarmador": "string", "idestat": "string", "navinternacional": "string", "lecturainici": "decimal", "lecturafi": "decimal", "consumototal": "decimal", "tiempoconexion": "decimal", "tiempoatraque": "decimal" }
 ```
-**Sin confirmar**: enum de estados de una lectura — el código expone acciones (`liquidacionMasiva`/`desliquidar`/`anular`) pero no un campo de estado explícito documentado.
+**Parcialmente confirmado 2026-07-14**: los 5 NOMBRES del enum de estado sí están confirmados (`CREADA` → `PDTE_LIQ` → `LIQUIDADA` → `FACTURADA`, con `ANULADA` alcanzable desde varios puntos) — siguen sin confirmar los códigos de cadena literales reales (constantes `SE_ELECT_ESTADOLECT_*`).
 
 ---
 

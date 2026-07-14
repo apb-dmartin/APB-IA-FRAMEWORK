@@ -9,7 +9,19 @@ info:
     funcionalidad no existía). Grounded en
     `sostrat/src/org/apb/sostrat/dataaccess/dto/suministres/electricitat/SeLectura.java`
     (vista `V_TC_LECTURA_ELECTRICITAT`, ticket FACTSTD-878).
-  version: "1.0.0"
+
+    **Corrección 2026-07-14** (`dossier-21-suministro-electrico-buques.md
+    §4/§9`): añadido `idestat` (ausente en la v1.0.0), corregido el tipo de
+    `navinternacional` (era `boolean`, el campo real es `String` indicador
+    S/N), y añadidos recursos para `SeConsum` (sesiones individuales de
+    conexión/desconexión), `SeConcesionari` y el histórico
+    `SeLogSincronizacion` — ausentes de la v1.0.0 pese a ser entidades reales
+    con DAO transaccional confirmado. También se documenta explícitamente que
+    la única vía real de creación de lecturas es automática vía el batch de
+    sincronización (`SeLecturasElectricidadTasklet`), no un alta manual — el
+    endpoint `POST /shore-power-readings` de la v1.0.0 no está grounded en
+    ningún flujo de alta manual real.
+  version: "1.1.0"
   contact:
     name: Arquitectura APB
     email: arquitectura@portdebarcelona.cat
@@ -92,6 +104,72 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ShorePowerReading" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /shore-power-readings/{idlectura}/sessions:
+    parameters:
+      - name: idlectura
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: listShorePowerSessions
+      summary: Listar las sesiones de conexión/desconexión de una lectura (SeConsum)
+      description: |
+        Añadido 2026-07-14 — Grounded: SeConsum.java (PK compuesta
+        idlectura+idconsumo), una fila por sesión recibida del sistema externo
+        de telemetría. Ausente de la v1.0.0 de este contrato.
+      tags: [shore-power-readings]
+      responses:
+        "200":
+          description: Página de sesiones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ShorePowerSession" }
+  /shore-power-concessionaires:
+    get:
+      operationId: listShorePowerConcessionaires
+      summary: Listar concesionarios de puntos de suministro (SeConcesionari)
+      description: "Añadido 2026-07-14 — Grounded: SeConcesionari.java (catálogo, tabla real). Ausente de la v1.0.0."
+      tags: [shore-power-readings]
+      responses:
+        "200":
+          description: Página de concesionarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ShorePowerConcessionaire" }
+  /shore-power-sync-log:
+    get:
+      operationId: listShorePowerSyncLog
+      summary: Consultar el histórico de errores/eventos de sincronización (SeLogSincronizacion)
+      description: |
+        Añadido 2026-07-14 — Grounded: SeLogSincronizacion (6 campos), poblada
+        por crearErrorSync() en cada paso relevante del proceso batch (inicio,
+        sin datos, error de conexión, fin). Ausente de la v1.0.0.
+      tags: [shore-power-readings]
+      parameters:
+        - name: cursor
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Página del log de sincronización
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ShorePowerSyncLogEntry" }
   /shore-power-readings/{idlectura}/settle:
     parameters:
       - name: idlectura
@@ -100,12 +178,14 @@ paths:
         schema: { type: integer, format: int64 }
     post:
       operationId: settleShorePowerReading
-      summary: Liquidar la lectura (grounded: liquidacionMasiva)
+      summary: "Liquidar la lectura (grounded: liquidacionMasiva)"
       description: |
-        ⚠️ Sin enum de estados confirmado en el código — el legacy expone
-        acciones (liquidacionMasiva/desliquidar/anular) pero no un campo de
-        estado explícito documentado. Requiere spike de confirmación con
-        negocio antes de implementar la máquina de estados real.
+        Actualizado 2026-07-14 (dossier-21 §9): cierre parcial del gap — los
+        5 NOMBRES del enum de estado sí están confirmados (CREADA → PDTE_LIQ
+        → LIQUIDADA → FACTURADA, con ANULADA alcanzable desde varios puntos,
+        campo idestat). Sigue pendiente confirmar los códigos de cadena
+        literales reales (constantes SE_ELECT_ESTADOLECT_*) antes de fijar el
+        enum en el contrato definitivo.
       tags: [shore-power-readings]
       responses:
         "200":
@@ -122,7 +202,7 @@ paths:
         schema: { type: integer, format: int64 }
     post:
       operationId: unsettleShorePowerReading
-      summary: Desliquidar la lectura (grounded: desliquidar)
+      summary: "Desliquidar la lectura (grounded: desliquidar)"
       tags: [shore-power-readings]
       responses:
         "200":
@@ -151,7 +231,8 @@ components:
         numescala: { type: integer, description: "Grounded: SeLectura.numescala" }
         idconsignatario: { type: string, nullable: true, description: "Grounded: SeLectura.idconsignatario" }
         idarmador: { type: string, nullable: true, description: "Grounded: SeLectura.idarmador" }
-        navinternacional: { type: boolean, nullable: true, description: "Grounded: SeLectura.navinternacional" }
+        idestat: { type: string, nullable: true, description: "Añadido 2026-07-14 — Grounded: SeLectura.idestat (String). Máquina de estados de 5 nombres confirmados (CREADA → PDTE_LIQ → LIQUIDADA → FACTURADA, con ANULADA alcanzable desde varios puntos) — los códigos de cadena literales (constantes SE_ELECT_ESTADOLECT_*) NO están confirmados en este checkout; enum no fijado en este contrato hasta esa confirmación (dossier-21 §3/§14)" }
+        navinternacional: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: SeLectura.navinternacional (String, indicador S/N; la v1.0.0 lo tipaba erróneamente como boolean)" }
         tiempoconexion: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.tiempoconexion" }
         tiempoatraque: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.tiempoatraque" }
         lecturainici: { type: number, format: double, nullable: true, description: "Grounded: SeLectura.lecturainici" }
@@ -165,7 +246,8 @@ components:
         anyescala: 2026
         numescala: 8821
         idarmador: "ARM-0091"
-        navinternacional: true
+        idestat: "LIQUIDADA"
+        navinternacional: "N"
         tiempoconexion: 18.5
         tiempoatraque: 20.0
         lecturainici: 1042300.0
@@ -184,6 +266,41 @@ components:
         idarmador: { type: string }
         lecturainici: { type: number, format: double }
         lecturafi: { type: number, format: double }
+    ShorePowerSession:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: SeConsum.java, una fila por sesión de conexión/desconexión recibida del sistema externo de telemetría"
+      required: [idlectura, idconsumo]
+      properties:
+        idlectura: { type: integer, format: int64, description: "FK a SeLectura, parte 1 de la PK compuesta" }
+        idconsumo: { type: integer, format: int64, description: "Parte 2 de la PK compuesta" }
+        idfield: { type: string, nullable: true, description: "Identificador único de la sesión en el sistema externo, usado para detectar duplicados en re-sincronizaciones" }
+        vaicodimo: { type: string, nullable: true, description: "Dato de buque denormalizado del payload externo (ShipImo) — no resuelto contra el maestro Vaixell en esta entidad" }
+        vainom: { type: string, nullable: true, description: "Denormalizado del payload externo (ShipName)" }
+        conexion: { type: string, format: date-time, nullable: true }
+        desconexion: { type: string, format: date-time, nullable: true }
+        duracionhoras: { type: number, format: double, nullable: true }
+        consumo: { type: number, format: double, nullable: true, description: "Consumo del intervalo (LoadEnergy del WS externo)" }
+        lecturainicial: { type: number, format: double, nullable: true }
+        lecturafinal: { type: number, format: double, nullable: true }
+        terminal: { type: string, nullable: true, description: "Nombre del sistema origen (SystemName del WS, ejemplo real: 'BEST')" }
+        puntosuministro: { type: string, nullable: true }
+    ShorePowerConcessionaire:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: SeConcesionari.java (catálogo, tabla real)"
+      required: [idconcesionari]
+      properties:
+        idconcesionari: { type: string }
+        dsssystemname: { type: string, nullable: true, description: "Semántica no confirmada más allá de 'nombre de sistema del concesionario' (dossier-21 §5/§14)" }
+    ShorePowerSyncLogEntry:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: SeLogSincronizacion, poblada por crearErrorSync() en cada paso relevante del batch"
+      required: [idlog]
+      properties:
+        idlog: { type: integer, format: int64 }
+        datelog: { type: string, format: date-time, nullable: true }
+        datesync: { type: string, format: date-time, nullable: true }
+        idfield: { type: string, nullable: true, description: "Referencia a la sesión externa que originó el log" }
+        error: { type: string, nullable: true, description: "Texto de error ya traducido" }
     Pagination:
       type: object
       properties:

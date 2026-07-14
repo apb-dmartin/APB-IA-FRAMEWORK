@@ -270,6 +270,12 @@ import { APBButton } from './components/core/APBButton';
 
 **Objetivo mínimo de Fase 1:** ≥3 dominios en estado `approved`. Candidatos probables: Gestión de Atraques, Tráfico de Mercancías, Gestión de Concesiones.
 
+| # | Tarea (añadida 2026-07-14) | Prerrequisito | Estado |
+|---|-------|--------------|--------|
+| DC4 | **Validación humana de toda la serie DDD SÒSTRAT** (24 dossiers, 27 bc-*.md, specs, backlog) — según `readiness-assessment.md` v5, sigue siendo el único bloqueo real antes de sprint planning; todo el árbol sigue en `status: "discovered"` | Arquitectura APB + domain experts por dominio | ⬜ Pendiente |
+| DC5 | Confirmar `parent_domain` de `bc-tramites-cliente-v1` — desajuste semántico detectado 2026-07-14 entre el dominio real `dom-administracion-electronica-v1` (integración AGE) y el alcance de Trámites de Cliente (gestiones ante APB, no ante el Estado) | Arquitectura APB | ⬜ Pendiente |
+| DC6 | Identificar dominio de 7 apps del lote de 33 planes de pruebas sin cobertura en `apb-domain-catalog`: `ADV`, `DGT`, `FLU`(`APB.API.FIL`), `MPS`, `MPT`, `NTA`, `RCF` — 4 ya trackeadas en `discovery/ddd-sostrat-mj8/repo-domain-coverage.md`, 3 (`ADV`/`FLU`/`RCF`) nunca auditadas (ni clonadas localmente) | Análisis DDD dedicado o confirmación de negocio | ⬜ Pendiente, sin urgencia |
+
 **Proceso de ingesta:**
 ```
 1. Funcional habla con apb-sub-ddd-interview-v1.0 (entrevista guiada)

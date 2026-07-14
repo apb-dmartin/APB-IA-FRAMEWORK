@@ -12,15 +12,31 @@ info:
     ⚠️ Evaluar con Arquitectura APB si debe fusionarse con el servicio PIF
     (`openapi-pif.yaml`) — comparten dominio (dom-inspeccion-control-v1) y
     ticket de origen (PIF-1429). Esta spec se mantiene separada hasta esa
-    decisión.
-  version: "1.0.0"
+    decisión. Ver `app-dossiers/dossier-19-inspeccion-scpp.md §7`: recomendación
+    con evidencia de código es fusionar, evaluar también `Posicionament` en el
+    mismo movimiento.
+
+    **Corrección 2026-07-14** (`dossier-19-inspeccion-scpp.md §5/§9/§10`, error
+    de contrato más grave que el ya corregido de `LlocDInspeccio`): el esquema
+    `Inspection`/`InspectionCreate` declaraba una PK simple `idinspeccio` que
+    **no existe** en `Inspeccio.java` — la PK real es compuesta
+    (`sptinspeccio`+`anyinspeccio`+`seqinspeccio`, confirmado por
+    `InspeccioPk.java`, mismo patrón de 3 partes que `OperacioPif`). También se
+    corrige `idllocinspeccio` → `idlloc` como PK de `LlocDInspeccio` (ya
+    señalado por `dossier-11-pif.md`, reconfirmado aquí — el nombre real
+    `IDLLOCINSPECCIO` sí existe en el esquema pero como FK en las tablas
+    relacionadas `LLOC_TIPUS_INSPECCIO`/`CALENDARI_DE_CAPACITATS`, no en
+    `LLOC_D_INSPECCIO` misma), y se amplía el contrato con `CalendariDeCapacitats`
+    y `LlocTipusInspeccio` — el mecanismo real que hace cumplir la capacidad,
+    ausente de la v1.0.0.
+  version: "1.1.0"
   contact:
     name: Arquitectura APB
     email: arquitectura@portdebarcelona.cat
   x-ai-generated: true
   x-ai-skill: "apb-arch-api-contract-v1.0"
   x-source-domain: "dom-inspeccion-control-v1"
-  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/LlocDInspeccio.java, Inspeccio.java"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/LlocDInspeccio.java, LlocDInspeccioTorn.java, LlocTipusInspeccio.java, CalendariDeCapacitats.java, Inspeccio.java, InspeccioPk.java"
 servers:
   - url: https://apim.portdebarcelona.cat/border-inspection-sites/v1
     description: APIM (producción)
@@ -29,6 +45,8 @@ security:
 tags:
   - name: border-inspection-sites
     description: Lugares de inspección fronteriza y su capacidad
+  - name: inspections
+    description: Registro y consulta de resultados de inspección
 paths:
   /border-inspection-sites:
     get:
@@ -54,12 +72,13 @@ paths:
                     type: array
                     items: { $ref: "#/components/schemas/BorderInspectionSite" }
                   pagination: { $ref: "#/components/schemas/Pagination" }
-  /border-inspection-sites/{idllocinspeccio}:
+  /border-inspection-sites/{idlloc}:
     parameters:
-      - name: idllocinspeccio
+      - name: idlloc
         in: path
         required: true
         schema: { type: string }
+        description: "Corregido 2026-07-14 — PK real de LlocDInspeccio (antes idllocinspeccio, nombre que solo existe como FK en tablas relacionadas)"
     get:
       operationId: getBorderInspectionSite
       summary: Consultar capacidad de un lugar de inspección
@@ -71,9 +90,9 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/BorderInspectionSite" }
         "404": { $ref: "#/components/responses/NotFound" }
-  /border-inspection-sites/{idllocinspeccio}/shifts:
+  /border-inspection-sites/{idlloc}/shifts:
     parameters:
-      - name: idllocinspeccio
+      - name: idlloc
         in: path
         required: true
         schema: { type: string }
@@ -93,12 +112,76 @@ paths:
                   data:
                     type: array
                     items: { $ref: "#/components/schemas/InspectionShift" }
+  /border-inspection-sites/{idlloc}/inspection-types:
+    parameters:
+      - name: idlloc
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: listSiteInspectionTypes
+      summary: Listar los tipos de inspección válidos para este lugar (LlocTipusInspeccio)
+      description: |
+        Añadido 2026-07-14 — Grounded: LlocTipusInspeccio.java (tabla
+        LLOC_TIPUS_INSPECCIO, PK idllocinspeccio+idtipinspeccio — aquí el
+        nombre de columna IDLLOCINSPECCIO sí es correcto, es FK real hacia
+        LLOC_D_INSPECCIO.IDLLOC). Tabla de reglas que decide qué tipos de
+        inspección son válidos en cada lugar. Ausente de la v1.0.0 de este
+        contrato (dossier-19 §5/§7, entidad no documentada previamente).
+      tags: [border-inspection-sites]
+      responses:
+        "200":
+          description: Página de reglas lugar+tipo de inspección
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/SiteInspectionType" }
+  /border-inspection-sites/{idlloc}/capacity-calendar:
+    parameters:
+      - name: idlloc
+        in: path
+        required: true
+        schema: { type: string }
+      - name: year
+        in: query
+        schema: { type: integer }
+        description: "Grounded: CalendariDeCapacitats.anycalendari"
+      - name: month
+        in: query
+        schema: { type: integer }
+        description: "Grounded: CalendariDeCapacitats.mes"
+    get:
+      operationId: listSiteCapacityCalendar
+      summary: Consultar el calendario día-a-día de consumo de capacidad (CalendariDeCapacitats)
+      description: |
+        Añadido 2026-07-14 — Grounded: CalendariDeCapacitats.java (tabla
+        CALENDARI_DE_CAPACITATS, PK idllocinspeccio+anycalendari+mes+dia+seqtorn).
+        Es la entidad que CN_CapacitatsInspeccio.ajustarCapacidades() consulta y
+        actualiza en cada asignación de Posicionament con gescapacitat=S — sin
+        ella el modelo de dominio de SCPP está incompleto (dossier-19 §5/§7).
+        Ausente de la v1.0.0 de este contrato.
+      tags: [border-inspection-sites]
+      responses:
+        "200":
+          description: Página del calendario de capacidad
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/CapacityCalendarDay" }
   /inspections:
     post:
       operationId: createInspection
       summary: Registrar un resultado de inspección
-      description: "Grounded: Inspeccio.java (tabla INSPECCIO), columna SPTPOSICIONAMENT enlaza con Posicionament"
-      tags: [border-inspection-sites]
+      description: "Grounded: Inspeccio.java (tabla INSPECCIO), columna SPTPOSICIONAMENT enlaza con Posicionament. PK compuesta corregida 2026-07-14, ver info.description."
+      tags: [inspections]
       requestBody:
         required: true
         content:
@@ -111,6 +194,32 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Inspection" }
         "400": { $ref: "#/components/responses/BadRequest" }
+  /inspections/{sptinspeccio}/{anyinspeccio}/{seqinspeccio}:
+    parameters:
+      - name: sptinspeccio
+        in: path
+        required: true
+        schema: { type: string }
+      - name: anyinspeccio
+        in: path
+        required: true
+        schema: { type: integer }
+      - name: seqinspeccio
+        in: path
+        required: true
+        schema: { type: integer }
+    get:
+      operationId: getInspection
+      summary: Consultar una inspección por su PK compuesta real
+      description: "Añadido 2026-07-14 — la v1.0.0 no tenía endpoint de consulta individual, solo POST de alta, y usaba idinspeccio (inexistente) como si fuera el identificador de recurso."
+      tags: [inspections]
+      responses:
+        "200":
+          description: Inspección encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Inspection" }
+        "404": { $ref: "#/components/responses/NotFound" }
 components:
   securitySchemes:
     entraId:
@@ -124,41 +233,71 @@ components:
   schemas:
     BorderInspectionSite:
       type: object
-      required: [idllocinspeccio]
+      required: [idlloc]
       properties:
-        idllocinspeccio: { type: string, description: "Grounded: LlocDInspeccio.idllocinspeccio (PK, tabla LLOC_D_INSPECCIO)" }
-        capmaxstddia: { type: integer, nullable: true, description: "Grounded: LlocDInspeccio.capmaxstddia (columna CAPMAXSTDDIA, capacidad diaria)" }
+        idlloc: { type: string, description: "Corregido 2026-07-14 — Grounded: LlocDInspeccio.idlloc (PK real, tabla LLOC_D_INSPECCIO; antes idllocinspeccio, nombre inexistente en esta tabla)" }
+        capmaxstddia: { type: integer, format: int64, nullable: true, description: "Corregido 2026-07-14 (tipo: Long, no Integer genérico) — Grounded: LlocDInspeccio.capmaxstddia (columna CAPMAXSTDDIA, capacidad diaria)" }
         descripcio: { type: string, nullable: true, description: "Grounded: LlocDInspeccio.descripcio" }
         datactnoupif: { type: string, format: date-time, nullable: true, description: "Grounded: LlocDInspeccio.datactnoupif (columna DATACTNOUPIF, referencia al PIF)" }
       example:
-        idllocinspeccio: "PIF-BCN-01"
+        idlloc: "PIF-BCN-01"
         capmaxstddia: 24
         descripcio: "PIF Zona Franca"
     InspectionShift:
       type: object
       properties:
         idtorn: { type: string, description: "Grounded: LlocDInspeccioTorn (tabla LLOC_D_INSPECCIO_TORN)" }
-        horainici: { type: string, format: date-time, nullable: true }
-        horafi: { type: string, format: date-time, nullable: true }
-    Inspection:
+        horainici: { type: integer, nullable: true, description: "Corregido 2026-07-14 — Grounded: LlocDInspeccioTorn.horainici (Integer, no date-time; el DTO real no almacena hora como fecha/hora completa)" }
+        horafi: { type: integer, nullable: true, description: "Corregido 2026-07-14 — Grounded: LlocDInspeccioTorn.horafi (Integer, no date-time)" }
+    SiteInspectionType:
       type: object
-      required: [idinspeccio]
+      description: "Añadido 2026-07-14 — Grounded: LlocTipusInspeccio.java (tabla LLOC_TIPUS_INSPECCIO, PK idllocinspeccio+idtipinspeccio)"
+      required: [idllocinspeccio, idtipinspeccio]
       properties:
-        idinspeccio: { type: integer, format: int64, description: "Grounded: Inspeccio.idinspeccio (PK, tabla INSPECCIO)" }
-        idllocinspeccio: { type: string, nullable: true }
-        sptposicionament: { type: string, nullable: true, description: "Grounded: Inspeccio.sptposicionament (columna SPTPOSICIONAMENT, enlaza con Posicionament)" }
-        resultat: { type: string, nullable: true, description: "Grounded: ResultatDInspeccio — dominio de valores no confirmado en esta extracción" }
-      example:
-        idinspeccio: 90211
-        idllocinspeccio: "PIF-BCN-01"
-        resultat: "CONFORME"
-    InspectionCreate:
+        idllocinspeccio: { type: string, description: "FK real hacia LlocDInspeccio.idlloc — el nombre de columna sí es idllocinspeccio en ESTA tabla" }
+        idtipinspeccio: { type: string, description: "FK a TipusDInspeccio" }
+        concapesp: { type: integer, nullable: true }
+        mincapdia: { type: integer, nullable: true, description: "Capacidad mínima diaria reservada para esta combinación lugar+tipo" }
+    CapacityCalendarDay:
       type: object
-      required: [idllocinspeccio]
+      description: "Añadido 2026-07-14 — Grounded: CalendariDeCapacitats.java (tabla CALENDARI_DE_CAPACITATS, PK idllocinspeccio+anycalendari+mes+dia+seqtorn)"
+      required: [idllocinspeccio, anycalendari, mes, dia, seqtorn]
       properties:
         idllocinspeccio: { type: string }
+        anycalendari: { type: integer }
+        mes: { type: integer }
+        dia: { type: integer }
+        seqtorn: { type: integer, description: "FK a LlocDInspeccioTorn" }
+        capmaxdia: { type: integer, nullable: true }
+        capassdia: { type: integer, nullable: true, description: "Capacidad ya asignada — contador que CN_CapacitatsInspeccio decrementa/verifica en cada asignación" }
+        observacions: { type: string, nullable: true }
+        bloquejat: { type: string, nullable: true, description: "Flag (String, no boolean — mismo patrón que otros flags legacy S/N)" }
+        activo: { type: string, nullable: true, description: "Flag (String), default 'N'" }
+    Inspection:
+      type: object
+      description: "Corregido 2026-07-14 — PK compuesta real, no el idinspeccio inventado de la v1.0.0. Ver info.description y dossier-19-inspeccion-scpp.md §5/§9/§10."
+      required: [sptinspeccio, anyinspeccio, seqinspeccio]
+      properties:
+        sptinspeccio: { type: string, description: "Grounded: Inspeccio.sptinspeccio (String) — 1er componente de la PK compuesta real, confirmado en InspeccioPk.java" }
+        anyinspeccio: { type: integer, description: "Grounded: Inspeccio.anyinspeccio (Integer) — 2º componente de la PK compuesta real" }
+        seqinspeccio: { type: integer, description: "Grounded: Inspeccio.seqinspeccio (Integer) — 3er componente de la PK compuesta real" }
+        idlloc: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: Inspeccio.idlloc (FK a LlocDInspeccio; antes idllocinspeccio en el contrato, nombre real en esta tabla es idlloc)" }
+        sptposicionament: { type: string, nullable: true, description: "Grounded: Inspeccio.sptposicionament — 1er componente de la FK compuesta hacia Posicionament (junto con anyposicionament/seqposicionament, no modelados aún)" }
+        resinspeccio: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: Inspeccio.resinspeccio (FK a ResultatDInspeccio.idresinspeccio; el campo real se llama resinspeccio, no resultat)" }
+      example:
+        sptinspeccio: "PIF"
+        anyinspeccio: 2026
+        seqinspeccio: 90211
+        idlloc: "PIF-BCN-01"
+        resinspeccio: "CONFORME"
+    InspectionCreate:
+      type: object
+      description: "Corregido 2026-07-14 — mismo grounding que Inspection"
+      required: [idlloc]
+      properties:
+        idlloc: { type: string }
         sptposicionament: { type: string }
-        resultat: { type: string }
+        resinspeccio: { type: string }
     Pagination:
       type: object
       properties:

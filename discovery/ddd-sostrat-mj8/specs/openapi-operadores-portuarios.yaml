@@ -12,7 +12,17 @@ info:
 
     ⚠️ `parent_domain` tentativo — ver `bc-operadores-portuarios-v1.md`. Esta
     spec es provisional hasta confirmar el dominio con Arquitectura APB.
-  version: "0.1.0-provisional"
+
+    **Corrección 2026-07-14** (`dossier-23-operadores-portuarios.md
+    §2/§9/§14`): `eseffnetwork` corregido de `boolean` a `string` (valores
+    reales `"S"`/`"N"`, asignados literalmente en
+    `CN_Usuari_Impl.java:978-980` — la discrepancia se repetía en 3
+    documentos distintos, incluido este). `comptefaceenlace` (nombre
+    inexistente en el DTO) corregido a `compteface` (`Integer`). Añadido el
+    sub-recurso `CompteBancari` (cuentas bancarias/mandato SEPA) y endpoints
+    de baja/restauración — ausentes de la v0.1.0 pese a ser operaciones
+    reales (`dardeBaixa`/`restaurar`).
+  version: "0.2.0-provisional"
   contact:
     name: Arquitectura APB
     email: arquitectura@portdebarcelona.cat
@@ -96,6 +106,70 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/PortOperator" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /port-operators/{idusuari}/deactivate:
+    parameters:
+      - name: idusuari
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      operationId: deactivatePortOperator
+      summary: "Dar de baja el operador (grounded: dardeBaixa)"
+      description: "Añadido 2026-07-14 — operación real y distinta de un borrado físico, ausente de la v0.1.0. Ver dossier-23 §9."
+      tags: [port-operators]
+      responses:
+        "200":
+          description: Operador dado de baja
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PortOperator" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /port-operators/{idusuari}/restore:
+    parameters:
+      - name: idusuari
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      operationId: restorePortOperator
+      summary: "Restaurar un operador dado de baja (grounded: restaurar)"
+      description: "Añadido 2026-07-14 — ausente de la v0.1.0."
+      tags: [port-operators]
+      responses:
+        "200":
+          description: Operador restaurado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PortOperator" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /port-operators/{idusuari}/bank-accounts:
+    parameters:
+      - name: idusuari
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      operationId: listPortOperatorBankAccounts
+      summary: Listar cuentas bancarias del operador (CompteBancari, mandato SEPA)
+      description: |
+        Añadido 2026-07-14 — Grounded: CompteBancari (tabla COMPTE_BANCARI,
+        FK idusuari), hallazgo nuevo de dossier-23 §5, no documentado
+        previamente. Dato financiero sensible (PSD2/SEPA) — excluir de
+        cualquier evento de dominio publicado en Service Bus y de cualquier
+        log/caché sin cifrado (dossier-23 §6/§13). Recomendado cifrado a
+        nivel de columna o Azure Key Vault para iban/compte/bic.
+      tags: [port-operators]
+      responses:
+        "200":
+          description: Página de cuentas bancarias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/PortOperatorBankAccount" }
 components:
   securitySchemes:
     entraId:
@@ -119,9 +193,9 @@ components:
         eori: { type: string, nullable: true, description: "Grounded: Usuari.eori (columna EORI, código de operador económico aduanero UE)" }
         cnae: { type: string, nullable: true, description: "Grounded: Usuari.cnae (columna CNAE)" }
         codiagent: { type: string, nullable: true, description: "Grounded: Usuari.codiagent (columna CODIAGENT, código de agente de aduanas)" }
-        comptefaceenlace: { type: string, nullable: true, description: "Grounded: Usuari.comptefaceenlace (columna COMPTEFACE, cuenta FACe facturación electrónica)" }
-        eseffnetwork: { type: boolean, nullable: true, description: "Grounded: Usuari.eseffnetwork (columna ESEFFNETWORK) — adhesión al programa Efficiency Network, ver EPIC-22 (bloqueada)" }
-        llistanegra: { type: boolean, nullable: true, description: "Grounded: Usuari.llistanegra (columna LLISTA_NEGRA)" }
+        compteface: { type: integer, nullable: true, description: "Corregido 2026-07-14 (antes comptefaceenlace, nombre inexistente en el DTO) — Grounded: Usuari.compteface (Integer, columna COMPTEFACE, ticket FACT-1295, cuenta FACe facturación electrónica)" }
+        eseffnetwork: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: Usuari.eseffnetwork (String, valores 'S'/'N', asignado literalmente en CN_Usuari_Impl.java:978-980; la v0.1.0 lo tipaba erróneamente como boolean) — adhesión al programa Efficiency Network, ver EPIC-22 (bloqueada)" }
+        llistanegra: { type: boolean, nullable: true, description: "Grounded: Usuari.llista_negra (columna LLISTA_NEGRA) — este sí es Boolean real en el DTO, a diferencia de eseffnetwork" }
       example:
         idusuari: "U0044213"
         tippersona: "J"
@@ -130,7 +204,8 @@ components:
         eori: "ES12345678900001"
         cnae: "5222"
         codiagent: "AG-0421"
-        eseffnetwork: true
+        compteface: 4471
+        eseffnetwork: "S"
         llistanegra: false
     PortOperatorCreate:
       type: object
@@ -143,6 +218,26 @@ components:
         eori: { type: string }
         cnae: { type: string }
         codiagent: { type: string }
+    PortOperatorBankAccount:
+      type: object
+      description: |
+        Añadido 2026-07-14 — Grounded: CompteBancari.java (tabla
+        COMPTE_BANCARI, FK idusuari). Mandato SEPA de domiciliación bancaria.
+        Dato financiero sensible — ver nota de seguridad en el endpoint.
+      required: [idusuari, seqcombancari]
+      properties:
+        idusuari: { type: string, description: "FK a Usuari" }
+        seqcombancari: { type: integer, description: "Secuencia, parte de la identificación de la cuenta" }
+        banc: { type: string, nullable: true }
+        idsucursal: { type: string, nullable: true }
+        digcontrol: { type: string, nullable: true }
+        compte: { type: string, nullable: true }
+        titcompte: { type: string, nullable: true, description: "Titular de la cuenta" }
+        iban: { type: string, nullable: true, description: "Dato financiero sensible — cifrado a nivel de columna o Key Vault recomendado" }
+        bic: { type: string, nullable: true }
+        datamandat: { type: string, format: date-time, nullable: true, description: "Fecha del mandato SEPA" }
+        canvimandat: { type: string, nullable: true, description: "Indicador de cambio de mandato" }
+        datbaixa: { type: string, format: date-time, nullable: true }
     Pagination:
       type: object
       properties:

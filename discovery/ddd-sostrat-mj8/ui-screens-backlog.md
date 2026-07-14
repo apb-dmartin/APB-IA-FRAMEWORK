@@ -130,16 +130,27 @@
 2. **Ficha de Operador** (`dxForm`) — datos fiscales, direcciones, facturación electrónica (FACe).
 
 ### App: Servicios Auxiliares de Cruceros — mapea a `dom-cruceros-v1`
-1. **Listado de Buses de Traslado** (`dxDataGrid`) — columnas: `numescala/anyescala`, `ocupacio`.
-2. **Listado de Puntos de Vigilancia** (`dxDataGrid`) — columnas: `idpuntvigilancia`, `moll`, `numescala/anyescala`.
+
+**Corregido 2026-07-14** (`dossier-18-servicios-auxiliares-cruceros.md §8`): `numescala`/`anyescala`/`ocupacio`/`moll` no existen en los DTOs reales — `CreuerBus`/`CreuerVigilanciaPunt` no tienen columna de escala; el campo real de ocupación es `CreuerBusDetall.quantitat`.
+
+1. **Listado de Buses de Traslado** (`dxDataGrid`) — columnas corregidas grounded: `dia`, `festiu`, `horenvsolicitud`, `observacions` (cabecera `CreuerBus`) + pestaña de detalle con `subindex`/`quantitat`/`horainici`/`horafin`/`idprestador`/`idtarifa` (`CreuerBusDetall`).
+2. **Listado de Puntos de Vigilancia** (`dxDataGrid`) — columnas corregidas grounded: `idpuntvigilancia`, `nompuntvigilancia`, `idsubport`, `idzonaport`, `datbaixa` (catálogo maestro, sin columna de escala).
+
+**Pantallas ausentes de este backlog, añadidas 2026-07-14** (dossier-18 §8, tienen Action y lógica de negocio dedicados): Asignación de Auxiliar de Bus (`CreuerAuxiliarBus`, asignación automática de proveedor + notificación por email), Servicio de Vigilancia por Punto (`CreuerVigilanciaServei`), Tarifas de Servicios Auxiliares (`CreuerServeiTarifa`), Informe de Reconciliación (`ComprobarFacturasAction`, exportación Excel).
 
 ### App: Capacidad e Inspección Fronteriza (SCPP) — mapea a `dom-inspeccion-control-v1` (⚠️ evaluar fusión con PIF, ver EPIC-19)
-1. **Listado de Lugares de Inspección** (`dxDataGrid`) — columnas: `idllocinspeccio`, `capmaxstddia`, `descripcio`.
+
+**Corregido 2026-07-14** (`dossier-19-inspeccion-scpp.md §5`): la PK real de `LlocDInspeccio` es `idlloc`, no `idllocinspeccio` (ese nombre solo existe como FK en las tablas relacionadas `LlocTipusInspeccio`/`CalendariDeCapacitats`).
+
+1. **Listado de Lugares de Inspección** (`dxDataGrid`) — columnas: `idlloc`, `capmaxstddia`, `descripcio`.
 2. **Calendario de Turnos** (`dxScheduler`) — grounded en `LlocDInspeccioTorn`.
 
 ### App: Trámites de Cliente — mapea a `dom-administracion-electronica-v1`
-1. **Listado de Trámites** (`dxDataGrid`) — columnas: `idtramit`, `idtipustramit`, `idestat`, `datcreacio`.
-2. **Ficha de Trámite** (`dxForm` + adjuntos) — documentación obligatoria por tipo de trámite.
+
+**Corregido 2026-07-14** (`dossier-20-tramites-cliente.md §9`): `idtipustramit`/`idestat`/`datcreacio` no son los nombres reales — el DTO real usa `idtiptramit`/`idestattramit`/`datacreacio`. Tampoco existe un campo `assumpte` (asunto); el dato libre más cercano es `dadesaddicionals`.
+
+1. **Listado de Trámites** (`dxDataGrid`) — columnas corregidas: `idtramit`, `idtiptramit`, `idestattramit`, `datacreacio`.
+2. **Ficha de Trámite** (`dxForm`) — **corregido**: sin sección de adjuntos — no existe ningún campo de adjunto en `MTramitClient.jsp` (verificado, 546 líneas); `docobligatori`/`iddocumentgd` están modelados en el DTO pero sin lectura/escritura real en el código (candidato a `dead-code-register.md`, confianza MEDIA). No construir la sección de adjuntos salvo que negocio confirme el requisito.
 
 ### App: Suministro Eléctrico a Buques — mapea a `dom-suministros-buques-v1`
 1. **Listado de Lecturas** (`dxDataGrid`) — columnas: `numescala/anyescala`, `idarmador`, `consumototal`, `tiempoconexion/tiempoatraque`.

@@ -35,7 +35,7 @@
 | manifiestos | 63 | bc-manifiestos-v1 |
 | mmpp | 58 | bc-mmpp-v1 |
 | facturas | 55 | bc-facturacion-v1 |
-| transporteterrestre (+ satélite 39) | 89 | bc-transporte-terrestre-v1 |
+| transporteterrestre (+ satélite 39) | 56 | bc-transporte-terrestre-v1 |
 | marpol | 46 | bc-marpol-residuos-v1 |
 | factestandar | 43 | bc-facturacion-v1 (sub-flujos: rebuts, marinas, vehículos abandonados) |
 | ferrocarril | 41 | bc-ferrocarril-portuario-v1 |
@@ -62,7 +62,11 @@
 | titolminim | 3 | bc-titulo-v1 |
 | **carpetaclient** | 3 | **bc-tramites-cliente-v1 (nuevo)** |
 | gestionnotificaciones, gestionmmpp, documents, lloyds, informacionlogin | 8 | infra transversal / bc-mmpp-v1 / bc-buques-v1, ya cubiertos |
-| **Subtotal cubierto** | **≈668** | |
+| **Subtotal cubierto** | **≈635** | |
+
+> **Corrección 2026-07-14** (`dossier-09-transporte-terrestre.md §4/§14`): la fila `transporteterrestre` mostraba **89** (50 rutas de `struts-config.xml` + 39 del satélite `struts-config-transporteterrestre.xml`), sin deduplicar. La verificación de dossier confirmó **33 definiciones duplicadas byte a byte** entre ambos ficheros → **56 rutas únicas reales** (6 exclusivas del satélite, 17 exclusivas de `struts-config.xml`, 33 compartidas). Subtotal ajustado en -33 (668→635). El total base de **1135** (§Metodología) no cambia — es un recuento `grep -c` deliberadamente sin deduplicar entre ficheros satélite, válido como inventario bruto; esta corrección aplica solo a la columna de "rutas cubiertas por BC" de este módulo, que sí debe reflejar el alcance real de migración. No se ha re-verificado si otros módulos con satélite (p. ej. `aduanas`/`depotsis`, que ya anota "13 dup. aduanas") tienen el mismo patrón de duplicación sin cuantificar — fuera del alcance de esta corrección puntual.
+>
+> La confusión histórica "63 pertenece a Transporte Terrestre" (señalada en `dossier-09 §14`) no se ha encontrado en la versión actual de esta tabla — `manifiestos` (fila superior) ya muestra 63 correctamente desde antes de esta corrección; se deja esta nota por si la confusión persiste en copias anteriores del documento fuera de este repositorio.
 
 ### 1.2 Módulos con subpaquete propio SIN clasificar (≈45 de 717) — gap real
 
