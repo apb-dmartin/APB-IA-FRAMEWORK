@@ -116,6 +116,7 @@ No hay `testing-strategy`/`threat-model` específico para esta fase porque no se
 
 ## 14. Riesgos y gaps de evidencia conocidos
 
+- **Consumidor externo no documentado con escritura directa (2026-07-14)**: `APB.API.LRT` (repo `otros/APB.API.LRT`, ecosistema Líneas Regulares) escribe directamente sobre la tabla `ESCALA` (`UpdateEscalaNomLinea`/`UpdateEscalasLinea`, Entity Framework) — un **tercer escritor** de Escalas, además de SÒSTRAT y de la migración planeada hacia ARGOS. Riesgo de doble escritor si ARGOS no contempla este camino. Ver `EXTERNAL_CONSUMERS_AUDIT.md §2` fila 6.
 - Mapeo de campos SÒSTRAT↔TES no confirmado 1:1 por nombre.
 - No confirmado si Cruceros necesita frontend propio dentro de ARGOS o se integra en él — decisión pendiente con el equipo de ARGOS.
 - `coverage-audit.md` no ha auditado el impacto de esta retirada sobre los jobs batch de `sostrat-BATCH` relacionados con Escalas.

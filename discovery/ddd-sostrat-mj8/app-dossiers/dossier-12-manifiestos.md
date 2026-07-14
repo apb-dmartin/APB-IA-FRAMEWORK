@@ -224,6 +224,7 @@ flowchart LR
 
 ## 14. Riesgos y gaps de evidencia conocidos
 
+- **Consumidor externo no documentado, alto riesgo (2026-07-14)**: `APB.API.CTS`/`APB.APP.CTA` ("Gestión de Contenedores", dashboard de clientes portuarios — repo `otros/APB.API.CTS`) lee directamente vía Entity Framework (`DbSostratContext.cs`) las tablas `MANIFEST`, `MANIFEST_VERSIO`, `MANIFEST_SERVEI(_VERSIO)`, `MANIFEST_EQUIP(_VERSIO/_PRECINTE)`, `CONEIXEMENT(_VERSIO/_DESCONSOLIDACIO)`, `PARTIDA(_VERSIO/_DESCONSOLIDACIO)` — el núcleo de este BC. Confirmado 100% solo lectura, con actividad de mantenimiento activa (commit de mayo 2026). Sin capa de compatibilidad, CTA queda inoperativo tras decomisionar estas tablas. Ver `EXTERNAL_CONSUMERS_AUDIT.md §2` fila 3 y §3.
 - **Alcance de refactor de EPIC-08 infravalorado**: no cita `CN_Tramo_Impl.java` (4.159 líneas, la mayor real del módulo) ni `CN_Coneixement_Impl.java` (2.893 líneas) — ver §2/§4/§12/§15.
 - **Afirmación incorrecta en `bc-manifiestos-v1.md:53`**: "las mayores god classes de todo el sistema" no se sostiene frente a Escalas (`CN_Escala_Impl.java`, 10.829 líneas, más del doble).
 - **Acoplamiento real hacia Escalas y Buques no documentado previamente** en `bc-manifiestos-v1.md` ni en `decomposition-roadmap.md:19` — corrige ambos. Es la dependencia externa más profunda del módulo (mayor volumen de import cruzado, suscripción real a eventos de dominio) y bloquea el criterio de éxito de EPIC-10 tal como está escrito hoy si no se planifica explícitamente vía ACL.

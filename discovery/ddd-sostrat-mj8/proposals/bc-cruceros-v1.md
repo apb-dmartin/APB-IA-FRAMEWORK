@@ -47,6 +47,10 @@ Responsable de la gestión específica de escalas de cruceros: auditoría de la 
 
 No gestiona los datos generales de la escala (buque, atraque) — eso pertenece a Escalas; Cruceros es un contexto downstream que añade información específica del segmento crucero.
 
+## ⚠️ Nota crítica (2026-07-14) — implementación .NET ya activa fuera de este documento
+
+Este documento solo cubre el agregado `CreuerEscalaAudit`. **No hay todavía un dossier de aplicación final para `bc-cruceros-v1`.** Una auditoría de consumidores externos (`discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md §2` fila 8 y §3) confirmó que ya existe un ecosistema .NET real y activo (~3 meses de desarrollo) para la gestión de reservas de atraque de crucero — repos `APB.API.CRE`, `APB.APP.CRE`, `APB.API.VXL`, `APB.API.SLC` (Jenkins `ARQ/TST/SOSTRAT/CRE-Cruceros`) — con su propio modelo (`CreSolicitud`, `CreVaixell`, `CreTerminalBloqueado`, `CreLineaOperativaSolicitud`), API y frontend. Sin solapamiento de datos con `dossier-18-servicios-auxiliares-cruceros.md` (buses/vigilancia es una sub-capacidad distinta), pero **cualquier dossier de aplicación final de `bc-cruceros-v1` que se escriba debe documentar esta implementación ya existente como la realidad operativa del bounded context, no tratarla como trabajo futuro de extracción.**
+
 ## Modelo de Dominio
 
 ### Aggregates

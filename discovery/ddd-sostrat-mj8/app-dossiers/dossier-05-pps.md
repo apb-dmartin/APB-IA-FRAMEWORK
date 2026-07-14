@@ -201,6 +201,7 @@ flowchart LR
 
 ## 14. Riesgos y gaps de evidencia conocidos
 
+- **Consumidor externo no documentado, bloqueante crítico (2026-07-14)**: `APB.API.AUT` (repo `otros/APB.API.AUT`, tótems físicos de control de acceso por puertas) tiene su `DbContext` completo apuntando directamente al esquema Oracle de SÒSTRAT (`Startup.cs`, connection string `"SOSTRAT"`) — **lee y escribe en tiempo real** sobre `AUTORITZACIO`/`HIST_AUTORITZACIO`/`AUTORITZACIO_ESTAT_RESUM` en cada paso físico por una puerta (`CreateHistoricAutoritzacio`). No es una integración por API — es acoplamiento de base de datos compartida. Bloquea el patrón Strangler Fig de este dossier hasta que AUT se reescriba contra la nueva API DOCKS o se mantenga sync/dual-write durante la transición. Ver `EXTERNAL_CONSUMERS_AUDIT.md §2` fila 4.
 - **Contrato de API incompleto**: `openapi-pps.yaml` solo cubre `Solicitud`/`SolicitudAudit`; `Targeta`, `Autoritzacio` y `Permis` no tienen recursos API definidos pese a tener Actions dedicadas y de alto volumen.
 - **Backlog de UI incompleto en el mismo sentido**: solo hay 3 pantallas definidas (`ui-screens-backlog.md`), todas sobre `Solicitud`; falta cubrir `Autoritzacio`, `Permis` y la gestión completa de `Targeta`.
 - **Nombre de conector engañoso**: `CN_PorticConnector` no llama a ningún servicio "PortIC" en el código real — genera ficheros AUPER y los envía por email. A confirmar con negocio/infra qué sistema físico consume esos ficheros y si "PortIC" es el nombre correcto del destino real.

@@ -1719,4 +1719,33 @@ Los 7 ficheros OpenAPI corregidos se validaron sintácticamente con `yaml.safe_l
 
 ---
 
+### 30.6 — Continuación crítica: auditoría de consumidores externos ocultos de SÒSTRAT (2026-07-14, misma sesión)
+
+Débora cuestionó la conclusión de "sin solapamiento de dominios" del §30.5 con un ejemplo concreto: **CTA es una aplicación existente que solo visualiza elementos de otros dominios** — es decir, mi verificación de solapamiento había cruzado solo contra `apb-domain-catalog` y las propias secciones §7 de los dossiers, nunca contra el universo real de aplicaciones ya construidas en `GitHub-Repos\otros\` (~69 repos).
+
+**Verificación directa de CTA**: confirmó el punto de Débora y reveló algo más grave — `APB.API.CTS`/`APB.APP.CTA` no es solo un visor, tiene un `SostratController.cs`/`DbSostratContext.cs` (Entity Framework) que lee directamente ~50 tablas de SÒSTRAT (Manifiestos, Aduanas, MMPP, Buques, Ferrocarril), con actividad de mantenimiento reciente (mayo 2026), y **ningún dossier de la serie lo menciona**. La propuesta original (`bc-aduanas-contenedores-v1.md`) incluso afirmaba —incorrectamente— que CTA no tenía "paquete propio en el código".
+
+**Rastreo sistemático (con acuerdo explícito de Débora sobre alcance/profundidad/uso de subagentes)**: grep de contenido sobre los ~69 repos de `GitHub-Repos\otros\` en busca de referencias a SÒSTRAT, filtrado a 9 repos con dependencia real y directa (no solo textual). Lanzados 8 subagentes en paralelo, cada uno cargando el prompt de `agents/apb-agent-ddd-v1.0.md` como metodología, para verificar uno a uno con evidencia de código (fichero:línea, lectura/escritura, actividad reciente vía `git log`).
+
+**Resultado — 9 aplicaciones reales con dependencia directa no documentada, 3 de ellas con escritura**: ver detalle completo y evidencia en el nuevo documento [`discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md`](ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md).
+
+1. `APB.API.CPR` (Precintos) — lee/escribe `INSPECCIO` (SCPP, no PIF) + SOAP a Portic.
+2. `APB.API.IPB` (Pesaje/báscula) — **escribe** en 15+ tablas de Transporte Terrestre/MARPOL.
+3. `APB.API.CTS`/`APB.APP.CTA` (Gestión de Contenedores) — lee ~50 tablas de Manifiestos+Aduanas+MMPP+Buques+Ferrocarril, solo lectura, desarrollo activo.
+4. `APB.API.AUT` — lee/escribe `AUTORITZACIO` de PPS en tiempo real desde tótems físicos — bloqueante crítico del patrón Strangler Fig.
+5. `APB.API.REB` + `apb.p51` — leen/escriben `Rebut` de Facturación; P51 **crea recibos en SÒSTRAT** vía SOAP.
+6. `APB.API.LRT` (+ `APB.API.LRG` como cliente indirecto) — lee Buques, **escribe** en Escalas (triple escritor junto con ARGOS).
+7. `APB.API.OPS` — puente de solo lectura vía Data Warehouse sobre Suministro Eléctrico, no duplica el build pero requiere decisión de convivencia.
+8. `APB.API.CRE`/`APB.APP.CRE`/`APB.API.VXL`/`APB.API.SLC` — **hallazgo mayor**: ya es la implementación .NET real y activa (~3 meses) de lo que `bc-cruceros-v1` (dossier de aplicación final todavía sin escribir) debería documentar.
+
+**Causa raíz identificada (carencia real del framework, no solo de esta ejecución)**: `agents/apb-agent-ddd-v1.0.md` nunca incluye un paso de rastreo de consumidores externos de la BBDD de origen — solo analiza el sistema a transformar y el catálogo de dominios. Añadido como mejora propuesta al agente en `PLAN_FASES_FUTURAS.md` #99.
+
+**Documentación actualizada**: nuevo `EXTERNAL_CONSUMERS_AUDIT.md`; notas añadidas a `dossier-00`, `dossier-05`, `dossier-09`, `dossier-12`, `dossier-13`, `dossier-15`, `dossier-17`, `dossier-18`, `dossier-19`, `dossier-21` (§14 de cada uno) y a `proposals/bc-cruceros-v1.md`; `INDEX.md §3/§4` ampliado; `PLAN_FASES_FUTURAS.md` #98 (bloqueante crítico) y #99 (mejora de agente).
+
+**Respuesta actualizada a "¿puedo pasar a validación humana y ponerme a desarrollar?"**: **no todavía**. Además del residuo de cobertura y la falta de validación humana ya señalados en `readiness-assessment.md` v5, existe ahora un bloqueante nuevo y más urgente: 9 aplicaciones reales en producción/desarrollo activo dependen directamente de datos que varias extracciones (Transporte Terrestre, PPS, Facturación, Buques, Escalas, Suministro Eléctrico, SCPP, Manifiestos, Aduanas, Cruceros) van a tocar. Ninguna decisión de *ejecución* debe tomarse sobre esas extracciones sin coordinar antes con los equipos propietarios de esas 9 aplicaciones.
+
+**Pendiente explícito, no ejecutado en esta sesión** (por presupuesto de tiempo/tokens, decisión explícita de Débora de buscar equilibrio): la re-derivación completa desde el código de eventos/APIs/pantallas/modelos de datos/backlog de las 24 dossiers (auditoría de consistencia cruzada, Tarea #7 de esta sesión) no se ejecutó — se priorizó el rastreo de consumidores externos por ser el hallazgo de mayor riesgo. Queda como trabajo pendiente si Débora lo confirma en una sesión futura.
+
+---
+
 *Cierre de Sesión 30 (2026-07-14).*

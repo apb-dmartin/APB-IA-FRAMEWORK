@@ -240,6 +240,8 @@ Las líneas gruesas (`==>`) marcan invocación síncrona dentro de una misma uni
 
 ## 14. Riesgos y gaps de evidencia conocidos
 
+- **Consumidor externo no documentado con escritura directa (2026-07-14)**: `APB.API.CPR` ("Precintos", app móvil GoCleaver para inspección física de contenedores en PIF, repo `otros/APB.API.CPR`) lee y **escribe** directamente sobre `INSPECCIO`/`INSPECCIO_AUDIT` (campos de precinto: `PRENAVILIERA`, `PRETERMINAL`, `PREEQ`, `DATPRECINTAT`/`DATDESPRECINTAT`) vía Entity Framework — la misma tabla `INSPECCIO` que este dossier (no PIF) documenta como propia. Refuerza el caso de fusión PIF+SCPP: CPR ya trata `INSPECCIO` como un dato compartido entre ambos. Además integra vía SOAP con Portic (`ConsultaCodecosPrecinto`, mensajes CODECO de precintos) — relevante para `dom-integraciones-edi-v1`. Ver `EXTERNAL_CONSUMERS_AUDIT.md §2` fila 1.
+
 | Riesgo/gap | Severidad | Detalle |
 |---|---|---|
 | **Decisión pendiente: fusión con PIF** | Alta | Ver §7. Este dossier recomienda fusionar, con evidencia de código nueva que refuerza (no solo repite) la recomendación de `dossier-11-pif.md`. Requiere validación de Arquitectura APB antes de sprint planning de EPIC-09/EPIC-19. |
