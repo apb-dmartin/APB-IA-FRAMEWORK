@@ -1744,7 +1744,17 @@ Débora cuestionó la conclusión de "sin solapamiento de dominios" del §30.5 c
 
 **Respuesta actualizada a "¿puedo pasar a validación humana y ponerme a desarrollar?"**: **no todavía**. Además del residuo de cobertura y la falta de validación humana ya señalados en `readiness-assessment.md` v5, existe ahora un bloqueante nuevo y más urgente: 9 aplicaciones reales en producción/desarrollo activo dependen directamente de datos que varias extracciones (Transporte Terrestre, PPS, Facturación, Buques, Escalas, Suministro Eléctrico, SCPP, Manifiestos, Aduanas, Cruceros) van a tocar. Ninguna decisión de *ejecución* debe tomarse sobre esas extracciones sin coordinar antes con los equipos propietarios de esas 9 aplicaciones.
 
-**Pendiente explícito, no ejecutado en esta sesión** (por presupuesto de tiempo/tokens, decisión explícita de Débora de buscar equilibrio): la re-derivación completa desde el código de eventos/APIs/pantallas/modelos de datos/backlog de las 24 dossiers (auditoría de consistencia cruzada, Tarea #7 de esta sesión) no se ejecutó — se priorizó el rastreo de consumidores externos por ser el hallazgo de mayor riesgo. Queda como trabajo pendiente si Débora lo confirma en una sesión futura.
+### 30.7 — Auditoría de consistencia cruzada acotada (2026-07-14, misma sesión)
+
+Cierre de la Tarea #7: en vez de re-derivar desde cero eventos/APIs/pantallas/modelos/backlog de las 24 dossiers (esfuerzo no proporcionado dado que cada dossier ya se generó con re-verificación de código real), se hizo una lectura completa de los 7 dossiers marcados `PROVISIONAL`/alto riesgo (Mano de Estiba #03, Aguada #07, Concesiones #14, Facturación #15, Clavegueram #16, Efficiency Network #22, Operadores Portuarios #23) buscando específicamente inconsistencias entre lo que cada dossier reporta en su propio §9/§10 (APIs/Eventos) y los ficheros de specs/catálogo reales.
+
+**Confirmación general**: los 7 dossiers ya son rigurosos por diseño — cada uno documenta explícitamente sus propios gaps de cobertura API/evento/pantalla en vez de darlos por cerrados (p. ej. Clavegueram §9 señala que solo 2 de 4 acciones de negocio tienen endpoint; Mano de Estiba señala la ausencia de pantalla de sincronización). No se encontró ningún caso de "gap silencioso" no auto-reportado.
+
+**2 inconsistencias cruzadas concretas encontradas y corregidas**:
+1. `events-catalog.md §19` (`ConsumClaveguerLiquidado`, 9 campos) vs. `specs/asyncapi-fase4.yaml` (`ConsumClaveguerData`, 4 campos) — ya señalada por `dossier-16-clavegueram.md §10` sin resolver. Corregido: `asyncapi-fase4.yaml` ampliado a los mismos 9 campos.
+2. **Residuo de la corrección de `eseffnetwork`** (Sesión 30.5): quedaban 2 menciones sin corregir a `Usuari.eseffnetwork=true` (boolean) en `jira-backlog.md:459` y `proposals/bc-efficiency-network-v1.md:77`, pese a que `dossier-23-operadores-portuarios.md` y el spec ya estaban corregidos a `String "S"/"N"`. Ambas corregidas.
+
+**Conclusión de la Tarea #7**: la calidad interna de la serie es alta — el riesgo real para "pasar a desarrollo" no está en la exactitud campo a campo de los dossiers (ya verificada exhaustivamente durante su generación), sino en los 2 bloqueantes ya identificados: el residuo de cobertura/validación humana (`readiness-assessment.md` v5) y los 9 consumidores externos no documentados (§30.6).
 
 ---
 

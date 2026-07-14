@@ -74,7 +74,7 @@ No es un maestro de terceros independiente — `EmpresaBC extends Usuari` (heren
 
 | Evento | Tipo | Descripción |
 |--------|------|-------------|
-| EmpresaEfficiencyNetworkRegistrada | emitido | Alta de una empresa en el programa (marca `Usuari.eseffnetwork=true`). |
+| EmpresaEfficiencyNetworkRegistrada | emitido | Alta de una empresa en el programa (marca `Usuari.eseffnetwork="S"`, String — corregido 2026-07-14, ver `dossier-23-operadores-portuarios.md §2`). |
 | CertificacionBCRegistrada | emitido | Nueva certificación asociada a una empresa BC. |
 | AuditoriaBCRegistrada | emitido | Nueva auditoría asociada a una empresa BC. |
 

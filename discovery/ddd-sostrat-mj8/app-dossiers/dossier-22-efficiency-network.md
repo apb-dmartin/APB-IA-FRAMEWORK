@@ -86,7 +86,7 @@ Ver `ui-screens-backlog.md` §"App: Efficiency Network":
 
 | Evento | Trigger | Consumidores |
 |---|---|---|
-| EmpresaEfficiencyNetworkRegistrada | Alta de empresa (marca `Usuari.eseffnetwork=true`) | — |
+| EmpresaEfficiencyNetworkRegistrada | Alta de empresa (marca `Usuari.eseffnetwork="S"`) | — |
 | CertificacionBCRegistrada | Nueva certificación | — |
 | AuditoriaBCRegistrada | Nueva auditoría | — |
 

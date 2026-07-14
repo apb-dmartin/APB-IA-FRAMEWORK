@@ -111,5 +111,6 @@ components:
       properties: { portfactura: { type: string }, anyfactura: { type: integer }, idserfactura: { type: string }, numfactura: { type: integer, format: int64 }, idestfacturacio: { type: string, nullable: true }, imptotal: { type: number, format: double, nullable: true } }
     ConsumClaveguerData:
       type: object
+      description: "Corregido 2026-07-14 (dossier-16-clavegueram.md §10) — ampliado de 4 a 9 campos para alinear con events-catalog.md §19, que ya reflejaba el payload real de ClvgConsums.java."
       required: [idconsum]
-      properties: { idconsum: { type: integer, format: int64 }, polissa: { type: string, nullable: true }, consum: { type: number, format: double, nullable: true }, estat: { type: string, nullable: true } }
+      properties: { idconsum: { type: integer, format: int64 }, idcarrega: { type: integer, format: int64, nullable: true }, polissa: { type: string, nullable: true }, nif: { type: string, nullable: true }, titular: { type: string, nullable: true }, consum: { type: number, format: double, nullable: true }, lecturaant: { type: number, format: double, nullable: true }, lecturaact: { type: number, format: double, nullable: true }, estat: { type: string, nullable: true } }

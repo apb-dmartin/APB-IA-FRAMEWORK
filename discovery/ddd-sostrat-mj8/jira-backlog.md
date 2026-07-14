@@ -456,7 +456,7 @@
 
 - **Fase:** 6 (nueva) | **Valor de negocio:** bajo-medio | **Riesgo técnico:** bajo | **Dependencias:** EPIC-17 (Operadores Portuarios) — **hereda su mismo bloqueante de `parent_domain`, ya no es un bloqueante nuevo/distinto**.
 - **Objetivo:** extraer la gestión de empresas adheridas al programa Efficiency Network, sus certificaciones y auditorías, como extensión de Operadores Portuarios.
-- **Criterios de éxito (DoD):** `/api/v1/efficiency-network-companies` en producción, marcando `Usuari.eseffnetwork=true` al dar de alta una empresa BC.
+- **Criterios de éxito (DoD):** `/api/v1/efficiency-network-companies` en producción, marcando `Usuari.eseffnetwork="S"` (String, no boolean — corregido 2026-07-14, ver `dossier-23-operadores-portuarios.md §2`) al dar de alta una empresa BC.
 
 **Historias de usuario**
 1. *Como* gestor del programa Efficiency Network, *quiero* dar de alta una empresa adherida (`POST /efficiency-network-companies` con `raosocialbc`, `codibc`, `codiactivitatbc`), *para* dejar de usar `EmpresaENAction.java`. (5 pts)
