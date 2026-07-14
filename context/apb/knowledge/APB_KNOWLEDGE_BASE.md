@@ -7,7 +7,7 @@ description: >
   (incluyendo sistemas legacy) necesario para dar respuestas de calidad.
   NO modifica los estándares DOCKS ni las políticas tecnológicas aprobadas:
   el legacy se documenta como contexto, nunca como patrón a seguir en desarrollos nuevos.
-version: "1.1.0"
+version: "1.2.0"
 status: "approved"
 owner: "Debora Martin <deboramv@gmail.com>"
 domain: "knowledge"
@@ -99,16 +99,19 @@ del Ministerio de Transportes, dentro del sistema de Puertos del Estado.
 ### 2.1. La Escala (Port Call)
 
 Una **escala** es la visita completa de un buque al puerto, desde el preaviso hasta la salida.
-Es el concepto central del negocio portuario.
+Es el concepto central del negocio portuario — **todos** los demás procesos de negocio de SÒSTRAT
+(residuos, agua, mercancías peligrosas, transporte terrestre, ferrocarril, cruceros, servicios
+auxiliares) se cuelgan de una escala concreta vía su clave compuesta.
 
-**Identificadores:**
+**Identificadores reales (grounded en `Escala.java`, tabla `ESCALA`):**
 
 | Campo | Descripción |
 |-------|-------------|
-| YearPortCall | Año de la escala |
-| NumPortCall | Número secuencial de escala |
-| IdSubPort | Subpuerto (generalmente "B" = Barcelona) |
-| Aspecto | R = Real, S = Solicitado |
+| `idsubport` | Subpuerto (generalmente `"B"` = Barcelona) — 1ª parte de la PK compuesta |
+| `anyescala` | Año de la escala — 2ª parte de la PK |
+| `numescala` | Número secuencial de escala — 3ª parte de la PK |
+| `EscalaAspecte` | Tabla separada (~90 campos técnicos de buque por versión de la escala) — no un simple flag R/S, es una entidad propia con su propio historial de versiones |
+| YearPortCall / NumPortCall / IdSubPort | Nombres del DTO equivalente en ARGOS (`PortCallCreatedDto.cs`) — mismo concepto de negocio, terminología catalana (`ESCALA`/`ASPECTE`) heredada literalmente en el nombre del campo `Aspecte` |
 
 **Ciclo de vida:**
 
@@ -126,6 +129,12 @@ Preaviso (BERMAN F11) → Autorizada → Confirmada → Iniciada → [Fondeada] 
 | ATA | Actual Time of Arrival |
 | ETD | Estimated Time of Departure |
 | ATD | Actual Time of Departure |
+
+**Hallazgos funcionales importantes (descomposición DDD 2026-07)**:
+- **La facturación está entrelazada con la gestión de la escala, no separada**: `EscalaAction.java` (7.549 líneas, la god class más grande de todo SÒSTRAT) tiene ~73-81 referencias directas a `Liquidacio`/`Facturacio` — dar de alta o modificar una escala dispara lógica de facturación en el mismo flujo. Cualquier análisis que asuma "Escalas no calcula tasas" está equivocado para el legacy actual (aunque sí es la separación correcta para el destino DOCKS).
+- **ARGOS (`APB.API.TES`, microservicio `MS_PORTCALL`) ya es hoy la maestría operativa real de la escala** — SÒSTRAT sigue escribiendo `ESCALA`/`ATRACADA` y emitiendo los eventos `MSG0004`/`MSG0017`, pero migrar Escalas no es "construir un servicio nuevo": es decidir cómo se retira SÒSTRAT como fuente de verdad y se traspasa esa responsabilidad a ARGOS, que ya la ejerce.
+- **`APB.API.LRT`** (ecosistema de Líneas Regulares) también **escribe** directamente en `ESCALA` — hay hoy un tercer escritor real (SÒSTRAT, ARGOS futuro, LRT), no dos.
+- **Sistemas satélite de la escala, poco conocidos fuera del código**: `SistemaPantallas` (pantallas informativas de escala/atraque) e `InformationPortcdmWS` (notificación PortCDM — Port Collaborative Decision Making) viven ambos en `service/escalas`, no en un módulo separado.
 
 ### 2.2. El Atraque (Berth)
 
@@ -166,17 +175,24 @@ Asigna un buque a un punto de amarre en un muelle.
 - 20MIN DEPARTURE / READY TO SAIL
 - SHIP ANCHORED CALL
 
-### 2.4. Concesiones y Ocupaciones
+### 2.4. Título, Ocupaciones y Garantías (lo que el negocio llama "Concesiones")
 
-Las **concesiones** son títulos que otorgan derecho de uso de terreno portuario.
+> **Corrección de nomenclatura (dossier-14-concesiones.md)**: el concepto real en el modelo de datos y el código es **Título** (`Titol`, tabla `TITOL`), no "Concesión" — "Concesión" es un tipo posible de título entre varios (Concesión, Autorización, Ocupación, Licencia, Evento), la hipótesis inicial de nombrar todo el módulo "Concesiones" sobregeneraliza un caso particular.
+
+El **Título** otorga derecho de uso de terreno/actividad portuaria. Un título puede tener **ocupaciones** (`TitolOcupacio`, uso de dominio público — parcela con perímetro) y/o **actividades** (`TitolActivitat`, actividad portuaria autorizada), no son excluyentes.
 
 | Campo | Descripción |
 |-------|-------------|
-| IDTITOL | Identificador del título |
-| Tipo | Concesión, Autorización, Licencia, Evento |
-| Ocupació | Parcela con perímetro georreferenciado |
+| `idsubport`+`idtitol` | PK compuesta real del título |
+| `idestattitol` | Estado del título — catálogo real (`TITOL_ESTAT`) confirmado en código, pero sus valores concretos (más allá del nombre del campo) no estaban confirmados en el checkout auditado |
+| `idtitolprecedent` | Referencia autoreferencial — un título puede suceder a otro (renovación) |
+| Ocupació | Parcela con perímetro georreferenciado, asociada a `TitolOcupacio` |
 | Zona portuaria / zona de valor | Clasificación del espacio |
 | Vigencia / caducidad / renovación | Fechas de validez del título |
+
+**Garantía** (`Garantia`, tabla `GARANTIA`) es un aval financiero **siempre asociado a un título** (`IDTITOL`) — no tiene identidad de agregado propia, se modela como sub-recurso de Título, no como colección independiente. Incluye evidencias documentales (`GarantiaEvidencia`) y auditoría de cambios (`GarantiaAudit`).
+
+**Hallazgo estructural importante**: en el código legacy, `Liquidación` **escribe directamente** sobre `TITOL_MINIM_DADES` al eliminar una liquidación (`CN_Liquidacion_Impl.java:434`, `UPDATE TITOL_MINIM_DADES SET PORTLIQUIDACIO=NULL...`) — es el ejemplo de acoplamiento por escritura cruzada más citado de toda la descomposición DDD, y la razón por la que el evento `TituloActualizado` se considera "fundacional" para poder separar Concesiones y Facturación en dos servicios con bases de datos propias.
 
 ### 2.5. Tasas y Tarifas Portuarias
 
@@ -198,12 +214,15 @@ Las **concesiones** son títulos que otorgan derecho de uso de terreno portuario
 
 ### 2.6. Operativa de Mercancías
 
-- **Manifiestos**: declaración de carga del buque (0811 = descarga, 0812 = carga).
-- **Declaraciones sumarias (CUSCAR)**: información anticipada para Aduana.
-- **Mercancías Peligrosas (MMPP/ADR/IMO)**: gestión especial con requisitos de seguridad.
-- **SCPP**: Servicio de Control y Posicionamiento de Contenedores para inspección aduanera.
-- **PIF**: Punto de Inspección Fronterizo (control sanitario).
-- **Gate-in / Gate-out**: entrada/salida de contenedores de terminal (mensajes CODECO).
+- **Manifiesto** (`Manifest`, tabla `MANIFEST`): declaración de carga del buque, con líneas de detalle llamadas **Partida** (`PartidaVersio`, versionada) — cada partida es una línea de mercancía concreta dentro del manifiesto, con su propia clasificación arancelaria (`numonu`/`classemmpp` cuando aplica). Tipos reales de declaración: `0811` (descarga), `0812` (carga).
+- **COARRI**: mensaje EDIFACT que informa de operaciones reales de terminal (carga/descarga física de un contenedor). En SÒSTRAT sirve para **conciliar** lo que el terminal reporta contra lo que dice el manifiesto — de ahí que su tabla de negocio real sea `CONCILIACION_MANIFIESTO`, no una entidad propia. Existe también un **COARRI ferroviario** (mensaje `RAIL20`) para movimientos de contenedores por tren, con la misma función de conciliación pero en el dominio de Ferrocarril.
+- **CODECO** (gate-in/gate-out): mensaje de entrada/salida de un contenedor de una terminal. En SÒSTRAT alimenta el módulo de **Transporte Terrestre** (preavisos/autorizaciones de camión) — no es una entidad de mercancía en sí, es el evento que dispara la autorización de acceso físico del transportista.
+- **Declaraciones sumarias (CUSCAR)** y familia (`CUSREP`/`CUSRES`/`CUSRP2`): información anticipada para Aduana sobre la carga de un manifiesto, mismo motor batch que IFCSUM.
+- **Mercancías Peligrosas (MMPP/ADR/IMO)**: dos procesos de negocio distintos, no uno solo — **notificación** a las autoridades (circuito EDI `IFTDGN`, con respuesta APERAK) y **autorización** de manipulación/inspección (circuito EDI `HAZMAT`, alimenta el listado de carga). El modelo de datos (`MmppNotif`) duplica literalmente el bloque de datos de transporte para "entrada" y "salida" — 61 campos totales, la mitad simétricos.
+- **SCPP** (Servicio de Control y Posicionamiento de Contenedores): gestiona la **capacidad** del recinto de inspección (lugares, turnos, calendario de capacidad ya comprometida) y el **resultado** formal de cada inspección concreta. No confundir con PIF.
+- **PIF** (Punto de Inspección Fronteriza): gestiona la **operación real** de un camión/contenedor concreto en el finger de muelle — 6 estados confirmados en código (`CR`=creada, `AP`=aprobada, `PF`=?, `FI`=finalizada, `AN`=anulada, `AF`=?; nombres completos de `PF`/`AF` no confirmados con evidencia adicional). PIF y SCPP están tan acoplados síncronamente en el código real (validación de turno de SCPP dentro de la transacción de alta de una operación PIF) que la recomendación de la descomposición DDD es desplegarlos como **un único servicio con dos agregados**, no como dos microservicios separados.
+- **Posicionamiento**: capacidad de negocio real (no solo un detalle técnico) que asigna la posición física de un camión/contenedor en el recinto PIF, con su propio circuito EDI y su propia máquina de incidencias (`Incidencia`/`IncidenciaEQ`) — acoplada síncronamente tanto a PIF como a SCPP, pero sin bounded context propio identificado todavía en el catálogo.
+- **Depotsis** (T6): depósito de mercancía en muelle libre — una **solicitud** de depósito versionada (no editable in-place: cada cambio crea una nueva versión numerada), que agrupa una o varias **operaciones** de desconsolidación de mercancía.
 
 **Tipos de transporte ant/post:** ZZ1 = marítimo, ZZ2 = terrestre (camión), ZZ5 = tránsito marítimo, ZZ6 = ferrocarril.
 
@@ -243,6 +262,27 @@ Las **concesiones** son títulos que otorgan derecho de uso de terreno portuario
 - Terminal (`MANAGE_TERMINAL`)
 
 Funcionalidades específicas: Bunkering, Shore Power (OPS), Anexo I Terminal y Consignatario, Informe de fecha fin operaciones, Facturación electricidad (DSS_DWH).
+
+### 2.11. Servicios al Buque (residuos, agua, electricidad, alcantarillado)
+
+Cuatro servicios distintos que un buque puede contratar durante su escala, cada uno con su propio ciclo de vida y tarifa — no son variantes de lo mismo:
+
+- **MARPOL (recogida de residuos)**: gestiona el ciclo completo desde la solicitud hasta el pago de una recogida de residuos de buque. **7 estados de negocio confirmados en código** (`ResidusEscala.idestat`): `1`=Recibido, `2`=Anulado, `3`=No pagado, `4`=Confirmado, `5`=Enviado, `6`=Pagado, `7`=Reclamado (la semántica de qué transiciones son válidas entre ellos no está confirmada, solo los nombres). Tiene su **propio tarifario** (`TARIFAS_RESIDUS`, por rango y tipo de residuo), **distinto y adicional** a la bonificación de la tasa L7 que se calcula del lado de Facturación según el tipo de residuo entregado — MARPOL y Facturación comparten el "hecho de negocio" (tipo de residuo) pero no el cálculo. Circuito EDI: WASDIS, con respuesta APERAK propia.
+- **Aguada**: suministro de agua potable al buque. Bloqueado documentalmente — el DTO fuente real (`SaSolicitud`) no existe en el checkout auditado, requiere recuperarlo del proveedor (IN2).
+- **Shore Power / OPS** (Suministro Eléctrico): suministro eléctrico a un buque atracado, con lecturas de consumo real. Tarifa `P11000` (BE1 fijo + BE2 variable). Existe un puente de solo lectura hacia un Data Warehouse externo (`APB.API.OPS`, tabla `OPS_B_SESSIONS` en `DSS_DWH`) que replica estas sesiones — decisión pendiente de si el nuevo servicio lo alimenta o se retira.
+- **Clavegueram (alcantarillado)**: liquidación de consumos de alcantarillado de empresas adheridas al puerto — el bounded context más pequeño de toda la serie (3 rutas), pero con acoplamiento real de código hacia Facturación (tarifa fija `L6-50-10`, motor `CN_LiquidadorBase_Impl` compartido con Aguada/Depotsis/Suministros).
+
+### 2.12. Terceros / Operadores Portuarios y Efficiency Network
+
+El maestro de terceros de SÒSTRAT es `Usuari` (tabla `USUARI`, 118 campos confirmados) — cubre consignatarios, armadores, agentes de aduanas, transitarios y cualquier operador económico con relación comercial con APB. Es un dato maestro consumido por **al menos 30 módulos distintos** (fan-out real confirmado — más que el propio maestro de buques), pese a que la documentación previa solo citaba 3 consumidores.
+
+Incluye datos bancarios (`CompteBancari`, mandato SEPA — dato financiero sensible, sujeto a PSD2), circuitos EDI propios (`UsuariCircuitEDI`) y presencia web (`nomweb`/`urlweb`/`logoweb`).
+
+**Efficiency Network** ("Business Club") es un programa de certificaciones de sostenibilidad para empresas adheridas — funcionalmente parece un programa aparte, pero en código `EmpresaBC extends Usuari` (herencia real de clase): toda empresa adherida al programa **es**, estructuralmente, un Operador Portuario con datos adicionales. El campo `Usuari.eseffnetwork` (String `"S"`/`"N"`, no booleano) marca la adhesión desde el propio maestro de terceros.
+
+### 2.13. Transporte Terrestre
+
+Gestiona los preavisos y autorizaciones de camiones que acceden al recinto portuario para recoger/entregar mercancía, más un sub-dominio de **parquing** (plazas de aparcamiento con tarifa propia) con paquete Java diferenciado. Alimentado por los circuitos EDI CODECO (gate-in/gate-out) y COPINO (recogida/entrega, con respuesta APERAK). Tiene acoplamiento de código real (no solo documental) hacia PPS (`CN_Targetas`) y Escalas (`AlineacioDades`).
 
 ---
 
@@ -824,11 +864,23 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 | Shore Power (OPS) | Suministro eléctrico al buque desde tierra |
 | Aguada / Aiguada | Suministro de agua potable al buque |
 | Manifest / Manifiest | Declaración de carga del buque |
+| Partida | Línea de mercancía concreta dentro de un manifiesto, con su propia clasificación arancelaria (versionada — `PartidaVersio`) |
 | Conocimiento (B/L) | Bill of Lading — documento de embarque |
 | DUA | Documento Único Administrativo (aduanas) |
 | Gate-in / Gate-out | Entrada/salida de contenedores de terminal |
+| COARRI | Mensaje EDIFACT de operaciones reales de terminal (carga/descarga) — en SÒSTRAT se usa para **conciliar** contra el manifiesto, no como entidad de negocio propia. Existe también un COARRI ferroviario (`RAIL20`), ver §12.2 |
+| CODECO | Mensaje EDIFACT de entrada/salida de contenedor de terminal (gate-in/gate-out) — alimenta las autorizaciones de Transporte Terrestre |
+| COPINO | Mensaje EDIFACT de recogida/entrega de mercancía y vacíos — circuito bidireccional con respuesta APERAK, dominio de Transporte Terrestre |
+| HAZMAT | Circuito EDI de autorización/inspección de mercancías peligrosas (alimenta el listado de carga MMPP) |
+| IFTDGN | Circuito EDI de notificación de mercancías peligrosas a las autoridades (con respuesta APERAK), distinto de HAZMAT |
+| IFCSUM | Mensaje EDIFACT de manifiesto resumen de carga (familia CUSCAR/CUSREP/CUSRES/CUSRP2) |
+| APERAK | Mensaje EDIFACT de acuse/confirmación de aplicación — en SÒSTRAT hay **7 implementaciones distintas**, una por circuito de negocio (WASDIS, MMPP, Facturas, Posicionamiento, Preavisos, PAXLST...), sin código base compartido |
 | Contenedor | Unidad estándar de transporte (TEU = 20 pies, FEU = 40 pies) |
 | Precinto | Sello de seguridad en contenedores |
+| Depotsis | Depósito de mercancía en muelle libre (terminal T6) — solicitud versionada + operaciones de desconsolidación asociadas |
+| Título (Titol) | Documento que otorga derecho de uso de terreno/actividad portuaria — término correcto en el modelo real; "Concesión" es solo uno de sus tipos posibles (junto a Autorización, Ocupación, Licencia, Evento), no un sinónimo exacto |
+| Operador Portuario | Maestro de terceros con relación comercial con APB (consignatarios, armadores, agentes de aduanas, transitarios) — entidad real `Usuari`, 118 campos, consumida por 30+ módulos |
+| Efficiency Network | Programa de certificaciones de sostenibilidad ("Business Club") — estructuralmente una especialización del maestro de Operadores Portuarios (`EmpresaBC extends Usuari`), no un programa aislado |
 | SCPP | Servicio de Control y Posicionamiento de Contenedores — capacidad/turnos/resultado de inspección (`LlocDInspeccio`/`Inspeccio`), candidato a fusión con PIF |
 | PIF | Puesto de Inspección Fronteriza — operación real de camión/contenedor (`OperacioPif`), distinto de SCPP aunque acoplado |
 | Posicionament | Posicionamiento físico de un camión/contenedor en el recinto PIF — capacidad de negocio real identificada en SÒSTRAT sin bounded context propuesto todavía (`CN_Posicionament_Impl.java`) |
@@ -840,8 +892,8 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 | Liquidació | Cálculo de la tasa portuaria aplicable |
 | Baremo | Tabla de precios aplicable (BE1 = fijo, BE2 = variable) |
 | Sujeto pasivo | Quién paga la tasa (consignatario o terminal) |
-| Concesión | Derecho de uso de espacio portuario |
-| Garantia | Aval financiero asociado a una concesión |
+| Concesión | Derecho de uso de espacio portuario — en el modelo real es un **tipo de Título** (ver `Título` más arriba), no un sinónimo genérico |
+| Garantia | Aval financiero asociado a un título — sin identidad de agregado propia, siempre referencia a `IDTITOL` |
 | ADR | Acuerdo Europeo sobre Transporte de Mercancías Peligrosas |
 
 ### 12.2. Ferrocarril
@@ -1013,6 +1065,7 @@ Estas reglas complementan y nunca reemplazan las del framework (`STANDARD_ARCHIT
 |---------|-------|--------|
 | 1.0.0 | 2026-06-30 | Creación — consolidación de APB_Knowledge_Base_IA.md v1-v3 (150 proyectos Jira, 520+ repos GitHub, Confluence APLIS, tickets 2023-2026) |
 | 1.1.0 | 2026-07-15 | Enriquecida con hallazgos de la descomposición DDD de SÒSTRAT (`discovery/ddd-sostrat-mj8/`, 24 dossiers + auditorías): distinción real PIF vs. SCPP y su candidatura a fusión; hallazgo `Posicionament` sin bounded context; recuento exacto de 90 jobs batch (corrige "~80"); arquitectura real de la mensajería EDI (modelo `MissatgeEdi`/`TipusMissatgeEdi` compartido, parsing de negocio repartido); corrección terminológica VUA (AEAT, nacional) vs. DMS (circuito real de la EMSWe europea); 9 aplicaciones externas con dependencia directa no documentada sobre datos de SÒSTRAT. Añadida regla de mantenimiento continuo (§14.14). |
+| 1.2.0 | 2026-07-15 | Segunda pasada, a petición explícita del usuario ("me refería a actualizar conocimiento funcional de negocio, nomenclaturas... qué es una escala, un COARRI, etc."): enriquece el conocimiento **funcional** (no solo arquitectura) de §2 con hallazgos reales de código — Escala (facturación entrelazada, EscalaAspecte, 3 escritores reales), Título/Garantía (corrige "Concesión" como término genérico erróneo), Mercancías (definiciones grounded de COARRI/CODECO/WASDIS/HAZMAT/IFTDGN/Depotsis/PIF-SCPP), nuevas §2.11-2.13 (Servicios al Buque, Operadores Portuarios/Efficiency Network, Transporte Terrestre). Añade ~20 términos nuevos al diccionario §12.1 (Partida, COARRI, CODECO, COPINO, HAZMAT, IFTDGN, IFCSUM, APERAK, Depotsis, Título, Operador Portuario) y corrige 2 entradas existentes (Concesión, Garantia). |
 
 ---
 
