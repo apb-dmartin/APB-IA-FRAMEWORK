@@ -1547,3 +1547,143 @@ infraestructura centralizada en vez de local/manual.
 ---
 
 *Cierre de Sesión 29 (2026-07-10).*
+
+---
+
+## Sesión 30 — Descomposición DDD completa de SÒSTRAT: 24 dossiers de aplicación final (2026-07-11 a 2026-07-14)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Uso del framework (discovery/DDD sobre un monolito real) — no construcción de componentes del catálogo
+
+**Contexto:** tres commits consecutivos (`c631fc2` 2026-07-11, `c6dd4fe` 2026-07-13,
+`5513c72` 2026-07-14) que ejecutan la descomposición DDD completa del monolito
+`SOSTRAT-Sostrat-MJ8` con los agentes propios del framework
+(`apb-agent-ddd-v1.0`, `apb-arch-decompose-v1.0`). **Esta bitácora no se
+actualizó al cierre de ninguna de las tres** — corregido ahora (verificación
+2026-07-14: los 24 dossiers existen, `validate_repo.py --strict` limpio,
+68/68 tests OK, sin trabajo real pendiente de ejecución en los dossiers
+mismos).
+
+### 30.1 — Fase 0-4: primera pasada de descomposición (commit `c631fc2`, 2026-07-11)
+
+14 apps, reparentadas contra el catálogo real de `apb-domain-catalog` (21
+dominios, 21 bounded contexts), roadmap de 6 fases, 14 OpenAPI + 4 AsyncAPI
+grounded en código real, testing strategy + threat model STRIDE, backlog Jira
+de 16 épicas y ~45 pantallas UI. Fase 5 (Escalas) documentada como migración
+hacia ARGOS, no extracción, con evidencia de código real (`MSG0004`,
+`PortCallCreatedDto.cs`).
+
+**Incidente de proceso detectado y corregido en la misma sesión** (documentado
+en `discovery/ddd-sostrat-mj8/session-retro-2026-07-11.md`): se generaron 28
+propuestas de dominio/BC asumiendo que `apb-domain-catalog` estaba vacío y que
+la estructura de ficheros destino era la de los templates locales. Ambas
+asunciones eran incorrectas — el submodule local estaba 4 commits por detrás
+del remoto (21 dominios `proposed` ya existentes de una sesión previa,
+solapando con 6 de los inventados), y la estructura real de ficheros
+(`domains/<nombre>/domain.md` + `contexts/<contexto>.md`) estaba documentada
+en el README del propio `apb-domain-catalog`, no leído hasta la tercera
+pasada. Causa raíz: generar sobre supuestos plausibles de un sistema externo
+en vez de leer su estado real. **Mitigación aplicada:** parche a
+`agents/apb-agent-ddd-v1.0.md` (Fase 1 exige ahora `git fetch` + comparación
+local vs. `origin/<rama>` antes de leer cualquier submodule como fuente de
+verdad) + memoria de sesión guardada
+(`feedback_verificar_repos_externos_antes_generar.md`).
+
+**Deliberadamente no corregido en esa sesión** (requiere confirmación
+explícita, no es un fix de contenido): el puntero del submodule
+`domain-catalog` en `APB-IA-FRAMEWORK` sigue apuntando a `c90668d`
+(desactualizado) — pendiente `git submodule update --remote domain-catalog` +
+revisión de diff + commit explícito de Débora. Ver §30.4 Sección A del plan
+de fases.
+
+### 30.2 — Auditoría de cobertura + 6 BCs de Fase 6 + primeros 14 dossiers (commit `c6dd4fe`, 2026-07-13)
+
+- `coverage-audit.md`: auditoría de cobertura funcional verificada contra
+  inventario real de Struts/SOAP/Batch.
+- `dead-code-register.md`: registro de código muerto con evidencia citada
+  (líneas y ficheros concretos).
+- **6 bounded contexts nuevos descubiertos en la auditoría** (no anticipados
+  en la Fase 0-4): Buques, Operadores Portuarios, Efficiency Network,
+  Servicios Auxiliares de Cruceros, Inspección SCPP, Trámites de Cliente —
+  con sus specs OpenAPI/AsyncAPI.
+- 14 de 24 dossiers de aplicación final generados (funcional + técnico +
+  datos + arquitectura + pantallas + APIs + eventos + convivencia), marcados
+  `[IA-GEN]` pendiente de validación humana.
+
+### 30.3 — Cierre de los 24 dossiers + índice consolidado (commit `5513c72`, 2026-07-14)
+
+Generados los 10 dossiers restantes (Manifiestos, Aduanas/Contenedores,
+Facturación y Liquidaciones, Clavegueram, Buques, Servicios Auxiliares de
+Cruceros, Inspección SCPP, Trámites de Cliente, Suministro Eléctrico a
+Buques, Operadores Portuarios), cada uno **re-verificado campo a campo contra
+el código real** de `SOSTRAT-Sostrat-MJ8`, no copiado de sesiones anteriores.
+Renumerado `dossier-17-operadores-portuarios` → `dossier-23` (colisión de
+numeración con `dossier-17-buques`).
+
+Creado `discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md` (v1.0.0): consolida
+los 24 dossiers (23 apps finales + 1 documento de migración/retirada de
+Escalas), con tabla de 4 bloqueantes de decisión y tabla de 9 correcciones
+pendientes de propagar a specs/eventos/código muerto ya publicados.
+
+**Hallazgos destacados de esta pasada final** (re-verificación campo a
+campo, no solo generación):
+- Motor de reglas de liquidación (`liquidadormm/`) con **153 referencias a
+  Manifiestos** + 56 a Escalas — el acoplamiento más profundo de toda la
+  serie.
+- Fusión PIF/SCPP confirmada con evidencia de código (cero uso de
+  `LlocDInspeccio` fuera de PIF/SCPP/Posicionament, comentarios que citan el
+  ticket compartido PIF-1429).
+- Fan-out real muy superior al documentado: Operadores Portuarios (369
+  ficheros) y Buques (145 ficheros consumidores / 4x lo documentado).
+- Entidad no documentada `CompteBancari` (IBAN/BIC, datos SEPA) ausente de la
+  spec OpenAPI de Operadores Portuarios y del catálogo de eventos.
+- Varias specs OpenAPI ya publicadas construidas sobre entidades equivocadas
+  o nombres de campo incorrectos (detalle completo: tabla §4 del `INDEX.md`).
+- 2 de 4 hallazgos de `dead-code-register.md` en Facturación son **falsos
+  positivos** (overrides polimórficos activos en producción) — corregido en
+  la propia auditoría antes de publicarse como definitivo.
+
+### 30.4 — Pendientes reales derivados de esta serie (verificados 2026-07-14, no ejecutados hasta ahora)
+
+Trasladados a `PLAN_FASES_FUTURAS.md` (secciones A y B) y a
+`HANDOFF_TECNICOS.md` (§6, §7, §10.3) en esta misma sesión de cierre:
+
+1. **4 bloqueantes de decisión de Arquitectura APB** (INDEX.md §3): fusión
+   PIF+SCPP (con recomendación de extender a Posicionament), `parent_domain`
+   compartido de Operadores Portuarios (#23) y Efficiency Network (#22),
+   conflicto de planificación Clavegueram (EPIC-15 vs. EPIC-13B en
+   `jira-backlog.md`), gap de evidencia de Aguada (modelo transaccional de
+   escritura no existe en el checkout auditado).
+2. **Corrección de specs ya publicadas** (INDEX.md §4): 9 correcciones
+   acotadas (entidad equivocada, nombres de campo, campos faltantes) sobre
+   specs OpenAPI/AsyncAPI/catálogo de eventos ya generados en sesiones
+   anteriores — ejecutable por Claude sin insumos externos.
+3. **Decisión de publicación**: el trabajo de esta serie contiene información
+   de negocio real de SÒSTRAT (estructura de datos, integraciones externas,
+   volúmenes) y sigue solo en commits locales — `apb-dmartin/APB-IA-FRAMEWORK`
+   es un repositorio **público** en GitHub. Débora debe decidir destino de
+   publicación antes de cualquier `git push` de estos commits (no se ha
+   pusheado nada de esta serie).
+4. **Bump del submodule `domain-catalog`** (ver §30.1) — pendiente de
+   confirmación explícita de Débora, no ejecutado automáticamente.
+5. **Formalización opcional**: no existe todavía una skill dedicada "dossier
+   de aplicación" — el formato se sintetizó combinando 4 skills/agentes
+   existentes. Si el formato resulta útil de forma recurrente en futuras
+   descomposiciones de monolitos, considerar formalizarlo.
+
+### Calidad y validación (verificación de cierre, 2026-07-14)
+
+`scripts/validate_repo.py --strict` → 0 errores, 10 warnings exentos ·
+`scripts/generate_catalog.py --check` → drift detectado y corregido (2 líneas
+triviales: fecha de `INDEX.md` y `status` de `prov-sonar-v1.0` desincronizados
+desde antes de esta serie, sin relación con SÒSTRAT) · `python -m unittest
+discover tests` → **68/68 OK**.
+
+**Inventario al cierre:** 367 componentes (sin cambio — los 24 dossiers y
+demás artefactos DDD viven en `discovery/`, no son componentes catalogables
+del framework).
+
+---
+
+*Cierre de Sesión 30 (2026-07-14).*

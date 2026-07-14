@@ -264,7 +264,7 @@ import { APBButton } from './components/core/APBButton';
 |---|-------|--------------|--------|
 | DC1 | ~~Ejecutar entrevista DDD para identificar el primer dominio APB~~ | Lista de sistemas/APIs de Débora | ✅ **Hecho (2026-06-30)** — 21 dominios `proposed` |
 | DC2 | Aprobación de los 21 dominios `proposed` (PR a APB-DOMAIN-CATALOG) | Revisión Arquitectura + experto de negocio | ⬜ Pendiente |
-| DC3 | Modelar bounded contexts (`bc-*.md`) por dominio | Acceso a código/BBDD de los repos DOCKS/SOSTRAT | ⬜ Diferido |
+| DC3 | Modelar bounded contexts (`bc-*.md`) por dominio | Acceso a código/BBDD de los repos DOCKS/SOSTRAT | ✅ **Hecho para SÒSTRAT (2026-07-11 a 2026-07-14)** — 21 bc-*.md en `discovery/ddd-sostrat-mj8/proposals/`, 24 dossiers de aplicación final re-verificados contra el código real de `SOSTRAT-Sostrat-MJ8`. Ver `CONTINUIDAD_PROYECTO.md` Sesión 30. **DOCKS sigue diferido** (sin acceso a código todavía) |
 | DC2 | Revisar `domain.md` generado y abrir PR en `APB-DOMAIN-CATALOG/domains/<nombre>/` | DC1 | ⬜ Pendiente |
 | DC3 | Aprobar dominio (estado `proposed` → `under_review` → `approved`) vía GOVERNANCE.md del catalog | DC2 | ⬜ Pendiente |
 
@@ -292,6 +292,7 @@ import { APBButton } from './components/core/APBButton';
 | S6 | Validar `apb-gov-dpia`, `apb-gov-data-classification` y `apb-sub-gov-data` contra criterio AEPD (RGPD art. 30/35, ENS) | Alta | DPO |
 | S7 | Definir proceso de gestión de supply chain para los 59 componentes de terceros sin SHA verificado | Media | Ciberseguridad |
 | S8 | Desactivar GitHub Actions de `apb-ai-skills` deprecado (`sync-skills.yml`, `validate-skills.yml`) | Media | Plataforma |
+| S9 | **Decidir destino de publicación de la serie DDD SÒSTRAT** (Sesión 30, 2026-07-14) — 24 dossiers + specs con información de negocio real (estructura de datos interna, integraciones externas no documentadas, volúmenes de fan-out) siguen solo en commits locales (`c631fc2`, `c6dd4fe`, `5513c72`); `apb-dmartin/APB-IA-FRAMEWORK` es un repositorio **público**. No pushear sin decisión explícita de Débora sobre repo destino (privado/interno vs. público actual) | Crítica — antes de cualquier `git push` de estos commits | Débora |
 
 ---
 
@@ -377,7 +378,7 @@ Entregado y listo para importar (`discovery/qa-compliance-grafana-dashboard.json
 | # | Qué se necesita | Desbloquea | Responsable |
 |---|---|---|---|
 | ACC1 | Acceso a histórico Jira (la skill de ingesta ya es ejecutable, falta el acceso real para probarla) | #37 — spec desde histórico | Plataforma / Jira Admin |
-| ACC2 | Acceso a código del monolito SÒSTRAT (Java/Oracle → DOCKS) | #38 Fase 1 — descomposición de monolitos (además de la aprobación de dominios, ver §6) | Arquitectura / equipo SÒSTRAT |
+| ACC2 | ~~Acceso a código del monolito SÒSTRAT (Java/Oracle → DOCKS)~~ | #38 Fase 1 — descomposición de monolitos (además de la aprobación de dominios, ver §6) | ✅ **Obtenido y usado (2026-07-11 a 2026-07-14)** — checkout de `SOSTRAT-Sostrat-MJ8` auditado campo a campo en los 24 dossiers (Sesión 30, ver `CONTINUIDAD_PROYECTO.md`). Único gap de evidencia real restante: **Aguada (#07)**, cuyo modelo transaccional de escritura no existe en el checkout auditado — ver `PLAN_FASES_FUTURAS.md` #93(d) |
 | ACC3 | ≥12 meses de datos reales de uso en Azure | `apb-agent-capacity-planner`, `apb-agent-portfolio-it` (#64) | Plataforma |
 | ACC4 | Validación de Ciberseguridad de `apb-sub-sec-sast-v1.0` + `apb-sub-ops-entra-v1.0` (SAST/Entra) y evaluación de necesidad de wrapper DAST (OWASP ZAP/Trivy) | R9/R10 — gap de seguridad ofensiva | Ciberseguridad |
 

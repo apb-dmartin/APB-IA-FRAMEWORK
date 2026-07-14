@@ -223,17 +223,22 @@ Antes de crear una skill APB, debe existir evidencia en `discovery/` de revisió
 >
 > Este repositorio está preparado para iniciar pilotos controlados. No debe usarse en producción sin revisión y aprobación explícita de Arquitectura, QA, Ciberseguridad y Gobierno de APB.
 
-Último hito (2026-07-08): **Sesión 28** — Agente de Valoración Técnica
+Último hito (2026-07-14): **Sesión 30** — descomposición DDD completa del monolito
+`SOSTRAT-Sostrat-MJ8` con los agentes propios del framework (`apb-agent-ddd-v1.0`,
+`apb-arch-decompose-v1.0`): 24 dossiers de aplicación final (23 apps + migración de
+Escalas hacia ARGOS), 21 bounded contexts re-verificados campo a campo contra el
+código real, roadmap de 6 fases, specs OpenAPI/AsyncAPI y backlog Jira asociados.
+Trabajo de discovery (`discovery/ddd-sostrat-mj8/`), no añade componentes al
+catálogo — ver `discovery/CONTINUIDAD_PROYECTO.md` Sesión 30 y
+`discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md`. **Pendiente de decisión de
+Débora antes de publicar:** el repositorio de GitHub es público y estos dossiers
+contienen información de negocio real de SÒSTRAT (ver `HANDOFF_TECNICOS.md` S9).
+Antes (2026-07-08): **Sesión 28** — Agente de Valoración Técnica
 (`apb-agent-valoracion-tecnica-v1.0`), orquestando los 3 sistemas reales de
 valoración APB (COSMIC, Horas/Perfil, Catálogo técnico USM/UEC/UTA) sobre
 metodología corporativa vigente y datos reales de 12 meses de Jira, sin forzar el
-enfoque por clasificación automática. Antes (2026-07-02): **Sesión QA-2** —
-metodología corporativa de planes de pruebas (#82: `TEST_PLAN_STANDARD`, plantilla,
-`apb-qa-test-plan` v1.2.0, ejemplo unificado TruckCenter de 112 casos con
-procedencia múltiple) + navegación agéntica para pruebas funcionales (#84:
-`prov-browser-agent` + `apb-qa-exploratory-nav`), con **ejecución funcional real
-demostrada sobre TruckCenter PRE**. El ciclo de aprobación `draft → approved` sigue
-pendiente.
+enfoque por clasificación automática. El ciclo de aprobación `draft → approved`
+sigue pendiente.
 
 ## Contacto
 
