@@ -1809,6 +1809,14 @@ El usuario preguntó directamente si el backlog/API/eventos/modelo de datos/pant
 
 `readiness-assessment.md` actualizado a v7, `INFORME_EJECUTIVO.md` a v1.3.0. Validación estricta, 68/68 tests y catálogo del framework sin drift confirmados antes de cada commit.
 
+### 30.12 — Arquitectura de eventos EDI/VUA + enriquecimiento del knowledge base (2026-07-15, misma sesión)
+
+Continuación tras el cierre formal de la 30.11. El usuario preguntó cómo se sustituyen los batch de SÒSTRAT y la mensajería EDI/Ventanilla Única en la nueva arquitectura — respuesta: no estaba diseñado, vacío real sin ninguna mención en `decomposition-roadmap.md`/`STANDARD_ARCHITECTURE.md`. Pidió a continuación analizar la mejor transformación a arquitectura de eventos (modo plan): un agente Explore investigó el código real (`sostrat`/`sostrat-BATCH`/`sostratWSCXF`) y confirmó que no hay un único "gateway EDI" sino 3 arquitecturas distintas coexistiendo; un agente Plan diseñó la partición en dos capas + dos excepciones (`bc-integracion-edi-portic-v1` de transporte, parsing repartido sin mover nada, `bc-vua-sapl-v1` y `bc-dms-emswe-v1` como bounded contexts propios). Hallazgo colateral importante: el catálogo real describía VUA/SAPL como si fuera la EMSWe europea — es aduana **nacional** (AEAT); el circuito FAL/EMSWe real es DMS. Con alcance acordado explícitamente con el usuario (documento de análisis + 3 proposals nuevos, resto diferido a `PLAN_FASES_FUTURAS.md` #103), se entregó `edi-event-architecture-analysis.md` + 3 `proposals/bc-*.md` nuevos. Commit `d459ab5`.
+
+A continuación, el usuario pidió un fichero de contexto de negocio para los agentes — se confirmó que ya existía (`context/apb/knowledge/APB_KNOWLEDGE_BASE.md`, consultado por los 40 agentes vía `prov-apb-knowledge-v1.0`) y se enriqueció en dos pasadas: (1) correcciones de arquitectura (PIF vs. SCPP, `Posicionament`, 90 batch jobs, modelo EDI real, VUA≠EMSWe, 9 consumidores externos — commit `3e851b0`); (2) tras aclarar el usuario que pedía conocimiento **funcional** de negocio ("qué es una escala, un COARRI..."), una segunda pasada mucho más profunda sobre §2 (Escala, Título/Garantía, Mercancías, 3 secciones nuevas: Servicios al Buque, Operadores Portuarios/Efficiency Network, Transporte Terrestre) y ~20 términos nuevos en el diccionario §12.1 — commit `01da78e`. Se estableció además un proceso de mantenimiento continuo: nueva regla §14.14 en el propio knowledge base, paso 11 en la Fase 3 del workflow de `apb-agent-ddd-v1.0` (v1.2.0), y una nueva entrada en el checklist de cierre de sesión (memoria persistente) para que ningún análisis futuro deje este conocimiento aislado en `discovery/`.
+
+Por último, el usuario pidió registrar como pendiente el modelo de permisos DOCKS (roles/grupos EntraID) que facilitará más adelante — `PLAN_FASES_FUTURAS.md` #104, `HANDOFF_TECNICOS.md` DC12, commit `6462897`.
+
 ---
 
-*Cierre de Sesión 30 (2026-07-14).*
+*Cierre de Sesión 30 (2026-07-15).*
