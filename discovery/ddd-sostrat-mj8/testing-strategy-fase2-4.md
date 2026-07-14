@@ -12,7 +12,7 @@
 - Integration: conectores externos Kaba/PortIC — usar test doubles, no el sistema físico real en CI.
 
 ### MARPOL/Residuos
-- Unit: transición de `idestat` (1-7) solo en el orden esperado — **bloqueante hasta confirmar con negocio los nombres reales de los estados 2-7** (solo el 1 está confirmado literalmente en código, ver `events-catalog.md` §14).
+- Unit: transición de `idestat` (1-7) solo en el orden esperado — **Corregido 2026-07-14**: los 7 nombres de estado están confirmados literalmente en código (`dossier-06-marpol-residuos.md §5`, `events-catalog.md` §14). Sigue siendo bloqueante confirmar con negocio la **semántica de las transiciones válidas** entre esos 7 estados (no los nombres, ya confirmados).
 - Contract: validar que `ResiduoPesado` nunca incluye campos fuera de `ResidusLineaData`.
 - E2E: flujo completo recogida → pesaje → cierre de lote → factura asociada (cruza con Facturación y Liquidaciones, Fase 4 — coordinar el orden real de implementación con esa dependencia).
 

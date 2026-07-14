@@ -500,14 +500,14 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
 | Constante | Valor | Significado |
 |---|---|---|
 | `ID_ESTAT_RECIBIDO` | 1 | Recibido |
-| (anulado) | 2 | Anulado |
-| (no pagado) | 3 | No pagado |
-| (confirmado) | 4 | Confirmado |
-| (enviado) | 5 | Enviado |
-| (pagado) | 6 | Pagado |
-| (reclamado) | 7 | Reclamado |
+| `ID_ESTAT_ANULADO` | 2 | Anulado |
+| `ID_ESTAT_NO_PAGADO` | 3 | No pagado |
+| `ID_ESTAT_CONFIRMADO` | 4 | Confirmado |
+| `ID_ESTAT_ENVIADO` | 5 | Enviado |
+| `ID_ESTAT_PAGADO` | 6 | Pagado |
+| `ID_ESTAT_RECLAMADO` | 7 | Reclamado |
 
-*(Fuente: `dataaccess/dto/marpol/ResidusEscala.java`, constantes `ID_ESTAT_*`; solo el valor 1 tiene nombre de constante confirmado literalmente en el extracto recibido — los nombres 2-7 son la interpretación directa del comentario del subagente, no se han vuelto a verificar contra el código fuente exacto de cada constante. Confirmar antes de usar en producción.)*
+*(Fuente: `dataaccess/dto/marpol/ResidusEscala.java` líneas 18-24. Corregido 2026-07-14 (`dossier-06-marpol-residuos.md §5`) — las 7 constantes están confirmadas literalmente en el código fuente, no solo la 1. Pendiente de negocio: la semántica de las transiciones válidas entre estados, no los nombres.)*
 
 ---
 
@@ -817,4 +817,4 @@ Evento `CapacidadPifActualizada` (payload separado, sobre `LlocDInspeccio`):
 | SolicitudAguadaProcesada | **DTO fuente no existe en el checkout** (solo compilado en `sostrat.jar`) — único gap real que sigue sin cerrar | Solicitar fuente a IN2 o decompilar como último recurso |
 | MensajeCodecoProcesado | Evento de mensaje EDI, no de entidad DTO | Diseño dedicado con equipo EDI |
 | GarantiaActualizada (`exprovisional`) | Javadoc ambiguo/duplicado en el DTO fuente | Confirmar columna real con el equipo antes de incluir el campo |
-| `idestatliq` (Liquidacion) → nombres de constantes 2-7 en `ResidusEscala` | Solo el valor 1 tiene nombre de constante Java confirmado literalmente | Releer `ResidusEscala.java` para confirmar nombres exactos de las constantes 2-7 |
+| ~~`idestat` (`ResidusEscala`) → nombres de constantes 2-7~~ | ✅ **Cerrado 2026-07-14** — las 7 constantes confirmadas literalmente en `ResidusEscala.java` líneas 18-24 (`dossier-06-marpol-residuos.md §5`); pendiente solo la semántica de transiciones, no los nombres | — |

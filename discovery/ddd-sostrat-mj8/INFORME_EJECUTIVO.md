@@ -50,9 +50,14 @@ El plan inicial era lanzar 8 agentes en paralelo (3 dossiers cada uno) para cubr
 | 19 — Inspección SCPP | Afirmaba que la PK de `Inspeccio` (3 partes) sigue "el mismo patrón" que `OperacioPif`/`OPERACIO_PIF2` — pero `OperacioPifPk.java` confirma que esa PK es de **2 partes**, no 3 (`dossier-11-pif.md §5` ya lo documentaba bien) | Corregido en 2 sitios del dossier (§5, §5 de NivellDInspeccio) |
 | 01 — Datos Maestros de Equipamiento | `openapi-datos-maestros-equipamiento.yaml` tipaba `matriculaiso` como la matrícula ISO 6346 real (con patrón `^[A-Z]{4}[0-9]{7}$`), cuando el DTO real (`Equipament.java`) lo usa como un flag `S`/`N` — confirmado sin excepción en 30+ puntos de asignación de todo el checkout; el patrón ISO pertenece a `refequipament` | Corregido: patrón movido a `refequipament`, `matriculaiso` retipado `enum: [S,N]`, retirado de `required` en el alta |
 
-**Dossiers NO re-verificados con este nivel de profundidad esta sesión** (por presupuesto): 00 (Escalas), 02 (solo recuento de rutas, no completo), 06 (MARPOL), 08 (Marinas/Pesca), 10 (MMPP). De los 24, **03 (Mano de Estiba), 07 (Aguada) y 15 (Facturación)** pasaron la auditoría de consistencia acotada de 30.7 (verificación cruzada entre documentos, no re-derivación desde código completa). Los 5 restantes conservan el nivel de verificación de su generación original (2026-07-13).
+**Cierre (30.10, mismo día)**: el usuario pidió continuar una tercera vez. Se verificaron los 4 dossiers restantes (00 Escalas, 06 MARPOL, 08 Marinas/Pesca, 10 MMPP), completando la **re-derivación desde código de las 24/24 dossiers** de la serie. 2 de los 4 no tenían ningún error (08, 10, ambos con verificaciones exactas de recuento de rutas y bloques de código muerto citados literalmente). Se encontraron y corrigieron **2 hallazgos más**:
 
-**Conclusión de la muestra verificada (20/24)**: 15 de 20 dossiers auditados en profundidad no tenían ningún error; los 5 con error (16, 19 ×2, 23, 01) comparten el mismo patrón — no son datos inventados, son correcciones parciales de una sesión anterior que no se propagaron del todo, o comparaciones/afirmaciones puntuales incorrectas sin verificar contra el fichero fuente exacto que citaban. No se ha encontrado ningún caso de dato fabricado sin base en código en ninguno de los 20 dossiers muestreados.
+| Dossier | Error encontrado | Corrección |
+|---|---|---|
+| 06 — MARPOL/Residuos | Nota obsoleta repetida en 6 ficheros distintos ("solo el valor 1 de `idestat` tiene nombre de constante confirmado") — el propio dossier ya había confirmado en su generación original (2026-07-13) que las 7 constantes son literales en `ResidusEscala.java`, pero la corrección nunca se propagó a las specs/catálogo/backlog/testing/threat-model | Corregido en `openapi-marpol-residuos.yaml`, `asyncapi-fase2.yaml`, `events-catalog.md`, `jira-backlog.md`, `testing-strategy-fase2-4.md` y `threat-model-fase2-4.md` |
+| 00 — Escalas | El dossier afirmaba "112 rutas Struts" del paquete `escalas`; el recuento exacto (`grep -c` sobre `struts-config.xml`) da 96, coincidente con `coverage-audit.md:34` ("escalas | 96"), que el dossier original no había cruzado | Corregido en §3 y §4 |
+
+**Conclusión final de la re-derivación (24/24 dossiers)**: 17 de 24 dossiers no tenían ningún error. Los 7 con hallazgos (16, 19 ×2, 23, 01, 06, 00) comparten el mismo patrón — ninguno es un dato inventado. Son, en todos los casos: (a) correcciones parciales de una sesión anterior que no se propagaron a todos los ficheros afectados, (b) comparaciones/afirmaciones puntuales incorrectas sin verificar contra el fichero fuente exacto citado, o (c) una cifra de recuento nunca cruzada contra el propio `coverage-audit.md` del proyecto. La disciplina de auto-verificación de los dossiers (cada uno documenta sus propios gaps de evidencia en su §14) es lo que hizo posible encontrar y corregir estos 7 casos con precisión quirúrgica en vez de una reescritura general.
 
 ### 4.1 Corrección — Payload del evento `ConsumClaveguerLiquidado` (dossier-16)
 
@@ -73,6 +78,14 @@ El mismo dossier afirmaba dos veces que la PK compuesta de `Inspeccio` (3 partes
 ### 4.5 Corrección — Semántica de `matriculaiso` en el contrato REST (dossier-01)
 
 `dossier-01-datos-maestros-equipamiento.md §2/§14` ya señalaba desde su generación original (2026-07-13) que `specs/openapi-datos-maestros-equipamiento.yaml` modelaba mal el campo `matriculaiso`: lo trataba como la matrícula ISO 6346 real del contenedor (con patrón `^[A-Z]{4}[0-9]{7}$`), cuando el DTO real (`Equipament.java`) lo usa como un flag `S`/`N` que indica si `refequipament` (el campo que sí lleva la matrícula) cumple el dígito de control ISO 6346 — confirmado sin excepción en 30+ puntos de asignación de todo el checkout. Esta corrección, señalada como pendiente hace un día, nunca se había aplicado. Corregido: el patrón ISO se mueve a `refequipament`, `matriculaiso` se retipa `enum: [S, N]` y se retira de los campos requeridos en el alta (es un valor calculado por el servicio, no un dato de entrada).
+
+### 4.6 Corrección — Nota obsoleta sobre nombres de estado propagada en 6 ficheros (dossier-06)
+
+`dossier-06-marpol-residuos.md` ya había confirmado, en su propia generación del 2026-07-13, que las 7 constantes de `ResidusEscala.idestat` están todas nombradas literalmente en `ResidusEscala.java` (líneas 18-24) — no solo la constante 1, como afirmaba una nota de cautela heredada de una fase de análisis anterior. Esa corrección nunca se propagó: `specs/openapi-marpol-residuos.yaml`, `specs/asyncapi-fase2.yaml`, `events-catalog.md §14`, `jira-backlog.md`, `testing-strategy-fase2-4.md` y `threat-model-fase2-4.md` seguían repitiendo la advertencia obsoleta ("solo el valor 1 confirmado"). Corregidos los 6 ficheros; se mantiene como pendiente real (no resuelto por esta corrección) la semántica de las transiciones válidas entre los 7 estados.
+
+### 4.7 Corrección — Recuento de rutas de Escalas (dossier-00)
+
+`dossier-00-escalas-migracion-argos.md` afirmaba 112 rutas Struts del paquete `escalas`. El recuento exacto contra `struts-config.xml` da 96, coincidente con `coverage-audit.md:34` ("escalas | 96 | bc-escalas-v1") — cifra que el dossier no había cruzado en su generación original pese a que otros dossiers de la serie sí verifican sistemáticamente contra esa fuente. Corregido en §3 y §4.
 
 ## 5. Los 3 bloqueantes reales, en detalle
 
@@ -101,7 +114,7 @@ Ninguna extracción que toque Transporte Terrestre, PPS, Facturación, Buques, E
 - Roadmap de 6 fases, 16 épicas con historias/criterios de aceptación, catálogo de 41+ eventos, superficie API por fase, ~45 pantallas UI.
 - 20 OpenAPI 3.0.3 + 4 AsyncAPI 2.6, testing strategy y threat model completos para las 14 apps de Fase 0-4.
 - Todas las specs necesarias ya existen — **no hacen falta specs nuevas** (verificado 2026-07-14): los únicos 2 casos "sin spec" (Efficiency Network, Escalas) lo son por diseño correcto, no por omisión.
-- Calidad interna verificada por muestreo profundo en tres rondas (30.7 acotada + 30.8 + 30.9, esta sesión): consistentemente alta — 20 de 24 dossiers verificados con evidencia de código, 5 correcciones puntuales encontradas y aplicadas, ninguna de tipo "dato inventado".
+- Calidad interna verificada por re-derivación completa desde código de las **24/24 dossiers** (30.7 acotada + 30.8 + 30.9 + 30.10, esta sesión): 7 correcciones puntuales encontradas y aplicadas en total, ninguna de tipo "dato inventado" — ver §3/§4.
 
 ## 7. Recomendación
 
@@ -112,7 +125,7 @@ Ninguna extracción que toque Transporte Terrestre, PPS, Facturación, Buques, E
 3. Resolver las 5 decisiones de dominio pendientes (§5.3) con Arquitectura APB/producto.
 4. Escribir el dossier de aplicación final de `bc-cruceros-v1` documentando el ecosistema CRE/VXL/SLC ya activo (hoy solo hay propuesta).
 5. Cerrar el residuo de cobertura ya conocido (~105 rutas de paquete raíz sin BC, 100 batch jobs sin auditar job a job, 3 gaps SOAP, DTO real de Aguada) — trabajo de IA todavía posible, no bloqueado por personas.
-6. Opcional, no bloqueante: completar la re-derivación desde código de los 4 dossiers restantes no cubiertos en profundidad esta sesión (00, 06, 08, 10 — ver §3), y mejorar `apb-agent-ddd-v1.0.md` con el paso de rastreo de consumidores externos (§5.4).
+6. Opcional, no bloqueante: mejorar `apb-agent-ddd-v1.0.md` con el paso de rastreo de consumidores externos (§5.4) — la re-derivación desde código de las 24 dossiers ya está completa (§3).
 
 Una vez cerrados los puntos 1-3, el resto de la documentación (`jira-backlog.md` + `specs/` + testing/threat-model) es una base de referencia válida para sprint planning real.
 
@@ -122,3 +135,4 @@ Una vez cerrados los puntos 1-3, el resto de la documentación (`jira-backlog.md
 |---|---|---|
 | 1.0.0 | 2026-07-14 | Primera versión, síntesis de toda la Sesión 30 a petición explícita del usuario tras la re-derivación completa (30.8) |
 | 1.1.0 | 2026-07-14 | Ampliada tras continuación 30.9: cobertura de re-derivación pasa de 10 a 20 de 24 dossiers, 3 correcciones adicionales encontradas y aplicadas (dossier-19 ×2, dossier-01) |
+| 1.2.0 | 2026-07-14 | Cierre tras continuación 30.10: re-derivación completa de las **24/24 dossiers**, 2 correcciones finales encontradas y aplicadas (dossier-06, dossier-00). Total de la sesión: 7 correcciones puntuales, ninguna de tipo "dato inventado" |

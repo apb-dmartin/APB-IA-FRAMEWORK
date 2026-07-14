@@ -64,7 +64,7 @@ components:
       contentType: application/json
       payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ResidusLineaData" }
       x-business-rules:
-        - "idestat de la recogida asociada (ResidusEscala) tiene 7 valores posibles — solo el valor 1 (Recibido) tiene nombre de constante confirmado literalmente en el código, ver events-catalog.md §14."
+        - "Corregido 2026-07-14 (dossier-06-marpol-residuos.md §5) — idestat de la recogida asociada (ResidusEscala) tiene 7 valores posibles, todos con constante confirmada literalmente en el código: 1=Recibido, 2=Anulado, 3=No pagado, 4=Confirmado, 5=Enviado, 6=Pagado, 7=Reclamado. Pendiente: la semántica de transiciones válidas entre estados, ver dossier-06 §13/§14."
     SolicitudAguadaProcesada:
       name: SolicitudAguadaProcesada
       contentType: application/json

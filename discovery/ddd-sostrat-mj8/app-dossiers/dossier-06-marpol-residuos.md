@@ -267,7 +267,7 @@ Ver `jira-backlog.md` EPIC-05 (Fase 2, valor de negocio medio-alto, riesgo técn
 **Desarrollo**:
 - [ ] Diseñar el ACL hacia el destino real de Escalas (ARGOS/`APB.API.TES`, no un servicio SÒSTRAT intermedio — ver `dossier-00-escalas-migracion-argos.md`).
 - [ ] Ampliar `specs/openapi-marpol-residuos.yaml` para cubrir `ResidusLot`/`ResidusFact` y las operaciones de contenedor/camión/QR/PDF antes de fijarlo como contrato definitivo.
-- [ ] Actualizar `specs/openapi-marpol-residuos.yaml`/`specs/asyncapi-fase2.yaml` para reflejar los 7 nombres de estado confirmados (§5), eliminando la advertencia de "solo el valor 1 confirmado".
+- [x] **Hecho 2026-07-14** — Actualizados `specs/openapi-marpol-residuos.yaml`, `specs/asyncapi-fase2.yaml`, `events-catalog.md` §14 y `jira-backlog.md`/`testing-strategy-fase2-4.md`/`threat-model-fase2-4.md` para reflejar los 7 nombres de estado confirmados (§5), eliminando la advertencia obsoleta de "solo el valor 1 confirmado" en los 6 sitios donde aparecía.
 - [ ] Coordinar con el equipo de Facturación y Liquidaciones (Fase 4) el tratamiento del cálculo de tarifa L7/bonificación por tipo de residuo (`recuperarReduccionesEscala`) antes de separar físicamente MARPOL de Escalas — riesgo de romper ese cálculo si se migra sin coordinación.
 - [ ] Inspeccionar campo a campo las ~15 clases DTO no cubiertas en esta pasada antes de fijar el modelo de datos definitivo.
 - [ ] Mapear `ROLE_MLISTRES`/`ROLE_MISSATGESEDI` legacy a scopes EntraID de destino.

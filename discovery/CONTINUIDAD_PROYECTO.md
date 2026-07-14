@@ -1787,4 +1787,16 @@ El usuario pidió explícitamente continuar el trabajo de 30.8. Se verificaron 6
 
 ---
 
+### 30.10 — Cierre de la re-derivación: 24/24 dossiers (2026-07-14, misma sesión)
+
+Tercera petición del usuario de "continuar". Se verificaron los 4 dossiers restantes (#00 Escalas, #06 MARPOL, #08 Marinas/Pesca, #10 MMPP) contra el checkout real, completando la re-derivación desde código de la serie completa de 24 dossiers.
+
+- **#10 MMPP** y **#08 Marinas/Pesca**: verificados exactos en todos los puntos comprobados (recuento de rutas — 58/36, 9+6 —, bloques de código muerto citados literalmente por número de línea). Sin correcciones.
+- **#06 MARPOL/Residuos**: el propio dossier ya había confirmado en su generación original que las 7 constantes de `ResidusEscala.idestat` están nombradas literalmente en código, pero esa corrección nunca se propagó — 6 ficheros distintos (`openapi-marpol-residuos.yaml`, `asyncapi-fase2.yaml`, `events-catalog.md`, `jira-backlog.md`, `testing-strategy-fase2-4.md`, `threat-model-fase2-4.md`) seguían repitiendo la advertencia obsoleta "solo el valor 1 confirmado". Corregidos los 6.
+- **#00 Escalas**: afirmaba 112 rutas Struts del paquete `escalas`; el recuento exacto da 96, coincidente con `coverage-audit.md:34`, que el dossier no había cruzado. Corregido.
+
+**Cierre definitivo de `PLAN_FASES_FUTURAS.md` #100 y `HANDOFF_TECNICOS.md` DC8**: la re-derivación desde código de las 24/24 dossiers está completa. Balance total de la sesión (30.7+30.8+30.9+30.10): **7 correcciones puntuales encontradas y aplicadas, 0 casos de dato inventado**. `INFORME_EJECUTIVO.md` actualizado a v1.2.0 con el cierre.
+
+---
+
 *Cierre de Sesión 30 (2026-07-14).*

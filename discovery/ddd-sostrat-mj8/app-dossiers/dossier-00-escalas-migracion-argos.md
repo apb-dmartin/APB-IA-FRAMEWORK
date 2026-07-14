@@ -22,7 +22,7 @@ SÒSTRAT gestiona hoy el ciclo de vida completo de la escala (visita de un buque
 ### Responsabilidad actual en SÒSTRAT
 - Registro y gestión de la escala (`Escala.java`, tabla `ESCALA`, PK `idsubport+anyescala+numescala`) y sus atraques (`Atracada.java`, tabla `ATRACADA`).
 - 67 interfaces de servicio bajo `service/escalas/` (`CN_*`).
-- 112 rutas Struts en el subpaquete `escalas` (+ `escalas.dms` + `escalas.prueba`), confirmadas por conteo exacto.
+- 96 rutas Struts en el subpaquete `escalas` (incluye `escalas.dms` [15] y `escalas.prueba` [1]) — **corregido 2026-07-14** (re-derivación desde código): la cifra original de este dossier era 112; el recuento exacto (`grep -c` sobre `struts-config.xml`, patrón `mvc.control.escalas`) da 96, coincidente con `coverage-audit.md:34` ("escalas | 96 | bc-escalas-v1"), que el dossier no había cruzado en su generación original.
 - Notificación a Cruceros, Ferrocarril, MARPOL y Aguada a través de referencias cruzadas a `EscalaPk`.
 
 ### Lo que la evidencia de código desmiente de la propia propuesta original
@@ -38,7 +38,7 @@ No incluye el diseño de ARGOS/`APB.API.TES` en sí — ese sistema ya existe y 
 
 ## 4. Alcance de migración — qué se retira y qué NO se migra por no estar en uso
 
-- **Se retira** (no se migra a un servicio nuevo, se traspasa la maestría a ARGOS): las 112 rutas Struts de `escalas`, la god class `EscalaAction.java` (una vez separada su lógica de facturación).
+- **Se retira** (no se migra a un servicio nuevo, se traspasa la maestría a ARGOS): las 96 rutas Struts de `escalas` (corregido 2026-07-14, ver §3), la god class `EscalaAction.java` (una vez separada su lógica de facturación).
 - **Código muerto confirmado dentro de este ámbito** (`dead-code-register.md` #2, #3): dos bloques completos comentados en `CN_Escala_Impl.java` (líneas ~10321-10420), con justificación explícita del desarrollador — *"ESCA-1328: (...) Este bloque de código está obsoleto"* y *"ESCA-1654: (...) ANULAMOS EL COMPORTAMIENTO DE LA ESCA-480"*. **Estos dos bloques NO deben migrarse ni replicarse en ARGOS bajo ningún escenario** — están confirmados como obsoletos por el propio desarrollador legacy.
 - **Se separa hacia otro destino, no se retira**: la lógica de liquidación/facturación entrelazada (81 referencias) — va hacia `bc-liquidacion-v1`/`bc-facturacion-v1` (Fase 4), no hacia ARGOS.
 - **No se ha auditado job a job** el impacto en `sostrat-BATCH` de esta retirada (ver `coverage-audit.md` §4, limitación explícita) — pendiente.
@@ -140,3 +140,4 @@ Ver `jira-backlog.md` EPIC-14 ("Migración de Escalas hacia ARGOS"). No hay stor
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-13 | APB AI Framework | Dossier inicial, a petición explícita del usuario de incluir Escalas en la serie de dossiers por aplicación, adaptando la plantilla a su naturaleza de migración |
+| 1.0.1 | 2026-07-14 | APB AI Framework (re-derivación completa, Sesión 30) | Corrige el recuento de rutas Struts de `escalas`: 96, no 112 — coincide exacto con `coverage-audit.md:34`, que el dossier original no había cruzado |

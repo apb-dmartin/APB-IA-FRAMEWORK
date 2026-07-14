@@ -119,7 +119,7 @@
 **Tareas técnicas**
 - Migrar los subpaquetes `pesatges`, `contenidor`, `camio`, `codisqr` a la nueva estructura de servicio.
 - Reconectar `LanzarCircuitoListaDeResiduosMARPOLTasklet.java` como job del nuevo servicio.
-- Confirmar los nombres exactos de las constantes de estado 2-7 de `ResidusEscala.idestat` (solo `ID_ESTAT_RECIBIDO=1` se confirmó literalmente en el código fuente leído; los nombres 2-7 son interpretación, no cita textual — releer el fichero completo antes de codificar la máquina de estados).
+- ~~Confirmar los nombres exactos de las constantes de estado 2-7 de `ResidusEscala.idestat`~~ — **Cerrado 2026-07-14**: las 7 constantes están confirmadas literalmente en `ResidusEscala.java` líneas 18-24 (`dossier-06-marpol-residuos.md §5`). Pendiente, sí sigue siendo bloqueante: confirmar con negocio la **semántica de las transiciones válidas** entre esos 7 estados antes de codificar la máquina de estados.
 
 ---
 

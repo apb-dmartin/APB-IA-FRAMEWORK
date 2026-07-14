@@ -77,7 +77,7 @@ components:
     EstatResidu:
       type: integer
       enum: [1, 2, 3, 4, 5, 6, 7]
-      description: "Grounded: ResidusEscala.idestat. Solo el valor 1 (ID_ESTAT_RECIBIDO) tiene nombre de constante confirmado literalmente en el código — los nombres 2-7 (Anulado/No pagado/Confirmado/Enviado/Pagado/Reclamado) son interpretación del orden observado, no citas textuales de constante Java. Confirmar con negocio antes de fijar este enum como definitivo."
+      description: "Corregido 2026-07-14 (dossier-06-marpol-residuos.md §5) — las 7 constantes están confirmadas literalmente en ResidusEscala.java líneas 18-24, todas activas en código: 1=ID_ESTAT_RECIBIDO, 2=ID_ESTAT_ANULADO, 3=ID_ESTAT_NO_PAGADO, 4=ID_ESTAT_CONFIRMADO, 5=ID_ESTAT_ENVIADO, 6=ID_ESTAT_PAGADO, 7=ID_ESTAT_RECLAMADO. Pendiente de negocio: la semántica de las transiciones válidas entre estados (no los nombres, ya confirmados) — ver dossier-06 §13/§14."
     ShipWasteCollection:
       type: object
       required: [idresidu, idsubport, anyescala, numescala]
