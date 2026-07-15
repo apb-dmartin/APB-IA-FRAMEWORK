@@ -2,7 +2,7 @@
 id: "apb-arch-security-design-v1.0"
 name: "Security by Design"
 description: "Integrar controles de seguridad desde la fase de diseño arquitectónico, aplicando el principio de 'security by design'. Define controles técnicos, organizativos y de gobierno para proteger datos, aplicaciones e infraestructura."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "Ciberseguridad <arquitectura@portdebarcelona.cat>"
 domain: "architecture"
@@ -66,7 +66,7 @@ En la fase de diseño de cualquier sistema, arquitectura o cambio significativo.
 
 1. **Clasificación de datos**: Identificar tipos de datos y su nivel de sensibilidad. Aplicar controles proporcionales.
 2. **Análisis de superficie de ataque**: Identificar puntos de entrada, APIs, interfaces, usuarios, integraciones.
-3. **Diseño de identidad**: Seleccionar mecanismo de auth (Entra ID, OAuth 2.0, API Keys). Definir RBAC, ABAC. Principio de mínimo privilegio.
+3. **Diseño de identidad**: Seleccionar mecanismo de auth (Entra ID, OAuth 2.0, API Keys). Definir RBAC, ABAC. Principio de mínimo privilegio. Para toda app DOCKS nueva, partir del catálogo de roles estándar de `APB_KNOWLEDGE_BASE.md` §3.4 (`APPLICATION_USER`, `APPLICATION_ADMINISTRATOR`, `APPLICATION_AUDIT`, y `APPLICATION_CLIENT`/`APPLICATION_USER_EXT`/`APPLICATION_CLIENT_EXT` cuando aplique) antes de inventar roles nuevos; documentar cualquier rol propio de negocio adicional.
 4. **Diseño de red**: Segmentación, NSGs, private endpoints, WAF, DDoS protection. Zero Trust.
 5. **Cifrado**: TLS 1.2+ en tránsito. AES-256 en reposo. CMK para datos restringidos.
 6. **Seguridad de aplicación**: Input validation, output encoding, parametrización de queries, headers de seguridad (HSTS, CSP, X-Frame-Options).
@@ -172,7 +172,7 @@ Integrar controles de seguridad desde la fase de diseño arquitectónico, aplica
 ## Instrucciones
 1. **Clasificación de datos**: Identificar tipos de datos y su nivel de sensibilidad. Aplicar controles proporcionales.
 2. **Análisis de superficie de ataque**: Identificar puntos de entrada, APIs, interfaces, usuarios, integraciones.
-3. **Diseño de identidad**: Seleccionar mecanismo de auth (Entra ID, OAuth 2.0, API Keys). Definir RBAC, ABAC. Principio de mínimo privilegio.
+3. **Diseño de identidad**: Seleccionar mecanismo de auth (Entra ID, OAuth 2.0, API Keys). Definir RBAC, ABAC. Principio de mínimo privilegio. Para toda app DOCKS nueva, partir del catálogo de roles estándar de `APB_KNOWLEDGE_BASE.md` §3.4 (`APPLICATION_USER`, `APPLICATION_ADMINISTRATOR`, `APPLICATION_AUDIT`, y `APPLICATION_CLIENT`/`APPLICATION_USER_EXT`/`APPLICATION_CLIENT_EXT` cuando aplique) antes de inventar roles nuevos; documentar cualquier rol propio de negocio adicional.
 4. **Diseño de red**: Segmentación, NSGs, private endpoints, WAF, DDoS protection. Zero Trust.
 5. **Cifrado**: TLS 1.2+ en tránsito. AES-256 en reposo. CMK para datos restringidos.
 6. **Seguridad de aplicación**: Input validation, output encoding, parametrización de queries, headers de seguridad (HSTS, CSP, X-Frame-Options).

@@ -1817,6 +1817,12 @@ A continuación, el usuario pidió un fichero de contexto de negocio para los ag
 
 Por último, el usuario pidió registrar como pendiente el modelo de permisos DOCKS (roles/grupos EntraID) que facilitará más adelante — `PLAN_FASES_FUTURAS.md` #104, `HANDOFF_TECNICOS.md` DC12, commit `6462897`.
 
+### 30.13 — Incorporación del modelo de roles DOCKS en Entra ID (2026-07-15, misma sesión)
+
+El usuario facilitó el documento "Roles de Aplicación DOCKS en Entra ID" (modelo real de autorización, cerrando `PLAN_FASES_FUTURAS.md` #104 registrado en 30.12) y pidió proponer dónde incorporarlo. Tras explorar el repo (dos agentes Explore en paralelo) se confirmó que el propio pendiente #104/DC12 ya señalaba el destino exacto (`APB_KNOWLEDGE_BASE.md` §3.4 + `STANDARD_ARCHITECTURE.md`). Se detectó de paso una posible discrepancia de nombrado de grupo entre la KB (`GRP_{ENTORNO}_{APP}_{ROL}`) y `subagents/apb-sub-ops-entra-v1.0.md` (`APB-{Sistema}-{Rol}`); el usuario aclaró que no es una inconsistencia real (son grupos de naturaleza distinta — rol de aplicación DOCKS vs. grupo de seguridad genérico de IT), así que el subagente no se toca. El usuario también confirmó dejar fuera de alcance el bounded context IAM en `domain-catalog` (submodule con bump pendiente sin confirmar) — queda como trabajo DDD futuro.
+
+Contenido incorporado: `APB_KNOWLEDGE_BASE.md` §3.4 ampliada de la convención de nombre de grupo (2 líneas) al modelo completo — transición CAS/LDAP→EntraID (Permisos→Roles, Roles→Grupos), catálogo de 7 roles estándar (`APPLICATION_AUDIT`, `FRAMEWORK_ADMINISTRATOR`, `APPLICATION_CLIENT[_EXT]`, `APPLICATION_USER[_EXT]`, `APPLICATION_ADMINISTRATOR`; rol "Gestor" marcado explícitamente como pendiente de decisión, tal como lo deja el documento fuente), fin de `API_CALL_*` en favor de App Roles entre APIs, convención de nomenclatura de roles — más referencias cruzadas en §3.6, §7.3 y §12.3 (v1.2.0→1.3.0). Propagado a `STANDARD_ARCHITECTURE.md` (v1.0.0→1.1.0), `GUIDE_API_SECURITY_v1.0.md` §4.2 y `apb-arch-security-design-v1.0.md` paso 3 (v1.0.0→1.0.1), todos remitiendo a la KB como fuente única para no crear una segunda versión divergente. Cierra `PLAN_FASES_FUTURAS.md` #104 y `HANDOFF_TECNICOS.md` DC12 (pendiente el movimiento íntegro a `PLAN_FASES_COMPLETADAS.md` en el próximo cierre de sesión, junto con #99-#101, que tampoco se han movido aún).
+
 ---
 
 *Cierre de Sesión 30 (2026-07-15).*

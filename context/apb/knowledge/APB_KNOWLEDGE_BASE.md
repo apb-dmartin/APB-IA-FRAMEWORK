@@ -7,7 +7,7 @@ description: >
   (incluyendo sistemas legacy) necesario para dar respuestas de calidad.
   NO modifica los estándares DOCKS ni las políticas tecnológicas aprobadas:
   el legacy se documenta como contexto, nunca como patrón a seguir en desarrollos nuevos.
-version: "1.2.0"
+version: "1.3.0"
 status: "approved"
 owner: "Debora Martin <deboramv@gmail.com>"
 domain: "knowledge"
@@ -20,6 +20,7 @@ sources:
   - "APB_Knowledge_Base_IA_v2.md (v2.0)"
   - "APB_Knowledge_Base_IA_v3.md (v3.0)"
   - "discovery/ddd-sostrat-mj8/ (v1.1.0, 2026-07-15) — descomposición DDD de SÒSTRAT: 24 dossiers de aplicación verificados contra código real, auditoría de 9 consumidores externos, cierre de cobertura de código (coverage-audit.md), análisis de arquitectura de eventos para EDI/Ventanilla Única"
+  - "Documento 'Roles de Aplicación DOCKS en Entra ID' (Débora Martin, 2026-07-15) — modelo de roles/grupos de autorización DOCKS, PLAN_FASES_FUTURAS.md #104"
 ---
 
 # APB Knowledge Base — Contexto Corporativo
@@ -347,10 +348,68 @@ Checkout → Restore → Build → Unit Test → APB Validations
 | Reliability | ≥ C |
 | Security | ≥ C |
 
-### 3.4. Convención de Grupos de Permisos
+### 3.4. Modelo de Roles y Permisos (Entra ID)
 
+**Transición del modelo de autorización** (migración CAS/LDAP → Entra ID):
+
+| OnPremises | Entra ID |
+|------------|----------|
+| Permisos asignados a roles de aplicación | Roles definidos por aplicación, comprobados en el token emitido por Entra ID |
+| Roles asignados directamente a usuarios | Roles asignados a **grupos**; los usuarios se incorporan a los grupos |
+
+Es decir: `Permisos (OnPrem) → Roles (Entra ID)` y `Roles (OnPrem) → Grupos de
+usuarios (Entra ID)`. La autorización se resuelve comprobando los roles
+contenidos en el token, no consultando permisos individuales por usuario.
+
+**Convención de nombre de grupo** (el grupo es quien porta el rol, no lo
+sustituye — ver más abajo la convención de nombre de *rol*):
 Formato: `GRP_{ENTORNO}_{APP}_{ROL}`
 Ejemplo: `GRP_PRO_ARG_TWO` (Producción, ARGOS, Tower Operator)
+
+**Catálogo de roles por defecto:**
+
+| Rol nuevo | Rol/permiso anterior | Propósito | Alcance |
+|-----------|----------------------|-----------|---------|
+| `APPLICATION_AUDIT` | Rol `APPLICATION_AUDITOR` / permiso `ACCESS_AUDITOR` | Acceso de solo lectura a toda la aplicación para auditorías internas, revisiones de cumplimiento | Todas las operaciones de consulta (GET) |
+| `FRAMEWORK_ADMINISTRATOR` | Rol `FRAMEWORK_ADMINISTRADOR` | Administradores del framework DOCKS | Acceso total — administración del framework, configuración global, soporte avanzado de plataforma |
+| `APPLICATION_CLIENT` | — | Aplicación que se autentica sin identidad de usuario (Cl@ve, Application-to-Application, procesos automáticos). Ej.: E33, EPS | No representa una persona física; flujo de credenciales de aplicación |
+| `APPLICATION_USER_EXT` | — | Persona física externa que accede a APIs/aplicaciones del Puerto. Ej.: P33, EQV, CTA | Asociado a identidad personal; control de acceso de terceros |
+| `APPLICATION_CLIENT_EXT` | — | Aplicación externa que consume APIs del Puerto sin usuario detrás. Ej.: API CTA | Autenticación por credenciales de aplicación; no asociado a usuario físico |
+| `APPLICATION_USER` (opcional) | Rol `APPLICATION_USUARI` / permiso `ACCESS_USUARI` | Funcionalidades operativas de un usuario estándar | Normalizado al inglés para estandarización y soporte |
+| `APPLICATION_ADMINISTRATOR` (opcional) | Rol `APPLICATION_ADMINISTRADOR` / permiso `ACCESS_ADMINISTRADOR` | Administración completa de la aplicación | Acceso administrativo total de la app |
+
+> ⚠️ **Pendiente de decisión**: el rol "Gestor de la aplicación" (permiso
+> anterior `ACCESS_GESTOR`) no tiene definición final aprobada — queda por
+> decidir si se fusiona con `APPLICATION_ADMINISTRATOR` o se mantiene como
+> rol independiente. No usar como referencia hasta que se cierre esa decisión.
+
+**Roles propios de aplicación**: además de los roles estándar, cada
+aplicación puede mantener roles personalizados de negocio propios (ej.
+`VIA_SGOIRI`), que se conservan durante la migración y siguen asignándose
+como App Roles de Entra ID.
+
+**Autorización API-to-API**: el modelo legacy de permisos `API_CALL_*` para
+conceder acceso entre aplicaciones desaparece en Entra ID. Se sustituye por
+App Registrations + permisos de aplicación + App Roles asignados entre APIs.
+Ejemplo:
+```
+API_BKO_DEV
+ └── APPLICATION_ADMINISTRATOR
+      └── API_EME_DEV
+API_BKO_DEV
+ └── APPLICATION_ADMINISTRATOR
+      └── API_MES_DEV
+```
+La comunicación API-to-API se basa en roles de aplicación, no en permisos
+específicos `API_CALL_*`.
+
+**Convención de nomenclatura de roles** (distinta de la convención de nombre
+de grupo anterior — el rol se define a nivel de aplicación en Entra ID; el
+grupo es el vehículo por el que se asigna a usuarios): MAYÚSCULAS,
+separación mediante `_`, inglés, sin acentos ni caracteres especiales. Ej.
+válidos: `APPLICATION_AUDIT`, `APPLICATION_USER`, `APPLICATION_ADMINISTRATOR`,
+`FRAMEWORK_ADMINISTRATOR`, `APPLICATION_CLIENT`, `APPLICATION_CLIENT_EXT`,
+`APPLICATION_USER_EXT`.
 
 ### 3.5. Entornos
 
@@ -363,7 +422,9 @@ Ejemplo: `GRP_PRO_ARG_TWO` (Producción, ARGOS, Tower Operator)
 ### 3.6. Migración EntraID
 
 - AuthScheme: `TGT` → `EntraIdOrTGT` → `EntraID`
-- Permisos: roles en App Registration de Entra ID.
+- Permisos: roles en App Registration de Entra ID. La asignación real es
+  Rol → Grupo → Usuario (nunca Rol → Usuario directo) — ver catálogo completo
+  de roles y modelo de grupos en §3.4.
 - SCIM para provisioning automático.
 - SSO con GitHub Enterprise.
 
@@ -732,7 +793,7 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 
 | Sistema | Mecanismo |
 |---------|-----------|
-| Aplicaciones DOCKS (Cloud) | Microsoft Entra ID + grupos APIM |
+| Aplicaciones DOCKS (Cloud) | Microsoft Entra ID + grupos APIM — catálogo de roles y modelo de grupos en §3.4 |
 | SÒSTRAT (legacy) | CAS (Apereo) + LDAP + Active Directory |
 | Alfresco (legacy) | CAS + Kerberos + LDAP |
 | Acceso físico al puerto | KABA + DormaKaba + huellas digitales (biometría) |
@@ -914,7 +975,8 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 | Portal DOCKS | Portal web unificado que aloja las aplicaciones DOCKS |
 | APIBASE / ArqApiBase | Plantilla base para APIs .NET del framework |
 | ARQBASE / ArqBase | Plantilla base para aplicaciones .NET |
-| App Registration | Registro de aplicación en Microsoft Entra ID |
+| App Registration | Registro de aplicación en Microsoft Entra ID — ahí se definen los App Roles de la aplicación |
+| App Role | Rol de aplicación definido en Entra ID (ej. `APPLICATION_USER`, `APPLICATION_ADMINISTRATOR`) y asignado a grupos, no a usuarios directamente. Catálogo completo en §3.4 |
 | EntraID | Microsoft Entra ID (antiguo Azure AD) — estándar de autenticación |
 | Service Bus | Azure Service Bus — mensajería asíncrona entre microservicios |
 | Topic / Subscription | Patrón publicación/suscripción en Service Bus |
@@ -1066,6 +1128,7 @@ Estas reglas complementan y nunca reemplazan las del framework (`STANDARD_ARCHIT
 | 1.0.0 | 2026-06-30 | Creación — consolidación de APB_Knowledge_Base_IA.md v1-v3 (150 proyectos Jira, 520+ repos GitHub, Confluence APLIS, tickets 2023-2026) |
 | 1.1.0 | 2026-07-15 | Enriquecida con hallazgos de la descomposición DDD de SÒSTRAT (`discovery/ddd-sostrat-mj8/`, 24 dossiers + auditorías): distinción real PIF vs. SCPP y su candidatura a fusión; hallazgo `Posicionament` sin bounded context; recuento exacto de 90 jobs batch (corrige "~80"); arquitectura real de la mensajería EDI (modelo `MissatgeEdi`/`TipusMissatgeEdi` compartido, parsing de negocio repartido); corrección terminológica VUA (AEAT, nacional) vs. DMS (circuito real de la EMSWe europea); 9 aplicaciones externas con dependencia directa no documentada sobre datos de SÒSTRAT. Añadida regla de mantenimiento continuo (§14.14). |
 | 1.2.0 | 2026-07-15 | Segunda pasada, a petición explícita del usuario ("me refería a actualizar conocimiento funcional de negocio, nomenclaturas... qué es una escala, un COARRI, etc."): enriquece el conocimiento **funcional** (no solo arquitectura) de §2 con hallazgos reales de código — Escala (facturación entrelazada, EscalaAspecte, 3 escritores reales), Título/Garantía (corrige "Concesión" como término genérico erróneo), Mercancías (definiciones grounded de COARRI/CODECO/WASDIS/HAZMAT/IFTDGN/Depotsis/PIF-SCPP), nuevas §2.11-2.13 (Servicios al Buque, Operadores Portuarios/Efficiency Network, Transporte Terrestre). Añade ~20 términos nuevos al diccionario §12.1 (Partida, COARRI, CODECO, COPINO, HAZMAT, IFTDGN, IFCSUM, APERAK, Depotsis, Título, Operador Portuario) y corrige 2 entradas existentes (Concesión, Garantia). |
+| 1.3.0 | 2026-07-15 | Incorpora el modelo de roles/permisos DOCKS en Entra ID facilitado por Débora (cierre de `PLAN_FASES_FUTURAS.md` #104 / `HANDOFF_TECNICOS.md` DC12): §3.4 pasa de la mera convención de nombre de grupo a documentar la transición CAS/LDAP→EntraID (Permisos→Roles, Roles→Grupos), el catálogo de 7 roles estándar (`APPLICATION_AUDIT`, `FRAMEWORK_ADMINISTRATOR`, `APPLICATION_CLIENT[_EXT]`, `APPLICATION_USER[_EXT]`, `APPLICATION_ADMINISTRATOR`), el rol "Gestor" marcado como pendiente de decisión, el fin de `API_CALL_*` en favor de App Roles entre APIs, y la convención de nomenclatura de roles. Referencias cruzadas añadidas en §3.6, §7.3 y §12.3 (nuevo término App Role). |
 
 ---
 
