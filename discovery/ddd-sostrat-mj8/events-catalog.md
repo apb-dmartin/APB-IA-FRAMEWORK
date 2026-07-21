@@ -93,18 +93,34 @@
 ```
 
 ### ListaPasajerosDeclarada / ListaPasajerosConfirmada
-**Diseño 2026-07-21** (materialización de `PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`) — eventos de negocio del circuito EDI PAXLST (lista de pasajeros de crucero), que `bc-cruceros-v1` recibe ya traducido desde `bc-integracion-edi-portic-v1` (suscripción con filtro SQL `circuito = 'PAXLST'` sobre `evt.sostrat.integracion-edi-portic`).
+**Cerrado 2026-07-21** (materialización de `PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`, gap cerrado con acceso al checkout real `SOSTRAT-Sostrat-MJ8`) — eventos de negocio del circuito EDI PAXLST (lista de pasajeros de crucero), que `bc-cruceros-v1` recibe ya traducido desde `bc-integracion-edi-portic-v1` (suscripción con filtro SQL `circuito = 'PAXLST'` sobre `evt.sostrat.integracion-edi-portic`).
 
-**⚠️ GAP DE EVIDENCIA**: no se ha identificado en esta extracción el DTO transaccional propio de PAXLST (`CN_Escala_PAXLST_Impl.java`, citado en `dossier-17-buques.md:123`, no leído en detalle — el checkout de código fuente no está disponible en esta sesión de materialización). Payload provisional limitado a los campos de correlación EDI ya grounded en el diseño de la capa de transporte (§5 de `edi-event-architecture-analysis.md`) más la clave de negocio de la escala de crucero, reutilizando el identificador ya citado arriba en `EscalaCruceroAuditada` (`idesccreuer`):
+**Fuente:** `dataaccess/dto/paxlst/EscalaPaxlst.java` (tabla `ESCALA_PAXLST`, PK `idescalapaxlst`) — agregado raíz confirmado. El circuito NO usa la tabla genérica `MissatgeEdi`/`MISSATGE_EDI` del gateway — tiene su propia tabla de correlación dedicada, `MissatgeEdiEscalaPaxlst.java` (tabla `MISSATGE_EDI_ESCALA_PAXLST`, PK compuesta `idescalapaxlst+nummissatge`), a diferencia de CODECO/COARRI que sí correlacionan vía el mecanismo genérico del gateway.
 ```json
 {
-  "idesccreuer": "long",
-  "edimessageid": "string",
-  "edicorrelationid": "string",
-  "estatllista": "string"
+  "idescalapaxlst": "long",
+  "idestat": "string",
+  "numreferencia": "string",
+  "idescalapaxlstoriginal": "long",
+  "numviatge": "string",
+  "idsubport": "string",
+  "anyescala": "integer",
+  "numescala": "integer",
+  "codtipusllista": "string",
+  "nifconsignatari": "string",
+  "idconsignatari": "string",
+  "callsign": "string",
+  "codvaixell": "long",
+  "nomvaixell": "string",
+  "idvaixell": "integer",
+  "dataaceptacio": "date",
+  "datacancelacio": "date",
+  "nummissatge": "long"
 }
 ```
-**No usar como contrato definitivo** — pendiente de recuperar `CN_Escala_PAXLST_Impl.java`/su DTO asociado antes de implementar. Añadido a la tabla de gaps de evidencia.
+*(`EscalaPaxlst.java` tiene 27 campos totales; se seleccionan aquí los de identidad/negocio, omitiendo los puramente de auditoría interna (`idprocalta`/`idprocmodificacio`/`idopealta`/`idopemodificacio`/`guid`) igual que el resto del catálogo. `nummissatge` viene de `MissatgeEdiEscalaPaxlst`, la tabla de correlación propia de este circuito.)*
+
+El paquete `dataaccess/dto/paxlst/` contiene además ~90 clases de segmento EDIFACT reales (`PaxlstEBgm01`/`PaxlstETdt01`/`PaxlstELoc01`/`PaxlstENad01`/etc., dirección entrada E/salida S) y su propia respuesta APERAK (`AperalEBgm01`/`AperalSBgm01`/etc., nombre real "Aperal" en este circuito) — no se vuelcan campo a campo aquí por volumen, siguiendo el mismo criterio que CODECO/COPINO (§16); `EscalaPaxlst` es el subconjunto de negocio suficiente para el contrato de evento.
 
 ---
 
@@ -473,31 +489,48 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
 **Nota (2026-07-14):** el proceso batch `sostrat-BATCH/.../tasklet/terminales/ConciliarDades.java`, citado en una versión anterior de este documento como fuente alternativa sin DTO de evento extraído, queda resuelto por el hallazgo de arriba — es el mismo flujo de conciliación de `CN_ConciliacioController_Impl.java`, no una fuente distinta pendiente.
 
 ### OperacionTerminalRegistrada
-**Diseño 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`) — evento de entrada del circuito EDI COARRI: se emite cuando `bc-aduanas-contenedores-v1` recibe (vía `bc-integracion-edi-portic-v1`, filtro `circuito = 'COARRI'`) y registra una operación de terminal, antes de la conciliación. Reutiliza el subconjunto de identidad ya grounded de `ProtermCont.java` (mismo DTO citado arriba en `DatosTerminalConciliados`) más las extensiones de correlación EDI del diseño de gateway:
+**Cerrado 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`, gap de investigación cerrado con acceso al checkout real) — evento de entrada del circuito EDI COARRI: se emite cuando `bc-aduanas-contenedores-v1` recibe (vía `bc-integracion-edi-portic-v1`, filtro `circuito = 'COARRI'`) y registra una operación de terminal, antes de la conciliación.
+
+**Fuente:** `dataaccess/dto/coarri/OpCompletTerminal.java` (tabla `OP_COMPLET_TERMINAL`, PK `idoperacio`) — confirmado el paquete real `service/coarri/`/`dataaccess/dto/coarri/`, nunca cubierto por ningún dossier de los 24 pero sí investigado directamente en esta sesión. Existe también `OpOnlineTerminal` (misma forma, variante "online"/tiempo real de la misma operación — tabla `OP_ONLINE_TERMINAL`).
+```json
+{
+  "idoperacio": "long",
+  "tipooperacion": "string",
+  "idoperaciooriginal": "long",
+  "dataini": "date",
+  "datafi": "date",
+  "idsubport": "string",
+  "anyescala": "integer",
+  "numescala": "integer",
+  "idvaixell": "integer",
+  "codeterminal": "string",
+  "terminal": "string",
+  "estat": "string",
+  "nummissatgeini": "long",
+  "nummissatgefi": "long",
+  "totalnomcontenidors": "long"
+}
+```
+*(`OpCompletTerminal.java` tiene 42+ campos totales; `nummissatgeini`/`nummissatgefi` son la correlación EDI real de este circuito — confirma que COARRI, a diferencia de PAXLST, sí usa el patrón de numeración de mensaje del gateway genérico, aunque en un par de columnas propias de esta tabla en vez de una FK a `MissatgeEdi`. Se omiten aquí ~25 campos de identificación de tren/ferrocarril (`idtren`/`empferroviaria`/etc., aplicables solo a operaciones intermodales) — ver el DTO fuente para el detalle completo.)*
+
+### ConciliacionCoarriProcesada
+**Cerrado 2026-07-21** — evento de cierre del circuito COARRI específicamente (distinto del más genérico `DatosTerminalConciliados`, que cubre la conciliación de terminales en general independientemente de su origen): marca que un mensaje COARRI concreto completó su ciclo de conciliación.
+
+**Fuente:** `dataaccess/dto/coarri/ProtermcontCoarri.java` (tabla `PROTERMCONT_COARRI`, PK `idregistre`) — misma forma que `ProtermCont.java`/`PROTERM_CONT` ya documentado en `DatosTerminalConciliados` arriba, pero es una tabla real **distinta y propia del circuito COARRI** (confirmado por lectura directa, no es la misma entidad reutilizada):
 ```json
 {
   "idregistre": "long",
   "idsubport": "string",
-  "anyescala": "long",
-  "numescala": "long",
+  "anyescala": "integer",
+  "numescala": "integer",
+  "numescalaterminal": "string",
+  "idvaixell": "integer",
   "refequipament": "string",
   "operacio": "string",
   "dataoperacio": "date",
+  "manipulacio": "string",
   "estado": "string",
-  "edimessageid": "string",
-  "edicorrelationid": "string"
-}
-```
-**Gap de investigación (2026-07-21)**: a diferencia de CODECO/COPINO (que sí tienen clases de segmento EDIFACT citadas, ver `PreavisoCodecoProcesado` §16), **ningún dossier de los 24 de esta serie cubre `service/coarri/`** — el paquete Java real donde vive `CN_EDI_Helper_Procesar_COARRI_Impl.java` (citado solo en `edi-event-architecture-analysis.md §3` y aquí, nunca en un dossier de aplicación dedicado). `dossier-13-aduanas-contenedores.md:173` confirma explícitamente que COARRI **no** vive en `service/aduanas`/`service/terminales` ("ninguna operación real encontrada... no es una integración activa de este módulo"), así que el paquete real que sí lo implementa nunca ha sido investigado en profundidad. Este payload reutiliza el subconjunto de identidad ya grounded de `ProtermCont.java` como aproximación razonable, no como evidencia directa de `service/coarri/`.
-
-### ConciliacionCoarriProcesada
-**Diseño 2026-07-21** — evento de cierre del circuito COARRI específicamente (distinto del más genérico `DatosTerminalConciliados`, que cubre la conciliación de terminales en general independientemente de su origen): marca que un mensaje COARRI concreto completó su ciclo de conciliación, con resultado. Payload = clave de correlación EDI + resultado, sin duplicar los ~34 campos ya cubiertos por `DatosTerminalConciliados`/`ErrorConciliacionDetectado`. Mismo gap de investigación que `OperacionTerminalRegistrada` arriba — `service/coarri/` nunca auditado en detalle:
-```json
-{
-  "idregistre": "long",
-  "edimessageid": "string",
-  "edicorrelationid": "string",
-  "resultat": "string"
+  "pes": "integer"
 }
 ```
 
@@ -665,20 +698,33 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
 ```
 
 ### PreavisoCodecoProcesado
-**Cerrado 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`) — sustituye el placeholder anterior `MensajeCodecoProcesado` (mismo evento, ahora nombrado y diseñado tras `edi-event-architecture-analysis.md §5`: el circuito CODECO es la respuesta EDI a un `PreavisoRegistrado` ya existente en este bounded context). Reutiliza la PK ya grounded de `Preavis.java` (arriba, `PreavisoRegistrado`) más las extensiones de correlación EDI del diseño de gateway (`edimessageid` = `MissatgeEdi.nummissatge`, `edicorrelationid` = `MissatgeEdi.nummisorigen`):
+**Cerrado 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`, campos reales confirmados con acceso al checkout) — sustituye el placeholder anterior `MensajeCodecoProcesado`: el circuito CODECO es la respuesta EDI a un `PreavisoRegistrado` ya existente en este bounded context.
+
+**Fuente:** `dataaccess/dto/transporteterrestre/codeco/CodecoTT.java` (DTO real, ~70 campos) — confirma la FK real hacia `Preavis.java` vía `portpreavis`+`seqpreavis` (hipótesis de diseño original, ahora verificada). Correlación EDI propia del circuito: `MissatgeEdiCodecoTT.java` (`seqcodeco`+`nummissatge`+`datalta`), distinta de la tabla genérica `MissatgeEdi` del gateway.
 ```json
 {
+  "seqcodeco": "long",
   "portpreavis": "string",
   "seqpreavis": "long",
-  "estat": "string",
-  "edimessageid": "string",
-  "edicorrelationid": "string"
+  "funcioncodeco": "string",
+  "tipuscodeco": "string",
+  "datcodeco": "date",
+  "matcontenidor": "string",
+  "refcontenidor": "string",
+  "idtransportista": "string",
+  "niftransportista": "string",
+  "idterminal": "string",
+  "idtipusmovimiento": "string",
+  "dataoperacio": "date",
+  "nummissatge": "long"
 }
 ```
-**Precisión de evidencia (2026-07-21, `dossier-09-transporte-terrestre.md §5/§14`)**: el circuito CODECO **sí tiene DTOs propios reales** — `CodecoTT.java`, `MissatgeEdiCodecoTT.java` y ~25 clases de segmento EDIFACT (`CodecoEBgm01`, `CodecoEEqd01`, `CodecoETdt01`, etc., paquete `codeco/`) — a diferencia de `SolicitudAguadaProcesada`/PAXLST, donde el DTO nunca se localizó. La razón de que el payload arriba siga siendo mínimo (PK + correlación) no es ausencia de datos sino **volumen no volcado en ninguna sesión** (>40 ficheros, ver TODO explícito en `dossier-09-transporte-terrestre.md:259`). Ampliar este payload es una tarea de re-lectura de código acotada, no un bloqueo por falta de fuente — ver `HANDOFF_SOSTRAT.md` ACC2.
+*(`CodecoTT.java` tiene ~70 campos reales, cubriendo tren/ferrocarril, mercancía peligrosa, daños y transbordo — se seleccionan aquí los de identidad/negocio del preaviso y el movimiento; el resto queda en el DTO fuente para el diseño detallado. Nota de calidad de datos: los primeros 6 campos de auditoría del fichero fuente tienen Javadoc que dice literalmente "in the DMS table" — copy-paste del generador desde otro circuito, mismo patrón que `Garantia.exprovisional`; no afecta a los campos de negocio aquí seleccionados.)*
 
 ### PreavisoCopinoRespondido
-**Diseño 2026-07-21** — respuesta EDI del circuito COPINO (recogida/entrega de mercancía, con APERAK propia) a un preaviso existente. Mismo patrón de correlación que `PreavisoCodecoProcesado`, reutilizando la misma PK de `Preavis.java`:
+**Cerrado 2026-07-21** — respuesta EDI del circuito COPINO (recogida/entrega de mercancía, con APERAK propia) a un preaviso existente.
+
+**Hallazgo de evidencia (2026-07-21)**: a diferencia de CODECO, el paquete `dataaccess/dto/transporteterrestre/copino/` **contiene únicamente clases de segmento EDIFACT puras** (`CopinoBGM01`, `CopinoRFF01`/`02`, `CopinoDTM01`/`02`/`03`, `CopinoEQD01`, `CopinoNAD01`, etc.) — no existe un `CopinoTT.java`/`MissatgeEdiCopino.java` equivalente al de CODECO (búsqueda confirmada sin resultados). COPINO no tiene, por tanto, una capa de negocio consolidada propia; su correlación real depende de la tabla genérica del gateway (`MissatgeEdi`). El payload sigue siendo el diseño original (PK de `Preavis.java` + correlación EDI genérica), que es la aproximación correcta dado este hallazgo, no una limitación pendiente de resolver:
 ```json
 {
   "portpreavis": "string",
@@ -688,7 +734,6 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
   "edicorrelationid": "string"
 }
 ```
-**Precisión de evidencia (2026-07-21)**: mismo caso que `PreavisoCodecoProcesado` — existe un paquete `copino/` paralelo a `codeco/` con la misma estructura de ~25 clases de segmento EDIFACT (`dossier-09-transporte-terrestre.md §5`), nunca volcado campo a campo. No es un gap de "DTO inexistente", es volumen pendiente de lectura.
 
 ---
 
@@ -898,8 +943,8 @@ Evento `CapacidadPifActualizada` (payload separado, sobre `LlocDInspeccio`):
 | ~~DatosTerminalConciliados~~ | ✅ **Cerrado 2026-07-11** — `ProtermCont.java`/`ErrorProcConc.java` leídos, ver §12 | — |
 | SolicitudAguadaProcesada | **DTO fuente no existe en el checkout** (solo compilado en `sostrat.jar`) | Solicitar fuente a IN2 o decompilar como último recurso — ver `HANDOFF_SOSTRAT.md` ACC2 |
 | ~~MensajeCodecoProcesado~~ | ✅ **Cerrado 2026-07-21** — renombrado y diseñado como `PreavisoCodecoProcesado` (§16), reutilizando la PK de `Preavis.java` + correlación EDI del gateway (`edi-event-architecture-analysis.md §5`) | — |
-| PreavisoCodecoProcesado / PreavisoCopinoRespondido (§16) | **Distinto de los gaps anteriores** — el DTO real SÍ existe (`CodecoTT.java`/`MissatgeEdiCodecoTT.java` + ~25 clases de segmento EDIFACT en `codeco/`/`copino/`, confirmado en `dossier-09-transporte-terrestre.md §5`), simplemente no se ha volcado campo a campo por volumen (>40 ficheros) | Re-lectura acotada de las clases de segmento — ver `HANDOFF_SOSTRAT.md` ACC2 |
-| OperacionTerminalRegistrada / ConciliacionCoarriProcesada (§12) | **Ningún dossier de los 24 cubre `service/coarri/`** — paquete real nunca auditado en profundidad en esta serie (confirmado ausente de `service/aduanas`/`service/terminales` por `dossier-13-aduanas-contenedores.md:173`) | Escribir un dossier dedicado a `service/coarri/`, mismo formato que los 24 existentes — ver `HANDOFF_SOSTRAT.md` ACC2 |
-| ListaPasajerosDeclarada / ListaPasajerosConfirmada (§2) | **DTO fuente de PAXLST no identificado en ninguna sesión** (`CN_Escala_PAXLST_Impl.java` nunca leído, única cita en `dossier-17-buques.md:123`; confirmado 2026-07-21 que no hay más pistas recuperables en el repo) | Recuperar el DTO real de PAXLST (IN2 o `SOSTRAT-Sostrat-JEE`) antes de fijar el contrato definitivo — ver `HANDOFF_SOSTRAT.md` ACC2 |
-| GarantiaActualizada (`exprovisional`) | Javadoc ambiguo/duplicado en el DTO fuente — confirmado 2026-07-21 que no es resoluble sin acceso al fuente real (no es un gap de "dato no leído", es una ambigüedad del propio comentario Java) | Confirmar columna real con el equipo antes de incluir el campo — ver `HANDOFF_SOSTRAT.md` ACC2 |
+| ~~PreavisoCodecoProcesado / PreavisoCopinoRespondido (§16)~~ | ✅ **Cerrado 2026-07-21** — `CodecoTT.java`/`MissatgeEdiCodecoTT.java` leídos con acceso al checkout real. Hallazgo adicional: COPINO no tiene DTO de negocio propio (solo segmentos EDIFACT puros), a diferencia de CODECO — el payload provisional de `PreavisoCopinoRespondido` es la aproximación correcta, no un gap pendiente | — |
+| ~~OperacionTerminalRegistrada / ConciliacionCoarriProcesada (§12)~~ | ✅ **Cerrado 2026-07-21** — `OpCompletTerminal.java`/`ProtermcontCoarri.java` leídos con acceso al checkout real; `service/coarri/` sigue sin un dossier de aplicación dedicado (fuera de alcance de este cierre puntual de eventos) | Dossier completo de `service/coarri/` sigue pendiente si se quiere el mismo nivel de detalle que los 24 existentes (Actions, riesgos, testing) |
+| ~~ListaPasajerosDeclarada / ListaPasajerosConfirmada (§2)~~ | ✅ **Cerrado 2026-07-21** — `EscalaPaxlst.java`/`MissatgeEdiEscalaPaxlst.java` leídos con acceso al checkout real (`GitHub-Repos/otros/SOSTRAT-Sostrat-MJ8`, corrección de la falsa premisa de "sin acceso a código" de sesiones anteriores) | — |
+| GarantiaActualizada (`exprovisional`) | **Confirmado 2026-07-21 con acceso directo a `Garantia.java` real** (checkout `SOSTRAT-Sostrat-MJ8`): el Javadoc de `exprovisional` (línea 155-158) dice literalmente *"maps to the column IDMOTIU"* — idéntico, copy-paste, al de `idmotiu` (línea 150-153). No hay ningún DAO/SQL de `Garantia` en el checkout (solo la excepción `GarantiaDaoException.java`) que permita desambiguar por otra vía. Es un defecto real del código fuente, no una limitación de esta investigación — **el único de los 5 residuos de `HANDOFF_SOSTRAT.md` ACC2 que sigue sin cerrar** | Confirmar la columna BBDD real con el equipo de Garantías/GESGAR (o inspección directa del esquema Oracle) antes de incluir el campo |
 | ~~`idestat` (`ResidusEscala`) → nombres de constantes 2-7~~ | ✅ **Cerrado 2026-07-14** — las 7 constantes confirmadas literalmente en `ResidusEscala.java` líneas 18-24 (`dossier-06-marpol-residuos.md §5`); pendiente solo la semántica de transiciones, no los nombres | — |

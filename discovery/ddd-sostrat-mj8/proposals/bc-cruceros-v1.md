@@ -67,14 +67,14 @@ Este documento solo cubre el agregado `CreuerEscalaAudit`. **No hay todavía un 
 | Evento | Tipo | Descripción |
 |--------|------|-------------|
 | EscalaCruceroAuditada | emitido | Se ha auditado una escala de crucero. |
-| ListaPasajerosDeclarada | emitido | Circuito EDI PAXLST: lista de pasajeros declarada. ⚠️ payload provisional, DTO fuente no confirmado — ver `events-catalog.md §2`. |
-| ListaPasajerosConfirmada | emitido | Circuito EDI PAXLST: lista de pasajeros confirmada (respuesta APERAK). ⚠️ mismo gap de evidencia que el evento anterior. |
+| ListaPasajerosDeclarada | emitido | Circuito EDI PAXLST: lista de pasajeros declarada. Payload real desde `EscalaPaxlst.java` — ver `events-catalog.md §2`. |
+| ListaPasajerosConfirmada | emitido | Circuito EDI PAXLST: lista de pasajeros confirmada (respuesta APERAK). |
 
 ## Relaciones con Otros Bounded Contexts
 
 Downstream (conformist) de Escalas.
 
-**Añadido 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`): también downstream de `bc-integracion-edi-portic-v1` para el circuito PAXLST (lista de pasajeros), vía suscripción con filtro SQL `circuito = 'PAXLST'` sobre `evt.sostrat.integracion-edi-portic` — ver `edi-event-architecture-analysis.md §5`. **Gap de evidencia pendiente**: el DTO transaccional real de PAXLST (`CN_Escala_PAXLST_Impl.java`) no se ha leído en ninguna sesión de esta serie; el payload de estos dos eventos es provisional hasta recuperar ese código fuente.
+**Añadido 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`): también downstream de `bc-integracion-edi-portic-v1` para el circuito PAXLST (lista de pasajeros), vía suscripción con filtro SQL `circuito = 'PAXLST'` sobre `evt.sostrat.integracion-edi-portic` — ver `edi-event-architecture-analysis.md §5`. **Cerrado el mismo día**: el DTO transaccional real de PAXLST (`dataaccess/dto/paxlst/EscalaPaxlst.java`, tabla `ESCALA_PAXLST`) se leyó con acceso al checkout real (`GitHub-Repos/otros/SOSTRAT-Sostrat-MJ8`) — el payload de estos dos eventos ya no es provisional, ver `events-catalog.md §2`.
 
 ## Implementación Actual
 
@@ -85,4 +85,5 @@ Implementado en SÒSTRAT bajo `dataaccess/dto/cruceros/CreuerEscalaAudit.java` y
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Propuesta inicial a partir de análisis DDD de SOSTRAT-Sostrat-MJ8 |
-| 1.1.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Materialización de `PLAN_FASES_FUTURAS.md #103`: añadidos `ListaPasajerosDeclarada`/`ListaPasajerosConfirmada` (circuito EDI PAXLST, payload provisional por gap de evidencia) y `bc-integracion-edi-portic-v1` como upstream |
+| 1.1.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Materialización de `PLAN_FASES_FUTURAS.md #103`: añadidos `ListaPasajerosDeclarada`/`ListaPasajerosConfirmada` (circuito EDI PAXLST) y `bc-integracion-edi-portic-v1` como upstream |
+| 1.2.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Gap de evidencia de PAXLST cerrado con acceso al checkout real (`EscalaPaxlst.java`) — payload de `ListaPasajerosDeclarada`/`ListaPasajerosConfirmada` ya no es provisional |
