@@ -1,0 +1,157 @@
+# [IA-GEN] Generado por APB AI Framework (apb-agent-ddd-v1.0) - pendiente revision humana
+asyncapi: "2.6.0"
+info:
+  title: APB SÒSTRAT — Eventos de la capa de transporte EDI/Ventanilla Única (integraciones-edi)
+  version: "1.0.0"
+  description: |
+    Contratos de evento para los 3 bounded contexts nuevos surgidos de la
+    transformación de la mensajería EDI/VUA a arquitectura de eventos:
+    `bc-integracion-edi-portic-v1` (capa de transporte transversal),
+    `bc-vua-sapl-v1` (Ventanilla Única Aduanera, AEAT) y `bc-dms-emswe-v1`
+    (Declaración Marítima de Sanidad — el circuito real de la EMSWe europea).
+    Ver `../edi-event-architecture-analysis.md` (diseño completo, §5 eventos)
+    y `../events-catalog.md` para la evidencia de código de cada campo.
+    Envelope CloudEvents 1.0 en todos los eventos. Materializa
+    `PLAN_FASES_FUTURAS.md #103` (c).
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-agent-ddd-v1.0"
+defaultContentType: application/json
+servers:
+  serviceBus: { url: "apb-sostrat.servicebus.windows.net", protocol: amqp, description: Azure Service Bus }
+channels:
+  evt.sostrat.integracion-edi-portic:
+    description: >
+      Topic transversal: bc-integracion-edi-portic-v1 publica aquí todo mensaje
+      EDI entrante ya traducido a CloudEvent. Los BCs de negocio no se
+      suscriben al topic entero — usan un filtro SQL sobre la propiedad de
+      aplicación `circuito` (COARRI/CODECO/COPINO/WASDIS/HAZMAT/IFTDGN/CUSCAR/
+      PAXLST/BERMAN/INVOIC), traducción literal de la tabla real TipusMissatgeEdi.
+    publish:
+      operationId: onIntegracionEdiPorticEvent
+      message: { oneOf: [ { $ref: "#/components/messages/MensajeEdiEnviado" }, { $ref: "#/components/messages/MensajeEdiRechazado" }, { $ref: "#/components/messages/ErrorEdiRegistrado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.integracion-edi-portic.dlq" } }
+  cmd.sostrat.integracion-edi-portic.enviar:
+    description: >
+      Canal de comando: un BC de negocio publica aquí (en vez de llamar a
+      Portic directamente) cuando necesita enviar una respuesta EDI (APERAK,
+      NotifEntrada VUA...). El gateway traduce, persiste MissatgeEdi
+      (sentit=sortida), invoca sendMessageOracle, y confirma con
+      MensajeEdiEnviado/MensajeEdiRechazado en evt.sostrat.integracion-edi-portic.
+    subscribe:
+      operationId: onEnviarMensajeEdiComando
+      message: { $ref: "#/components/messages/EnviarMensajeEdiComando" }
+  evt.sostrat.vua-sapl:
+    description: "bc-vua-sapl-v1 — Ventanilla Única Aduanera (AEAT), no confundir con la EMSWe europea (ver bc-dms-emswe-v1)."
+    publish:
+      operationId: onVuaSaplEvent
+      message: { oneOf: [ { $ref: "#/components/messages/SaplAltaRegistrada" }, { $ref: "#/components/messages/SaplBajaRegistrada" }, { $ref: "#/components/messages/NotificacionSalidaVuaRecibida" }, { $ref: "#/components/messages/NotificacionEntradaVuaEnviada" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.vua-sapl.dlq" } }
+  evt.sostrat.dms-emswe:
+    description: "bc-dms-emswe-v1 — Declaración Marítima de Sanidad, circuito real de la European Maritime Single Window environment (Directiva UE 2019/1239)."
+    publish:
+      operationId: onDmsEmsweEvent
+      message: { oneOf: [ { $ref: "#/components/messages/DeclaracionSanitariaMaritimaRecibida" }, { $ref: "#/components/messages/PosicionamientoSanitarioActualizado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.dms-emswe.dlq" } }
+components:
+  messages:
+    MensajeEdiEnviado:
+      name: MensajeEdiEnviado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/MensajeEdiConfirmacionData" }
+      x-business-rules: [ "Confirmación de envío tras el comando cmd.sostrat.integracion-edi-portic.enviar." ]
+    MensajeEdiRechazado:
+      name: MensajeEdiRechazado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/MensajeEdiConfirmacionData" }
+    ErrorEdiRegistrado:
+      name: ErrorEdiRegistrado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ErrorEdiData" }
+      x-business-rules: [ "Fuente: tabla ErrorEdi — permite un dashboard de errores EDI transversal sin que cada BC de negocio replique lógica de error." ]
+    EnviarMensajeEdiComando:
+      name: EnviarMensajeEdiComando
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/EnviarMensajeEdiComandoData" }
+    SaplAltaRegistrada:
+      name: SaplAltaRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/SaplAltaData" }
+      x-business-rules: [ "Inbound Alta, XSD real CoordinacionAltaV1Sal." ]
+    SaplBajaRegistrada:
+      name: SaplBajaRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/SaplBajaData" }
+      x-business-rules: [ "Inbound Baja, XSD real CoordinacionAnulacionV1Sal." ]
+    NotificacionSalidaVuaRecibida:
+      name: NotificacionSalidaVuaRecibida
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/NotificacionSalidaVuaData" }
+      x-business-rules: [ "Inbound NotifSalida, XSD real NotificacionAltaV1Sal." ]
+    NotificacionEntradaVuaEnviada:
+      name: NotificacionEntradaVuaEnviada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/NotificacionEntradaVuaData" }
+      x-business-rules:
+        - "Outbound NotifEntrada, XSD real NotificacionAltaV1Ent."
+        - "Invariante de negocio confirmada en código: un SAPL solo se responde una vez (SaplContenidor.nummissatgenotif ya seteado → no reenviar)."
+    DeclaracionSanitariaMaritimaRecibida:
+      name: DeclaracionSanitariaMaritimaRecibida
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/DeclaracionSanitariaMaritimaData" }
+      x-business-rules: [ "Inbound MDH XML (schema JAXB MDHResponse), NO usa MissatgeEdi — transporte propio del circuito DMS, distinto del gateway genérico." ]
+    PosicionamientoSanitarioActualizado:
+      name: PosicionamientoSanitarioActualizado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PosicionamientoSanitarioData" }
+      x-business-rules: [ "Fuente: SancrtPosIns." ]
+  schemas:
+    CloudEventEnvelope:
+      type: object
+      required: [specversion, type, source, id, time, data]
+      properties:
+        specversion: { type: string, enum: ["1.0"] }
+        type: { type: string }
+        source: { type: string, format: uri-reference }
+        id: { type: string, format: uuid }
+        time: { type: string, format: date-time }
+        data: { type: object }
+    MensajeEdiConfirmacionData:
+      type: object
+      description: "Confirmación de envío/rechazo tras cmd.sostrat.integracion-edi-portic.enviar."
+      required: [nummissatge, idcircuit]
+      properties: { nummissatge: { type: string }, idcircuit: { type: string }, edicorrelationid: { type: string, nullable: true }, motiu: { type: string, nullable: true } }
+    ErrorEdiData:
+      type: object
+      description: "Fuente: tabla ErrorEdi."
+      required: [nummissatge, idcircuit, codierror]
+      properties: { nummissatge: { type: string }, idcircuit: { type: string }, codierror: { type: string }, descripcio: { type: string, nullable: true } }
+    EnviarMensajeEdiComandoData:
+      type: object
+      description: "Comando emitido por un BC de negocio para que el gateway traduzca y envíe una respuesta EDI (APERAK, NotifEntrada VUA...). Payload de negocio como sub-objeto opaco (data), el gateway no interpreta su contenido."
+      required: [idcircuit, sentit]
+      properties: { idcircuit: { type: string }, sentit: { type: string, enum: ["sortida"] }, edicorrelationid: { type: string, nullable: true }, payloadNegocio: { type: object } }
+    SaplAltaData:
+      type: object
+      required: [numsapl, matcontenidor]
+      properties: { numsapl: { type: string }, matcontenidor: { type: string }, idterminal: { type: string, nullable: true }, dataalta: { type: string, format: date-time, nullable: true }, idestat: { type: string, nullable: true } }
+    SaplBajaData:
+      type: object
+      required: [numsapl]
+      properties: { numsapl: { type: string }, databaixa: { type: string, format: date-time, nullable: true }, motiubaixa: { type: string, nullable: true } }
+    NotificacionSalidaVuaData:
+      type: object
+      required: [numsapl]
+      properties: { numsapl: { type: string }, datasortida: { type: string, format: date-time, nullable: true }, idestatsortida: { type: string, nullable: true } }
+    NotificacionEntradaVuaData:
+      type: object
+      required: [numsapl]
+      properties: { numsapl: { type: string }, dataentrada: { type: string, format: date-time, nullable: true }, idestatentrada: { type: string, nullable: true }, edicorrelationid: { type: string, nullable: true } }
+    DeclaracionSanitariaMaritimaData:
+      type: object
+      required: [idsubport, anyescala, numescala, numdms]
+      properties: { idsubport: { type: string }, anyescala: { type: integer }, numescala: { type: integer }, numdms: { type: string }, datadeclaracio: { type: string, format: date-time, nullable: true }, idestatsanitari: { type: string, nullable: true } }
+    PosicionamientoSanitarioData:
+      type: object
+      required: [numdms]
+      properties: { numdms: { type: string }, idposicionament: { type: string, nullable: true }, dataactualitzacio: { type: string, format: date-time, nullable: true }, idestat: { type: string, nullable: true } }

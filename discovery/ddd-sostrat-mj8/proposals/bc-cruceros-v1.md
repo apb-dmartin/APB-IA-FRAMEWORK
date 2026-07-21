@@ -14,6 +14,8 @@ entities: []
 value_objects: []
 domain_events:
   - "EscalaCruceroAuditada"
+  - "ListaPasajerosDeclarada"
+  - "ListaPasajerosConfirmada"
 ubiquitous_language:
   - term: "Creuer"
     definition: "Buque de crucero."
@@ -23,6 +25,7 @@ integration_patterns:
     direction: "downstream"
 upstream_contexts:
   - "bc-escalas-v1"
+  - "bc-integracion-edi-portic-v1"
 downstream_contexts: []
 related_systems:
   - "SOSTRAT-Sostrat-MJ8"
@@ -64,10 +67,14 @@ Este documento solo cubre el agregado `CreuerEscalaAudit`. **No hay todavía un 
 | Evento | Tipo | Descripción |
 |--------|------|-------------|
 | EscalaCruceroAuditada | emitido | Se ha auditado una escala de crucero. |
+| ListaPasajerosDeclarada | emitido | Circuito EDI PAXLST: lista de pasajeros declarada. ⚠️ payload provisional, DTO fuente no confirmado — ver `events-catalog.md §2`. |
+| ListaPasajerosConfirmada | emitido | Circuito EDI PAXLST: lista de pasajeros confirmada (respuesta APERAK). ⚠️ mismo gap de evidencia que el evento anterior. |
 
 ## Relaciones con Otros Bounded Contexts
 
 Downstream (conformist) de Escalas.
+
+**Añadido 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`): también downstream de `bc-integracion-edi-portic-v1` para el circuito PAXLST (lista de pasajeros), vía suscripción con filtro SQL `circuito = 'PAXLST'` sobre `evt.sostrat.integracion-edi-portic` — ver `edi-event-architecture-analysis.md §5`. **Gap de evidencia pendiente**: el DTO transaccional real de PAXLST (`CN_Escala_PAXLST_Impl.java`) no se ha leído en ninguna sesión de esta serie; el payload de estos dos eventos es provisional hasta recuperar ese código fuente.
 
 ## Implementación Actual
 
@@ -78,3 +85,4 @@ Implementado en SÒSTRAT bajo `dataaccess/dto/cruceros/CreuerEscalaAudit.java` y
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Propuesta inicial a partir de análisis DDD de SOSTRAT-Sostrat-MJ8 |
+| 1.1.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Materialización de `PLAN_FASES_FUTURAS.md #103`: añadidos `ListaPasajerosDeclarada`/`ListaPasajerosConfirmada` (circuito EDI PAXLST, payload provisional por gap de evidencia) y `bc-integracion-edi-portic-v1` como upstream |

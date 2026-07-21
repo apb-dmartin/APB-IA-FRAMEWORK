@@ -38,7 +38,7 @@ channels:
   evt.sostrat.transporte-terrestre:
     subscribe:
       operationId: onTransporteTerrestreEvent
-      message: { oneOf: [ { $ref: "#/components/messages/PreavisoRegistrado" }, { $ref: "#/components/messages/AutorizacionConcedida" } ] }
+      message: { oneOf: [ { $ref: "#/components/messages/PreavisoRegistrado" }, { $ref: "#/components/messages/AutorizacionConcedida" }, { $ref: "#/components/messages/PreavisoCodecoProcesado" }, { $ref: "#/components/messages/PreavisoCopinoRespondido" } ] }
     bindings: { amqp: { deadLetterExchange: "evt.sostrat.transporte-terrestre.dlq" } }
 components:
   messages:
@@ -86,9 +86,18 @@ components:
       name: AutorizacionConcedida
       contentType: application/json
       payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/AutorizacionData" }
-      x-error-handling:
-        - scenario: "MensajeCodecoProcesado (circuito EDI) no tiene DTO propio identificado — no modelado como mensaje formal en este AsyncAPI, ver events-catalog.md §16."
-          handling: "Diseño dedicado con el equipo EDI antes de implementar ese circuito específico."
+    PreavisoCodecoProcesado:
+      name: PreavisoCodecoProcesado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PreavisoEdiCorrelationData" }
+      x-business-rules:
+        - "Cerrado 2026-07-21 (PLAN_FASES_FUTURAS.md #103) — sustituye el placeholder anterior 'MensajeCodecoProcesado' (ver events-catalog.md §16). Recibido vía bc-integracion-edi-portic-v1 (filtro circuito='CODECO'), reutiliza la PK de Preavis + correlación edimessageid/edicorrelationid del diseño de gateway (edi-event-architecture-analysis.md §5)."
+    PreavisoCopinoRespondido:
+      name: PreavisoCopinoRespondido
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PreavisoEdiCorrelationData" }
+      x-business-rules:
+        - "Añadido 2026-07-21 (PLAN_FASES_FUTURAS.md #103) — respuesta EDI del circuito COPINO (con APERAK) a un preaviso existente. Recibido vía bc-integracion-edi-portic-v1 (filtro circuito='COPINO'), mismo patrón de correlación que PreavisoCodecoProcesado."
   schemas:
     CloudEventEnvelope:
       type: object
@@ -136,3 +145,8 @@ components:
       type: object
       required: [portautoritzacio, seqautoritzacio]
       properties: { portautoritzacio: { type: string }, seqautoritzacio: { type: integer, format: int64 }, emptransport: { type: string, nullable: true }, estat: { type: string, nullable: true } }
+    PreavisoEdiCorrelationData:
+      type: object
+      description: "Añadido 2026-07-21 (PLAN_FASES_FUTURAS.md #103) — reutiliza la PK de Preavis (ver PreavisData) más las extensiones de correlación EDI del gateway bc-integracion-edi-portic-v1 (edimessageid=MissatgeEdi.nummissatge, edicorrelationid=MissatgeEdi.nummisorigen)."
+      required: [portpreavis, seqpreavis]
+      properties: { portpreavis: { type: string }, seqpreavis: { type: integer, format: int64 }, estat: { type: string, nullable: true }, estatresposta: { type: string, nullable: true, description: "Solo aplica a PreavisoCopinoRespondido, ver events-catalog.md §16" }, edimessageid: { type: string, nullable: true }, edicorrelationid: { type: string, nullable: true } }

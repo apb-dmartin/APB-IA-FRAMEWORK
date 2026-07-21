@@ -64,6 +64,9 @@
 }
 ```
 
+### MercanciaAsociadaAEscalaRegistrada (nota de diseño anticipada, no formalizado)
+**Añadido 2026-07-21** (`PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`) — evento del circuito EDI BERMAN (asociación mercancía-escala), hoy en `serviceNoAOP/berman/edi/impl/CN_EDI_Helper_BERMAN_Impl.java` (deuda técnica, fuera del proxy transaccional estándar). **No se formaliza como sección de bounded context en este catálogo**: pertenece al futuro `bc-escalas-v1` unificado (`dom-operaciones-maritimas-v1`), que todavía no existe — su creación está bloqueada por la sesión pendiente con el equipo ARGOS (ver `edi-event-architecture-analysis.md §3`, fila BERMAN). Se deja esta nota para que, cuando `bc-escalas-v1` se diseñe, no se pierda el hallazgo de que BERMAN es uno de sus eventos de entrada EDI (vía `bc-integracion-edi-portic-v1`, filtro `circuito = 'BERMAN'`).
+
 ---
 
 ## 2. Cruceros
@@ -88,6 +91,20 @@
   "datanulacio": "date"
 }
 ```
+
+### ListaPasajerosDeclarada / ListaPasajerosConfirmada
+**Diseño 2026-07-21** (materialización de `PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`) — eventos de negocio del circuito EDI PAXLST (lista de pasajeros de crucero), que `bc-cruceros-v1` recibe ya traducido desde `bc-integracion-edi-portic-v1` (suscripción con filtro SQL `circuito = 'PAXLST'` sobre `evt.sostrat.integracion-edi-portic`).
+
+**⚠️ GAP DE EVIDENCIA**: no se ha identificado en esta extracción el DTO transaccional propio de PAXLST (`CN_Escala_PAXLST_Impl.java`, citado en `dossier-17-buques.md:123`, no leído en detalle — el checkout de código fuente no está disponible en esta sesión de materialización). Payload provisional limitado a los campos de correlación EDI ya grounded en el diseño de la capa de transporte (§5 de `edi-event-architecture-analysis.md`) más la clave de negocio de la escala de crucero, reutilizando el identificador ya citado arriba en `EscalaCruceroAuditada` (`idesccreuer`):
+```json
+{
+  "idesccreuer": "long",
+  "edimessageid": "string",
+  "edicorrelationid": "string",
+  "estatllista": "string"
+}
+```
+**No usar como contrato definitivo** — pendiente de recuperar `CN_Escala_PAXLST_Impl.java`/su DTO asociado antes de implementar. Añadido a la tabla de gaps de evidencia.
 
 ---
 
@@ -261,6 +278,19 @@
 }
 ```
 `codaranzelari` es FK a `dataaccess/dto/Mercaderia.java` (tabla `MERCADERIA`, PK de un solo campo `codaranzelari` — clase intencionalmente mínima, el detalle descriptivo vive en `MercaderiaDades`/`MercaderiaDadesIdioma`, no leídas en esta extracción).
+
+### PartidaManifestadaViaEdi
+**Diseño 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`) — evento de que una partida del manifiesto fue declarada a través de uno de los circuitos EDI de Manifiestos (IFCSUM/CUSCAR/CUSREP/CUSRES/CUSRP2), recibido vía `bc-integracion-edi-portic-v1`. Reutiliza la PK ya grounded de `Manifest.java`/`PartidaVersio.java` de esta misma sección, sin duplicar el resto de campos ya cubiertos por `ManifiestoRegistrado`/`PartidaActualizada`, más las extensiones de correlación EDI del diseño de gateway:
+```json
+{
+  "idmanifest": "long",
+  "idpartida": "long",
+  "versio": "integer",
+  "codedi": "string",
+  "edimessageid": "string",
+  "edicorrelationid": "string"
+}
+```
 
 ---
 
@@ -442,6 +472,34 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
 
 **Nota (2026-07-14):** el proceso batch `sostrat-BATCH/.../tasklet/terminales/ConciliarDades.java`, citado en una versión anterior de este documento como fuente alternativa sin DTO de evento extraído, queda resuelto por el hallazgo de arriba — es el mismo flujo de conciliación de `CN_ConciliacioController_Impl.java`, no una fuente distinta pendiente.
 
+### OperacionTerminalRegistrada
+**Diseño 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103` / `edi-event-architecture-analysis.md §5`) — evento de entrada del circuito EDI COARRI: se emite cuando `bc-aduanas-contenedores-v1` recibe (vía `bc-integracion-edi-portic-v1`, filtro `circuito = 'COARRI'`) y registra una operación de terminal, antes de la conciliación. Reutiliza el subconjunto de identidad ya grounded de `ProtermCont.java` (mismo DTO citado arriba en `DatosTerminalConciliados`) más las extensiones de correlación EDI del diseño de gateway:
+```json
+{
+  "idregistre": "long",
+  "idsubport": "string",
+  "anyescala": "long",
+  "numescala": "long",
+  "refequipament": "string",
+  "operacio": "string",
+  "dataoperacio": "date",
+  "estado": "string",
+  "edimessageid": "string",
+  "edicorrelationid": "string"
+}
+```
+
+### ConciliacionCoarriProcesada
+**Diseño 2026-07-21** — evento de cierre del circuito COARRI específicamente (distinto del más genérico `DatosTerminalConciliados`, que cubre la conciliación de terminales en general independientemente de su origen): marca que un mensaje COARRI concreto completó su ciclo de conciliación, con resultado. Payload = clave de correlación EDI + resultado, sin duplicar los ~34 campos ya cubiertos por `DatosTerminalConciliados`/`ErrorConciliacionDetectado`:
+```json
+{
+  "idregistre": "long",
+  "edimessageid": "string",
+  "edicorrelationid": "string",
+  "resultat": "string"
+}
+```
+
 ---
 
 ## 13. Datos Maestros de Equipamiento
@@ -605,8 +663,29 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
 }
 ```
 
-### MensajeCodecoProcesado
-**Fuente:** `sostrat-BATCH/.../tasklet/LanzarCircuitoCodecoTasklet.java` — evento a nivel de mensaje EDI, no de una entidad DTO propia identificada en esta extracción. Payload pendiente de diseño dedicado con el equipo EDI.
+### PreavisoCodecoProcesado
+**Cerrado 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`) — sustituye el placeholder anterior `MensajeCodecoProcesado` (mismo evento, ahora nombrado y diseñado tras `edi-event-architecture-analysis.md §5`: el circuito CODECO es la respuesta EDI a un `PreavisoRegistrado` ya existente en este bounded context). Reutiliza la PK ya grounded de `Preavis.java` (arriba, `PreavisoRegistrado`) más las extensiones de correlación EDI del diseño de gateway (`edimessageid` = `MissatgeEdi.nummissatge`, `edicorrelationid` = `MissatgeEdi.nummisorigen`):
+```json
+{
+  "portpreavis": "string",
+  "seqpreavis": "long",
+  "estat": "string",
+  "edimessageid": "string",
+  "edicorrelationid": "string"
+}
+```
+
+### PreavisoCopinoRespondido
+**Diseño 2026-07-21** — respuesta EDI del circuito COPINO (recogida/entrega de mercancía, con APERAK propia) a un preaviso existente. Mismo patrón de correlación que `PreavisoCodecoProcesado`, reutilizando la misma PK de `Preavis.java`:
+```json
+{
+  "portpreavis": "string",
+  "seqpreavis": "long",
+  "estatresposta": "string",
+  "edimessageid": "string",
+  "edicorrelationid": "string"
+}
+```
 
 ---
 
@@ -815,6 +894,7 @@ Evento `CapacidadPifActualizada` (payload separado, sobre `LlocDInspeccio`):
 | ~~OperacionPifRegistrada~~ | ✅ **Cerrado 2026-07-11** — `dataaccess/dto/OperacioPif.java` leído, ver §10 | — |
 | ~~DatosTerminalConciliados~~ | ✅ **Cerrado 2026-07-11** — `ProtermCont.java`/`ErrorProcConc.java` leídos, ver §12 | — |
 | SolicitudAguadaProcesada | **DTO fuente no existe en el checkout** (solo compilado en `sostrat.jar`) — único gap real que sigue sin cerrar | Solicitar fuente a IN2 o decompilar como último recurso |
-| MensajeCodecoProcesado | Evento de mensaje EDI, no de entidad DTO | Diseño dedicado con equipo EDI |
+| ~~MensajeCodecoProcesado~~ | ✅ **Cerrado 2026-07-21** — renombrado y diseñado como `PreavisoCodecoProcesado` (§16), reutilizando la PK de `Preavis.java` + correlación EDI del gateway (`edi-event-architecture-analysis.md §5`) | — |
+| ListaPasajerosDeclarada / ListaPasajerosConfirmada (§2) | **DTO fuente de PAXLST no identificado en esta extracción** (`CN_Escala_PAXLST_Impl.java` no leído — checkout no disponible en esta sesión) | Recuperar el DTO real de PAXLST antes de fijar el contrato definitivo |
 | GarantiaActualizada (`exprovisional`) | Javadoc ambiguo/duplicado en el DTO fuente | Confirmar columna real con el equipo antes de incluir el campo |
 | ~~`idestat` (`ResidusEscala`) → nombres de constantes 2-7~~ | ✅ **Cerrado 2026-07-14** — las 7 constantes confirmadas literalmente en `ResidusEscala.java` líneas 18-24 (`dossier-06-marpol-residuos.md §5`); pendiente solo la semántica de transiciones, no los nombres | — |

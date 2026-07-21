@@ -22,7 +22,8 @@ value_objects: []
 domain_events:
   - "PreavisoRegistrado"
   - "AutorizacionConcedida"
-  - "MensajeCodecoProcesado"
+  - "PreavisoCodecoProcesado"
+  - "PreavisoCopinoRespondido"
 ubiquitous_language:
   - term: "Preavís"
     definition: "Preaviso de transporte terrestre de mercancías."
@@ -30,8 +31,12 @@ ubiquitous_language:
     definition: "Autorización de acceso/operación de transporte terrestre."
   - term: "RPI"
     definition: "Registro/permiso específico de transporte terrestre (siglas usadas en el código)."
-integration_patterns: []
-upstream_contexts: []
+integration_patterns:
+  - pattern: "conformist"
+    with_context: "bc-integracion-edi-portic-v1"
+    direction: "downstream"
+upstream_contexts:
+  - "bc-integracion-edi-portic-v1"
 downstream_contexts: []
 related_systems:
   - "SOSTRAT-Sostrat-MJ8"
@@ -72,11 +77,14 @@ No gestiona el control de accesos personales (eso es PPS) ni la mercancía en s�
 |--------|------|-------------|
 | PreavisoRegistrado | emitido | Se ha registrado un preaviso. |
 | AutorizacionConcedida | emitido | Se ha concedido una autorización. |
-| MensajeCodecoProcesado | emitido | Se ha procesado un mensaje CODECO (circuito EDI batch). |
+| PreavisoCodecoProcesado | emitido | Circuito EDI CODECO: respuesta a un preaviso ya registrado (cierra el gap antes llamado `MensajeCodecoProcesado`). |
+| PreavisoCopinoRespondido | emitido | Circuito EDI COPINO: respuesta (con APERAK) a un preaviso de recogida/entrega de mercancía. |
 
 ## Relaciones con Otros Bounded Contexts
 
 Sin acoplamiento detectado hacia otros dominios de negocio del sistema; sí hacia integraciones EDI/CBOX externas (PortIC).
+
+**Corregido 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`): esa integración EDI ya no es un acoplamiento directo con PortIC — pasa por el nuevo bounded context `bc-integracion-edi-portic-v1` (upstream, patrón conformist), que traduce EDIFACT↔CloudEvent. Este contexto se suscribe con filtro SQL `circuito IN ('CODECO', 'COPINO')` sobre `evt.sostrat.integracion-edi-portic`. Ver `edi-event-architecture-analysis.md §5`.
 
 ## Implementación Actual
 
@@ -87,3 +95,4 @@ Implementado en SÒSTRAT bajo `service/transporteterrestre/` y `mvc/control/tran
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Propuesta inicial a partir de análisis DDD de SOSTRAT-Sostrat-MJ8 |
+| 1.1.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Materialización de `PLAN_FASES_FUTURAS.md #103`: `MensajeCodecoProcesado` renombrado/diseñado como `PreavisoCodecoProcesado`, añadido `PreavisoCopinoRespondido`, y `bc-integracion-edi-portic-v1` como upstream (conformist) en vez de acoplamiento directo con PortIC |

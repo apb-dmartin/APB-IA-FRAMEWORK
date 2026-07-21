@@ -20,6 +20,7 @@ domain_events:
   - "ManifiestoRegistrado"
   - "ManifiestoCircuitoProcesado"
   - "PartidaActualizada"
+  - "PartidaManifestadaViaEdi"
 ubiquitous_language:
   - term: "Manifest"
     definition: "Manifiesto de mercancías de una escala."
@@ -39,6 +40,7 @@ integration_patterns:
     direction: "downstream"
 upstream_contexts:
   - "bc-datos-maestros-equipamiento-v1"
+  - "bc-integracion-edi-portic-v1"
 downstream_contexts:
   - "bc-liquidacion-v1"
 related_systems:
@@ -80,10 +82,13 @@ No gestiona mercancías peligrosas de forma independiente (aunque referencia MMP
 | ManifiestoRegistrado | emitido | Se ha registrado un nuevo manifiesto. |
 | ManifiestoCircuitoProcesado | emitido | El circuito EDI del manifiesto se ha procesado (batch). |
 | PartidaActualizada | emitido | Se ha actualizado una partida del manifiesto. |
+| PartidaManifestadaViaEdi | emitido | Una partida fue declarada vía un circuito EDI (IFCSUM/CUSCAR/CUSREP/CUSRES/CUSRP2). |
 
 ## Relaciones con Otros Bounded Contexts
 
 Consume el futuro servicio de Datos Maestros de Equipamiento; tiene dependencia bidireccional con MMPP (`CN_PartidaMmpp.java` vive hoy en este paquete pero modela un concepto MMPP); alimenta a Liquidación.
+
+**Añadido 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`): también upstream de `bc-integracion-edi-portic-v1` para los circuitos EDI de manifiestos, vía suscripción con filtro SQL `circuito IN ('IFCSUM', 'CUSCAR', 'CUSREP', 'CUSRES', 'CUSRP2')` sobre `evt.sostrat.integracion-edi-portic`. Ver `edi-event-architecture-analysis.md §5`.
 
 ## Implementación Actual
 
@@ -94,3 +99,4 @@ Implementado en SÒSTRAT bajo `service/manifiestos/gestion/`. Contiene las god c
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Propuesta inicial a partir de análisis DDD de SOSTRAT-Sostrat-MJ8 |
+| 1.1.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Materialización de `PLAN_FASES_FUTURAS.md #103`: añadido `PartidaManifestadaViaEdi` y `bc-integracion-edi-portic-v1` como upstream |

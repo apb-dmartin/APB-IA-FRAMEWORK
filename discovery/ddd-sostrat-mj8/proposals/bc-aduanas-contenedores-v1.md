@@ -17,6 +17,8 @@ value_objects: []
 domain_events:
   - "TrasladoContenedorActualizado"
   - "DatosTerminalConciliados"
+  - "OperacionTerminalRegistrada"
+  - "ConciliacionCoarriProcesada"
 ubiquitous_language:
   - term: "Trasllat"
     definition: "Traslado de un contenedor entre ubicaciones/terminales."
@@ -28,6 +30,7 @@ integration_patterns:
     direction: "upstream"
 upstream_contexts:
   - "bc-datos-maestros-equipamiento-v1"
+  - "bc-integracion-edi-portic-v1"
 downstream_contexts: []
 related_systems:
   - "SOSTRAT-Sostrat-MJ8"
@@ -67,10 +70,14 @@ No gestiona el manifiesto de mercancías (eso es Manifiestos) ni la inspección 
 |--------|------|-------------|
 | TrasladoContenedorActualizado | emitido | Se ha actualizado el traslado de un contenedor. |
 | DatosTerminalConciliados | emitido | Se han conciliado datos de terminal (proceso batch). |
+| OperacionTerminalRegistrada | emitido | Entrada del circuito EDI COARRI: operación de terminal registrada antes de conciliar. |
+| ConciliacionCoarriProcesada | emitido | Cierre del circuito EDI COARRI: un mensaje concreto completó su ciclo de conciliación. |
 
 ## Relaciones con Otros Bounded Contexts
 
 Consumirá el futuro servicio de Datos Maestros de Equipamiento. Se expone parcialmente hoy hacia consumidores externos vía el servicio SOAP `ContenedoresSecureSOAP` (`sostratWSCXF`), candidato a open-host-service en el modelo objetivo.
+
+**Añadido 2026-07-21** (materialización `PLAN_FASES_FUTURAS.md #103`): el circuito EDI COARRI ya no se recibe directamente de Portic — pasa por `bc-integracion-edi-portic-v1` (upstream), que traduce el mensaje EDIFACT a CloudEvent y lo publica en `evt.sostrat.integracion-edi-portic`. Este bounded context se suscribe con un filtro SQL (`circuito = 'COARRI'`), no al topic entero. Ver `discovery/ddd-sostrat-mj8/edi-event-architecture-analysis.md §5`.
 
 ## Implementación Actual
 
@@ -81,3 +88,4 @@ Implementado de forma **dispersa** en SÒSTRAT entre `service/aduanas/` (`CN_Con
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-11 | APB AI Framework (apb-agent-ddd-v1.0) | Propuesta inicial a partir de análisis DDD de SOSTRAT-Sostrat-MJ8 |
+| 1.1.0 | 2026-07-21 | APB AI Framework (apb-agent-ddd-v1.0) | Materialización de `PLAN_FASES_FUTURAS.md #103`: añadidos `OperacionTerminalRegistrada`/`ConciliacionCoarriProcesada` (circuito EDI COARRI) y `bc-integracion-edi-portic-v1` como upstream, según `edi-event-architecture-analysis.md` (2026-07-15) |

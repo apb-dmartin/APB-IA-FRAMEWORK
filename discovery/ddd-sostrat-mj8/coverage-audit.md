@@ -57,7 +57,7 @@
 | gpesca (satélite) | 6 | bc-marinas-pesca-v1 |
 | avisgestiotitol | 5 | bc-titulo-v1 |
 | **scppauditorias + vistasscpp** | 7 | **bc-inspeccion-scpp-v1 (nuevo)** |
-| coarri | 7 | infraestructura EDI (dom-integraciones-edi-v1), nota |
+| coarri | 7 | **Resuelto 2026-07-21** (`PLAN_FASES_FUTURAS.md #103`, `edi-event-architecture-analysis.md`): partición en dos capas, no un único dominio — transporte en `bc-integracion-edi-portic-v1` (nuevo, `dom-integraciones-edi-v1`), parsing/negocio en `bc-aduanas-contenedores-v1` (`OperacionTerminalRegistrada`/`ConciliacionCoarriProcesada`, ver `events-catalog.md §12`) |
 | manoEstiba | 3 | bc-mano-estiba-v1 |
 | clavegueram | 3 | bc-clavegueram-v1 |
 | titolminim | 3 | bc-titulo-v1 |
@@ -197,7 +197,7 @@ Recuento exacto: 90 beans `SimpleJob` en 67 ficheros `sostrat-batch-*.xml`. Clas
 | bc-suministro-electrico-buques-v1 | 2 | `SeLecturasElectricidad` (2) |
 | bc-aguada-v1 | 1 | `SaSolicitud` (**gap de evidencia ya conocido — DTO fuente no existe en el checkout**) |
 | bc-transporte-terrestre-v1 | 2 | `GestionPreavisosEDI`, `EnvioAutorizacionTransportistas` |
-| Infraestructura EDI/Portic transversal (`dom-integraciones-edi-v1`) | 8 | `CarregaMtoPortic` (2), `CarregaMtoVaixellPortic` (2), `CoarriEDI`, `CodecoEDI`, `COPINOSEDI` (2), `DMS` (2), `CBOX` |
+| Infraestructura EDI/Portic transversal (`dom-integraciones-edi-v1`) | 8 | `CarregaMtoPortic` (2), `CarregaMtoVaixellPortic` (2), `CoarriEDI`, `CodecoEDI`, `COPINOSEDI` (2), `DMS` (2), `CBOX` — **actualizado 2026-07-21**: transporte puro (`CarregaMtoPortic`/`CarregaMtoVaixellPortic`/`CBOX`) queda en `bc-integracion-edi-portic-v1`; `CoarriEDI`/`CodecoEDI`/`COPINOSEDI` son el transporte de circuitos cuyo parsing de negocio vive en `bc-aduanas-contenedores-v1`/`bc-transporte-terrestre-v1` (ver `events-catalog.md §12/§16`); `DMS` es el bounded context propio `bc-dms-emswe-v1` (no genérico, ver `edi-event-architecture-analysis.md §4`) |
 | Infraestructura transversal (notificaciones/SMS/email/Alfresco) | 6 | `avisos`, `AvisosNotificaciones`, `EmailsMassius`, `Notificaciones`, `SincronizadorAlfresco`, `SMS` |
 | **`Posicionament`/Incidencias — hallazgo nuevo, ver §8.2** | 2 | `posicionamientoEDI`, `avisosIncidencias` |
 | Suscripción/mailing (transversal) | 1 | `serviciDeSusbscripcio` |
