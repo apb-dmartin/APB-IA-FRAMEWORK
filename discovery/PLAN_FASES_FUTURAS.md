@@ -10,8 +10,19 @@
 > completitud (no solo existencia) de 7 rondas contra el código real.
 >
 > 🚀 **El trabajo de puesta en producción real (Plataforma, Arquitectura,
-> Ciberseguridad, admins M365/Atlassian) vive en
-> [`HANDOFF_TECNICOS.md`](HANDOFF_TECNICOS.md)** — no se duplica aquí.
+> Ciberseguridad, admins M365/Atlassian) vive en dos documentos de handoff
+> separados** (separación 2026-07-21, a petición explícita de Débora — este
+> propio documento de fases sigue **unificado** framework+SÒSTRAT, no así el
+> handoff):
+> - [`HANDOFF_TECNICOS.md`](HANDOFF_TECNICOS.md) — framework APB-IA-FRAMEWORK
+>   en general (bugs, gobernanza de componentes, integraciones M365/Rovo,
+>   Design System, telemetría, QA de otras aplicaciones).
+> - [`ddd-sostrat-mj8/HANDOFF_SOSTRAT.md`](ddd-sostrat-mj8/HANDOFF_SOSTRAT.md)
+>   — específico de la descomposición DDD de SÒSTRAT (validación humana de la
+>   serie, consumidores externos, push del submodule, publicación, acceso al
+>   código fuente).
+>
+> No se duplica ninguno de los dos aquí.
 >
 > **Regla de mantenimiento (obligatoria al cierre de cada sesión):**
 > 1. Verificar **completitud** de cualquier entregable citado como cerrado
@@ -19,16 +30,18 @@
 >    dimensión por dimensión) antes de darlo por bueno.
 > 2. Mover el histórico verificado, **íntegro** (sin resumir), a
 >    `PLAN_FASES_COMPLETADAS.md`.
-> 3. Cualquier tarea nueva de producción real va a `HANDOFF_TECNICOS.md`.
+> 3. Cualquier tarea nueva de producción real va al handoff que corresponda
+>    (framework → `HANDOFF_TECNICOS.md`; SÒSTRAT → `HANDOFF_SOSTRAT.md`).
 >    Cualquier tarea que Claude pueda ejecutar sin más insumos va a la
 >    Sección B de aquí. Cualquier decisión de negocio/alcance de Débora (o
 >    conjunta con Plataforma) va a la Sección A.
 > 4. No crear documentos de handoff/resumen/estado sueltos — se integran en
->    estos 3 documentos canónicos (`PLAN_FASES_FUTURAS.md`,
->    `PLAN_FASES_COMPLETADAS.md`, `HANDOFF_TECNICOS.md`). Si algo necesita
->    vida propia por volumen (una auditoría de una aplicación externa, un
->    runbook operativo), se archiva con puntero desde estos tres, nunca queda
->    huérfano en `discovery/`.
+>    estos 4 documentos canónicos (`PLAN_FASES_FUTURAS.md`,
+>    `PLAN_FASES_COMPLETADAS.md`, `HANDOFF_TECNICOS.md`,
+>    `ddd-sostrat-mj8/HANDOFF_SOSTRAT.md`). Si algo necesita vida propia por
+>    volumen (una auditoría de una aplicación externa, un runbook operativo),
+>    se archiva con puntero desde estos cuatro, nunca queda huérfano en
+>    `discovery/`.
 
 ---
 

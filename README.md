@@ -232,7 +232,8 @@ Trabajo de discovery (`discovery/ddd-sostrat-mj8/`), no añade componentes al
 catálogo — ver `discovery/CONTINUIDAD_PROYECTO.md` Sesión 30 y
 `discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md`. **Pendiente de decisión de
 Débora antes de publicar:** el repositorio de GitHub es público y estos dossiers
-contienen información de negocio real de SÒSTRAT (ver `HANDOFF_TECNICOS.md` S9).
+contienen información de negocio real de SÒSTRAT (ver
+`discovery/ddd-sostrat-mj8/HANDOFF_SOSTRAT.md` S9).
 Antes (2026-07-08): **Sesión 28** — Agente de Valoración Técnica
 (`apb-agent-valoracion-tecnica-v1.0`), orquestando los 3 sistemas reales de
 valoración APB (COSMIC, Horas/Perfil, Catálogo técnico USM/UEC/UTA) sobre

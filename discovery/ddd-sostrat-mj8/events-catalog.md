@@ -488,9 +488,10 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
   "edicorrelationid": "string"
 }
 ```
+**Gap de investigación (2026-07-21)**: a diferencia de CODECO/COPINO (que sí tienen clases de segmento EDIFACT citadas, ver `PreavisoCodecoProcesado` §16), **ningún dossier de los 24 de esta serie cubre `service/coarri/`** — el paquete Java real donde vive `CN_EDI_Helper_Procesar_COARRI_Impl.java` (citado solo en `edi-event-architecture-analysis.md §3` y aquí, nunca en un dossier de aplicación dedicado). `dossier-13-aduanas-contenedores.md:173` confirma explícitamente que COARRI **no** vive en `service/aduanas`/`service/terminales` ("ninguna operación real encontrada... no es una integración activa de este módulo"), así que el paquete real que sí lo implementa nunca ha sido investigado en profundidad. Este payload reutiliza el subconjunto de identidad ya grounded de `ProtermCont.java` como aproximación razonable, no como evidencia directa de `service/coarri/`.
 
 ### ConciliacionCoarriProcesada
-**Diseño 2026-07-21** — evento de cierre del circuito COARRI específicamente (distinto del más genérico `DatosTerminalConciliados`, que cubre la conciliación de terminales en general independientemente de su origen): marca que un mensaje COARRI concreto completó su ciclo de conciliación, con resultado. Payload = clave de correlación EDI + resultado, sin duplicar los ~34 campos ya cubiertos por `DatosTerminalConciliados`/`ErrorConciliacionDetectado`:
+**Diseño 2026-07-21** — evento de cierre del circuito COARRI específicamente (distinto del más genérico `DatosTerminalConciliados`, que cubre la conciliación de terminales en general independientemente de su origen): marca que un mensaje COARRI concreto completó su ciclo de conciliación, con resultado. Payload = clave de correlación EDI + resultado, sin duplicar los ~34 campos ya cubiertos por `DatosTerminalConciliados`/`ErrorConciliacionDetectado`. Mismo gap de investigación que `OperacionTerminalRegistrada` arriba — `service/coarri/` nunca auditado en detalle:
 ```json
 {
   "idregistre": "long",
@@ -674,6 +675,7 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
   "edicorrelationid": "string"
 }
 ```
+**Precisión de evidencia (2026-07-21, `dossier-09-transporte-terrestre.md §5/§14`)**: el circuito CODECO **sí tiene DTOs propios reales** — `CodecoTT.java`, `MissatgeEdiCodecoTT.java` y ~25 clases de segmento EDIFACT (`CodecoEBgm01`, `CodecoEEqd01`, `CodecoETdt01`, etc., paquete `codeco/`) — a diferencia de `SolicitudAguadaProcesada`/PAXLST, donde el DTO nunca se localizó. La razón de que el payload arriba siga siendo mínimo (PK + correlación) no es ausencia de datos sino **volumen no volcado en ninguna sesión** (>40 ficheros, ver TODO explícito en `dossier-09-transporte-terrestre.md:259`). Ampliar este payload es una tarea de re-lectura de código acotada, no un bloqueo por falta de fuente — ver `HANDOFF_SOSTRAT.md` ACC2.
 
 ### PreavisoCopinoRespondido
 **Diseño 2026-07-21** — respuesta EDI del circuito COPINO (recogida/entrega de mercancía, con APERAK propia) a un preaviso existente. Mismo patrón de correlación que `PreavisoCodecoProcesado`, reutilizando la misma PK de `Preavis.java`:
@@ -686,6 +688,7 @@ Evento complementario `ErrorConciliacionDetectado` (cuando la conciliación encu
   "edicorrelationid": "string"
 }
 ```
+**Precisión de evidencia (2026-07-21)**: mismo caso que `PreavisoCodecoProcesado` — existe un paquete `copino/` paralelo a `codeco/` con la misma estructura de ~25 clases de segmento EDIFACT (`dossier-09-transporte-terrestre.md §5`), nunca volcado campo a campo. No es un gap de "DTO inexistente", es volumen pendiente de lectura.
 
 ---
 
@@ -893,8 +896,10 @@ Evento `CapacidadPifActualizada` (payload separado, sobre `LlocDInspeccio`):
 |---|---|---|
 | ~~OperacionPifRegistrada~~ | ✅ **Cerrado 2026-07-11** — `dataaccess/dto/OperacioPif.java` leído, ver §10 | — |
 | ~~DatosTerminalConciliados~~ | ✅ **Cerrado 2026-07-11** — `ProtermCont.java`/`ErrorProcConc.java` leídos, ver §12 | — |
-| SolicitudAguadaProcesada | **DTO fuente no existe en el checkout** (solo compilado en `sostrat.jar`) — único gap real que sigue sin cerrar | Solicitar fuente a IN2 o decompilar como último recurso |
+| SolicitudAguadaProcesada | **DTO fuente no existe en el checkout** (solo compilado en `sostrat.jar`) | Solicitar fuente a IN2 o decompilar como último recurso — ver `HANDOFF_SOSTRAT.md` ACC2 |
 | ~~MensajeCodecoProcesado~~ | ✅ **Cerrado 2026-07-21** — renombrado y diseñado como `PreavisoCodecoProcesado` (§16), reutilizando la PK de `Preavis.java` + correlación EDI del gateway (`edi-event-architecture-analysis.md §5`) | — |
-| ListaPasajerosDeclarada / ListaPasajerosConfirmada (§2) | **DTO fuente de PAXLST no identificado en esta extracción** (`CN_Escala_PAXLST_Impl.java` no leído — checkout no disponible en esta sesión) | Recuperar el DTO real de PAXLST antes de fijar el contrato definitivo |
-| GarantiaActualizada (`exprovisional`) | Javadoc ambiguo/duplicado en el DTO fuente | Confirmar columna real con el equipo antes de incluir el campo |
+| PreavisoCodecoProcesado / PreavisoCopinoRespondido (§16) | **Distinto de los gaps anteriores** — el DTO real SÍ existe (`CodecoTT.java`/`MissatgeEdiCodecoTT.java` + ~25 clases de segmento EDIFACT en `codeco/`/`copino/`, confirmado en `dossier-09-transporte-terrestre.md §5`), simplemente no se ha volcado campo a campo por volumen (>40 ficheros) | Re-lectura acotada de las clases de segmento — ver `HANDOFF_SOSTRAT.md` ACC2 |
+| OperacionTerminalRegistrada / ConciliacionCoarriProcesada (§12) | **Ningún dossier de los 24 cubre `service/coarri/`** — paquete real nunca auditado en profundidad en esta serie (confirmado ausente de `service/aduanas`/`service/terminales` por `dossier-13-aduanas-contenedores.md:173`) | Escribir un dossier dedicado a `service/coarri/`, mismo formato que los 24 existentes — ver `HANDOFF_SOSTRAT.md` ACC2 |
+| ListaPasajerosDeclarada / ListaPasajerosConfirmada (§2) | **DTO fuente de PAXLST no identificado en ninguna sesión** (`CN_Escala_PAXLST_Impl.java` nunca leído, única cita en `dossier-17-buques.md:123`; confirmado 2026-07-21 que no hay más pistas recuperables en el repo) | Recuperar el DTO real de PAXLST (IN2 o `SOSTRAT-Sostrat-JEE`) antes de fijar el contrato definitivo — ver `HANDOFF_SOSTRAT.md` ACC2 |
+| GarantiaActualizada (`exprovisional`) | Javadoc ambiguo/duplicado en el DTO fuente — confirmado 2026-07-21 que no es resoluble sin acceso al fuente real (no es un gap de "dato no leído", es una ambigüedad del propio comentario Java) | Confirmar columna real con el equipo antes de incluir el campo — ver `HANDOFF_SOSTRAT.md` ACC2 |
 | ~~`idestat` (`ResidusEscala`) → nombres de constantes 2-7~~ | ✅ **Cerrado 2026-07-14** — las 7 constantes confirmadas literalmente en `ResidusEscala.java` líneas 18-24 (`dossier-06-marpol-residuos.md §5`); pendiente solo la semántica de transiciones, no los nombres | — |

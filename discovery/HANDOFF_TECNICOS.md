@@ -259,27 +259,28 @@ import { APBButton } from './components/core/APBButton';
 
 > Repositorio: `APB-DOMAIN-CATALOG` — **21 dominios de negocio `proposed`** (Sesión DDD, 2026-06-30)  
 > **Estado:** inventario `API_INVENTORY_APIM.md` recibido + entrevista ejecutada → 15 `domain.md` en `domains/`. **Pendiente:** PR + aprobación de Arquitectura APB (y experto de negocio para las fronteras pendientes). Hasta que pasen a `approved`, los subagentes DDD aún no deben consumirlos como verdad establecida. **Bounded contexts diferidos** a sesión con acceso a código/BBDD.
+>
+> **Separación 2026-07-21:** esta sección cubre solo el proceso **general** de gobernanza del
+> catálogo de dominios (aplicable a cualquier dominio APB). Los pendientes **específicos de la
+> descomposición DDD de SÒSTRAT** (validación humana de los 24 dossiers, consumidores externos,
+> push del submodule, decisión de publicación, acceso al código fuente) viven ahora en
+> [`discovery/ddd-sostrat-mj8/HANDOFF_SOSTRAT.md`](ddd-sostrat-mj8/HANDOFF_SOSTRAT.md) — a
+> petición explícita de Débora, para no mezclar ambos ámbitos en un solo documento.
 
 | # | Tarea | Prerrequisito | Estado |
 |---|-------|--------------|--------|
 | DC1 | ~~Ejecutar entrevista DDD para identificar el primer dominio APB~~ | Lista de sistemas/APIs de Débora | ✅ **Hecho (2026-06-30)** — 21 dominios `proposed` |
-| DC2 | Aprobación de los 21 dominios `proposed` (PR a APB-DOMAIN-CATALOG) | Revisión Arquitectura + experto de negocio | ⬜ Pendiente |
-| DC3 | Modelar bounded contexts (`bc-*.md`) por dominio | Acceso a código/BBDD de los repos DOCKS/SOSTRAT | ✅ **Hecho para SÒSTRAT (2026-07-11 a 2026-07-14)** — 21 bc-*.md en `discovery/ddd-sostrat-mj8/proposals/`, 24 dossiers de aplicación final re-verificados contra el código real de `SOSTRAT-Sostrat-MJ8`. Ver `CONTINUIDAD_PROYECTO.md` Sesión 30. **DOCKS sigue diferido** (sin acceso a código todavía) |
 | DC2 | Revisar `domain.md` generado y abrir PR en `APB-DOMAIN-CATALOG/domains/<nombre>/` | DC1 | ⬜ Pendiente |
-| DC3 | Aprobar dominio (estado `proposed` → `under_review` → `approved`) vía GOVERNANCE.md del catalog | DC2 | ⬜ Pendiente |
+| DC3 | Aprobación de los 21 dominios `proposed`, incluida la aprobación final vía GOVERNANCE.md del catalog (`proposed` → `under_review` → `approved`) | DC2 + Revisión Arquitectura + experto de negocio | ⬜ Pendiente |
 
 **Objetivo mínimo de Fase 1:** ≥3 dominios en estado `approved`. Candidatos probables: Gestión de Atraques, Tráfico de Mercancías, Gestión de Concesiones.
 
-| # | Tarea (añadida 2026-07-14) | Prerrequisito | Estado |
+**Modelado de bounded contexts sobre código real:** ya hecho para SÒSTRAT
+(2026-07-11 a 2026-07-21, 27 `bc-*.md` — ver `discovery/ddd-sostrat-mj8/HANDOFF_SOSTRAT.md`
+para el detalle y los pendientes). DOCKS sigue diferido, sin acceso a código todavía.
+
+| # | Tarea | Prerrequisito | Estado |
 |---|-------|--------------|--------|
-| DC4 | **Validación humana de toda la serie DDD SÒSTRAT** (24 dossiers, 27 bc-*.md, specs, backlog) — según `readiness-assessment.md` v6, sigue siendo uno de los bloqueos reales antes de sprint planning; todo el árbol sigue en `status: "discovered"`. Ver `discovery/ddd-sostrat-mj8/INFORME_EJECUTIVO.md` para la síntesis completa | Arquitectura APB + domain experts por dominio | ⬜ Pendiente |
-| DC5 | Confirmar `parent_domain` de `bc-tramites-cliente-v1` — desajuste semántico detectado 2026-07-14 entre el dominio real `dom-administracion-electronica-v1` (integración AGE) y el alcance de Trámites de Cliente (gestiones ante APB, no ante el Estado) | Arquitectura APB | ⬜ Pendiente |
-| DC6 | Identificar dominio de 7 apps del lote de 33 planes de pruebas sin cobertura en `apb-domain-catalog`: `ADV`, `DGT`, `FLU`(`APB.API.FIL`), `MPS`, `MPT`, `NTA`, `RCF` — 4 ya trackeadas en `discovery/ddd-sostrat-mj8/repo-domain-coverage.md`, 3 (`ADV`/`FLU`/`RCF`) nunca auditadas (ni clonadas localmente) | Análisis DDD dedicado o confirmación de negocio | ⬜ Pendiente, sin urgencia |
-| DC7 | **Coordinar con los equipos propietarios de 9 aplicaciones reales con dependencia directa no documentada sobre datos de SÒSTRAT** (`APB.API.CPR`, `APB.API.IPB`, `APB.API.CTS`/`APB.APP.CTA`, `APB.API.AUT`, `APB.API.REB`, `apb.p51`, `APB.API.LRT`/`LRG`, `APB.API.OPS`, `APB.API.CRE`/`APB.APP.CRE`/`APB.API.VXL`/`APB.API.SLC`) — detalle completo y evidencia en `discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md`. **Bloqueante crítico** antes de ejecutar (no solo documentar) cualquier extracción de Transporte Terrestre, PPS, Facturación, Buques, Escalas, Suministro Eléctrico, SCPP, Manifiestos, Aduanas o Cruceros — 3 de los 9 escriben directamente en tablas Oracle de SÒSTRAT | Arquitectura APB + equipos propietarios de cada app | 🔴 Pendiente, crítico |
-| DC8 | ✅ **Cerrado 2026-07-14** — Re-derivación desde código completada para las 24/24 dossiers SÒSTRAT (Sesión 30.8+30.9+30.10) — 7 correcciones puntuales encontradas y aplicadas en total, ninguna de tipo "dato inventado". Ver `PLAN_FASES_FUTURAS.md` #100 e `INFORME_EJECUTIVO.md §3/§4` | — | ✅ Completado |
-| DC9 | ✅ **Cerrado 2026-07-14** — Residuo de `coverage-audit.md` cerrado (105→1 rutas sin clasificar, 90 jobs batch clasificados, 3 gaps SOAP resueltos). Hallazgo nuevo, no crítico: `Posicionament` es una capacidad real sin bounded context propio (`PLAN_FASES_FUTURAS.md` #102) | — | ✅ Completado |
-| DC10 | **Revisar y empujar el catálogo de dominios preparado localmente** — 27 bounded contexts commiteados en `domain-catalog` (rama `feat/sostrat-bounded-contexts`, `status: "proposed"`, sin push; 24 de la serie DDD original + 3 de la capa EDI/VUA añadidos en DC11). Débora debe revisar el diff y decidir cuándo hacer `git push` + abrir el PR — el agente no lo hace por sí mismo (`autonomy_level 1` de `apb-agent-ddd-v1.0`) | Débora Martín | ⬜ Pendiente de revisión |
-| DC11 | ✅ **Cerrado 2026-07-21** — **Materializado el resto del diseño de arquitectura de eventos EDI/VUA** (`PLAN_FASES_FUTURAS.md` #103): eventos nuevos en `events-catalog.md` (§1, §2, §8, §12, §16 — `OperacionTerminalRegistrada`/`ConciliacionCoarriProcesada`/`ListaPasajerosDeclarada`/`ListaPasajerosConfirmada`/`PreavisoCodecoProcesado`/`PreavisoCopinoRespondido`/`PartidaManifestadaViaEdi`/nota `MercanciaAsociadaAEscalaRegistrada`), los 4 proposals actualizados (`bc-aduanas-contenedores-v1`/`bc-cruceros-v1`/`bc-transporte-terrestre-v1`/`bc-manifiestos-v1`), nuevo `specs/asyncapi-integraciones-edi.yaml` + placeholder `MensajeCodecoProcesado` cerrado en `asyncapi-fase2.yaml`, `catalog-comparison.md:44`/`coverage-audit.md` (fila `coarri`) corregidos, y los 3 bounded contexts nuevos preparados en `domain-catalog` (VUA≠EMSWe corregido — ver DC10) | Equipo SÒSTRAT / Arquitectura APB | ✅ Completado (pendiente validación humana, igual que el resto de la serie #96) |
 | DC12 | ✅ **Cerrado 2026-07-15** — **Modelo de permisos DOCKS (roles/grupos EntraID) recibido de Débora e incorporado** (`PLAN_FASES_FUTURAS.md` #104) a `APB_KNOWLEDGE_BASE.md` §3.4 y a `STANDARD_ARCHITECTURE.md` / `GUIDE_API_SECURITY_v1.0.md` / `apb-arch-security-design-v1.0.md` | Débora Martín | ✅ Completado |
 
 **Proceso de ingesta:**
@@ -304,7 +305,10 @@ import { APBButton } from './components/core/APBButton';
 | S6 | Validar `apb-gov-dpia`, `apb-gov-data-classification` y `apb-sub-gov-data` contra criterio AEPD (RGPD art. 30/35, ENS) | Alta | DPO |
 | S7 | Definir proceso de gestión de supply chain para los 59 componentes de terceros sin SHA verificado | Media | Ciberseguridad |
 | S8 | Desactivar GitHub Actions de `apb-ai-skills` deprecado (`sync-skills.yml`, `validate-skills.yml`) | Media | Plataforma |
-| S9 | **Decidir destino de publicación de la serie DDD SÒSTRAT** (Sesión 30, 2026-07-14) — 24 dossiers + specs con información de negocio real (estructura de datos interna, integraciones externas no documentadas, volúmenes de fan-out) siguen solo en commits locales (`c631fc2`, `c6dd4fe`, `5513c72`); `apb-dmartin/APB-IA-FRAMEWORK` es un repositorio **público**. No pushear sin decisión explícita de Débora sobre repo destino (privado/interno vs. público actual) | Crítica — antes de cualquier `git push` de estos commits | Débora |
+
+> **S9 (decisión de publicación de la serie DDD SÒSTRAT) se movió a
+> [`discovery/ddd-sostrat-mj8/HANDOFF_SOSTRAT.md`](ddd-sostrat-mj8/HANDOFF_SOSTRAT.md)** —
+> separación 2026-07-21, es un pendiente específico de SÒSTRAT, no del framework en general.
 
 ---
 
@@ -390,9 +394,12 @@ Entregado y listo para importar (`discovery/qa-compliance-grafana-dashboard.json
 | # | Qué se necesita | Desbloquea | Responsable |
 |---|---|---|---|
 | ACC1 | Acceso a histórico Jira (la skill de ingesta ya es ejecutable, falta el acceso real para probarla) | #37 — spec desde histórico | Plataforma / Jira Admin |
-| ACC2 | ~~Acceso a código del monolito SÒSTRAT (Java/Oracle → DOCKS)~~ | #38 Fase 1 — descomposición de monolitos (además de la aprobación de dominios, ver §6) | ✅ **Obtenido y usado (2026-07-11 a 2026-07-14)** — checkout de `SOSTRAT-Sostrat-MJ8` auditado campo a campo en los 24 dossiers (Sesión 30, ver `CONTINUIDAD_PROYECTO.md`). Único gap de evidencia real restante: **Aguada (#07)**, cuyo modelo transaccional de escritura no existe en el checkout auditado — ver `PLAN_FASES_FUTURAS.md` #93(d) |
 | ACC3 | ≥12 meses de datos reales de uso en Azure | `apb-agent-capacity-planner`, `apb-agent-portfolio-it` (#64) | Plataforma |
 | ACC4 | Validación de Ciberseguridad de `apb-sub-sec-sast-v1.0` + `apb-sub-ops-entra-v1.0` (SAST/Entra) y evaluación de necesidad de wrapper DAST (OWASP ZAP/Trivy) | R9/R10 — gap de seguridad ofensiva | Ciberseguridad |
+
+> **ACC2 (acceso al código del monolito SÒSTRAT) se movió a
+> [`discovery/ddd-sostrat-mj8/HANDOFF_SOSTRAT.md`](ddd-sostrat-mj8/HANDOFF_SOSTRAT.md)** —
+> separación 2026-07-21, es un pendiente específico de SÒSTRAT, no del framework en general.
 
 ### 10.4 Seguimiento de auditorías de aplicaciones (evidencia archivada)
 
