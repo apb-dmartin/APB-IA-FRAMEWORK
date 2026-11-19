@@ -18,7 +18,7 @@
 | `sec` | Security | 12 | 🔴 |
 | `gov` | Governance | 20 | ⚫ |
 | `ops` | Operation | 20 | 🔵 |
-| `doc` | Documentation | 11 | ⚪ |
+| `doc` | Documentation | 12 | ⚪ |
 | `orch` | Orchestration | 3 | 🟤 |
 | `pm` | Project Management | 11 | 🟢 |
 | `design` | Design & UX | 4 | 🎨 |
