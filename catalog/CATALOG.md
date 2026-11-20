@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 367
+- **Total Components**: 362
 
 ## Component Breakdown
 
-### Skills APB-Owned (184 total)
+### Skills APB-Owned (182 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -87,6 +87,7 @@
 | `apb-doc-onboarding-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-onboarding-v1.0.md` |
 | `apb-doc-post-mortem-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-post-mortem-v1.0.md` |
 | `apb-doc-release-notes-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-release-notes-v1.0.md` |
+| `apb-doc-repo-rag-qa-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-repo-rag-qa-v1.0.md` |
 | `apb-doc-swagger-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-swagger-v1.0.md` |
 | `apb-dev-verify-before-done-v1.0` | governance | draft | `skills/apb-owned/governance/apb-dev-verify-before-done-v1.0.md` |
 | `apb-gov-ai-model-lifecycle-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-ai-model-lifecycle-v1.0.md` |
@@ -135,7 +136,6 @@
 | `apb-plat-ci-qa-gate-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-ci-qa-gate-v1.0.md` |
 | `apb-plat-cicd-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cicd-v1.0.md` |
 | `apb-plat-cloud-ready-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-cloud-ready-v1.0.md` |
-| `apb-plat-dashboards-generator-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-dashboards-generator-v1.0.md` |
 | `apb-plat-db-migration-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-db-migration-v1.0.md` |
 | `apb-plat-deliver-artifact-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deliver-artifact-v1.0.md` |
 | `apb-plat-deployment-finish-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-deployment-finish-v1.0.md` |
@@ -152,9 +152,7 @@
 | `apb-plat-secret-rotation-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-secret-rotation-v1.0.md` |
 | `apb-plat-sharepoint-io-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-sharepoint-io-v1.0.md` |
 | `apb-plat-terraform-v1.0` | platform | draft | `skills/apb-owned/platform/apb-plat-terraform-v1.0.md` |
-| `apb-pm-catalogo-servicios-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-catalogo-servicios-v1.0.md` |
 | `apb-pm-implementation-planning-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-implementation-planning-v1.0.md` |
-| `apb-pm-jira-estimation-review-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-jira-estimation-review-v1.0.md` |
 | `apb-pm-parallel-execution-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-parallel-execution-v1.0.md` |
 | `apb-pm-product-analysis-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-product-analysis-v1.0.md` |
 | `apb-pm-refactoring-patterns-v1.0` | pm | draft | `skills/apb-owned/pm/apb-pm-refactoring-patterns-v1.0.md` |
@@ -198,7 +196,7 @@
 | `apb-sec-supply-chain-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-supply-chain-v1.0.md` |
 | `apb-sec-threat-model-v1.0` | security | draft | `skills/apb-owned/security/apb-sec-threat-model-v1.0.md` |
 
-### Skills de Terceros (57 total)
+### Skills de Terceros (56 total)
 
 | ID | Fuente | Licencia | Estado | Archivo |
 |---|---|---|---|---|
@@ -245,7 +243,6 @@
 | `third-obra-test-driven-development-v1.0` | https://github.com/obra/superpowers | MIT | approved | `skills/third_party/obra/third-obra-test-driven-development-v1.0.md` |
 | `third-openai-threat-model-v1.0` | https://github.com/openai/security-threat-model | MIT | approved | `skills/third_party/openai/third-openai-threat-model-v1.0.md` |
 | `third-openspec-spec-gen-v1.0` | https://github.com/Fission-AI/OpenSpec | MIT | approved | `skills/third_party/openspec/third-openspec-spec-gen-v1.0.md` |
-| `third-roboflow-supervision-v1.0` | https://github.com/roboflow/supervision | MIT | draft | `skills/third_party/roboflow/third-roboflow-supervision-v1.0.md` |
 | `third-rowboat-orchestrator-v1.0` | https://github.com/rowboatlabs/rowboat | Apache 2.0 | approved | `skills/third_party/rowboat/third-rowboat-orchestrator-v1.0.md` |
 | `third-sickn33-auth-implementation-patterns-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-auth-implementation-patterns-v1.0.md` |
 | `third-sickn33-ddd-context-mapping-v1.0` | https://github.com/sickn33/antigravity-awesome-skills | MIT | draft | `skills/third_party/sickn33/third-sickn33-ddd-context-mapping-v1.0.md` |
@@ -260,11 +257,12 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (40 total)
+### Agentes (39 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `apb-agent-accessibility-auditor-v1.0` | Accessibility Auditor | draft | `agents/apb-agent-accessibility-auditor-v1.0.md` |
+| `apb-agent-apb-stack-expert-v1.0` | APB Stack Expert | draft | `agents/apb-agent-apb-stack-expert-v1.0.md` |
 | `apb-agent-api-product-manager-v1.0` | API Product Manager | draft | `agents/apb-agent-api-product-manager-v1.0.md` |
 | `apb-agent-business-analyst-v1.0` | Business Analyst Agent | draft | `agents/apb-agent-business-analyst-v1.0.md` |
 | `apb-agent-catalog-manager-v1.0` | AI Catalog Manager Agent | draft | `agents/apb-agent-catalog-manager-v1.0.md` |
@@ -279,14 +277,13 @@
 | `apb-agent-documentation-v1.0` | Documentation Agent | draft | `agents/apb-agent-documentation-v1.0.md` |
 | `apb-agent-domain-architect-v1.0` | Domain Architect Agent | draft | `agents/apb-agent-domain-architect-v1.0.md` |
 | `apb-agent-finops-v1.0` | FinOps Agent | draft | `agents/apb-agent-finops-v1.0.md` |
-| `apb-agent-functional-technical-support-v1.0` | Functional Technical Support Agent | draft | `agents/apb-agent-functional-technical-support-v1.0.md` |
 | `apb-agent-governance-v1.0` | Governance Agent | draft | `agents/apb-agent-governance-v1.0.md` |
 | `apb-agent-implementer-v1.0` | Implementer Agent | draft | `agents/apb-agent-implementer-v1.0.md` |
 | `apb-agent-incident-support-v1.0` | Incident Support | draft | `agents/apb-agent-incident-support-v1.0.md` |
 | `apb-agent-knowledge-manager-v1.0` | Knowledge Manager | draft | `agents/apb-agent-knowledge-manager-v1.0.md` |
-| `apb-agent-log-analyst-v1.0` | Log Analyst Agent | draft | `agents/apb-agent-log-analyst-v1.0.md` |
 | `apb-agent-meta-builder-v1.0` | Meta Builder Agent | draft | `agents/apb-agent-meta-builder-v1.0.md` |
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
+| `apb-agent-mother-framework-expert-v1.0` | Mother Framework Expert | draft | `agents/apb-agent-mother-framework-expert-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
 | `apb-agent-platform-engineer-v1.0` | Platform Engineer Agent | draft | `agents/apb-agent-platform-engineer-v1.0.md` |
 | `apb-agent-pm-v1.0` | Project Management Agent | draft | `agents/apb-agent-pm-v1.0.md` |
@@ -302,14 +299,12 @@
 | `apb-agent-tech-discovery-v1.0` | Technology Discovery Agent | draft | `agents/apb-agent-tech-discovery-v1.0.md` |
 | `apb-agent-technical-architect-v1.0` | Technical Architect | draft | `agents/apb-agent-technical-architect-v1.0.md` |
 | `apb-agent-ux-mockup-v1.0` | UX Mockup Agent | draft | `agents/apb-agent-ux-mockup-v1.0.md` |
-| `apb-agent-valoracion-tecnica-v1.0` | Agente de Valoración Técnica | draft | `agents/apb-agent-valoracion-tecnica-v1.0.md` |
 | `apb-agent-vendor-manager-v1.0` | Vendor Manager | draft | `agents/apb-agent-vendor-manager-v1.0.md` |
 
-### Subagentes (35 total)
+### Subagentes (34 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
-| `apb-sub-dashboard-discovery-v1.0` | Dashboard Discovery & Reuse Analysis | draft | `subagents/apb-sub-dashboard-discovery-v1.0.md` |
 | `apb-sub-ddd-code-v1.0` | DDD Code Analysis Subagent | draft | `subagents/apb-sub-ddd-code-v1.0.md` |
 | `apb-sub-ddd-db-v1.0` | DDD Database Schema Analysis Subagent | draft | `subagents/apb-sub-ddd-db-v1.0.md` |
 | `apb-sub-ddd-doc-v1.0` | DDD Documentation Analysis Subagent | draft | `subagents/apb-sub-ddd-doc-v1.0.md` |
@@ -375,7 +370,7 @@
 | `prov-apb-knowledge-v1.0` | Provider: Knowledge APB | approved | `providers/prov-apb-knowledge-v1.0.md` |
 | `prov-arqapibase-v1.0` | Provider: APB.ARQ.APIBASE | draft | `providers/prov-arqapibase-v1.0.md` |
 | `prov-arqbase-v1.0` | Provider: APB.ARQ.BASE | draft | `providers/prov-arqbase-v1.0.md` |
-| `prov-atlassian-v1.0` | Provider: Atlassian Jira (Software + Service Management) + Compass | draft | `providers/prov-atlassian-v1.0.md` |
+| `prov-atlassian-v1.0` | Provider: Atlassian Rovo MCP | draft | `providers/prov-atlassian-v1.0.md` |
 | `prov-azure-cost-v1.0` | Provider: Azure Cost Management API | draft | `providers/prov-azure-cost-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-qa-runtime-v1.0` | Provider: Azure QA Runtime | draft | `providers/prov-azure-qa-runtime-v1.0.md` |
@@ -386,14 +381,14 @@
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
 | `prov-entra-id-v1.0` | Provider: Microsoft Entra ID (Azure Active Directory) | draft | `providers/prov-entra-id-v1.0.md` |
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers/prov-github-v1.0.md` |
-| `prov-jira-software-v1.0` | Provider: Jira Software REST API | deprecated | `providers/prov-jira-software-v1.0.md` |
+| `prov-jira-software-v1.0` | Provider: Jira Software REST API | draft | `providers/prov-jira-software-v1.0.md` |
 | `prov-k6-v1.0` | Provider: k6 MCP | draft | `providers/prov-k6-v1.0.md` |
 | `prov-ms-learn-v1.0` | Provider: Microsoft Learn MCP | draft | `providers/prov-ms-learn-v1.0.md` |
 | `prov-ms365-v1.0` | Provider: Microsoft 365 (Graph API) | draft | `providers/prov-ms365-v1.0.md` |
 | `prov-otel-v1.0` | Provider: OpenTelemetry (instrumentación y telemetría) | draft | `providers/prov-otel-v1.0.md` |
 | `prov-playwright-v1.0` | Provider: Playwright MCP | draft | `providers/prov-playwright-v1.0.md` |
 | `prov-sentinel-v1.0` | Provider: Microsoft Sentinel | draft | `providers/prov-sentinel-v1.0.md` |
-| `prov-sonar-v1.0` | Provider: SonarQube (MCP oficial SonarSource) | candidate | `providers/prov-sonar-v1.0.md` |
+| `prov-sonar-v1.0` | Provider: SonarQube MCP | draft | `providers/prov-sonar-v1.0.md` |
 
 ### Wrappers (7 total)
 

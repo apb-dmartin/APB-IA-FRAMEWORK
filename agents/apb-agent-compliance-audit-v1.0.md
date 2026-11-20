@@ -2,7 +2,7 @@
 id: "apb-agent-compliance-audit-v1.0"
 name: "Compliance Audit Agent"
 description: "Agente que orquesta la auditoría completa de cumplimiento de políticas IT corporativas APB sobre un sistema, proyecto o artefacto. Coordina la detección de incumplimientos en todas las áreas de política y marcos normativos (ENS, ISO 27001, NIST CSF, OWASP, RGPD, LCSP, WCAG), genera el informe de análisis de riesgos multidimensional con recomendación explícita (APROBAR CON CONDICIONES / DENEGAR / ESCALAR) y plan de mitigación concreto, y entrega el informe a los validadores correctos para su decisión y firma. La decisión final es siempre humana."
-version: "1.3.0"
+version: "1.4.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
@@ -52,6 +52,28 @@ del informe con análisis multidimensional, recomendación explícita y plan de 
 El agente **no** toma la decisión de excepción — la skill sí emite una recomendación
 razonada, pero la decisión y las firmas son siempre de los validadores humanos
 (Ciberseguridad + Arquitectura + Responsable del Servicio).
+
+---
+
+## 📥 Input Esperado
+
+Mother genera el formulario de la ejecución a partir de estos campos (ver
+`MarkdownAgentParser.ParseInputs`); sin ellos declarados aquí, el agente solo podía
+pedir este contexto como texto libre dentro del "Prompt de Sistema" (el GRILL de
+abajo), sin que el portal ofreciera un formulario estructurado. Los puntos 1-3 son
+bloqueantes: el agente no debe proceder con la auditoría si faltan.
+
+- Nombre y descripción del sistema o componente (obligatorio, tipo: texto-largo): identificación y alcance de lo auditado.
+- Nivel ENS declarado (obligatorio, tipo: select[Alto,Medio,Bajo]): nivel de seguridad del Esquema Nacional de Seguridad.
+- Tipo de sistema (obligatorio, tipo: select[Legacy,Compliance]): Legacy = existía antes de la política vigente; Compliance = nuevo o modificado tras ella.
+- Tratamiento de datos personales (opcional, tipo: texto-largo): si procesa datos personales y de qué categoría (RGPD).
+- Exposición del sistema (opcional, tipo: select[Ciudadano,Interno,Ambos]): de cara a la ciudadanía, solo interno, o ambos.
+- Excepciones activas en Jira (opcional, tipo: texto-largo): claves de excepciones ya abiertas para este sistema, si las hay.
+- Áreas de política a auditar (opcional, tipo: select[Todas,Seguridad,QA,IA,Arquitectura,Infraestructura]): scope de la auditoría; por defecto, todas.
+- Incumplimientos ya conocidos (opcional, tipo: texto-largo): hallazgos previos o sospechas, si los hay; vacío si es auditoría proactiva.
+- Contexto de negocio (opcional, tipo: texto-largo): urgencia operativa, entrega comprometida, limitación externa — mejora mucho la calidad del informe; pídelo siempre que se pueda.
+- Fecha límite para la decisión (opcional, tipo: fecha): plazo orientativo si existe.
+- Repositorios y evidencias disponibles (opcional, tipo: texto-largo): URLs/ids de repos (rama o commit), y evidencias de CI/CD, SonarQube o Jira/JSM ya exportadas — a pegar aquí cuando el agente no tenga acceso de lectura directo (MCP de GitHub/Jira/SonarQube sin credenciales configuradas).
 
 ---
 
@@ -438,7 +460,8 @@ REGLAS DEL AGENTE
 | 1.0.0 | 2026-06-24 | Arquitectura APB | Creación — Sesión 16 |
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Flujo de entrega: Markdown en chat → aprobación usuario → Word → opciones de entrega (Jira / Confluence / SharePoint / mail / descarga). Notificación a validadores siempre posterior a aprobación del usuario. |
 | 1.2.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente↔skill/provider) | Añadidas `apb-plat-doc-to-markdown-v1.0` a `skills:` y `prov-atlassian-v1.0`/`prov-ms365-v1.0` a `depends_on:` — el Prompt de Sistema (Fase 3.3) ya usaba las tres para conversión a Word, Confluence y correo, pero no estaban declaradas |
-| 1.3.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora (ejecución bloqueada por falta de evidencia) | Añadida FASE 0 al Prompt de Sistema: recopilación automática best-effort de evidencia con los MCP `github`/`sonarqube`/`jira` (ya vinculados a todo agente como opcionales en `AgentTools:Bindings`, patrón `*`) antes de depender solo del GRILL manual para repos, CI/CD, Quality Gate de Sonar y excepciones Jira. Si el MCP falla (sin token/VPN/alcance), se declara como limitación de evidencia en el informe en vez de bloquear la auditoría completa |
+| 1.3.0 | 2026-11-20 | Arquitectura APB | Añade `## 📥 Input Esperado` (los 11 campos del GRILL de contexto, tipados) para que Mother genere un formulario estructurado en vez de depender de texto libre; una ejecución sin nivel ENS / Legacy-Compliance ya no se bloquea tras lanzarse sin avisar antes qué faltaba. *(nota de fusión: esta entrada usaba el número de versión "1.2.0", duplicado con la fila de 2026-07-06; renumerada a 1.3.0 al fusionar con la 1.4.0)* |
+| 1.4.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora (ejecución bloqueada por falta de evidencia) | Añadida FASE 0 al Prompt de Sistema: recopilación automática best-effort de evidencia con los MCP `github`/`sonarqube`/`jira` (ya vinculados a todo agente como opcionales en `AgentTools:Bindings`, patrón `*`) antes de depender solo del GRILL manual para repos, CI/CD, Quality Gate de Sonar y excepciones Jira. Si el MCP falla (sin token/VPN/alcance), se declara como limitación de evidencia en el informe en vez de bloquear la auditoría completa |
 
 ---
 
