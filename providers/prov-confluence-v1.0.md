@@ -47,7 +47,7 @@ Proveedor de acceso estructural directo a Atlassian Confluence mediante la REST 
 > **Nota de aprovisionamiento:**
 > 1. Crear una OAuth 2.0 App en el Atlassian Developer Console con scopes: `read:confluence-content.all`, `write:confluence-content`, `read:confluence-space.summary`.
 > 2. El API token es fallback para entornos sin OAuth2 configurado.
-> 3. El `base_url` varía entre instancia cloud (`https://apb.atlassian.net/wiki`) y on-prem.
+> 3. El `base_url` varía entre instancia cloud (`https://portdebarcelona.atlassian.net/wiki`) y on-prem.
 > 4. Todos los valores se almacenan en Azure Key Vault (`prov-akv-v1.0`).
 
 ## Acciones Disponibles
@@ -107,7 +107,7 @@ ParentId: 123456
 Title: "Post-Mortem INC-2026-0615 — Caída servicio de pagos"
 Content: "[contenido en Confluence Storage Format]"
 Labels: ["ia-generado", "post-mortem", "operaciones"]
-→ {id: "789012", title: "Post-Mortem INC-2026-0615...", url: "https://apb.atlassian.net/wiki/..."}
+→ {id: "789012", title: "Post-Mortem INC-2026-0615...", url: "https://portdebarcelona.atlassian.net/wiki/..."}
 ```
 
 ---

@@ -134,7 +134,7 @@ Real-time monitoring of APB application quality across three dimensions:
 3. Check for rate limiting: GitHub → Settings → Developer settings → Personal tokens
 
 #### Jira data missing?
-1. Verify Jira API connectivity: `curl -u user:token https://apb.atlassian.net/rest/api/3/myself`
+1. Verify Jira API connectivity: `curl -u user:token https://portdebarcelona.atlassian.net/rest/api/3/myself`
 2. Check token expiration: Azure Key Vault → `jira-api-token` → expiry date
 3. If token expired: generate new one + update AKV
 

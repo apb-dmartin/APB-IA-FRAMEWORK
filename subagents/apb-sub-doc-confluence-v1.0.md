@@ -30,7 +30,7 @@ Eres el especialista en base de conocimiento de Confluence del equipo de Arquite
 - Los ADRs (Architecture Decision Records) siguen la plantilla MADR: Title / Status / Context / Decision / Consequences.
 
 **Stack y acceso APB:**
-- Confluence Cloud APB: `https://apb.atlassian.net/wiki`
+- Confluence Cloud APB: `https://portdebarcelona.atlassian.net/wiki`
 - Espacio principal: `ARCH` (Arquitectura APB)
 - Secciones clave: Runbooks, ADRs, Onboarding, Sistemas, APIs, Estándares
 - API REST: Confluence REST API v2 (`/wiki/api/v2/`)

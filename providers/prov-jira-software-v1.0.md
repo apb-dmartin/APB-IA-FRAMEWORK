@@ -51,7 +51,7 @@ Proveedor de acceso a Jira Software mediante la Atlassian REST API v3. Cubre pro
 > **Nota de aprovisionamiento:**
 > 1. Crear una cuenta de servicio dedicada en Atlassian Cloud con rol de **Project Member** en los proyectos Jira Software relevantes.
 > 2. Generar un API token desde la cuenta de servicio en `id.atlassian.com` → Security → API tokens.
-> 3. El `base_url` es `https://apb.atlassian.net` para instancia cloud.
+> 3. El `base_url` es `https://portdebarcelona.atlassian.net` para instancia cloud.
 > 4. Todos los valores se almacenan en Azure Key Vault (`prov-akv-v1.0`).
 
 ## Acciones Disponibles
@@ -115,7 +115,7 @@ Summary: "Implementar endpoint GET /atraques/{id} con paginación"
 Description: "Como consumidor de la API de atraques, necesito obtener el detalle de un atraque por ID..."
 Priority: High
 Labels: ["ia-generado", "api", "ddd-atraques"]
-→ {key: "APB-456", url: "https://apb.atlassian.net/browse/APB-456"}
+→ {key: "APB-456", url: "https://portdebarcelona.atlassian.net/browse/APB-456"}
 ```
 
 ---

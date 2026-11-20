@@ -26,7 +26,7 @@
       "command": "uvx",
       "args": ["mcp-atlassian"],
       "env": {
-        "JIRA_URL": "https://apb.atlassian.net",
+        "JIRA_URL": "https://portdebarcelona.atlassian.net",
         "JIRA_USERNAME": "${JIRA_USERNAME:-}",
         "JIRA_API_TOKEN": "${JIRA_API_TOKEN:-}"
       }

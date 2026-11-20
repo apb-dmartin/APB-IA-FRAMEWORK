@@ -2,7 +2,7 @@
 id: "prov-atlassian-v1.0"
 name: "Provider: Atlassian Jira (Software + Service Management) + Compass"
 description: "Proveedor de acción unificado para Jira: Jira Software (backlog/epics/sprints de desarrollo, búsqueda JQL) y Jira Service Management (incidencias/service desk), más soporte ligero de Compass (catálogo de componentes). Fusiona lo que antes eran dos providers solapados (prov-atlassian-v1.0 + prov-jira-software-v1.0, ahora deprecado). Para Confluence, usar prov-confluence-v1.0 (dedicado, más completo). Distinto de adapter-rovo-v1.0 (capa de IA de Rovo — pendiente de activación en APB, julio 2026)."
-version: "2.2.0"
+version: "2.3.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
@@ -102,7 +102,7 @@ provider ofrecía antes de la corrección v2.1.0.
 > 1. Crear una cuenta de servicio dedicada en Atlassian Cloud con rol de **Project Member**
 >    en los proyectos Jira relevantes.
 > 2. Generar un API token desde la cuenta de servicio en `id.atlassian.com` → Security → API tokens.
-> 3. El `base_url` es `https://apb.atlassian.net` para la instancia cloud de APB.
+> 3. El `base_url` es `https://portdebarcelona.atlassian.net` para la instancia cloud de APB.
 > 4. Todos los valores se almacenan en Azure Key Vault (`prov-akv-v1.0`).
 > 5. **Runtime Claude Code:** servidor MCP `jira` registrado en `.mcp.json`
 >    (`uvx mcp-atlassian`, autenticación por API token). `JIRA_URL` va en el fichero;
@@ -170,7 +170,7 @@ Action: create_issue
 ProjectKey: APB
 IssueType: Task
 Summary: "..."
-→ { key: "APB-456", url: "https://apb.atlassian.net/browse/APB-456" }
+→ { key: "APB-456", url: "https://portdebarcelona.atlassian.net/browse/APB-456" }
 ```
 
 ---
@@ -192,6 +192,7 @@ Conforme al [`AI_MARKING_STANDARD`](../context/apb/standards/AI_MARKING_STANDARD
 | 2.1.0 | 2026-07-06 | Claude (Anthropic) | Corregido: la v2.0.0 duplicaba capacidades de Confluence ya cubiertas — mejor y de forma más completa — por `prov-confluence-v1.0` (existente desde el 2026-06-29). Este provider queda acotado a Jira (Software + JSM) + Compass ligero |
 
 | 2.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Servidor MCP `jira` registrado en `.mcp.json` (API token por variables de entorno); las acciones de lectura se usan como evidencia automática por los consumidores |
+| 2.3.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Corregida la URL de la instancia: `https://portdebarcelona.atlassian.net` (verificada en vivo con `/myself` y una búsqueda JQL sobre `ARQ`); `apb.atlassian.net` no existe |
 
 ---
 *Registrado en APB AI Framework.*

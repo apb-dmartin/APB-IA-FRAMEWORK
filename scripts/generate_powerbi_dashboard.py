@@ -10,7 +10,7 @@ Uso:
         --sonar-url https://sonar.apb.internal \\
         --sonar-token YOUR_SONAR_TOKEN \\
         --github-token YOUR_GITHUB_PAT \\
-        --jira-url https://apb.atlassian.net \\
+        --jira-url https://portdebarcelona.atlassian.net \\
         --jira-token YOUR_JIRA_TOKEN \\
         --output dashboard_qa_compliance.pbix
 
@@ -690,7 +690,7 @@ Ejemplo de uso:
     --sonar-url https://sonar.apb.internal \\
     --sonar-token YOUR_SONAR_TOKEN \\
     --github-token YOUR_GITHUB_PAT \\
-    --jira-url https://apb.atlassian.net \\
+    --jira-url https://portdebarcelona.atlassian.net \\
     --jira-token YOUR_JIRA_TOKEN \\
     --output ./powerbi-output
 
@@ -720,7 +720,7 @@ Credenciales requeridas:
         ),
     )
     parser.add_argument("--github-token", required=True, help="GitHub Personal Access Token")
-    parser.add_argument("--jira-url", required=True, help="URL de Jira (e.g., https://apb.atlassian.net)")
+    parser.add_argument("--jira-url", required=True, help="URL de Jira (e.g., https://portdebarcelona.atlassian.net)")
     parser.add_argument("--jira-token", required=True, help="Token API de Jira")
     parser.add_argument(
         "--output",

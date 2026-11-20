@@ -19,7 +19,7 @@ pip install requests pandas openpyxl
    - Permisos: `public_repo`, `security_events`
 
 3. **Jira API Token**
-   - URL: `https://apb.atlassian.net/secure/ViewProfile.jspa?currentTab=user-profile`
+   - URL: `https://portdebarcelona.atlassian.net/secure/ViewProfile.jspa?currentTab=user-profile`
    - Crear API token
 
 ---
@@ -35,7 +35,7 @@ python scripts/generate_powerbi_dashboard.py \
   --sonar-url https://sonar.apb.internal \
   --sonar-token YOUR_SONAR_TOKEN \
   --github-token YOUR_GITHUB_PAT \
-  --jira-url https://apb.atlassian.net \
+  --jira-url https://portdebarcelona.atlassian.net \
   --jira-token YOUR_JIRA_TOKEN \
   --output ./powerbi-output
 ```
@@ -52,7 +52,7 @@ python scripts/generate_powerbi_dashboard.py `
   --sonar-url https://sonar.apb.internal `
   --sonar-token $env:SONAR_TOKEN `
   --github-token $env:GITHUB_TOKEN `
-  --jira-url https://apb.atlassian.net `
+  --jira-url https://portdebarcelona.atlassian.net `
   --jira-token $env:JIRA_TOKEN `
   --output ./powerbi-output
 ```
@@ -67,7 +67,7 @@ python scripts/generate_powerbi_dashboard.py \
   --sonar-url https://sonar.apb.internal \
   --sonar-token $SONAR_TOKEN \
   --github-token $GITHUB_TOKEN \
-  --jira-url https://apb.atlassian.net \
+  --jira-url https://portdebarcelona.atlassian.net \
   --jira-token $JIRA_TOKEN \
   --output ./powerbi-output
 ```
@@ -99,7 +99,7 @@ Supongamos que tienes:
 - Sonar: `https://sonar.apb.internal`
 - Token Sonar: `squ_1234567890abcdef`
 - GitHub PAT: `ghp_1234567890abcdefghij`
-- Jira: `https://apb.atlassian.net`
+- Jira: `https://portdebarcelona.atlassian.net`
 - Token Jira: `ATATT3xF1234567890_abcdef`
 
 ### Paso 1: Ejecutar el script
@@ -110,7 +110,7 @@ python scripts/generate_powerbi_dashboard.py ^
   --sonar-url https://sonar.apb.internal ^
   --sonar-token squ_1234567890abcdef ^
   --github-token ghp_1234567890abcdefghij ^
-  --jira-url https://apb.atlassian.net ^
+  --jira-url https://portdebarcelona.atlassian.net ^
   --jira-token ATATT3xF1234567890_abcdef ^
   --output ./powerbi-output
 ```
@@ -239,7 +239,7 @@ Si prefieres un archivo `.env`:
 SONAR_URL=https://sonar.apb.internal
 SONAR_TOKEN=squ_1234567890abcdef
 GITHUB_TOKEN=ghp_1234567890abcdefghij
-JIRA_URL=https://apb.atlassian.net
+JIRA_URL=https://portdebarcelona.atlassian.net
 JIRA_TOKEN=ATATT3xF1234567890_abcdef
 ```
 
