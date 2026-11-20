@@ -3,7 +3,7 @@
 > **ID:** `apb-index-v1.0`
 > **Versión:** 1.0.0
 > **Estado:** draft
-> **Fecha de actualización:** 2026-07-14
+> **Fecha de actualización:** 2026-11-18
 > **Framework:** APB AI v1.0.0-draft
 
 ---
@@ -21,12 +21,12 @@
 | Skills APB | 184 / 184 |
 | Skills terceros | 57 / 57 |
 | Agentes | 40 / 40 |
-| Subagentes | 35 / 35 |
+| Subagentes | 36 / 36 |
 | Workflows | 17 / 17 |
 | Providers | 23 / 23 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **367** |
+| **Total** | **368** |
 
 ---
 
@@ -53,7 +53,7 @@ APB-IA-FRAMEWORK/
 ├── INDEX.md
 ├── DOMAIN_REGISTRY.md
 ├── agents/                     # 40 agentes
-├── subagents/                  # 35 subagentes
+├── subagents/                  # 36 subagentes
 ├── workflows/                  # 17 workflows
 ├── skills/
 │   ├── apb-owned/             # 184 skills

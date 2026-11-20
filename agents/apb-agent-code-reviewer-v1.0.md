@@ -18,7 +18,8 @@ skills:
   - "apb-dev-surgical-changes-v1.0"
   - "apb-dev-gis-django-v1.0"
   - "apb-arch-dotnet-base-v1.0"
-subagents: []
+subagents:
+  - "apb-sub-qa-policy-fix-loop-v1.0"
 runtime:
   - "copilot"
   - "claude"

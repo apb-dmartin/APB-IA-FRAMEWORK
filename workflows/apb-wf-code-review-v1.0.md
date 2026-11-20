@@ -2,7 +2,7 @@
 id: "apb-wf-code-review-v1.0"
 name: "Code Review Asistido"
 description: "Revisión de código asistida por IA con cumplimiento de estándares, validación de calidad, seguridad y generación de evidencias para gobierno."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Desarrollo APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -15,7 +15,7 @@ agents:
 human_checkpoints:
   - "Validación humana antes de cada fase crítica del workflow"
 created_date: "2026-06-20"
-review_date: "2026-06-22"
+review_date: "2026-11-18"
 ---
 
 # Code Review Asistido
@@ -35,7 +35,10 @@ graph TD
     C --> D[Governance Agent]
     D --> E[Security Testing Subagent]
     E --> F[QA Automation Agent]
-    F --> G{Decisión}
+    F --> P{¿Hallazgos POLICY_QA_v1.0?}
+    P -->|Sí| Q[QA Policy Fix-Loop Subagent]
+    Q --> G
+    P -->|No| G{Decisión}
     G -->|Aprobado| H[Merge]
     G -->|Rechazado| I[Correcciones]
     I --> B
@@ -49,6 +52,7 @@ graph TD
 | 2 | Governance Agent | Validación de estándares | `apb-gov-standards`, `apb-gov-compliance` |
 | 3 | Security Testing Subagent | Análisis de seguridad | `apb-dev-openspec-review`, `apb-sec-owasp` |
 | 4 | QA Automation Agent | Validación de calidad | `apb-qa-unit-test-gen`, `apb-qa-test-auto` |
+| 4b (condicional) | QA Policy Fix-Loop Subagent (`apb-sub-qa-policy-fix-loop-v1.0`, delegado por Code Reviewer Agent) | Remediación de hallazgos `POLICY_QA_v1.0` detectados en la Fase 2 | `apb-dev-pr-doc-v1.0` |
 
 ## 📡 Contratos de Output Inter-Agente
 
@@ -78,6 +82,12 @@ graph TD
 - Validación de cobertura ≥ 80%
 - Tests de integración si aplica
 
+### Fase 4b: Remediación de política de QA (condicional)
+- Si la Fase 2 (Code Review Automática) produjo hallazgos en la tabla «Hallazgos POLICY_QA_v1.0»
+  (ver `apb-dev-code-review-gate-v1.0`), se invoca `apb-sub-qa-policy-fix-loop-v1.0` con esos hallazgos
+- El subagente propone un PR de corrección y anota el ticket Jira; **nunca mergea**
+- Si no hay hallazgos de `POLICY_QA_v1.0`, esta fase se omite y se pasa directo a la Fase 5
+
 ### Fase 5: Decisión
 - Aprobación si pasa todos los gates
 - Rechazo con comentarios detallados si falla algún gate
@@ -104,6 +114,8 @@ graph TD
 - **DP3:** ¿Cobertura de tests ≥ 80%? Si no, requiere más tests.
 - **DP4:** ¿Pasa validación de estándares? Si no, aplicar correcciones.
 - **DP5:** ¿Decisión de aprobación? Requiere validación humana final.
+- **DP6 (condicional):** ¿Hay hallazgos de `POLICY_QA_v1.0` en la Fase 2? Si sí, invocar Fase 4b
+  (`apb-sub-qa-policy-fix-loop-v1.0`) antes de llegar a DP5; si no, saltar directo a DP5.
 
 ## 🚫 Límites y Escapes
 
@@ -160,6 +172,7 @@ inputs:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.1.0 | 2026-11-18 | APB AI Framework | Añadida Fase 4b condicional: si la Fase 2 produce hallazgos de `POLICY_QA_v1.0`, se invoca `apb-sub-qa-policy-fix-loop-v1.0` (propone PR + anota Jira, nunca mergea) antes de la Fase 5 de Decisión. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

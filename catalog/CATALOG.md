@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 367
+- **Total Components**: 368
 
 ## Component Breakdown
 
@@ -305,7 +305,7 @@
 | `apb-agent-valoracion-tecnica-v1.0` | Agente de Valoración Técnica | draft | `agents/apb-agent-valoracion-tecnica-v1.0.md` |
 | `apb-agent-vendor-manager-v1.0` | Vendor Manager | draft | `agents/apb-agent-vendor-manager-v1.0.md` |
 
-### Subagentes (35 total)
+### Subagentes (36 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -340,6 +340,7 @@
 | `apb-sub-qa-e2e-v1.0` | E2E Testing Subagent | draft | `subagents/apb-sub-qa-e2e-v1.0.md` |
 | `apb-sub-qa-fix-loop-v1.0` | QA Fix-Loop Subagent | draft | `subagents/apb-sub-qa-fix-loop-v1.0.md` |
 | `apb-sub-qa-performance-v1.0` | Performance Testing Subagent | draft | `subagents/apb-sub-qa-performance-v1.0.md` |
+| `apb-sub-qa-policy-fix-loop-v1.0` | QA Policy Fix-Loop Subagent | draft | `subagents/apb-sub-qa-policy-fix-loop-v1.0.md` |
 | `apb-sub-qa-security-v1.0` | Security Testing Subagent | draft | `subagents/apb-sub-qa-security-v1.0.md` |
 | `apb-sub-qa-unit-v1.0` | Unit Testing Subagent | draft | `subagents/apb-sub-qa-unit-v1.0.md` |
 | `apb-sub-sec-ens-v1.0` | ENS Compliance Subagent | draft | `subagents/apb-sub-sec-ens-v1.0.md` |

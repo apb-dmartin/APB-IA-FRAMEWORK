@@ -109,7 +109,14 @@ Agente especializado en calidad del software y automatización de pruebas. Respo
 
 ## 📤 Output Generado
 
-- Plan de pruebas detallado (`test-plan.md`)
+> Mother separa cada entregable de abajo en su propio artefacto buscando, en la respuesta del
+> agente, una cabecera Markdown que contenga literalmente su nombre de fichero (para los dos
+> primeros) o su etiqueta tal cual aparece aquí (para el resto) — ver «Formato de Salida» del
+> Prompt de Sistema, que es donde se le exige ese convenio al modelo.
+
+- Plan de pruebas detallado `test-plan.md` (requiere-aprobacion): requiere aprobación humana explícita
+  (`ApprovalKind.Artifact` en Mother) antes de entregarse — declarado aquí, nunca inferido del pie de
+  página del propio informe (principio de `apb-plat-deliver-artifact-v1.0` §«Declaración estática para Mother»).
 - Estrategia de testing (`test-strategy.md`)
 - Tests automatizados (unitarios, integración, E2E)
 - Datos de prueba anonimizados
@@ -202,12 +209,22 @@ Agente especializado en calidad del software y automatización de pruebas. Respo
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Plan de pruebas detallado (`test-plan.md`)
-- Estrategia de testing (`test-strategy.md`)
-- Tests automatizados (unitarios, integración, E2E)
-- Datos de prueba anonimizados
-- Informe de readiness para release
-- Evidencias de validación post-migración
+Entrega SIEMPRE los seis entregables siguientes, cada uno en su propia sección, encabezada con
+un título Markdown (`##` o superior) que contenga **literalmente, sin reformular ni resumir**,
+el nombre exacto indicado entre comillas — Mother usa ese texto exacto para repartir tu respuesta
+en seis entregables independientes; un título distinto (aunque sea sinónimo) hace que esa sección
+no se reconozca como entregable y se pierda:
+
+- Título con `test-plan.md` — plan de pruebas detallado
+- Título con `test-strategy.md` — estrategia de testing
+- Título con «Tests automatizados (unitarios, integración, E2E)» — automatización (código de test, aunque sea plantilla)
+- Título con «Datos de prueba anonimizados»
+- Título con «Informe de readiness para release»
+- Título con «Evidencias de validación post-migración»
+
+Si alguno de los seis queda bloqueado por falta de acceso o información (p. ej. no se pudo leer
+el repositorio), incluye igualmente su sección con el título exacto y explica ahí, brevemente,
+el motivo del bloqueo y qué haría falta para desbloquearlo — nunca omitas la sección entera.
 ```
 
 ## 🔄 Historial de Cambios

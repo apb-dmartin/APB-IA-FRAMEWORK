@@ -141,7 +141,18 @@ Subagente (general-purpose):
     - [Descripción específica]
 
     **Evaluación:** Lista para continuar | Necesita correcciones
+
+    **Hallazgos POLICY_QA_v1.0 (si aplica):**
+    | Regla | Severidad | Fichero | Descripción |
+    |-------|-----------|---------|-------------|
+    | [p.ej. "Authorize+Entra ID obligatorio"] | [Bloqueante/Informativo] | [ruta:línea] | [qué incumple y por qué] |
 ```
+
+> La tabla «Hallazgos POLICY_QA_v1.0» es la entrada estructurada que consume `apb-sub-qa-policy-fix-loop-v1.0`
+> (ver `subagents/apb-sub-qa-policy-fix-loop-v1.0.md`) para proponer una corrección. Se rellena solo cuando el
+> código revisado incumple `context/apb/policies/quality/POLICY_QA_v1.0.md` (p.ej. `[Authorize]`+Entra ID
+> ausente, `try/catch` genérico, uso de SOAP, secretos fuera de Key Vault, Quality Gate de SonarQube no
+> alcanzado); se deja vacía (tabla sin filas) si no hay hallazgos de esta política.
 
 ### Etapa 2: Revisión Amplia de Rama (Whole-Branch)
 

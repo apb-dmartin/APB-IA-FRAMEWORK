@@ -96,6 +96,7 @@ de este repositorio.
 | `autonomy_level` | int (0–4) | Sí | |
 | `agents` | list[string] | Sí | IDs de agentes orquestados, en orden. |
 | `human_checkpoints` | list[string] | Sí | Puntos de control humano. |
+| `agent_dependencies` | map[string, string] | No | De qué otro(s) agente(s) depende cada agente (IDs separados por coma). Sin declarar, cada agente depende solo del anterior en `agents:` (secuencia lineal, comportamiento histórico). Varios agentes con la misma dependencia se ejecutan en **paralelo** (fan-out/fan-in real en Mother, vía `Microsoft.Agents.AI.Workflows`); un agente con varias dependencias espera a que **todas** terminen antes de arrancar (fan-in). Ver `workflows/apb-wf-qa-evidence-v1.0.md` como primer caso de uso real.|
 
 ### 3.5 Provider
 | Campo | Tipo | Obligatorio | Descripción |

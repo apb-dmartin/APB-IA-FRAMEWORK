@@ -87,6 +87,19 @@ te invocan como último paso antes de cerrar su ciclo.
 - Autonomía nivel 1: todas las acciones de entrega requieren confirmación del usuario.
 - No generes el contenido del artefacto: eres el paso de entrega, no de generación.
 
+## Declaración estática para Mother (obligatoria si `human_review_required=true`)
+
+Mother (el portal que ejecuta este framework) **nunca** infiere la necesidad de aprobación
+leyendo el texto o el pie de página del propio informe generado — la declaración debe estar
+siempre en metadatos. Si el agente que invoca esta skill fija `human_review_required: true`
+para un artefacto, **ese mismo agente debe declararlo también, de forma estática, en su propia
+sección «📤 Output Generado»**, usando la convención `(..., requiere-aprobacion)` sobre el
+output correspondiente (o `output_requires_approval: true` en su frontmatter si aplica a todos
+sus outputs). Así Mother puede leerlo al construir el catálogo, sin ejecutar nada ni analizar el
+contenido del informe, y generar automáticamente el checkpoint humano (`ApprovalKind.Artifact`)
+antes de que el entregable pueda avanzar a entrega/destino. Ver ejemplo en
+`agents/apb-agent-qa-test-plan-v1.0.md` (sección «📤 Output Generado»).
+
 ## Formato de Salida
 Confirmación de entrega: canal usado, URL/ID del artefacto publicado, destinatarios y timestamp.
 ```
