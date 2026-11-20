@@ -2,7 +2,7 @@
 id: "prov-atlassian-v1.0"
 name: "Provider: Atlassian Jira (Software + Service Management) + Compass"
 description: "Proveedor de acción unificado para Jira: Jira Software (backlog/epics/sprints de desarrollo, búsqueda JQL) y Jira Service Management (incidencias/service desk), más soporte ligero de Compass (catálogo de componentes). Fusiona lo que antes eran dos providers solapados (prov-atlassian-v1.0 + prov-jira-software-v1.0, ahora deprecado). Para Confluence, usar prov-confluence-v1.0 (dedicado, más completo). Distinto de adapter-rovo-v1.0 (capa de IA de Rovo — pendiente de activación en APB, julio 2026)."
-version: "2.1.0"
+version: "2.2.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
@@ -104,10 +104,14 @@ provider ofrecía antes de la corrección v2.1.0.
 > 2. Generar un API token desde la cuenta de servicio en `id.atlassian.com` → Security → API tokens.
 > 3. El `base_url` es `https://apb.atlassian.net` para la instancia cloud de APB.
 > 4. Todos los valores se almacenan en Azure Key Vault (`prov-akv-v1.0`).
-> 5. **Runtime Claude Code:** si el tenant APB expone un servidor MCP de Atlassian, el
->    adapter de Claude puede invocar este provider a través de él en vez de REST directo
->    — ver `adapters/claude/adapter-claude-v1.0.md`. Ninguna de las dos vías cambia el
->    contrato de acciones documentado aquí.
+> 5. **Runtime Claude Code:** servidor MCP `jira` registrado en `.mcp.json`
+>    (`uvx mcp-atlassian`, autenticación por API token). `JIRA_URL` va en el fichero;
+>    `JIRA_USERNAME` y `JIRA_API_TOKEN` son variables de usuario (referencias `${...}`,
+>    nunca el valor en el repo) — ver `adapters/claude/adapter-claude-v1.0.md`. La vía
+>    MCP y la REST directa no cambian el contrato de acciones documentado aquí. Las
+>    consultas de solo lectura (`get_issue`, `search_issues`, `get_backlog`, `get_sprint`)
+>    las usan los consumidores como evidencia automática según
+>    `context/apb/standards/EXTERNAL_EVIDENCE_STANDARD.md`.
 
 ## Inputs
 
@@ -186,6 +190,8 @@ Conforme al [`AI_MARKING_STANDARD`](../context/apb/standards/AI_MARKING_STANDARD
 | 1.1.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Renombrado a "Atlassian REST API (JSM + Confluence + Compass)" — el nombre original inducía a confusión con MCP/Rovo sin relación real. Tabla de diferenciación con `prov-jira-software-v1.0` |
 | 2.0.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | **Fusión** con `prov-jira-software-v1.0` (ahora deprecado): absorbe todas sus acciones (`get_issue`, `search_issues`/JQL, `add_to_sprint`, `link_issues`, etc.) |
 | 2.1.0 | 2026-07-06 | Claude (Anthropic) | Corregido: la v2.0.0 duplicaba capacidades de Confluence ya cubiertas — mejor y de forma más completa — por `prov-confluence-v1.0` (existente desde el 2026-06-29). Este provider queda acotado a Jira (Software + JSM) + Compass ligero |
+
+| 2.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Servidor MCP `jira` registrado en `.mcp.json` (API token por variables de entorno); las acciones de lectura se usan como evidencia automática por los consumidores |
 
 ---
 *Registrado en APB AI Framework.*

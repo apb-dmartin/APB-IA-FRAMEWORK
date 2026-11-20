@@ -155,6 +155,10 @@ y sigue con lo que el humano aporte en el GRILL.
       (JQL por proyecto o componente) en vez de depender de que el humano
       las enumere de memoria en la pregunta 6 del GRILL.
 
+Esta fase aplica `context/apb/standards/EXTERNAL_EVIDENCE_STANDARD.md` (MCP primero,
+identificador mínimo, degradación a «evidencia no disponible», escrituras con aprobación
+humana); las herramientas lógicas son `github`, `sonarqube` y `jira`.
+
 Resume al final de esta fase qué evidencia se obtuvo automáticamente y cuál
 sigue pendiente de que la aporte el humano.
 
@@ -461,6 +465,7 @@ REGLAS DEL AGENTE
 | 1.1.0 | 2026-06-24 | Arquitectura APB | Flujo de entrega: Markdown en chat → aprobación usuario → Word → opciones de entrega (Jira / Confluence / SharePoint / mail / descarga). Notificación a validadores siempre posterior a aprobación del usuario. |
 | 1.2.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente↔skill/provider) | Añadidas `apb-plat-doc-to-markdown-v1.0` a `skills:` y `prov-atlassian-v1.0`/`prov-ms365-v1.0` a `depends_on:` — el Prompt de Sistema (Fase 3.3) ya usaba las tres para conversión a Word, Confluence y correo, pero no estaban declaradas |
 | 1.3.0 | 2026-11-20 | Arquitectura APB | Añade `## 📥 Input Esperado` (los 11 campos del GRILL de contexto, tipados) para que Mother genere un formulario estructurado en vez de depender de texto libre; una ejecución sin nivel ENS / Legacy-Compliance ya no se bloquea tras lanzarse sin avisar antes qué faltaba. *(nota de fusión: esta entrada usaba el número de versión "1.2.0", duplicado con la fila de 2026-07-06; renumerada a 1.3.0 al fusionar con la 1.4.0)* |
+| 1.4.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | La FASE 0 pasa a referenciar `EXTERNAL_EVIDENCE_STANDARD` (estándar compartido por todos los consumidores de Jira/GitHub/Sonar); sin cambio de comportamiento |
 | 1.4.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora (ejecución bloqueada por falta de evidencia) | Añadida FASE 0 al Prompt de Sistema: recopilación automática best-effort de evidencia con los MCP `github`/`sonarqube`/`jira` (ya vinculados a todo agente como opcionales en `AgentTools:Bindings`, patrón `*`) antes de depender solo del GRILL manual para repos, CI/CD, Quality Gate de Sonar y excepciones Jira. Si el MCP falla (sin token/VPN/alcance), se declara como limitación de evidencia en el informe en vez de bloquear la auditoría completa |
 
 ---

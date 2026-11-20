@@ -2,7 +2,7 @@
 id: "prov-sonar-v1.0"
 name: "Provider: SonarQube (MCP oficial SonarSource)"
 description: "Proveedor de acción de solo lectura para análisis de calidad de código con SonarQube. Consulta métricas, issues, security hotspots y estado de quality gate de la instancia real de APB a través del servidor MCP oficial de SonarSource."
-version: "2.1.0"
+version: "2.2.0"
 status: "candidate"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
@@ -137,7 +137,7 @@ para "Non-Competitive Purpose" — aplicable a uso interno de APB.
 >    - Si el motor de contenedores tiene ruta directa a la red de la VPN de APB
 >      (`172.17.x.x`), esto basta:
 >      ```
->      docker run -d --name sonar-mcp --init --restart unless-stopped -p 8080:8080 \
+>      docker run -d --name sonar-mcp --init --restart unless-stopped -p 8765:8080 \
 >        -e SONARQUBE_TRANSPORT=http \
 >        -e SONARQUBE_HTTP_HOST=0.0.0.0 \
 >        -e SONARQUBE_HTTP_PORT=8080 \
@@ -165,7 +165,7 @@ para "Non-Competitive Purpose" — aplicable a uso interno de APB.
 >      real arriba.
 >    - Verificación rápida (handshake MCP):
 >      ```
->      curl -X POST http://localhost:8080/mcp \
+>      curl -X POST http://localhost:8765/mcp \
 >        -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
 >        -H "Authorization: Bearer <User Token>" \
 >        -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
@@ -228,6 +228,7 @@ ProjectKey: "APB.API.APPS"
 | 1.0.0 | 2026-06-20 | Arquitectura APB | Creación inicial (aspiracional, sin mecanismo real) |
 | 2.0.0 | 2026-07-09 | Claude (Anthropic), a petición de Débora | Reescritura completa: endpoint real (`gisplanolpre.port.apb.es:9001`), mecanismo real (MCP oficial SonarSource, no custom), alcance acotado a solo lectura (`permissions: ["read"]`, se retira `"analysis"`), tabla de acciones con gates humanos, nota de aprovisionamiento, verificación REST directa confirmada con datos reales |
 | 2.1.0 | 2026-07-10 | Claude (Anthropic), a petición de Débora | `status` pasa a `candidate`: servidor MCP oficial verificado en vivo (`initialize`, `tools/list`, `search_my_sonarqube_projects` con datos reales). Documentado el hallazgo de infraestructura: la subred de bridge de Docker por defecto choca con una ruta real de la VPN de APB — solución documentada (subred alternativa + Docker Engine nativo en WSL en vez del motor de Docker Desktop). Registrado en `.mcp.json` (`sonar`, `type: http`) |
+| 2.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Puerto publicado del contenedor `sonar-mcp` pasa de 8080 a 8765 (en Windows el 8080 lo ocupa otro proceso local y `localhost:8080/mcp` devolvía 404); `.mcp.json` actualizado y handshake `initialize` verificado en el nuevo puerto |
 
 ---
 *Registrado en APB AI Framework.*

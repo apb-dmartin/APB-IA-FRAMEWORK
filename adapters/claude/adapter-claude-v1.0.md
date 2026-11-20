@@ -2,7 +2,7 @@
 id: "adapter-claude-v1.0"
 name: "Claude (Anthropic) Adapter"
 description: "Adaptador que permite que los agentes, skills y workflows del framework APB se ejecuten en el runtime de Claude (Anthropic). Soporta Claude Code, Claude Desktop, y API de Anthropic."
-version: "1.4.0"
+version: "1.5.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -48,9 +48,10 @@ Claude 3.5/4 Sonnet/Opus via Anthropic API, Claude Code CLI, Claude Desktop App.
 | Agent | `apb-agent-implementer-v1.0` | ✅ Adaptado | Multi-turn con tool use |
 | Workflow | `apb-wf-sdd-full-v1.0` | ✅ Adaptado | Multi-agent orchestration |
 | Provider | `prov-azure-v1.0` | ✅ MCP | Azure MCP nativo |
-| Provider | `prov-atlassian-v1.0` | ⚠️ Parcial | Sin conector MCP de Atlassian confirmado en este runtime a fecha 2026-07-06 — usar REST directo (api_token vía AKV) hasta confirmar disponibilidad de un servidor MCP de Atlassian en el tenant APB. Actualizar esta fila en cuanto se confirme |
+| Provider | `prov-atlassian-v1.0` | ✅ MCP | Servidor `jira` registrado en `.mcp.json` (`uvx mcp-atlassian`, API token + email por variables de entorno `JIRA_USERNAME`/`JIRA_API_TOKEN`). Pendiente de prueba en vivo con credenciales reales; mientras no conecte, los consumidores aplican la regla R3 de `EXTERNAL_EVIDENCE_STANDARD` |
 | Provider | `prov-confluence-v1.0` | ⚠️ Parcial | Mismo estado que `prov-atlassian-v1.0` — REST v2/OAuth2 directo hasta confirmar MCP |
-| Provider | `prov-sonar-v1.0` | ✅ MCP | Servidor MCP oficial de SonarSource (`sonarsource/sonarqube-mcp`) verificado en vivo (2026-07-10) contra la instancia real de APB (`gisplanolpre.port.apb.es:9001`): handshake `initialize`, `tools/list` y llamada real a `search_my_sonarqube_projects` con datos reales. Corre sobre Docker Engine nativo en WSL (no el motor de Docker Desktop — choque de subred con la VPN de APB, ver `prov-sonar-v1.0.md`). Registrado en `.mcp.json` (`sonar`, `type: http`, `localhost:8080`) |
+| Provider | `prov-github-v1.0` | ✅ MCP | Servidor remoto `github` registrado en `.mcp.json` (`https://api.githubcopilot.com/mcp/`, PAT por `GITHUB_PERSONAL_ACCESS_TOKEN`). Pendiente de prueba en vivo con el token real |
+| Provider | `prov-sonar-v1.0` | ✅ MCP | Servidor MCP oficial de SonarSource (`sonarsource/sonarqube-mcp`) verificado en vivo (2026-07-10) contra la instancia real de APB (`gisplanolpre.port.apb.es:9001`): handshake `initialize`, `tools/list` y llamada real a `search_my_sonarqube_projects` con datos reales. Corre sobre Docker Engine nativo en WSL (no el motor de Docker Desktop — choque de subred con la VPN de APB, ver `prov-sonar-v1.0.md`). Registrado en `.mcp.json` (`sonar`, `type: http`, `localhost:8765` — el 8080 de Windows lo ocupa otro proceso local) |
 
 ## 🔌 Interface de Adaptación
 
@@ -72,17 +73,17 @@ Los agentes se invocan mediante:
 
 ### Integración con MCP
 - Azure MCP para acceso a recursos Azure
-- GitHub MCP para operaciones de repo
-- SonarQube MCP: servidor **oficial de SonarSource** (`sonarsource/sonarqube-mcp`),
+- GitHub MCP (`github`) para operaciones de repo y lectura de PR/diff/CI
+- SonarQube MCP (`sonar`): servidor **oficial de SonarSource** (`sonarsource/sonarqube-mcp`),
   no un mecanismo custom del framework. Provisionado contra la instancia real de
   APB (`prov-sonar-v1.0`); ver ese provider para el comando de arranque y el
-  estado de verificación en vivo (pendiente a fecha 2026-07-09)
-- Atlassian (Jira/Confluence): sin servidor MCP confirmado en el tenant APB a fecha
-  2026-07-06 — `prov-atlassian-v1.0`/`prov-confluence-v1.0` operan hoy vía REST directo
-  (api_token/OAuth2 en AKV). Si en el futuro se confirma un servidor MCP de Atlassian
-  disponible para el tenant, migrar aquí siguiendo el mismo patrón que Azure/GitHub/Sonar
-  — no confundir con `adapter-rovo-v1.0` (capa de IA de Rovo, mecanismo distinto,
-  pendiente de activación julio 2026)
+  estado de verificación en vivo
+- Jira (`jira`): servidor MCP registrado en `.mcp.json` (`prov-atlassian-v1.0`).
+  Confluence (`prov-confluence-v1.0`) sigue por REST directo (api_token/OAuth2 en AKV).
+  No confundir con `adapter-rovo-v1.0` (capa de IA de Rovo, mecanismo distinto)
+- Regla común: los consumidores obtienen la evidencia con estas herramientas y
+  piden al usuario solo el identificador mínimo — ver
+  `context/apb/standards/EXTERNAL_EVIDENCE_STANDARD.md`
 
 ## ⚙️ Configuración
 
@@ -217,6 +218,7 @@ config:
 | 1.2.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Corregido un hueco: `prov-atlassian-v1.0`/`prov-confluence-v1.0` no aparecían en este adapter pese a que Azure/GitHub/Sonar sí tenían su mapeo MCP explícito. Añadidos como "⚠️ Parcial" (REST directo, sin conector MCP de Atlassian confirmado en este runtime) — no confundir con `adapter-rovo-v1.0`, un mecanismo distinto y aún no activo en APB. |
 | 1.3.0 | 2026-07-09 | Claude (Anthropic), a petición de Débora | `prov-sonar-v1.0` pasa de mención suelta en texto a fila propia en la tabla de componentes adaptados: se identificó y provisionó el servidor MCP **oficial de SonarSource**, no un mecanismo custom, contra la instancia real de APB. Marcado "⚠️ Pendiente de verificar" (REST directo ya confirmado con datos reales; falta la prueba en vivo del contenedor `streamable-http`, bloqueada por el primer arranque de Docker Desktop en la máquina de Débora). |
 | 1.4.0 | 2026-07-10 | Claude (Anthropic), a petición de Débora | `prov-sonar-v1.0` pasa a "✅ MCP": servidor verificado en vivo con datos reales. Nota de infraestructura: corre sobre Docker Engine nativo en WSL, no el motor de Docker Desktop, por un choque real de subredes con la VPN de APB — ver `prov-sonar-v1.0.md` para el detalle si hay que reproducirlo en otra máquina. |
+| 1.5.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Servidores MCP `github` y `jira` registrados en `.mcp.json` (credenciales por variables de entorno, sin valores en el repo); `prov-atlassian-v1.0` y `prov-github-v1.0` pasan a "✅ MCP" pendientes de prueba en vivo; puerto de Sonar 8765. Referencia a `EXTERNAL_EVIDENCE_STANDARD` |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
