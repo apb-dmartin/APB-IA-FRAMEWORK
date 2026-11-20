@@ -2,7 +2,7 @@
 id: "apb-wf-risk-exception-v1.0"
 name: "Risk & Exception"
 description: "Gestionar excepciones a estándares y políticas con análisis de riesgo completo, mitigaciones propuestas, y documentación de aceptación de riesgo."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "Ciberseguridad APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -18,6 +18,8 @@ created_date: "2026-06-20"
 review_date: "2026-06-22"
 depends_on:
   - "prov-atlassian-v1.0"  # Jira (evidencia automática)
+  - "prov-github-v1.0"  # Repos del sistema analizado (evidencia automática)
+  - "prov-sonar-v1.0"  # Quality Gate / hallazgos de seguridad estática (evidencia automática)
 ---
 
 # Risk & Exception
@@ -174,6 +176,8 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 |---|---|---|---|
 | Excepciones y cambios activos del sistema | `jira` | JQL por proyecto/componente y tipo (excepción de riesgo, cambio) en estado abierto | el proyecto Jira o el nombre del sistema |
 | Ticket / historia de usuario | `jira` | issue por clave: resumen, descripción, criterios de aceptación, estado, épica, sprint y enlaces | la clave del ticket (p. ej. `ARQ-123`) |
+| Vulnerabilidades y hallazgos de seguridad estática del sistema analizado | `sonarqube` | Quality Gate de la rama/proyecto + security hotspots e issues abiertos por severidad (BLOCKER/CRITICAL) | el `project_key` de Sonar o el nombre del repo |
+| Código/configuración del sistema afectado por la excepción | `github` | árbol del repo y ficheros relevantes en la rama/SHA indicada | `owner/repo` + rama o SHA |
 
 ## 🔄 Historial de Cambios
 
@@ -181,6 +185,7 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
 | 1.1.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Obtención automática de evidencia (jira) antes de pedir datos al usuario, según `EXTERNAL_EVIDENCE_STANDARD`; solo se pide el identificador mínimo |
+| 1.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Añadidas las filas `sonarqube`/`github` a la tabla de evidencia automática — la v1.1.0 solo cubrió `jira`, igual que `apb-agent-risk-exception-v1.0` (hallazgos de la ejecución `8ec973a26ab14febbdad754de24abee6`) |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
