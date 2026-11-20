@@ -7,6 +7,7 @@ status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "operation"
 autonomy_level: 2
+max_duration_minutes: 30
 skills:
   - "apb-ops-incident-triage-v1.0"
   - "apb-ops-incident-diagnose-v1.0"

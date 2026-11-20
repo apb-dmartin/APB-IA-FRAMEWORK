@@ -1,0 +1,146 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Pases y Permisos (PPS) API
+  description: |
+    Gestión de solicitudes, autorizaciones y tarjetas de acceso al recinto
+    portuario. Grounded en `sostrat/src/org/apb/sostrat/dataaccess/dto/pps/Solicitud.java`
+    (+`SolicitudBase.java`, PK `port+idsolicitud`) y `SolicitudAudit.java`
+    (tabla `SOLICITUD_AUDIT`, PK `seqaudit`).
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-acceso-seguridad-fisica-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/pps/Solicitud.java, SolicitudBase.java, SolicitudAudit.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/pps/v1
+security: [ { entraId: [] } ]
+tags: [ { name: access-requests }, { name: access-cards } ]
+paths:
+  /access-requests:
+    get:
+      operationId: listAccessRequests
+      tags: [access-requests]
+      parameters:
+        - { name: idempresa, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+        - { name: pageSize, in: query, schema: { type: integer, minimum: 1, maximum: 200, default: 50 } }
+      responses:
+        "200":
+          description: Página de solicitudes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/AccessRequest" } }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createAccessRequest
+      tags: [access-requests]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AccessRequestCreate" }
+      responses:
+        "201": { description: Solicitud creada, content: { application/json: { schema: { $ref: "#/components/schemas/AccessRequest" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /access-requests/{port}/{idsolicitud}:
+    parameters:
+      - { name: port, in: path, required: true, schema: { type: string } }
+      - { name: idsolicitud, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: getAccessRequest
+      tags: [access-requests]
+      responses:
+        "200": { description: Solicitud encontrada, content: { application/json: { schema: { $ref: "#/components/schemas/AccessRequest" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /access-cards:
+    get:
+      operationId: listAccessCards
+      tags: [access-cards]
+      description: Grounded en SolicitudAudit.java — historial de auditoría de tarjetas
+      parameters:
+        - { name: estado, in: query, description: "Filtro rápido, p.ej. 'caducada'", schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200":
+          description: Página de auditoría de tarjetas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: { type: array, items: { $ref: "#/components/schemas/AccessCardAudit" } }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes: { pps.read: Lectura, pps.write: Escritura }
+  schemas:
+    AccessRequest:
+      type: object
+      required: [port, idsolicitud, idempresa]
+      properties:
+        port: { type: string, description: "Grounded: Solicitud.port (PK parte 1)" }
+        idsolicitud: { type: string, description: "Grounded: Solicitud.idsolicitud (PK parte 2)" }
+        idempresa: { type: string, description: "Grounded: SolicitudBase.idempresa" }
+        datsol: { type: string, format: date-time, description: "Grounded: SolicitudBase.datsol" }
+        ntargetes: { type: integer, format: int64, description: "Grounded: SolicitudBase.ntargetes" }
+        doccomplerta: { type: boolean, description: "Grounded: SolicitudBase.doccomplerta" }
+        iddepaval: { type: string, nullable: true, description: "Grounded: SolicitudBase.iddepaval" }
+        tipoavalador: { type: string, nullable: true, description: "Grounded: SolicitudBase.tipoavalador — dominio de valores no confirmado" }
+        emailnotificacio: { type: string, format: email, nullable: true, description: "Grounded: SolicitudBase.emailnotificacio" }
+        preu: { type: number, format: double, nullable: true, description: "Grounded: SolicitudBase.preu" }
+        datbaixa: { type: string, format: date-time, nullable: true, description: "Grounded: SolicitudBase.datbaixa" }
+        motiuanulacio: { type: string, nullable: true, description: "Grounded: Solicitud.motiuanulacio" }
+      example:
+        port: "B"
+        idsolicitud: "SOL-88213"
+        idempresa: "B08123456"
+        datsol: "2026-07-14T09:00:00Z"
+        ntargetes: 4
+        doccomplerta: true
+        emailnotificacio: "operaciones@empresa.example"
+        preu: 120.50
+    AccessRequestCreate:
+      type: object
+      required: [idempresa, ntargetes]
+      properties:
+        idempresa: { type: string }
+        ntargetes: { type: integer, format: int64 }
+        iddepaval: { type: string }
+        tipoavalador: { type: string }
+        emailnotificacio: { type: string, format: email }
+    AccessCardAudit:
+      type: object
+      required: [seqaudit, port, idsolicitud]
+      properties:
+        seqaudit: { type: integer, format: int64, description: "Grounded: SolicitudAudit.seqaudit (PK, tabla SOLICITUD_AUDIT)" }
+        dataaudit: { type: string, format: date-time, description: "Grounded: SolicitudAudit.dataaudit" }
+        tipoperacio: { type: string, description: "Grounded: SolicitudAudit.tipoperacio" }
+        idestat: { type: string, description: "Grounded: SolicitudAudit.idestat" }
+        numeracionTargeta: { type: string, nullable: true, description: "Grounded: SolicitudAudit.numeracionTargeta" }
+        port: { type: string }
+        idsolicitud: { type: string }
+      example:
+        seqaudit: 771023
+        dataaudit: "2026-07-01T00:00:00Z"
+        tipoperacio: "CADUCIDAD"
+        idestat: "CADUCADA"
+        numeracionTargeta: "TGT-004521"
+        port: "B"
+        idsolicitud: "SOL-88213"
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

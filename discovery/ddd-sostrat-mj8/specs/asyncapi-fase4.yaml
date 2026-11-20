@@ -1,0 +1,116 @@
+# [IA-GEN] Generado por APB AI Framework (apb-doc-event-specs-v1.0 / apb-arch-event-driven-v1.0) - pendiente revision humana
+asyncapi: "2.6.0"
+info:
+  title: APB SÒSTRAT — Eventos de Fase 4 (Concesiones, Facturación y Liquidaciones)
+  version: "1.0.0"
+  description: |
+    Contratos de evento para los 2 servicios de Fase 4, separados en 2026-07-11
+    tras reparentar contra el catálogo real de dominios (`dom-concesiones-v1`,
+    `dom-facturacion-v1`). **`TituloActualizado` es el evento fundacional de
+    esta fase**: sustituye la escritura directa detectada en el legacy
+    (`UPDATE TITOL_MINIM_DADES` desde `CN_Liquidacion_Impl.java:434`) — sin
+    este evento en producción, los dos servicios no pueden desplegarse de
+    forma independiente (ver EPIC-12 en jira-backlog.md).
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-doc-event-specs-v1.0"
+defaultContentType: application/json
+servers:
+  serviceBus: { url: "apb-sostrat.servicebus.windows.net", protocol: amqp, description: Azure Service Bus }
+channels:
+  evt.sostrat.concesiones:
+    subscribe:
+      operationId: onConcesionesEvent
+      message: { oneOf: [ { $ref: "#/components/messages/TituloOtorgado" }, { $ref: "#/components/messages/TituloActualizado" }, { $ref: "#/components/messages/GarantiaActualizada" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.concesiones.dlq" } }
+  evt.sostrat.facturacion-liquidaciones:
+    subscribe:
+      operationId: onFacturacionEvent
+      message:
+        oneOf:
+          - $ref: "#/components/messages/LiquidacionGenerada"
+          - $ref: "#/components/messages/LiquidacionAceptada"
+          - $ref: "#/components/messages/LiquidacionAnulada"
+          - $ref: "#/components/messages/FacturaEmitida"
+          - $ref: "#/components/messages/FacturaEdiGenerada"
+          - $ref: "#/components/messages/ConsumClaveguerLiquidado"
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.facturacion-liquidaciones.dlq" } }
+components:
+  messages:
+    TituloOtorgado:
+      name: TituloOtorgado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/TituloData" }
+    TituloActualizado:
+      name: TituloActualizado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/TituloData" }
+      x-business-rules:
+        - "EVENTO FUNDACIONAL de la Fase 4 — sustituye la escritura directa legacy. Consumido obligatoriamente por Facturación y Liquidaciones antes de aceptar cualquier liquidación sobre un título."
+      x-error-handling:
+        - scenario: "Facturación y Liquidaciones no puede procesar el evento (esquema inválido, título no reconocido)"
+          handling: "DLQ + alerta — este es el punto de mayor riesgo operativo de toda la Fase 4, requiere monitorización dedicada desde el primer día."
+    GarantiaActualizada:
+      name: GarantiaActualizada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/GarantiaData" }
+    LiquidacionGenerada:
+      name: LiquidacionGenerada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/LiquidacionData" }
+      x-business-rules: [ "Emitido en la transición a idestatliq=GE." ]
+    LiquidacionAceptada:
+      name: LiquidacionAceptada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/LiquidacionData" }
+      x-business-rules: [ "Emitido en la transición a idestatliq=AC. Debe incluir siempre idestatliqant para que el consumidor valide la transición." ]
+    LiquidacionAnulada:
+      name: LiquidacionAnulada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/LiquidacionData" }
+    FacturaEmitida:
+      name: FacturaEmitida
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/FacturaData" }
+      x-business-rules: [ "pdfdupfactura y pdfsignat (BLOB) nunca viajan en el evento — el consumidor los recupera vía GET /invoices/.../pdf." ]
+    FacturaEdiGenerada:
+      name: FacturaEdiGenerada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/FacturaData" }
+    ConsumClaveguerLiquidado:
+      name: ConsumClaveguerLiquidado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ConsumClaveguerData" }
+  schemas:
+    CloudEventEnvelope:
+      type: object
+      required: [specversion, type, source, id, time, data]
+      properties: { specversion: { type: string, enum: ["1.0"] }, type: { type: string }, source: { type: string, format: uri-reference }, id: { type: string, format: uuid }, time: { type: string, format: date-time }, data: { type: object } }
+    TituloData:
+      type: object
+      required: [idsubport, idtitol]
+      properties: { idsubport: { type: string }, idtitol: { type: integer }, idestattitol: { type: string, nullable: true }, idtitolprecedent: { type: integer, nullable: true }, garantia: { type: string, nullable: true } }
+    GarantiaData:
+      type: object
+      required: [idsubport, seqgarantia, idtitol]
+      properties: { idsubport: { type: string }, seqgarantia: { type: integer, format: int64 }, idtitol: { type: integer }, idestatgarantia: { type: string, nullable: true }, impgarexiactual: { type: number, format: double, nullable: true } }
+    LiquidacionData:
+      type: object
+      required: [portliquidacio, anyliquidacio, numliquidacio, idestatliq]
+      properties:
+        portliquidacio: { type: string }
+        anyliquidacio: { type: integer }
+        numliquidacio: { type: integer, format: int64 }
+        idestatliq: { type: string, enum: [GE, SE, AC, FA, AN, ES] }
+        idestatliqant: { type: string, enum: [GE, SE, AC, FA, AN, ES], nullable: true }
+        idtitol: { type: integer, nullable: true }
+        imptotalc: { type: number, format: double, nullable: true }
+    FacturaData:
+      type: object
+      required: [portfactura, anyfactura, idserfactura, numfactura]
+      properties: { portfactura: { type: string }, anyfactura: { type: integer }, idserfactura: { type: string }, numfactura: { type: integer, format: int64 }, idestfacturacio: { type: string, nullable: true }, imptotal: { type: number, format: double, nullable: true } }
+    ConsumClaveguerData:
+      type: object
+      description: "Corregido 2026-07-14 (re-derivación completa, dossier-16-clavegueram.md §5/§10/§16) — ampliado de 9 a 11 campos. La corrección anterior del mismo día (4→9) solo alineó este esquema con el JSON de ejemplo de events-catalog.md §19, pero ese ejemplo era en sí incompleto: el DTO real ClvgConsums.java tiene 25 campos, y el propio dossier-16 §5 identifica codiusaigua e idservei como críticos y ausentes (codiusaigua determina la tarifa/barem aplicado — sin él no se puede reproducir el cálculo de liquidación desde fuera; idservei es la clave de correlación real con Liquidacio, usada por desliquidar() y por LiquidacionConsumsAGBARDependencias_Impl). Los 14 campos restantes del DTO (dv, direccio, lot, tipuslectura, zona, datalecturaant, datalecturaact, guid + 6 de auditoría estándar) se excluyen deliberadamente por ser de auditoría/interno o no evidenciados como necesarios para un consumidor externo del evento."
+      required: [idconsum]
+      properties: { idconsum: { type: integer, format: int64 }, idcarrega: { type: integer, format: int64, nullable: true }, polissa: { type: string, nullable: true }, nif: { type: string, nullable: true }, titular: { type: string, nullable: true }, consum: { type: number, format: double, nullable: true }, lecturaant: { type: number, format: double, nullable: true }, lecturaact: { type: number, format: double, nullable: true }, estat: { type: string, nullable: true }, codiusaigua: { type: string, nullable: true, description: "Grounded: ClvgConsums.codiusaigua — FK conceptual a ClvgUsAigua, determina el barem/tarifa aplicado. Crítico: sin este campo no se puede reproducir el cálculo de liquidación desde fuera (dossier-16 §5)." }, idservei: { type: integer, format: int64, nullable: true, description: "Grounded: ClvgConsums.idservei — clave de correlación real con Liquidacio, usada por desliquidar() y LiquidacionConsumsAGBARDependencias_Impl (dossier-16 §5)." } }

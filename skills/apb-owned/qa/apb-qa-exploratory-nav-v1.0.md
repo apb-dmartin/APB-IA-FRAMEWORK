@@ -2,13 +2,13 @@
 id: "apb-qa-exploratory-nav-v1.0"
 name: "Exploratory Browser Navigation"
 description: "Conduce navegación agéntica/exploratoria en vivo sobre una aplicación web: abre la app, observa la pantalla y el DOM, decide el siguiente paso sin guion fijo, interactúa y asevera, capturando evidencias. Complementa la ejecución scriptada de Playwright (regresión) con exploración para descubrimiento y QA manual asistido."
-version: "1.1.0"
+version: "1.2.0"
 status: "draft"
 owner: "QA Gobierno APB <qa-gobierno@portdebarcelona.cat>"
 domain: "qa"
 autonomy_level: 1
 created_date: "2026-07-02"
-review_date: "2026-07-03"
+review_date: "2026-07-07"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
   - "prov-browser-agent-v1.0"  # Motor de navegación agéntica (agnóstico de herramienta)
@@ -45,6 +45,7 @@ Esta skill:
 | `constraints` | text | No | Límites: dominios permitidos, acciones prohibidas, timeouts |
 | `evidence_destination` | enum | No | `zip`, `jira`, `ambos`. Default: preguntar al usuario |
 | `test_plan_ref` | file_path | No | Plan de pruebas (p. ej. unificado) cuyos casos guían la exploración |
+| `scope` | enum / list | No | Alcance de la ejecución: `full` (todo el plan) o lista de bloques/IDs canónicos concretos (p. ej. `["B02","B03"]` o `["TRU-B02-T05"]`). Default: preguntar al usuario — **nunca asumir `full`** |
 
 ## 3. Outputs
 
@@ -84,6 +85,18 @@ descubriendo defectos que un guion fijo no anticiparía, y capturando evidencia 
   evidence_destination (opcional: zip|jira|ambos), test_plan_ref (opcional).
 
 ## Instrucciones
+0. **Verificación pre-vuelo (obligatoria antes de ejecutar, no solo al generar el plan):**
+   a. **Alcance:** si `scope` no se ha indicado, PREGUNTA explícitamente "¿ejecuto el plan completo o solo
+      unos bloques/casos concretos?" — nunca asumas `full` por defecto.
+   b. **Vigencia del plan:** si se aporta `test_plan_ref`, comprueba su fecha de última actualización
+      contra cambios recientes conocidos de la app (commits, tickets cerrados desde esa fecha). Si hay
+      indicios de que está desactualizado, avísalo explícitamente y sugiere invocar primero
+      `apb-qa-test-plan-v1.0` (modo actualización incremental vía `previous_plan`) antes de ejecutar —
+      no ejecutes un plan potencialmente obsoleto sin señalarlo.
+   c. **Usuario de test en AKV:** si la autenticación se resuelve por referencia AKV (`execution_user_source:
+      akv-ref`, `TEST_PLAN_STANDARD §9.2`), comprueba si el secreto referenciado existe/está poblado antes
+      de intentar el login. Si no lo está (bloqueante conocido, ver `HANDOFF_TECNICOS.md` QA2-1), NO falles
+      silenciosamente contra un secreto vacío — declara el bloqueante y ofrece login asistido como alternativa.
 1. Si faltan inputs clave (URL, objetivo, credenciales/estado de sesión, destino de evidencias), PREGUNTA.
 2. Autentica reutilizando storage_state; si no existe, solicita login asistido (nunca hardcodees credenciales).
 3. Bucle exploratorio: observa (captura + DOM/accesibilidad) → razona el siguiente paso → actúa → asevera.
@@ -122,6 +135,9 @@ evidencias (vídeo real o GIF segmentado por bloque, `TEST_PLAN_STANDARD §7.2`)
 | `goal` | Pregunta: "¿Qué objetivo o casos verificar?" | Sí |
 | `storage_state` / credenciales | Pregunta si hay sesión guardada o solicita login asistido; nunca inventa credenciales | Sí para apps autenticadas |
 | `evidence_destination` | Pregunta destino (zip/jira/ambos); default zip | No |
+| `scope` | Pregunta: "¿Plan completo o solo unos bloques/casos?" — nunca asume `full` | Sí |
+| `test_plan_ref` desactualizado | Avisa explícitamente y sugiere actualizar primero con `apb-qa-test-plan-v1.0` antes de ejecutar | No — pero requiere confirmación explícita de continuar igualmente |
+| Secreto AKV del usuario de test no poblado | Declara el bloqueante (no falla en silencio) y ofrece login asistido como alternativa | Sí para ejecución con `execution_user_source: akv-ref` |
 
 ## 7. Human Review
 
@@ -151,6 +167,7 @@ evidencias (vídeo real o GIF segmentado por bloque, `TEST_PLAN_STANDARD §7.2`)
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-02 | APB AI Framework (Sesión QA-2) | Creación inicial — punto #84, navegación agéntica exploratoria |
 | 1.1.0 | 2026-07-03 | APB AI Framework (feedback de Débora) | Alinea con `TEST_PLAN_STANDARD v1.4.0`: el informe de ejecución se entrega siempre en Markdown **y** HTML corporativo (nunca solo `.md`), lista explícitamente los casos NO ejecutados por ID canónico, y la evidencia visual debe ser vídeo real o GIF segmentado por bloque (nunca un GIF único sin verificar su cobertura). Origen: sesión QA TruckCenter (2026-07-03) donde el informe se generó incompleto en estos tres aspectos. |
+| 1.2.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | Añade input `scope` (plan completo vs. bloques/casos concretos — nunca asume `full`) y verificación pre-vuelo (§0 de Instrucciones): vigencia del `test_plan_ref` antes de ejecutar (sugiere actualizar con `apb-qa-test-plan-v1.0` si está desactualizado) y existencia del secreto AKV del usuario de test antes de intentar login (no fallar en silencio — bloqueante conocido `HANDOFF_TECNICOS.md` QA2-1). Origen: Débora detectó que ninguno de estos 3 pre-vuelos estaba definido antes de una ejecución real. |
 
 ---
 

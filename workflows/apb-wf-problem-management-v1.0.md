@@ -76,7 +76,7 @@ graph TD
 - Si rechazado → volver a Fase 2 con los comentarios del Problem Manager
 
 ### Fase 5 — Registro en Backlog de Tech Debt
-- Agente: Tech Debt (vía `prov-jira-software-v1.0`)
+- Agente: Tech Debt (vía `prov-atlassian-v1.0`)
 - Crear epic en Jira Software con la solución definitiva como deuda técnica priorizada
 - Vincular el epic al ticket de Problema JSM
 - El Problema pasa a estado **Solución en planificación**

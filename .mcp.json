@@ -2,11 +2,18 @@
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "args": ["-y", "@playwright/mcp@latest", "--caps", "devtools", "--output-dir", "qa-evidence/output"]
     },
     "ms365": {
       "command": "npx",
       "args": ["-y", "@softeria/ms-365-mcp-server", "--org-mode"]
+    },
+    "sonar": {
+      "type": "http",
+      "url": "http://localhost:8080/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SONARQUBE_TOKEN}"
+      }
     }
   }
 }

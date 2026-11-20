@@ -1,0 +1,527 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Buques (Ship Master Data) API
+  description: |
+    Maestro de referencia de buques — descubierto en la auditoría de cobertura
+    2026-07-13 (`coverage-audit.md`). Grounded en
+    `sostrat/src/org/apb/sostrat/dataaccess/dto/Vaixell.java` (tabla `VAIXELL`,
+    68 atributos Java declarados localmente, confirmados uno a uno contra el
+    código fuente real el 2026-07-14 — ver `app-dossiers/dossier-17-buques.md
+    §5/§9`). Consumido como referencia por al menos 13 módulos (Escalas,
+    Cruceros, MMPP, Manifiestos, Aduanas/Terminales, Aguada, MARPOL, Depotsis,
+    PPS, Mano de Estiba, Suministro Eléctrico, SCPP/Inspección, Liquidación) —
+    fan-out muy superior a los 3 consumidores (Escalas/Cruceros/MMPP)
+    planificados originalmente en `jira-backlog.md` EPIC-16.
+
+    **Corrección 2026-07-14**: la v1.0.0 de este contrato solo cubría 14/68
+    campos reales y tipaba `bandera` incorrectamente como `string` libre — es
+    `Integer` (FK a catálogo de banderas), con `banderaISO` como campo de
+    enriquecimiento aparte. Esta versión amplía el esquema a los 68 campos,
+    corrige el tipo de `bandera`, corrige `lng` (era `boolean`, el campo real
+    es `String`, semántica S/N no confirmada por Javadoc), añade el endpoint
+    de restauración y los sub-recursos de certificados/ISPS/servicio regular
+    de aduana ausentes.
+  version: "1.1.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-operaciones-maritimas-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/Vaixell.java, VaixellCertificat.java, VaixellCertificats.java, VaixellISPS.java, VaixellServeiRegularDuana.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/vessels/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: vessels
+    description: Maestro de buques
+  - name: certificates
+    description: Certificados del buque (dos formas — VaixellCertificat "principal" y VaixellCertificats "de otro tipo")
+  - name: isps
+    description: Estatus ISPS por período de vigencia
+  - name: customs-service
+    description: Adscripción a servicio regular de aduana por período de vigencia
+paths:
+  /vessels:
+    get:
+      operationId: listVessels
+      summary: Listar buques
+      tags: [vessels]
+      parameters:
+        - name: mmsi
+          in: query
+          schema: { type: string }
+        - name: callsign
+          in: query
+          schema: { type: string }
+        - name: numlloyds
+          in: query
+          schema: { type: string }
+          description: "Grounded: Vaixell.numlloyds — IMO/número Lloyd's"
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de buques
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/Vessel" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createVessel
+      summary: Dar de alta un buque (caso de uso legacy "01.01.13 Mantenimiento de Buques")
+      description: |
+        Grounded: CN_Vaixell.crear gestiona certificados en dos colecciones
+        paralelas (certificados/certificadosAltres) como una operación
+        compuesta Vaixell + VaixellCertificat[] + VaixellCertificats[], no
+        una escritura simple de una sola tabla.
+      tags: [vessels]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VesselCreate" }
+      responses:
+        "201":
+          description: Buque creado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /vessels/{idvaixell}:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getVessel
+      summary: Consultar la ficha técnica de un buque
+      tags: [vessels]
+      responses:
+        "200":
+          description: Buque encontrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: updateVessel
+      summary: Modificar ficha técnica del buque
+      description: |
+        Grounded: dispara el evento BuqueActualizado; Cruceros solo revalida si
+        cambian nomvaixell/maxmaniga/maxcalat/maxeslora (evidencia:
+        arrModifCruEscOOPP en el código legacy — arrModifCruEscOOPP solo
+        contiene maxcalat/maxeslora, arrModificacionCE contiene además
+        nomvaixell/maxmaniga; no diferenciado en un único evento en esta
+        versión, ver dossier §7/§12 para el diseño de propagación pendiente
+        de los 10 consumidores adicionales sin mecanismo de invalidación
+        equivalente).
+      tags: [vessels]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/VesselCreate" }
+      responses:
+        "200":
+          description: Buque actualizado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/deactivate:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      operationId: deactivateVessel
+      summary: "Dar de baja el buque (grounded: darDeBaja)"
+      tags: [vessels]
+      responses:
+        "200":
+          description: Buque dado de baja
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/restore:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    post:
+      operationId: restoreVessel
+      summary: Restaurar un buque dado de baja
+      description: |
+        Añadido 2026-07-14 — CN_Vaixell.restaurar() es un método real, distinto
+        de darDeBaja/eliminar (borrado físico); jira-backlog.md:356 ya lo cita
+        como historia de usuario, pero no existía endpoint en la v1.0.0 de
+        este contrato. Ver dossier-17-buques.md §9.
+      tags: [vessels]
+      responses:
+        "200":
+          description: Buque restaurado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Vessel" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/certificates:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: listVesselCertificates
+      summary: Listar certificados "principales" del buque (VaixellCertificat)
+      description: |
+        Añadido 2026-07-14 — api-surface-by-phase.md:260 ya asumía este
+        endpoint ("evidencia VaixellCertificat.java/VaixellCertificats.java")
+        pero no existía en la v1.0.0 de este contrato. Grounded en
+        VaixellCertificat.java — DTO sin tabla propia confirmada, PK compuesta
+        (VaixellCertificatPK: idvaixell+datinivigencia), gestionado por
+        CN_Vaixell.crear/modificar (parámetro certificados).
+      tags: [certificates]
+      responses:
+        "200":
+          description: Página de certificados principales
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/VesselCertificate" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/other-certificates:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: listVesselOtherCertificates
+      summary: Listar certificados "de otro tipo" del buque (VaixellCertificats, tabla VAIXELL_CERTIFICATS)
+      description: |
+        Añadido 2026-07-14. Grounded en VaixellCertificats.java (tabla
+        VAIXELL_CERTIFICATS, PK idcertificat), gestionado por
+        CN_Vaixell.crear/modificar (parámetro certificadosAltres). Distinto de
+        /certificates (VaixellCertificat, sin tabla propia) — dos colecciones
+        paralelas reales en el código, no una duplicación de diseño.
+      tags: [certificates]
+      responses:
+        "200":
+          description: Página de certificados "de otro tipo"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/VesselOtherCertificate" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/isps:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: listVesselIspsStatus
+      summary: Listar el estatus ISPS del buque por período de vigencia
+      description: |
+        Añadido 2026-07-14. Grounded en VaixellISPS.java (tabla VAIXELL_ISPS,
+        PK compuesta idvaixell+datinivigencia).
+      tags: [isps]
+      responses:
+        "200":
+          description: Página de estatus ISPS
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/VesselIspsStatus" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /vessels/{idvaixell}/customs-service:
+    parameters:
+      - name: idvaixell
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: listVesselCustomsService
+      summary: Listar la adscripción del buque a servicio regular de aduana por período de vigencia
+      description: |
+        Añadido 2026-07-14. Grounded en VaixellServeiRegularDuana.java (tabla
+        VAIXELL_SERVEI_REGULAR_DUANA, PK compuesta idvaixell+datinivigencia).
+      tags: [customs-service]
+      responses:
+        "200":
+          description: Página de adscripciones a servicio regular de aduana
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/VesselCustomsService" }
+        "404": { $ref: "#/components/responses/NotFound" }
+# GAP PENDIENTE (2026-07-14, dossier-17 §6/§9/§12): el circuito de
+# importación masiva Lloyd's Register (CargaBDLloydsAction,
+# CN_Vaixell.actualizarDeLloyds, conciliación de discrepancias vía
+# obtenerDiscrepancias/actualizarDiscrepancias) NO tiene ningún endpoint aquí.
+# Es un circuito de fichero + reconciliación manual, no una API en vivo — el
+# dossier recomienda explícitamente publicar primero la API de referencia
+# (este contrato) y migrar el circuito Lloyd's en una segunda ola, modelado
+# como ACL de ingesta por fichero, preservando la regla de negocio real
+# "actualizarDeLloyds solo inserta, nunca actualiza registros existentes"
+# (Javadoc literal de CN_Vaixell.java:156-157). No inventar aquí un endpoint
+# sin esa decisión de diseño explícita.
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            vessels.read: Lectura
+            vessels.write: Escritura
+  schemas:
+    Vessel:
+      type: object
+      description: "Ampliado 2026-07-14 a los 68 campos reales de Vaixell.java (antes 14/68), tipos verificados uno a uno contra el fichero fuente. Ver dossier-17-buques.md §5/§9."
+      required: [idvaixell, nomvaixell]
+      properties:
+        idvaixell: { type: integer, format: int64, description: "Grounded: Vaixell.idvaixell (PK, columna IDVAIXELL, tipo Long)" }
+        nomvaixell: { type: string, description: "Grounded: Vaixell.nomvaixell (String)" }
+        callsign: { type: string, nullable: true, description: "Grounded: Vaixell.callsign (String)" }
+        bandera: { type: integer, nullable: true, description: "Corregido 2026-07-14 — Grounded: Vaixell.bandera (Integer, FK a catálogo de banderas; la v1.0.0 lo tipaba erróneamente como string libre)" }
+        banderaISO: { type: string, nullable: true, description: "Grounded: Vaixell.banderaISO (String) — código ISO de enriquecimiento, comparte Javadoc de columna con bandera, sin columna física propia confirmada de forma independiente" }
+        portregistre: { type: integer, nullable: true, description: "Grounded: Vaixell.portregistre (Integer)" }
+        portregistreISO: { type: string, nullable: true, description: "Grounded: Vaixell.portregistreISO (String, enriquecimiento de portregistre)" }
+        datconstruccio: { type: string, format: date-time, nullable: true, description: "Grounded: Vaixell.datconstruccio (Date)" }
+        gt: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.gt (Long, tonelaje bruto)" }
+        numlloyds: { type: string, nullable: true, description: "Grounded: Vaixell.numlloyds (String, IMO/Lloyd's)" }
+        tpm: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.tpm (Long)" }
+        maxmaniga: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.maxmaniga (Double) — dispara BuqueActualizado hacia Cruceros" }
+        puntal: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.puntal (Double)" }
+        maxcalat: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.maxcalat (Double) — dispara BuqueActualizado hacia Cruceros" }
+        maxeslora: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.maxeslora (Double) — dispara BuqueActualizado hacia Cruceros" }
+        numrampes: { type: integer, nullable: true, description: "Grounded: Vaixell.numrampes (Integer)" }
+        desrampa1: { type: string, nullable: true, description: "Grounded: Vaixell.desrampa1 (String)" }
+        lonrampa1: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.lonrampa1 (Double)" }
+        amprampa1: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.amprampa1 (Double)" }
+        altarboladura: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.altarboladura (Double)" }
+        potencia: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.potencia (Long)" }
+        velservei: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.velservei (Double)" }
+        tipcasc: { type: string, nullable: true, description: "Grounded: Vaixell.tipcasc (String)" }
+        numhelix: { type: integer, nullable: true, description: "Grounded: Vaixell.numhelix (Integer)" }
+        deshelix: { type: string, nullable: true, description: "Grounded: Vaixell.deshelix (String)" }
+        captls: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.captls (Long)" }
+        numpassatgers: { type: integer, nullable: true, description: "Grounded: Vaixell.numpassatgers (Integer)" }
+        numcabines: { type: integer, nullable: true, description: "Grounded: Vaixell.numcabines (Integer)" }
+        numcotxes: { type: integer, nullable: true, description: "Grounded: Vaixell.numcotxes (Integer)" }
+        numcamions: { type: integer, nullable: true, description: "Grounded: Vaixell.numcamions (Integer)" }
+        metlincarroro: { type: integer, nullable: true, description: "Grounded: Vaixell.metlincarroro (Integer, metros lineales carga RoRo)" }
+        numteus: { type: integer, nullable: true, description: "Grounded: Vaixell.numteus (Integer, capacidad TEUs)" }
+        numrefteus: { type: integer, nullable: true, description: "Grounded: Vaixell.numrefteus (Integer, TEUs reefer)" }
+        captancs: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.captancs (Long, capacidad tanques)" }
+        capcarrefrigerada: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.capcarrefrigerada (Long, capacidad carga refrigerada)" }
+        capgranel: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.capgranel (Long, capacidad granel)" }
+        capliquids: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.capliquids (Long, capacidad líquidos)" }
+        numbodegues: { type: integer, nullable: true, description: "Grounded: Vaixell.numbodegues (Integer, número de bodegas)" }
+        bcm: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.bcm (Double)" }
+        origt: { type: string, nullable: true, description: "Grounded: Vaixell.origt (String) — valor 'original' previo a corrección, semántica de negocio no confirmada por Javadoc" }
+        orieslora: { type: string, nullable: true, description: "Grounded: Vaixell.orieslora (String) — mismo patrón que origt" }
+        oribandera: { type: string, nullable: true, description: "Grounded: Vaixell.oribandera (String) — mismo patrón que origt" }
+        orinom: { type: string, nullable: true, description: "Grounded: Vaixell.orinom (String) — mismo patrón que origt" }
+        oricallsign: { type: string, nullable: true, description: "Grounded: Vaixell.oricallsign (String) — mismo patrón que origt" }
+        orialtres: { type: string, nullable: true, description: "Grounded: Vaixell.orialtres (String) — mismo patrón que origt" }
+        mmsi: { type: string, nullable: true, description: "Grounded: Vaixell.mmsi (String)" }
+        tipvaixell: { type: string, nullable: true, description: "Grounded: Vaixell.tipvaixell (String)" }
+        caplasbrut: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.caplasbrut (Double, capacidad aguas residuales — MARPOL)" }
+        captanfangs: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.captanfangs (Double, capacidad tanque de fangos — MARPOL)" }
+        captansentines: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.captansentines (Double, capacidad tanque de sentinas — MARPOL)" }
+        capaigbrut: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.capaigbrut (Double, capacidad agua sucia — MARPOL)" }
+        capescombraries: { type: number, format: double, nullable: true, description: "Grounded: Vaixell.capescombraries (Double, capacidad residuos — MARPOL, explica el consumo real desde bc-marpol-residuos-v1)" }
+        portinspeccio: { type: integer, nullable: true, description: "Grounded: Vaixell.portinspeccio (Integer)" }
+        portinspeccioISO: { type: string, nullable: true, description: "Grounded: Vaixell.portinspeccioISO (String, enriquecimiento de portinspeccio)" }
+        datinspeccio: { type: string, format: date-time, nullable: true, description: "Grounded: Vaixell.datinspeccio (Date)" }
+        defpendents: { type: integer, nullable: true, description: "Grounded: Vaixell.defpendents (Integer, deficiencias pendientes)" }
+        datcerarqueig: { type: string, format: date-time, nullable: true, description: "Grounded: Vaixell.datcerarqueig (Date)" }
+        datvigcerigs: { type: string, format: date-time, nullable: true, description: "Grounded: Vaixell.datvigcerigs (Date)" }
+        observacions: { type: string, nullable: true, description: "Grounded: Vaixell.observacions (String)" }
+        socclassificacio: { type: string, nullable: true, description: "Grounded: Vaixell.socclassificacio (String, sociedad de clasificación)" }
+        comasseguradora: { type: string, nullable: true, description: "Grounded: Vaixell.comasseguradora (String, compañía aseguradora)" }
+        clubpandi: { type: string, nullable: true, description: "Grounded: Vaixell.clubpandi (String, club P&I)" }
+        datbaixa: { type: string, format: date-time, nullable: true, description: "Grounded: Vaixell.datbaixa (Date)" }
+        idvaias400: { type: string, nullable: true, description: "Grounded: Vaixell.idvaias400 (String) — correlación legacy AS400, activo (consumido por CN_Liquidacion_Impl.getIdVaixellSostrat), no eliminar sin confirmar con Liquidación" }
+        guid: { type: integer, format: int64, nullable: true, description: "Grounded: Vaixell.guid (Long)" }
+        dadescertificat: { type: string, nullable: true, description: "Grounded: Vaixell.dadescertificat (String)" }
+        interior: { type: string, nullable: true, description: "Grounded: Vaixell.interior (String)" }
+        lng: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: Vaixell.lng (String, ticket ESCA-1789, propulsión gas licuado; la v1.0.0 lo tipaba erróneamente como boolean — el campo real es String, semántica de valores no confirmada por Javadoc)" }
+      example:
+        idvaixell: 88421
+        nomvaixell: "MSC BELLISSIMA"
+        callsign: "3FOE9"
+        bandera: 620
+        banderaISO: "PA"
+        mmsi: "356123000"
+        numlloyds: "9770579"
+        gt: 171598
+        maxeslora: 315.2
+        maxcalat: 8.6
+        maxmaniga: 43.0
+        tipvaixell: "CRUCERO"
+        lng: "N"
+        datbaixa: null
+    VesselCreate:
+      type: object
+      description: "Ampliado 2026-07-14, mismo grounding que Vessel"
+      required: [nomvaixell]
+      properties:
+        nomvaixell: { type: string }
+        callsign: { type: string }
+        bandera: { type: integer }
+        portregistre: { type: integer }
+        datconstruccio: { type: string, format: date-time }
+        gt: { type: integer, format: int64 }
+        numlloyds: { type: string }
+        tpm: { type: integer, format: int64 }
+        maxmaniga: { type: number, format: double }
+        puntal: { type: number, format: double }
+        maxcalat: { type: number, format: double }
+        maxeslora: { type: number, format: double }
+        numrampes: { type: integer }
+        desrampa1: { type: string }
+        lonrampa1: { type: number, format: double }
+        amprampa1: { type: number, format: double }
+        altarboladura: { type: number, format: double }
+        potencia: { type: integer, format: int64 }
+        velservei: { type: number, format: double }
+        tipcasc: { type: string }
+        numhelix: { type: integer }
+        deshelix: { type: string }
+        captls: { type: integer, format: int64 }
+        numpassatgers: { type: integer }
+        numcabines: { type: integer }
+        numcotxes: { type: integer }
+        numcamions: { type: integer }
+        metlincarroro: { type: integer }
+        numteus: { type: integer }
+        numrefteus: { type: integer }
+        captancs: { type: integer, format: int64 }
+        capcarrefrigerada: { type: integer, format: int64 }
+        capgranel: { type: integer, format: int64 }
+        capliquids: { type: integer, format: int64 }
+        numbodegues: { type: integer }
+        bcm: { type: number, format: double }
+        mmsi: { type: string }
+        tipvaixell: { type: string }
+        caplasbrut: { type: number, format: double }
+        captanfangs: { type: number, format: double }
+        captansentines: { type: number, format: double }
+        capaigbrut: { type: number, format: double }
+        capescombraries: { type: number, format: double }
+        portinspeccio: { type: integer }
+        datinspeccio: { type: string, format: date-time }
+        defpendents: { type: integer }
+        datcerarqueig: { type: string, format: date-time }
+        datvigcerigs: { type: string, format: date-time }
+        observacions: { type: string }
+        socclassificacio: { type: string }
+        comasseguradora: { type: string }
+        clubpandi: { type: string }
+        idvaias400: { type: string }
+        dadescertificat: { type: string }
+        interior: { type: string }
+        lng: { type: string }
+    VesselCertificate:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: VaixellCertificat.java, sin tabla propia confirmada (DTO ligero en memoria), PK compuesta VaixellCertificatPK (idvaixell+datinivigencia)"
+      required: [idvaixell, datinivigencia]
+      properties:
+        idvaixell: { type: integer, format: int64 }
+        datinivigencia: { type: string, format: date-time }
+        datfivigencia: { type: string, format: date-time, nullable: true }
+        datrecepcio: { type: string, format: date-time, nullable: true }
+        gt: { type: number, format: double, nullable: true }
+        maniga: { type: number, format: double, nullable: true }
+        eslora: { type: number, format: double, nullable: true }
+        calat: { type: number, format: double, nullable: true }
+    VesselOtherCertificate:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: VaixellCertificats.java (tabla VAIXELL_CERTIFICATS, PK idcertificat), certificados 'de otro tipo'"
+      required: [idcertificat, idvaixell]
+      properties:
+        idcertificat: { type: integer, format: int64 }
+        idvaixell: { type: integer, format: int64 }
+        idtipcertvaix: { type: integer, nullable: true }
+        datinivigencia: { type: string, format: date-time, nullable: true }
+        datfivigencia: { type: string, format: date-time, nullable: true }
+        datrecepcio: { type: string, format: date-time, nullable: true }
+        valor1: { type: string, nullable: true }
+        valor2: { type: string, nullable: true }
+    VesselIspsStatus:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: VaixellISPS.java (tabla VAIXELL_ISPS, PK compuesta idvaixell+datinivigencia)"
+      required: [idvaixell, datinivigencia]
+      properties:
+        idvaixell: { type: integer, format: int64 }
+        datinivigencia: { type: string, format: date-time }
+        datfivigencia: { type: string, format: date-time, nullable: true }
+    VesselCustomsService:
+      type: object
+      description: "Añadido 2026-07-14 — Grounded: VaixellServeiRegularDuana.java (tabla VAIXELL_SERVEI_REGULAR_DUANA, PK compuesta idvaixell+datinivigencia)"
+      required: [idvaixell, datinivigencia]
+      properties:
+        idvaixell: { type: integer, format: int64 }
+        datinivigencia: { type: string, format: date-time }
+        datfivigencia: { type: string, format: date-time, nullable: true }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

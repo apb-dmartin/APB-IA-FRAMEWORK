@@ -72,6 +72,14 @@ Workflow (orquestación de agentes para un objetivo de negocio)
 | `watchlist` | Observado, no consumible hasta nueva evaluación. |
 | `rejected` | Descartado. |
 
+## Relación con Otros Repositorios APB
+
+> **`apb-ai-skills` está DEPRECADO** (decisión de Arquitectura APB, Sesión QA). Todo desarrollo
+> de skills, agentes y subagentes de QA vive exclusivamente en este repositorio
+> (`APB-IA-FRAMEWORK`). El repositorio `apb-ai-skills` no se ha modificado ni retirado
+> físicamente — la deprecación es una decisión de proceso, no una migración de código.
+> Detalle completo en `discovery/CONTINUIDAD_PROYECTO.md §13.3`.
+
 ## Tecnología Soportada
 
 | Ámbito | Tecnología / Estándar |
@@ -198,7 +206,7 @@ apb-ai-framework/
 
 Consultar [`catalog/CATALOG.md`](catalog/CATALOG.md) para el listado completo de skills, agentes, subagentes y workflows con sus metadatos, estados y dependencias.
 
-**345 componentes** (2026-07-02): 177 skills APB · 52 skills terceros · 35 agentes · 33 subagentes · 17 workflows · 20 providers · 7 wrappers · 4 adapters.
+**367 componentes** (2026-07-08): 184 skills APB · 57 skills terceros · 40 agentes · 35 subagentes · 17 workflows · 23 providers · 7 wrappers · 4 adapters.
 
 Todos los componentes cumplen el [`PROMPTING_STANDARD`](context/apb/standards/PROMPTING_STANDARD.md) (estructura de prompt obligatoria, verificada por el check #18 de `validate_repo.py`) y el modelo de **Harness Engineering** (`SYSTEM.md §10` + `GOVERNANCE.md §8`, agnóstico de LLM). Los planes de pruebas siguen el [`TEST_PLAN_STANDARD`](context/apb/standards/TEST_PLAN_STANDARD.md) (check #20).
 
@@ -215,7 +223,23 @@ Antes de crear una skill APB, debe existir evidencia en `discovery/` de revisió
 >
 > Este repositorio está preparado para iniciar pilotos controlados. No debe usarse en producción sin revisión y aprobación explícita de Arquitectura, QA, Ciberseguridad y Gobierno de APB.
 
-Último hito (2026-07-02): **Sesión QA-2** — metodología corporativa de planes de pruebas (#82: `TEST_PLAN_STANDARD`, plantilla, `apb-qa-test-plan` v1.2.0, ejemplo unificado TruckCenter de 112 casos con procedencia múltiple) + navegación agéntica para pruebas funcionales (#84: `prov-browser-agent` + `apb-qa-exploratory-nav`), con **ejecución funcional real demostrada sobre TruckCenter PRE**. Antes: estándar de prompting (#78) + Harness Engineering (#83) sobre todo el catálogo. El ciclo de aprobación `draft → approved` sigue pendiente.
+Último hito (2026-07-14): **Sesión 30** — descomposición DDD completa del monolito
+`SOSTRAT-Sostrat-MJ8` con los agentes propios del framework (`apb-agent-ddd-v1.0`,
+`apb-arch-decompose-v1.0`): 24 dossiers de aplicación final (23 apps + migración de
+Escalas hacia ARGOS), 21 bounded contexts re-verificados campo a campo contra el
+código real, roadmap de 6 fases, specs OpenAPI/AsyncAPI y backlog Jira asociados.
+Trabajo de discovery (`discovery/ddd-sostrat-mj8/`), no añade componentes al
+catálogo — ver `discovery/CONTINUIDAD_PROYECTO.md` Sesión 30 y
+`discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md`. **Pendiente de decisión de
+Débora antes de publicar:** el repositorio de GitHub es público y estos dossiers
+contienen información de negocio real de SÒSTRAT (ver
+`discovery/ddd-sostrat-mj8/HANDOFF_SOSTRAT.md` S9).
+Antes (2026-07-08): **Sesión 28** — Agente de Valoración Técnica
+(`apb-agent-valoracion-tecnica-v1.0`), orquestando los 3 sistemas reales de
+valoración APB (COSMIC, Horas/Perfil, Catálogo técnico USM/UEC/UTA) sobre
+metodología corporativa vigente y datos reales de 12 meses de Jira, sin forzar el
+enfoque por clasificación automática. El ciclo de aprobación `draft → approved`
+sigue pendiente.
 
 ## Contacto
 

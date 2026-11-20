@@ -20,8 +20,11 @@
 | A | {archivo/ticket} | {rovo/github-copilot/usuario} | {jira/documentacion/codigo/usuario} | {N} |
 | … | | | | |
 
-**Leyenda «Procedencia»:** `R`=Rovo · `C`=GitHub Copilot · `U`=Usuario · orígenes `J`=Jira(+ticket) ·
-`AF`=Documentación/Análisis Funcional · `Cod`=Código. Toda prueba lleva ≥1 herramienta y ≥1 origen.
+**Procedencia (texto legible, sin siglas — `TEST_PLAN_STANDARD` §2):** cada caso cita en la columna
+«Procedencia» una frase que un lector no técnico entiende sin leyenda: p. ej. `Jira aportado por Débora
+(ticket AOM-2530)`, `Jira a través de Rovo (ticket TRANSTE-1513)`, `Documentación funcional aportada por
+Débora`, `Código fuente verificado (repo APB.API.TES, PortCallController.cs:38)`. Combinar con ` · ` si hay
+más de un respaldo. Toda prueba lleva ≥1 herramienta y ≥1 origen; nunca se inventa procedencia inexistente.
 **«Desde»:** fecha en que se definió la prueba. **«OK func.»:** funcional que la aprobó (vacío hasta validar).
 
 **Identificador canónico (§3.2):** `{APP}-B{NN}-T{NN}` — bloque append-only + secuencia append-only
@@ -62,13 +65,17 @@ ID anterior (nunca se pierde la trazabilidad con informes ya emitidos).
 > resuelve por **referencia AKV** (`AKV://<secret>`, vía `prov-akv-v1.0`) **o** se **proporciona en runtime**
 > (login asistido → `storageState`). **Nunca** se escribe usuario/contraseña/token/`storageState` con
 > secretos en este documento ni en ningún fichero versionado (`AGENTS.md §3`, `GOVERNANCE.md §5.2`).
+> **Enfoque inmediato vs. futuro (§9.5):** hoy la vía AKV **no es operativa** (vault sin provisionar) — usar
+> la vía «proporcionado en runtime» salvo que §9.5 esté resuelto; no describir `AKV://<secret>` como
+> ejecutable sin esa comprobación.
 
 | Rol / Permiso | Alcance | Bloques / casos que lo requieren |
 |---|---|---|
 | {rol} | {qué puede hacer} | {B02, B05…} |
 
-**Usuario de ejecución:** {`AKV://<secret>` (por defecto, ejecución autónoma) | proporcionado por el
-usuario en runtime}. **Destino de ejecución (§9.1):** {`local` | `ci-runner` | `azure-qa`}.
+**Usuario de ejecución:** {`AKV://<secret>` (por defecto, ejecución autónoma — no operativo hoy, ver §9.5)
+| proporcionado por el usuario en runtime (vía real hoy)}. **Destino de ejecución (§9.1):** {`local`
+(enfoque inmediato) | `ci-runner` | `azure-qa` (enfoque futuro, ver §9.5)}.
 
 ### 1.7 Referencia a Spec / Análisis Funcional
 {Documentos de origen, versión, fecha. Si el plan nace de un flujo SDD, **enlazar la spec** —
@@ -136,7 +143,7 @@ de aceptación.}
 
 | ID | Legado | Caso | Tipo | Prio | Rol requerido | Resultado esperado | Procedencia | Desde | OK func. | Estado | Evidencia |
 |----|--------|------|------|------|---------------|--------------------|-------------|-------|----------|--------|-----------|
-| {APP}-B{NN}-T{NN} | {ID plano si migró, si no —} | {caso} | {Funcional/UI/Integración/Seguridad/…} | {Crítica/Alta/Media} | {rol mínimo, p. ej. USER_READ_*} | {resultado} | {R[J:TICKET·AF]·C[Cod] / S[spec:CRIT-id]} | {AAAA-MM-DD} | {rol o —} | Pendiente | {enlace} |
+| {APP}-B{NN}-T{NN} | {ID plano si migró, si no —} | {caso} | {Funcional/UI/Integración/Seguridad/…} | {Crítica/Alta/Media} | {rol mínimo, p. ej. USER_READ_*} | {resultado} | {p. ej. "Jira aportado por Débora (ticket TICKET) · Código fuente verificado (repo X, fichero:línea)" / "Spec SDD (criterio CRIT-id)"} | {AAAA-MM-DD} | {rol o —} | Pendiente | {enlace} |
 
 ---
 
@@ -206,7 +213,7 @@ de aceptación.}
 ## 14bis. Acta de aprobación del informe de resultados (§6.2)
 > **Rellenar en el informe de ejecución** (no en el plan base). Autoriza los **resultados** de una corrida.
 > El agente **no** se autoaprueba: cada fila la firma una persona nombrada. La decisión se persiste aquí
-> **y** se refleja en el ticket Jira vinculado (`prov-jira-software-v1.0`).
+> **y** se refleja en el ticket Jira vinculado (`prov-atlassian-v1.0`).
 
 - **Estado del informe:** {`pendiente-aprobación` | `aprobado` | `rechazado` | `aprobado-con-reservas`}
 

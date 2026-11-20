@@ -61,7 +61,7 @@ GitHub por el contenido de este zip (es la versión consolidada y corregida).
 | QA | Testing — auditoría `apb-ai-skills`, resolver solape | ✅ **Completa** — ver sección 13 |
 | Frontend | Mockups, generación frontend, catálogo de componentes | ✅ **Completa** |
 | Design System | Sistema de diseño APB sobre DevExtreme — repo propio `APB-DESIGN-SYSTEM` | ✅ **Completa** (v1.3.0, 2026-06-26) |
-| 15 | Integraciones Microsoft + gaps Rovo / M365 Copilot | ✅ **Completa** (2026-06-26) — artefactos en `openapi/`, `forge/`, `docs/`. Pendiente de equipo APB: ver `docs/HANDOFF_SESION15_INTEGRACIONES.md` |
+| 15 | Integraciones Microsoft + gaps Rovo / M365 Copilot | ✅ **Completa** (2026-06-26) — artefactos en `openapi/`, `forge/`, `docs/`. Pendiente de equipo APB: ver `discovery/HANDOFF_TECNICOS.md §4` |
 | 16 | Skill de análisis de riesgos con procedimientos APB | ✅ **Completa** (2026-06-24) — `apb-gov-org-risk-report-v1.0` v1.2.0. Multi-framework (ENS, ISO 27001, NIST CSF 2.0, OWASP, RGPD, LCSP, WCAG 2.1 AA), recomendación APROBAR/DENEGAR/ESCALAR, plan de mitigación, alineado con `PROCEDURE_RISK_EVALUATION` + `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` |
 | 13 | Cierre de pendientes históricos (plantillas, Jira, COSMIC, DDD, loops, guía agentes) | ⚠️ **Parcial** (2026-06-26, 7/10) — bloqueados: #6 (ejemplos Word/Excel de Débora), #8 (horas COSMIC históricas de Débora), #52 (mail Jira de Arquitectura) |
 | 22/#47bis | Taxonomía de capacidades en agentes y skills | ✅ **Completa** (2026-06-26) — taxonomía APB normalizada en frontmatter |
@@ -914,3 +914,915 @@ cableado en `apb-wf-qa-evidence` y `apb-wf-sdd-full`; **(7)** nuevo provider **`
 **49/49 tests** · **347 componentes** (345 + subagente fix-loop + provider Azure QA, ambos `draft`).
 Pendiente: decidir si pushear la rama `feat/qa2-test-plan-methodology`; **QA-3** (despliegue real del
 entorno Azure QA + ejecución funcional completa con dataset, k6 y SonarQube/OWASP ZAP).
+
+## 24. Sesión Orquestación PoC (#77) + Auditorías de Cumplimiento (#85, #86) (2026-07-06)
+
+**Contexto:** Débora continuó con "las siguientes fases" del framework. Tras mapear
+`PLAN_FASES_FUTURAS.md` y `CONTINUIDAD_PROYECTO.md`, pidió avanzar en paralelo en:
+(A) PoC de orquestación (#77) — demostrar viabilidad de pausas humanas sincrónicas;
+(B) Auditoría Design System (#85) — APB.TRU contra tokens/componentes/tipografía/WCAG;
+(C) Auditoría de calidad (#86) — verificar cierre de hallazgos Sonar en APB.API.SMS.
+
+**Bloqueante resuelto previamente:** #77 quedó pendiente de "decisión arquitectónica del motor"
+(Azure Durable / LangGraph / Temporal). Esta sesión **no elige el motor definitivo** (eso sigue siendo
+responsabilidad de Débora + Plataforma APB), pero **demuestra viabilidad** de la capa de checkpoint
+humano como primer escalón hacia la orquestación real.
+
+**Ejecutado:**
+
+- **PoC #77 (3 artefactos):**
+  - `scripts/orchestrate_checkpoint_gate.py` — lee frontmatter YAML (`human_checkpoints`), genera bloque de
+    pausa exacto según `apb-orch-human-checkpoint-v1.0.md` (formato: ⏸️ header, ¿Qué completado?, ¿Qué revisar?,
+    artifacts table, 3 opciones ✅/🔄/❌, YAML decision log).
+  - `.github/workflows/human-checkpoint-poc.yml` — workflow_dispatch (input `workflow_id`, default
+    `apb-wf-sdd-full-v1.0`), job de generación + job pausa en `environment: human-checkpoint` + job de
+    registro de decisión (GitHub Artifacts, 90 días, `.yaml` con timestamp + reviewer + decision).
+  - `scripts/setup_github_environment.py` — configura Environment + required reviewers vía API
+    (`gh api` / REST, parametrizable `--repo owner/repo --environment human-checkpoint --reviewers user1,user2`),
+    permite portabilidad automática repo personal → repo oficial APB sin depender de UI manual.
+  - Memo ejecutivo con tabla comparativa (Durable Functions ⭐⭐⭐⭐⭐ recomendado / LangGraph ⭐⭐⭐ /
+    Temporal ⭐⭐), checklist pre-decisión, **primer borrador de contratos de eventos** (CloudEvents
+    `code.*`, `ci.*`, `pr.*`, `bug.*`, `deployment.*`), checklist de migración repo personal → oficial.
+    *(Nota 2026-07-06: este memo vivía en `discovery/HANDOFF_ORQUESTACION_MOTOR.md`, disuelto en la
+    reorganización — la decisión de motor está ahora en `PLAN_FASES_FUTURAS.md` Sección A y los pasos
+    condicionados a la decisión en `HANDOFF_TECNICOS.md §10.1`.)*
+
+- **Actualización del roadmap:**
+  - `discovery/PLAN_FASES_FUTURAS.md` (#77): añadida sección "Sesión de Análisis de Orquestación completada"
+    con puntero a handoff.
+  - Este fichero (`CONTINUIDAD_PROYECTO.md`): esta sesión 24.
+
+- **#85, #86:** (pendiente de ejecución) — preparados: repos ya clonados (`APB.TRU`, `APB.API.SMS`),
+  agentes `apb-agent-design-compliance-v1.0` + `apb-agent-quality-compliance-v1.0` ya en `agents/`
+  (draft 2026-07-04), insumo de 4 hallazgos Sonar en `incumplimientos_sms_arq.md` (aportado por Débora).
+
+**Resultado:** PoC validada por ejecución local (`orchestrate_checkpoint_gate.py --workflow
+apb-wf-sdd-full-v1.0 --checkpoint 1` genera bloque correcto). Cambios aún no commiteados hasta
+confirmación de Débora (scripts pueden disparar CI/CD, requieren aprobación explícita).
+
+`validate_repo.py --strict` (aún no ejecutado post-cambios, en validación final §8 del plan).
+
+**Próximos pasos bloqueantes:**
+1. Débora + Plataforma APB: **decidir motor de orquestación** (A/B/C en `PLAN_FASES_FUTURAS.md` Sección A).
+2. Débora: OK explícito para commitar nuevos scripts/workflow `.github/workflows/human-checkpoint-poc.yml`.
+3. GitHub: Configurar Environment `human-checkpoint` + required reviewers (`setup_github_environment.py` o UI).
+4. Ejecutar #85 + #86 (auditorías de cumplimiento sobre APB.TRU + APB.API.SMS).
+5. Validación final: `validate_repo.py --strict` + tests `python -m unittest discover tests`.
+
+**Inventario:** 347 componentes (sin cambios — 3 scripts + 1 workflow + 1 handoff memo, cambios, no nuevos
+componentes en `agents/`/`workflows/`/`skills/` que requieran ID). Los agentes #85/#86 ya existen desde
+sesión anterior (estado `draft`).
+
+**Nota sobre #88:** explícitamente pospuesto a sesión posterior (TruckCenter reejecución completa con vídeo + corrección H1).
+
+---
+
+## Sesión 25 — #39/#40 Dashboards + #41 Autonomía (2026-07-06)
+
+**Participantes:** Débora Martín, Claude Haiku 4.5 (sesión parallel workstreams)
+
+**Tipo:** Implementación + Análisis
+
+### Workstream 1: #39/#40 — Dashboards Genéricos (COMPLETADO)
+
+**Objetivo:** Generar skill + subagent para crear dashboards agnósticos (Power BI, Grafana) desde especificación natural.
+
+**Entregables:**
+- ✅ Skill `apb-plat-dashboards-generator-v1.0` (generador agnóstico)
+- ✅ Subagent `apb-sub-dashboard-discovery-v1.0` (entrevista + reuso)
+- ✅ Dashboard **Grafana JSON** (importable en 5 min)
+- ✅ Dashboard **Power BI spec** (guía + DAX measures)
+- ✅ **Runbook operativo** (SLAs, alertas, troubleshooting)
+
+**Caso de uso (MVP):** QA Compliance Dashboard
+- Origen: Sonar (coverage, bugs), Dependabot (vulnerabilities), Jira (resolution time)
+- Metrics: test coverage%, High/Critical bugs, open vulnerabilities, MTTR
+- Dimensions: app, environment (DEV/PRE/PROD), team
+- Frecuencia: Real-time (Grafana) + Daily (Power BI)
+
+**Hallazgos de reutilización:**
+- Subagentes existentes encontrados (`apb-sub-obs-powerbi-v1.0`, `apb-sub-obs-grafana-v1.0`)
+- Plantillas Grafana comunitarias identificadas
+- Estrategia: CUSTOMIZE_TEMPLATE (Grafana) + BUILD_FROM_SCRATCH (Power BI)
+
+**Próximos pasos:**
+1. Probar dashboard Grafana JSON en vivo (requiere Prometheus/Azure Monitor)
+2. Construir Power BI dataset desde spec (1-2 horas)
+3. Validar alertas y SLAs en operación
+
+---
+
+### Workstream 2: #41 — Autonomía de Agentes (COMPLETADO)
+
+**Objetivo:** Analizar qué 217 componentes pueden operar sin revisión humana previa (Nivel 2/3).
+
+**Descubrimiento:**
+- **350 componentes** mapeados (no 217)
+- **Distribución:** Level 0 (1), Level 1 (318), Level 2 (31), Level 3/4 (0)
+- **Candidatos identificados:** 3 (auditoría read-only, bajo riesgo)
+  - `apb-agent-accessibility-auditor-v1.0`
+  - `apb-ops-dependency-audit-v1.0`
+  - `apb-wf-accessibility-audit-v1.0`
+
+**Gaps críticos identificados:**
+1. ❌ Sin timeout policy (agente puede colgarse indefinidamente)
+2. ❌ Sin loop detection (ciclos no detectados)
+3. ❌ Sin enforcement real (validación es solo metadata)
+4. ❌ Sin async messaging (comunicación síncrona via Git/Jira)
+
+**Recomendación:**
+- NO promover a Nivel 2 hasta cerrar gaps
+- Implementar enforcement en futuro
+- Usar candidatos actuales como test case para validation
+
+---
+
+### Calidad & Validación
+
+- ✅ `validate_repo.py --strict`: EXITOSO (0 errores, 10 warnings conocidos)
+- ✅ 14 files changed, 2679 insertions
+- ✅ Commit: 0788c9c
+
+### Commits Relevantes
+
+- `0788c9c`: feat: #39/#40 dashboards genéricos + #41 análisis autonomía
+
+---
+
+### Próxima Sesión
+
+**Tema:** Prueba de implementación dashboard Power BI (construcción real dataset + import)
+
+**Bloqueantes resueltos:**
+- Especificación Power BI lista
+- DAX measures documentadas
+- Data model definido
+
+**Bloqueantes pendientes:**
+- Azure Monitor / Sonar credenciales para Grafana
+- Acceso Power BI Service para deploy
+
+---
+
+*Cierre de sesión 2026-07-06*
+
+---
+
+## Sesión 26 — Estrategia de Optimización de Tokens (2026-07-06, continuación)
+
+**Participantes:** Débora Martín, Claude Haiku 4.5
+
+**Tipo:** Análisis estratégico + Documentación
+
+**Solicitud:** "apunta para fases futuras, estrategias para optimizar consumo tokens por el framework"
+
+### Entregable Principal
+
+- ✅ **`discovery/ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md`** (5 KB, completo)
+  - 10 estrategias viables (priorizadas por impacto/esfuerzo)
+  - Roadmap de 3 fases de implementación
+  - Estimación de ahorro anual (30-50% en tokens/turno)
+  - Checklist detallado para cada fase
+  - Métricas de validación de impacto
+
+### Resumen Ejecutivo de Estrategias
+
+| # | Estrategia | Impacto | Esfuerzo | Prioridad |
+|---|-----------|---------|----------|-----------|
+| 1 | Caching YAML frontmatter | 15-20t | Bajo | 🔴 CRÍTICA |
+| 2 | Workflows paralelos | 10-15% | Medio | 🔴 CRÍTICA |
+| 3 | Lazy loading de archivos | 5-10t | Bajo | 🟡 ALTA |
+| 4 | Dedup búsquedas Grep/Glob | 2-5t | Bajo | 🟡 ALTA |
+| 5 | Batch processing análisis | 20-30% | Medio | 🟡 ALTA |
+| 6 | Model selection inteligente | 15-25% | Bajo | 🟢 MEDIA |
+| 7 | Context compression | 5-10% | Bajo | 🟢 MEDIA |
+| 8 | Subagent registry | 10-20% | Medio | 🟢 MEDIA |
+| 9 | Streaming resultados | 5-15% | Alto | 🔵 FUTURA |
+| 10 | MCP caching | 2-5t | Bajo | 🔵 FUTURA |
+
+**Ahorro teórico acumulado (Fases 1+2+3):** 30-50% tokens/sesión
+
+### Roadmap de Implementación
+
+**Fase 1 (1-2 semanas) — QUICK WINS**
+- Caching frontmatter YAML
+- Lazy loading con índices
+- Dedup búsquedas
+- Esfuerzo: ~4-6 horas
+- Ahorro esperado: 20-35 tokens/turno
+
+**Fase 2 (Semanas 3-4) — ARQUITECTURA**
+- Workflow patterns para paralelismo
+- Batch processing framework
+- Model selection heuristics
+- Esfuerzo: ~8-12 horas
+- Ahorro esperado: +15-30% adicional
+
+**Fase 3 (Mes 2) — AVANZADO**
+- Subagent registry
+- Context compression tuning
+- Streaming + MCP caching (si disponible)
+- Esfuerzo: ~12-16 horas
+- Ahorro esperado: +10-20% adicional
+
+### Insights Clave
+
+1. **Context matters más que model size** — Haiku con buen contexto > Opus con mal contexto
+2. **Paralelismo es gratis** — Workflows no cuestan más, ahorran tiempo y tokens
+3. **Lazy > Eager** — Solo cargar lo necesario es ~10% más barato que full context
+4. **Caching pequeño ahorra grande** — 180KB cache frontmatter → 20 tokens/turno ahorrados
+5. **Batch > Sequential** — 50 items en 1 agente (5K tokens) vs 50 agentes (50K tokens)
+
+### Artefactos Anexos
+
+- Estimación de ahorro anual (416K tokens → 150K tokens con todas las fases)
+- Baseline Sesión 25: ~45K tokens gastados, 2h ejecución
+- Target post-optimización: ~25K tokens (-44%)
+
+### Recomendaciones para Debate (Arquitectura APB)
+
+1. **¿Adoptar todas las estrategias, o piloto Fase 1 primero?**
+   - Recomendación: Piloto Fase 1 (4-6h, bajo riesgo)
+
+2. **¿Reutilizar optimizer para workflows existentes (#77 PoC)?**
+   - Recomendación: Sí, medir Sesión 25 vs post-optimización
+
+3. **¿Formalizar "token budgets" por sesión?**
+   - Recomendación: Sí, directiva +500k ya existe
+
+### Próximas Acciones (Debate Débora)
+
+- [ ] Revisar documento de estrategia
+- [ ] Elegir modelo de implementación (piloto Fase 1 vs. full rollout)
+- [ ] Decidir si priorizar caching YAML o workflows primero
+- [ ] Asignar recursos para Fase 1
+
+---
+
+*Cierre de sesión 2026-07-06 (continuación)*
+
+---
+
+## Sesión 26 — Auditoría de cableado (#27/#28) + Agente de soporte funcional-técnico (2026-07-06)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Corrección de defecto + refuerzo de gobernanza + creación de componente
+
+### Workstream 1: Auditoría de cableado agente/subagente↔skill/provider (COMPLETADO)
+
+**Origen:** Débora detectó que `INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md` citaba
+`PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0` en la cabecera sin aplicar su contenido real —
+la skill lo nombraba en prosa, sin ruta literal ni verbo de carga, a diferencia de
+`PROCEDURE_RISK_EVALUATION` (que sí tenía un paso "Aplica" explícito y se aplicó a fondo).
+Pidió revisar si el mismo patrón se repetía en otros agentes/skills y un mecanismo
+permanente para que no volviera a ocurrir.
+
+**Ejecutado:**
+- Corregida la causa raíz en `apb-gov-org-risk-report-v1.0` (v1.4.0) y en la atribución de
+  agente equivocada de `apb-agent-risk-exception-v1.0` (v1.1.0 — no tiene asignada esa skill;
+  es competencia de `apb-agent-compliance-audit-v1.0`).
+- `validate_repo.py` checks **#27** (procedimientos sin ruta literal) y **#28** (skill/provider
+  usado sin declarar, generaliza el #27) — el #28 escanea `agents/` y `subagents/`.
+- Auditoría manual de los 38 agentes + 35 subagentes: **6 gaps reales** corregidos
+  (`apb-agent-business-analyst-v1.0`, `apb-agent-compliance-audit-v1.0`, `apb-agent-finops-v1.0`,
+  `apb-agent-observability-v1.0`, `apb-sub-ops-azure-v1.0`, `apb-sub-obs-powerbi-v1.0`).
+- `SCHEMA.md` v1.1.0: formaliza `skills`/`depends_on` como campos condicionales de `Subagent` §3.3.
+- Informe `INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md` corregido a v3 (ticket maestro JSM y
+  justificación de negocio marcados como pendientes de confirmar, no inventados).
+
+**Detalle completo:** [`PLAN_FASES_COMPLETADAS.md` #89](PLAN_FASES_COMPLETADAS.md).
+
+**Verificación:** `validate_repo.py --strict` → 0 errores en cada paso · 60/60 tests.
+
+---
+
+### Workstream 2: Agente de soporte técnico para analistas funcionales (COMPLETADO)
+
+**Objetivo:** Convertir en componente conforme al schema el borrador
+`apb-agent-functional-technical-support-v1.0.md` que Débora ya había esbozado, más la skill que
+le faltaba.
+
+**Entregables:**
+- Skill `apb-pm-jira-estimation-review-v1.0` (dominio `pm`): explica tickets Jira en lenguaje
+  accesible, analiza complejidad, busca precedentes híbridos (Jira en vivo + catálogo del repo),
+  y contrapropone valoración si supera el +25% de la media de precedentes.
+- Catálogo `discovery/ESTIMATION_REFERENCES.md` (fichero seed).
+- Agente `apb-agent-functional-technical-support-v1.0` reescrito conforme a convenciones.
+
+**Decisiones de Débora:** catálogo en el repo (no Confluence/custom field); estimación en horas
+(no story points); acceso a Jira vía `prov-jira-software-v1.0` (REST API, no MCP ni Rovo — ver
+Workstream 3); umbral de contrapropuesta en +25% sobre la media de precedentes.
+
+**Pendiente:** acceso real a histórico Jira (`HANDOFF_TECNICOS.md` ACC1).
+
+**Detalle completo:** [`PLAN_FASES_COMPLETADAS.md` #90](PLAN_FASES_COMPLETADAS.md).
+
+---
+
+### Workstream 3: Reconciliación de providers Atlassian (COMPLETADO)
+
+**Origen:** al escribir el Workstream 2 se afirmó (incorrectamente) que el acceso a Jira se hacía
+"vía el conector MCP de Atlassian (Rovo)". Débora pidió reconciliar `prov-atlassian-v1.0` y
+`prov-jira-software-v1.0`, que se solapaban.
+
+**Hallazgo:** `prov-atlassian-v1.0` se llamaba *"Atlassian Rovo MCP"* pero su contenido siempre fue
+REST CRUD genérico, sin relación con MCP ni Rovo. La integración real de Rovo (búsqueda semántica,
+Rovo Agents vía Forge App) ya existía documentada aparte en `adapters/rovo/adapter-rovo-v1.0.md`
+(Sesión 15) — pendiente de activación en APB (julio 2026). Ninguno de los dos providers Jira usa
+MCP ni Rovo como transporte.
+
+**Ejecutado:** renombrado `prov-atlassian-v1.0` → "Atlassian REST API (JSM + Confluence + Compass)"
+(v1.1.0), tabla de diferenciación añadida a ambos providers (+ referencia a `adapter-rovo-v1.0`),
+corregidas las 3 afirmaciones erróneas sobre MCP/Rovo introducidas en el Workstream 2. **No** se
+fusionaron los providers (ambos tienen consumidores reales activos; el problema era de
+nomenclatura, no de wiring roto).
+
+**Detalle completo:** [`PLAN_FASES_COMPLETADAS.md` #91](PLAN_FASES_COMPLETADAS.md).
+
+**Verificación:** `validate_repo.py --strict` → 0 errores · 60/60 tests.
+
+---
+
+### Workstream 4: Fusión real de providers Atlassian + revisión de Rovo (COMPLETADO)
+
+**Petición de Débora:** "fusiona los providers. también asegúrate que el adapter para rovo es
+correcto. necesitamos el mcp de atlassian + rovo?"
+
+**Ejecutado:**
+- `prov-atlassian-v1.0` → v2.0.0 (fusión con `prov-jira-software-v1.0`, ahora deprecado) → v2.1.0
+  (corrección: se detectó que la fusión duplicaba Confluence, ya cubierto por un tercer provider
+  ya existente, `prov-confluence-v1.0` — acotado a Jira Software+JSM+Compass).
+- 10 ficheros consumidores actualizados (3 con wiring formal detectados por el check #25 al
+  deprecar, 7 con mención en prosa).
+- `adapter-rovo-v1.0` (v1.1.0) y `adapter-claude-v1.0` (v1.2.0) corregidos: el primero no
+  reflejaba que Confluence ya no vive en `prov-atlassian-v1.0`; el segundo no mapeaba Atlassian a
+  ningún mecanismo MCP pese a hacerlo con Azure/GitHub/Sonar — añadido como "⚠️ Parcial" en vez de
+  darlo por hecho, sin conector MCP de Atlassian confirmado en este entorno de sesión.
+
+**Respuesta a "¿necesitamos MCP de Atlassian + Rovo?":** no compiten — son direcciones distintas.
+MCP de Atlassian sería el transporte (framework → Atlassian) si el tenant lo expone; Rovo
+(`adapter-rovo-v1.0`) es la capa de IA + exposición del framework como Rovo Agents dentro de
+Jira/Confluence, pendiente de activación en APB (julio 2026). Ambos son necesarios si se activan.
+
+**Detalle completo:** [`PLAN_FASES_COMPLETADAS.md` #92](PLAN_FASES_COMPLETADAS.md).
+
+**Pendiente de Débora:** confirmar si existe/se activará un servidor MCP de Atlassian real en el
+tenant APB.
+
+**Verificación:** `validate_repo.py --strict` → 0 errores · 60/60 tests · catálogo regenerado.
+
+---
+
+*Cierre de Sesión 26 (2026-07-06).*
+
+---
+
+## Sesión 27 — Plan MCP Server APB Agents consolidado + skill third-party supervision (2026-07-07)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Consolidación de documentación + creación de componente
+
+**Solicitud:** "añade al plan por fases lo indicado en el proyecto [los dos ficheros
+adjuntos `PLAN_MCP_SERVER_APB_v1.md` y `PLAN_MCP_SERVER_APB_FASES_1-7.md`] y las
+funcionalidades de terceros de `roboflow/supervision`". Aclarado antes de ejecutar
+(dos preguntas): (1) "el proyecto" = los propios ficheros adjuntos, no otra
+decisión ya registrada; (2) `supervision` es una skill de terceros normal en el
+catálogo, sin relación con el servidor MCP.
+
+### Workstream 1: Consolidación del plan MCP Server APB Agents (COMPLETADO)
+
+**Ejecutado:**
+- Releídos y reverificados contra el repo real los 5 ficheros de contexto que el
+  propio plan exige (`agents/apb-agent-ddd-v1.0.md`, `providers/prov-apb-knowledge-v1.0.md`,
+  `scripts/invoke_agent.py`, `context/apb/SCHEMA.md`) — frontmatter y los "dos bloques
+  Prompt de Sistema" confirmados como describía el plan original.
+- Creado `discovery/PLAN_MCP_SERVER_APB.md`: consolida íntegramente (sin resumir)
+  los dos documentos adjuntos (Fase 0 MVP local + Fases 1-7 con leyenda de
+  confianza Seguro/Probable/Suposición), más una sección nueva "Vínculos con el
+  resto del framework APB" que conecta el plan con **N8** (runtime de agentes en
+  producción — este MCP server es el mecanismo que falta), **#78** (tagging
+  `runtime: rovo`), `adapter-rovo-v1.0`, y aclara que no se solapa con los
+  providers P1-P6 de `PLAN_FASES_FUTURAS.md` §B.2.
+- `PLAN_FASES_FUTURAS.md`: añadidas 4 filas a Sección A (**MCP-1** a **MCP-4**,
+  los 5 bloqueantes reales de las Fases 1-7 condensados en 4 decisiones), 1 fila
+  a Sección B (Fase 0, ejecutable ya, ligada a N8), y notas de puntero en N8 y en
+  el cierre de §B.2.
+
+**No implementado en esta sesión:** el servidor MCP en sí (código, Dockerfile,
+tests) — esta sesión fue de consolidación de planificación, no de construcción.
+La Fase 0 queda en el backlog ejecutable (Sección B) para una sesión futura.
+
+### Workstream 2: Skill de terceros — visión artificial (roboflow/supervision) (COMPLETADO)
+
+**Verificación previa (no se asumió nada del enunciado del usuario):** grep
+exhaustivo del repo confirmó que no existía ninguna mención previa a visión
+artificial, cámaras, detección de objetos o tracking — no hay caso de uso APB
+que justifique esta skill. Verificado vía API de GitHub: licencia **MIT**,
+commit real `fd3de344dc9ba2dacd1e996ee6416b60d5e4d0d2` (rama `main`), repo activo
+(~47k ⭐, no archivado).
+
+**Ejecutado:**
+- Creado `skills/third_party/roboflow/third-roboflow-supervision-v1.0.md`
+  (dominio `development`, `status: draft`, `consumed_by` vacío). Cuerpo con
+  Capacidades (anotación de detecciones/segmentación, tracking multi-objeto,
+  análisis por zonas, conversión de datasets YOLO/COCO/Pascal VOC, métricas de
+  evaluación), y una **Nota de gobernanza explícita**: sin caso de uso ni
+  agente consumidor confirmado, no debe wirearse a ningún componente real sin
+  que Arquitectura APB documente antes el caso de uso concreto (mismo
+  tratamiento que `third-lum1104-knowledge-graph-v1.0`).
+
+**Pendiente:** identificar (si Débora lo decide) un caso de uso real antes de
+conectar esta skill a cualquier agente/workflow.
+
+### Calidad & Validación
+
+`scripts/generate_catalog.py` regenerado (364 componentes, +1 sobre los 363
+previos: la skill `third-roboflow-supervision-v1.0`) ·
+`scripts/validate_repo.py --strict` → **0 errores**, 10 warnings exentos
+(`source_commit: unverified`, política `GOVERNANCE.md §4.2`) · **60/60 tests**
+(`python -m unittest discover tests`).
+
+**Inventario al cierre:** 364 componentes (57 skills terceros [+1 sobre las 56
+previas], resto sin cambio — el plan MCP Server es documentación en
+`discovery/`, no un componente catalogable).
+
+---
+
+*Cierre de Sesión 27 (2026-07-07).*
+
+## Sesión 28 — Corrección de handoff + Agente de Valoración Técnica COSMIC/Horas-Perfil (2026-07-08)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Corrección documental + construcción de agente nuevo con metodología corporativa real
+
+**Solicitud:** (1) "siguientes tareas pendientes que podríamos realizar" → ejecución
+de 3 tareas de bajo riesgo detectadas como ya resueltas pero mal reflejadas en
+`HANDOFF_TECNICOS.md`; (2) "vamos a mejorar el agente que permita valorar tareas
+técnicas..." — construir un agente de valoración (COSMIC / Horas-Perfil) apoyado en
+histórico real de Jira, aportando 3 documentos de metodología corporativa
+(`Guía para valoración de desarrollos con Cosmic`, `ANEXO - Criterios de valoración`,
+`OBSOLETO - Guía genérica`), datos reales de 12 meses de Jira, y un Excel
+(`Catálogo de coste de tareas técnicas APB`) con la hoja de servicios USM/UEC/UTA.
+
+### Workstream 1: Corrección de handoff desactualizado (COMPLETADO)
+
+**Ejecutado:**
+- `HANDOFF_TECNICOS.md`: verificado contra código real que **7 de 8 bugs** de la
+  tabla §1 ya estaban resueltos (BUG-01, 02, 04, 05, 06, 07, 08) — el documento
+  los listaba como pendientes. Hallazgos nuevos en la verificación: BUG-06
+  (`telemetry.yml` ya usa rama + PR, no push directo a `main`) y BUG-08 (licencia
+  `third-lum1104-knowledge-graph-v1.0` = MIT, ya verificada 2026-07-04, repo
+  transferido de `Lum1104` a `Egonex-AI`). Solo BUG-03 (Design System, repo
+  separado) sigue pendiente real.
+- README.md: nueva sección "Relación con Otros Repositorios APB" documentando la
+  deprecación de `apb-ai-skills` (DOC7).
+- Commit `22c5af9`.
+
+### Workstream 2: Agente de Valoración Técnica — COSMIC + Horas/Perfil + Catálogo USM/UEC/UTA (COMPLETADO)
+
+**Hallazgo clave de planificación:** ya existía
+`apb-pm-jira-estimation-review-v1.0` (Sesión 26) cubriendo búsqueda híbrida de
+precedentes (Jira en vivo + catálogo) y regla de desviación >25% para tickets
+técnicos — no se duplicó esa maquinaria, se extendió.
+
+**Ejecutado:**
+- `apb-disc-cosmic-v1.0` reescrita v1.0.0→v2.0.0: de ISO/IEC 19761 genérico a las
+  reglas reales de la `Guía para valoración de desarrollos con Cosmic` vigente
+  (checklist de validación, tablas E/X/R/W con inclusiones/exclusiones, catálogo
+  de acciones, 6 ejemplos reales, sección de calibración interna no contractual
+  con los factores del informe Rovo aportado por Débora, marcados explícitamente
+  "no verificados").
+- `apb-pm-jira-estimation-review-v1.0` ampliada v1.0.2→v1.1.0: de "solo tickets
+  técnicos" a todo el sistema Horas/Perfil (incluye desarrollo funcional cuando
+  el contrato de proveedor no usa COSMIC — caso real: proyectos Java/Sòstrat).
+  Sustituida la guía obsoleta 2020-2022 por Tablas A/B de datos reales de 12
+  meses de Jira aportados por Débora (7 categorías de desarrollo + 4 de tareas
+  técnicas, con confianza ✅/⚠️/❌ por nº de tickets).
+- `apb-pm-catalogo-servicios-v1.0` (nueva): catálogo real USM/UEC/UTA de 12
+  servicios desatendidos + 11 servicios "bajo evento" del ciclo de construcción,
+  extraído del Excel real de Débora.
+- `apb-agent-valoracion-tecnica-v1.0` (nuevo): orquestador que aplica la
+  clasificación ANEXO (Naturaleza × Modo) **solo como sugerencia, nunca forzada**
+  — el enfoque (COSMIC/Horas-Perfil) lo elige el usuario, porque depende del
+  contrato del proveedor, no solo de la naturaleza del trabajo.
+- `discovery/ESTIMATION_REFERENCES.md`: sembrado con las tablas reales (antes 0
+  entradas).
+- Gap #8 de `PLAN_FASES_FUTURAS.md` (horas históricas para calibrar COSMIC↔horas)
+  marcado **aportado, no 100% resuelto** — categorías con <50 tickets siguen
+  indicativas; detalle en `PLAN_FASES_COMPLETADAS.md`.
+- Commit `ae2b7a7`.
+
+**Corrección de rumbo post-commit (Débora):** el catálogo USM/UEC/UTA no debía
+estimar €/unidad vía referencias de mercado externas (día/hora de consultoría,
+pricing SaaS) — el framework APB solo valora en horas o CFP. Se investigaron
+referencias de mercado (España 2026: DevOps/SRE 40-90€/h freelance; benchmarks de
+monitorización/SOC/backup-DR/FinOps/helpdesk) pero se descartaron por completo tras
+la corrección. `apb-pm-catalogo-servicios-v1.0` v1.1.0 ahora estima **volumen de
+horas de referencia** citando datos reales del Excel donde hay concepto equivalente
+(Platform Engineering, Observabilidad, SRE, QA equipos desarrollo) y declarando
+"sin dato real — pendiente" en el resto; la conversión horas→€ se deja a
+`tarifa_hora_proveedor` (dato real del contrato, nunca estimado). `apb-agent-
+valoracion-tecnica-v1.0` v1.0.0→v1.0.1 actualizado en consecuencia. Commit
+`001c94c`.
+
+### Calidad & Validación
+
+`scripts/validate_repo.py --strict` → **0 errores**, 10 warnings exentos
+(`source_commit: unverified`) tras cada commit · **68/68 tests** · catálogo
+regenerado sin drift tras cada cambio.
+
+**Inventario al cierre:** 367 componentes (184 skills APB [+1: `apb-pm-catalogo-
+servicios-v1.0`], 57 skills terceros, 40 agentes [+1: `apb-agent-valoracion-
+tecnica-v1.0`], 35 subagentes, 17 workflows, 23 providers, 7 wrappers, 4 adapters).
+
+---
+
+*Cierre de Sesión 28 (2026-07-08).*
+
+## Sesión 29 — Cierre del lote de 32 planes de pruebas + auditoría y definición de infraestructura de ejecución (2026-07-10)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Continuación de sesión QA (uso del framework, no construcción) + corrección
+de gobernanza documental tras un hallazgo real de la propia sesión
+
+**Solicitud:** continuar el lote de 32 planes de pruebas (`quiero-que-ejecuten-el-
+valiant-castle.md`, sesión anterior) desde donde quedó (INS); tras cerrarlo, Débora
+preguntó "si quiero ejecutar un plan de pruebas completo, ¿tengo todo lo necesario?
+k6, sonar, unitarias…" — la respuesta a esa pregunta reveló un gap de gobernanza real
+que Débora pidió corregir con dos enfoques (inmediato/futuro), y después señaló
+correctamente que ese contenido también debía reflejarse en `PLAN_FASES_FUTURAS.md`
+y `HANDOFF_TECNICOS.md`, no solo en el estándar.
+
+### Workstream 1: Cierre del lote de 32 planes de pruebas (fuera del repo del framework)
+
+**Ejecutado (deliverable externo, no versionado en este repo):** los 32 planes de
+pruebas del lote QA-continuación viven en `Proyectos\SDD - Framework desarrollo
+asistido por IA\planes de pruebas\` (fuera de este repo, sin control de versiones).
+Cerrados en esta sesión:
+- **INS:** el `.md` (120 KB, con hallazgos de código reales sobre `APB.INS`) ya
+  estaba completo de la sesión anterior; solo faltaba generar el `.html`
+  (`scripts/generate_test_plan_html.py`).
+- **MPT (AEATService):** única app del lote de 32 sin ninguna carpeta de salida.
+  Generada desde cero cruzando la fuente Jira (42 casos) con el código real de
+  `APB.API.MPT` (commit `d9ee4ea`): hallazgos relevantes incluyen que el "sello
+  electrónico" documentado es en realidad autenticación mTLS de transporte (el
+  método de firma WS-Security existe pero es código muerto), un contrato de
+  respuesta real con 6 campos no documentados, un `AutoMapper`/DTO nunca invocado,
+  y una contradicción confirmada por el propio test suite del repo entre el caso
+  `MPT-R04` de la fuente Jira y el comportamiento real ante XML malformado.
+- **Verificación de integridad de las 32 apps:** existencia de `.md`+`.html`,
+  tamaño no-stub, footer estándar, cierre HTML correcto, `assets/` generado,
+  matriz de pruebas con bloques reales — 32/32 conformes (33 carpetas de salida,
+  la 33ª es `AOM_ARGOS-MDE`, el piloto original conservado sin tocar).
+- `python scripts/validate_repo.py --strict` ejecutado como cierre del lote:
+  0 errores, mismos 10 warnings exentos de siempre — repo del framework intacto
+  (esta parte del trabajo no toca ningún fichero del framework).
+
+### Workstream 2: Auditoría de infraestructura de ejecución + corrección de gobernanza (COMPLETADO)
+
+**Hallazgo de la auditoría** (2 subagentes de investigación, verificación
+componente a componente contra el repo real, no asumida):
+- **k6:** `prov-k6-v1.0` en `draft`, `endpoint: "local://k6"` (CLI local, no cuenta
+  k6 Cloud). `infra/azure-qa-runtime/k6/` es un runner Docker **genérico** —
+  ningún script `.js` de ninguna aplicación existe todavía.
+- **SonarQube:** conexión REST real y verificada (`http://gisplanolpre.port.apb.es:9001`,
+  100 proyectos reales listados vía User Token) — pero es el **token personal de
+  Débora** como variable de entorno local, solo consumido hoy por
+  `scripts/generate_powerbi_dashboard.py`, sin gate de calidad ni confirmación de
+  qué apps del lote de 32 tienen project key registrado.
+- **Tests unitarios:** el CI del framework (`validate.yml`) solo valida el propio
+  repo (`validate_repo.py`, `tests/`) — no orquesta ejecución de tests de ninguna
+  app. Verificado por inspección directa: la mayoría de los ~68 repos clonados en
+  `GitHub-Repos\otros\` sí tienen carpeta de tests propia; `APB.INS` es una
+  excepción confirmada sin ningún test automatizado.
+- **AKV:** `prov-akv-v1.0` con `endpoint` placeholder literal (`https://<vault-name>...`),
+  cero vault provisionado, cero código resolutor — la referencia `AKV://<secret>`
+  que todo plan de pruebas cita como "usuario de ejecución por defecto" **no es
+  operativa hoy**.
+
+**Ejecutado (corrección de gobernanza, en el repo del framework):**
+- `context/apb/standards/TEST_PLAN_STANDARD.md` v1.6.1→**1.7.0**: nueva **§9.5
+  "Estado real de la infraestructura de ejecución — inmediato vs. futuro"**, con
+  dos tablas explícitas (qué es operativo hoy con destino `local` vs. qué falta
+  aprovisionar para `ci-runner`/`azure-qa`). §9.2 enlazado (aviso de que la vía
+  AKV no es operativa). Ítem nuevo en el checklist §10. Entrada en `Historial`.
+- `context/apb/templates/TEST_PLAN.md`: §1.6 actualizado para no describir
+  `AKV://<secret>` como resoluble por defecto sin remitir a §9.5.
+- `discovery/HANDOFF_TECNICOS.md`: **QA2-1** y **QA3-2** ampliados para dejar
+  explícito que ya no bloquean solo a TruckCenter, sino a los 32 planes del lote.
+  **QA3-3** (nuevo): pasar Sonar de token personal a cuenta de servicio real —
+  tarea de Plataforma/Ciberseguridad, no ejecutable por Claude.
+- `discovery/PLAN_FASES_FUTURAS.md` Sección B (lo que Claude puede ejecutar sin
+  más insumos): 2 filas nuevas — escribir los 32 scripts k6 reales, y confirmar
+  qué apps del lote tienen project key en Sonar (ambas con la REST API ya
+  verificada, sin depender de que Plataforma aprovisione nada). Ninguna se
+  duplicó en `HANDOFF_TECNICOS.md` (regla explícita del propio documento: trabajo
+  ejecutable por Claude va a Sección B, trabajo manual de Plataforma/Ciberseguridad
+  va a `HANDOFF_TECNICOS.md`).
+- Catálogo regenerado (`generate_catalog.py`): drift detectado en `INDEX.md`/
+  `catalog/CATALOG.md` — no de esta sesión, venía de un cambio previo sin
+  commitear en `providers/prov-sonar-v1.0.md` (fecha del MCP oficial SonarSource);
+  sincronizado.
+
+### Calidad & Validación
+
+`scripts/validate_repo.py --strict` → **0 errores**, 10 warnings exentos
+(`source_commit: unverified`) · **68/68 tests** · catálogo regenerado sin drift
+tras la sincronización.
+
+**Inventario al cierre:** sin cambio de componentes (367) — esta sesión modificó
+gobernanza (estándar, plantilla, handoff, plan de fases) y generó contenido de
+negocio fuera del repo (32 planes de pruebas), no creó/eliminó componentes del
+catálogo.
+
+**Pendiente real, no de esta sesión:** ver `HANDOFF_TECNICOS.md` QA2-1/QA3-2/QA3-3
+(Plataforma/Ciberseguridad) y `PLAN_FASES_FUTURAS.md` Sección B (Claude, a demanda)
+para el detalle de qué falta antes de poder ejecutar los 32 planes con
+infraestructura centralizada en vez de local/manual.
+
+---
+
+*Cierre de Sesión 29 (2026-07-10).*
+
+---
+
+## Sesión 30 — Descomposición DDD completa de SÒSTRAT: 24 dossiers de aplicación final (2026-07-11 a 2026-07-14)
+
+**Participantes:** Débora Martín, Claude Sonnet 5
+
+**Tipo:** Uso del framework (discovery/DDD sobre un monolito real) — no construcción de componentes del catálogo
+
+**Contexto:** tres commits consecutivos (`c631fc2` 2026-07-11, `c6dd4fe` 2026-07-13,
+`5513c72` 2026-07-14) que ejecutan la descomposición DDD completa del monolito
+`SOSTRAT-Sostrat-MJ8` con los agentes propios del framework
+(`apb-agent-ddd-v1.0`, `apb-arch-decompose-v1.0`). **Esta bitácora no se
+actualizó al cierre de ninguna de las tres** — corregido ahora (verificación
+2026-07-14: los 24 dossiers existen, `validate_repo.py --strict` limpio,
+68/68 tests OK, sin trabajo real pendiente de ejecución en los dossiers
+mismos).
+
+### 30.1 — Fase 0-4: primera pasada de descomposición (commit `c631fc2`, 2026-07-11)
+
+14 apps, reparentadas contra el catálogo real de `apb-domain-catalog` (21
+dominios, 21 bounded contexts), roadmap de 6 fases, 14 OpenAPI + 4 AsyncAPI
+grounded en código real, testing strategy + threat model STRIDE, backlog Jira
+de 16 épicas y ~45 pantallas UI. Fase 5 (Escalas) documentada como migración
+hacia ARGOS, no extracción, con evidencia de código real (`MSG0004`,
+`PortCallCreatedDto.cs`).
+
+**Incidente de proceso detectado y corregido en la misma sesión** (documentado
+en `discovery/ddd-sostrat-mj8/session-retro-2026-07-11.md`): se generaron 28
+propuestas de dominio/BC asumiendo que `apb-domain-catalog` estaba vacío y que
+la estructura de ficheros destino era la de los templates locales. Ambas
+asunciones eran incorrectas — el submodule local estaba 4 commits por detrás
+del remoto (21 dominios `proposed` ya existentes de una sesión previa,
+solapando con 6 de los inventados), y la estructura real de ficheros
+(`domains/<nombre>/domain.md` + `contexts/<contexto>.md`) estaba documentada
+en el README del propio `apb-domain-catalog`, no leído hasta la tercera
+pasada. Causa raíz: generar sobre supuestos plausibles de un sistema externo
+en vez de leer su estado real. **Mitigación aplicada:** parche a
+`agents/apb-agent-ddd-v1.0.md` (Fase 1 exige ahora `git fetch` + comparación
+local vs. `origin/<rama>` antes de leer cualquier submodule como fuente de
+verdad) + memoria de sesión guardada
+(`feedback_verificar_repos_externos_antes_generar.md`).
+
+**Deliberadamente no corregido en esa sesión** (requiere confirmación
+explícita, no es un fix de contenido): el puntero del submodule
+`domain-catalog` en `APB-IA-FRAMEWORK` sigue apuntando a `c90668d`
+(desactualizado) — pendiente `git submodule update --remote domain-catalog` +
+revisión de diff + commit explícito de Débora. Ver §30.4 Sección A del plan
+de fases.
+
+### 30.2 — Auditoría de cobertura + 6 BCs de Fase 6 + primeros 14 dossiers (commit `c6dd4fe`, 2026-07-13)
+
+- `coverage-audit.md`: auditoría de cobertura funcional verificada contra
+  inventario real de Struts/SOAP/Batch.
+- `dead-code-register.md`: registro de código muerto con evidencia citada
+  (líneas y ficheros concretos).
+- **6 bounded contexts nuevos descubiertos en la auditoría** (no anticipados
+  en la Fase 0-4): Buques, Operadores Portuarios, Efficiency Network,
+  Servicios Auxiliares de Cruceros, Inspección SCPP, Trámites de Cliente —
+  con sus specs OpenAPI/AsyncAPI.
+- 14 de 24 dossiers de aplicación final generados (funcional + técnico +
+  datos + arquitectura + pantallas + APIs + eventos + convivencia), marcados
+  `[IA-GEN]` pendiente de validación humana.
+
+### 30.3 — Cierre de los 24 dossiers + índice consolidado (commit `5513c72`, 2026-07-14)
+
+Generados los 10 dossiers restantes (Manifiestos, Aduanas/Contenedores,
+Facturación y Liquidaciones, Clavegueram, Buques, Servicios Auxiliares de
+Cruceros, Inspección SCPP, Trámites de Cliente, Suministro Eléctrico a
+Buques, Operadores Portuarios), cada uno **re-verificado campo a campo contra
+el código real** de `SOSTRAT-Sostrat-MJ8`, no copiado de sesiones anteriores.
+Renumerado `dossier-17-operadores-portuarios` → `dossier-23` (colisión de
+numeración con `dossier-17-buques`).
+
+Creado `discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md` (v1.0.0): consolida
+los 24 dossiers (23 apps finales + 1 documento de migración/retirada de
+Escalas), con tabla de 4 bloqueantes de decisión y tabla de 9 correcciones
+pendientes de propagar a specs/eventos/código muerto ya publicados.
+
+**Hallazgos destacados de esta pasada final** (re-verificación campo a
+campo, no solo generación):
+- Motor de reglas de liquidación (`liquidadormm/`) con **153 referencias a
+  Manifiestos** + 56 a Escalas — el acoplamiento más profundo de toda la
+  serie.
+- Fusión PIF/SCPP confirmada con evidencia de código (cero uso de
+  `LlocDInspeccio` fuera de PIF/SCPP/Posicionament, comentarios que citan el
+  ticket compartido PIF-1429).
+- Fan-out real muy superior al documentado: Operadores Portuarios (369
+  ficheros) y Buques (145 ficheros consumidores / 4x lo documentado).
+- Entidad no documentada `CompteBancari` (IBAN/BIC, datos SEPA) ausente de la
+  spec OpenAPI de Operadores Portuarios y del catálogo de eventos.
+- Varias specs OpenAPI ya publicadas construidas sobre entidades equivocadas
+  o nombres de campo incorrectos (detalle completo: tabla §4 del `INDEX.md`).
+- 2 de 4 hallazgos de `dead-code-register.md` en Facturación son **falsos
+  positivos** (overrides polimórficos activos en producción) — corregido en
+  la propia auditoría antes de publicarse como definitivo.
+
+### 30.4 — Pendientes reales derivados de esta serie (verificados 2026-07-14, no ejecutados hasta ahora)
+
+Trasladados a `PLAN_FASES_FUTURAS.md` (secciones A y B) y a
+`HANDOFF_TECNICOS.md` (§6, §7, §10.3) en esta misma sesión de cierre:
+
+1. **4 bloqueantes de decisión de Arquitectura APB** (INDEX.md §3): fusión
+   PIF+SCPP (con recomendación de extender a Posicionament), `parent_domain`
+   compartido de Operadores Portuarios (#23) y Efficiency Network (#22),
+   conflicto de planificación Clavegueram (EPIC-15 vs. EPIC-13B en
+   `jira-backlog.md`), gap de evidencia de Aguada (modelo transaccional de
+   escritura no existe en el checkout auditado).
+2. **Corrección de specs ya publicadas** (INDEX.md §4): 9 correcciones
+   acotadas (entidad equivocada, nombres de campo, campos faltantes) sobre
+   specs OpenAPI/AsyncAPI/catálogo de eventos ya generados en sesiones
+   anteriores — ejecutable por Claude sin insumos externos.
+3. **Decisión de publicación**: el trabajo de esta serie contiene información
+   de negocio real de SÒSTRAT (estructura de datos, integraciones externas,
+   volúmenes) y sigue solo en commits locales — `apb-dmartin/APB-IA-FRAMEWORK`
+   es un repositorio **público** en GitHub. Débora debe decidir destino de
+   publicación antes de cualquier `git push` de estos commits (no se ha
+   pusheado nada de esta serie).
+4. **Bump del submodule `domain-catalog`** (ver §30.1) — pendiente de
+   confirmación explícita de Débora, no ejecutado automáticamente.
+5. **Formalización opcional**: no existe todavía una skill dedicada "dossier
+   de aplicación" — el formato se sintetizó combinando 4 skills/agentes
+   existentes. Si el formato resulta útil de forma recurrente en futuras
+   descomposiciones de monolitos, considerar formalizarlo.
+
+### Calidad y validación (verificación de cierre, 2026-07-14)
+
+`scripts/validate_repo.py --strict` → 0 errores, 10 warnings exentos ·
+`scripts/generate_catalog.py --check` → drift detectado y corregido (2 líneas
+triviales: fecha de `INDEX.md` y `status` de `prov-sonar-v1.0` desincronizados
+desde antes de esta serie, sin relación con SÒSTRAT) · `python -m unittest
+discover tests` → **68/68 OK**.
+
+**Inventario al cierre:** 367 componentes (sin cambio — los 24 dossiers y
+demás artefactos DDD viven en `discovery/`, no son componentes catalogables
+del framework).
+
+---
+
+### 30.5 — Continuación: corrección de specs + verificación de solapamiento + backlog readiness (2026-07-14, misma sesión)
+
+Tras el cierre inicial de la Sesión 30, Débora pidió ejecutar los pendientes que quedaron anotados en §30.4: corregir `dead-code-register.md` y las 9 specs/documentos, verificar que los nuevos dominios/apps no solapan con los ya identificados, revisar si los repos del lote de QA tienen dominio identificado, y evaluar si el backlog de SÒSTRAT está listo para que empiece la transformación (incluida la pregunta de si faltan specs por crear).
+
+**1. `dead-code-register.md` corregido** (verificado línea a línea contra el checkout real `GitHub-Repos/otros/SOSTRAT-Sostrat-MJ8/`, no solo contra el resumen de los dossiers):
+- **3 falsos positivos confirmados y corregidos** (items #9, #10, #13): `CN_LiquidadorMM_Pasajeros_Impl.java:245` (`preliquidarEquipo`) y dos métodos de `LiquidadorMM_Reglas_L2.java` (`calcularQUOTA`:823, `calcularNUM9`:838) son overrides activos y no comentados del patrón Strategy (`ILiquidadorMM_Reglas_Comunes`) — no código muerto. Verificado también que los items #11/#12 (mismo fichero) sí están genuinamente comentados — no se tocaron.
+- **6 candidatos nuevos añadidos** (items #23-27 en confianza ALTA, #10 en confianza MEDIA), todos verificados con `grep`/lectura directa: `decisionMensajeEnviarCUSREP` y código inalcanzable en `ProcesarMensaje_Impl.java` (Manifiestos); `getConsumosUltimos7Dias` y `obtenerConsumosElecFake` (Suministro Eléctrico); 3 Actions huérfanas (`CErrorEquipoAction`/`CErrorNivelEquipoAction`/`CErrorNivelTramoAction`) + wiring Spring comentado (Aduanas).
+- Numeración original preservada (no se renumeró nada) para no romper las referencias cruzadas por número desde otros dossiers (`#2`, `#3`, `#6`, `#7`, `#14`, `#19`).
+
+**2. 9 specs/documentos corregidos** (cada corrección verificada contra el dossier de origen y, en varios casos, releída contra el código fuente real para alcanzar certeza total, no solo confiar en el resumen del dossier):
+- `openapi-aduanas-contenedores.yaml` + `events-catalog.md §12`: `ContainerMovement` redefinido sobre `TrasllatContenidor` (no `MovimientoContenedor`, DTO huérfano); `TerminalReconciliationData` ampliado de ~10 a 34 campos de `ProtermCont`; catálogo `CODERR_*` corregido a 111 constantes (no ~40).
+- `openapi-buques.yaml`: ampliado de 14 a **68 campos reales** de `Vaixell.java` (tipos verificados uno a uno contra el fichero fuente, no solo el dossier); `bandera` corregido de `string` a `integer` (FK); `lng` corregido de `boolean` a `string` (hallazgo propio, verificado directamente en el código — no señalado explícitamente por el dossier); añadidos endpoint `/restore` y sub-recursos de certificados/ISPS/servicio regular de aduana.
+- `openapi-servicios-auxiliares-cruceros.yaml` + `events-catalog.md` + `api-surface-by-phase.md` + `ui-screens-backlog.md`: eliminados `numescala`/`anyescala`/`ocupacio`/`moll` (inexistentes); remodelado sobre `CreuerBus`/`CreuerVigilancia` (agregados por día, no por escala) y `CreuerBusDetall.quantitat` (campo real de ocupación); añadidos `CreuerAuxiliarBus`/`CreuerVigilanciaServei`/`CreuerServeiTarifa` (ausentes pese a concentrar la lógica de negocio real).
+- `openapi-inspeccion-scpp.yaml` + `events-catalog.md` + `api-surface-by-phase.md` + `ui-screens-backlog.md`: PK inventada `idinspeccio` corregida a la PK compuesta real (`sptinspeccio`+`anyinspeccio`+`seqinspeccio`); `idllocinspeccio`→`idlloc`; `resultat`→`resinspeccio`; añadidos `CalendariDeCapacitats`/`LlocTipusInspeccio` (mecanismo real que hace cumplir la capacidad, ausente).
+- `openapi-tramites-cliente.yaml` + `events-catalog.md` + `ui-screens-backlog.md`: nombres de campo sistemáticamente incorrectos corregidos (`idtipustramit`→`idtiptramit`, `idestat`→`idestattramit`, `datcreacio`→`datacreacio`, `datlectura`→`datalectura`; `assumpte` retirado, no existe — el dato libre real es `dadesaddicionals`).
+- `openapi-suministro-electrico-buques.yaml` + `events-catalog.md`: añadido `idestat` (gobierna la máquina de estados del BC, ausente); `navinternacional` corregido de `boolean` a `string`; añadidos recursos `SeConsum`/`SeConcesionari`/`SeLogSincronizacion`.
+- `openapi-operadores-portuarios.yaml`: `eseffnetwork` corregido de `boolean` a `string` (`"S"`/`"N"`); `comptefaceenlace` (inexistente) corregido a `compteface`; añadido sub-recurso `CompteBancari` (cuentas bancarias/mandato SEPA, dato financiero sensible, marcado explícitamente para cifrado/exclusión de eventos) y endpoints de baja/restauración.
+- `coverage-audit.md`: `transporteterrestre` corregido de 89 a 56 rutas únicas (33 duplicadas entre `struts-config.xml` y su satélite, sin deduplicar en la cifra original); subtotal ajustado.
+
+Los 7 ficheros OpenAPI corregidos se validaron sintácticamente con `yaml.safe_load` tras cada edición (2 errores de sintaxis YAML detectados y corregidos en el proceso — dos puntos sin comillas dentro de un `summary` en texto plano).
+
+**3. Verificación de solapamiento de dominio**: cruzados los 6 BCs de Fase 6 contra los 21 dominios de `apb-domain-catalog` y los 21 BCs de Fase 0-4 (`catalog-comparison.md §D`) — **ninguno duplica un dominio existente**. Hallazgo nuevo: `bc-tramites-cliente-v1` → `dom-administracion-electronica-v1` tiene un desajuste semántico sin resolver (el dominio real está definido en torno a integración AGE — GEISER/Notifica/FACe/Portafirmas —, Trámites de Cliente es sobre gestiones de un operador portuario ante APB, no ante el Estado). Añadido a `PLAN_FASES_FUTURAS.md` #93.
+
+**4. Verificación de dominio en el lote de 33 apps de QA**: cruzados contra `apb-domain-catalog` y `repo-domain-coverage.md` (auditoría previa de 69 repos, 2026-07-11). **26/33 con dominio identificado.** 7/33 sin él: `DGT`/`MPS`/`MPT`/`NTA` (ya trackeados como pendientes en `repo-domain-coverage.md`) y **`ADV`/`FLU`(`APB.API.FIL`)/`RCF`** (hallazgo nuevo — ni siquiera están clonados localmente, nunca entraron en ninguna auditoría de dominio).
+
+**5. Evaluación de preparación del backlog**: actualizado `readiness-assessment.md` a v5. Respuesta a "¿deberían crearse specs?": **no** — las 23 apps con extracción real ya tienen spec propio; Efficiency Network y Escalas correctamente no tienen spec por diseño (extensión de otro agregado / migración, no extracción). Respuesta a "¿tenemos todo lo necesario para empezar?": **no del todo** — la corrección de esta sesión mejora la exactitud de lo ya documentado, pero **no cierra el residuo real de cobertura** que el propio `coverage-audit.md`/`readiness-assessment.md` v4 ya señalaba como pendiente (105 rutas de paquete raíz sin BC asignado, 100 batch jobs sin auditar job a job, 3 gaps SOAP, y sobre todo: **cero validación humana** — todo el árbol sigue en `status: discovered`, sin revisión de Arquitectura APB ni de ningún domain expert).
+
+### Calidad y validación (cierre de la continuación, 2026-07-14)
+
+`scripts/validate_repo.py --strict` → 0 errores, 10 warnings exentos · `python -m unittest discover tests` → 68/68 OK (sin cambios — todo el trabajo de esta continuación vive en `discovery/`, no toca componentes del catálogo) · los 7 ficheros OpenAPI corregidos parsean sin error (`yaml.safe_load`).
+
+---
+
+### 30.6 — Continuación crítica: auditoría de consumidores externos ocultos de SÒSTRAT (2026-07-14, misma sesión)
+
+Débora cuestionó la conclusión de "sin solapamiento de dominios" del §30.5 con un ejemplo concreto: **CTA es una aplicación existente que solo visualiza elementos de otros dominios** — es decir, mi verificación de solapamiento había cruzado solo contra `apb-domain-catalog` y las propias secciones §7 de los dossiers, nunca contra el universo real de aplicaciones ya construidas en `GitHub-Repos\otros\` (~69 repos).
+
+**Verificación directa de CTA**: confirmó el punto de Débora y reveló algo más grave — `APB.API.CTS`/`APB.APP.CTA` no es solo un visor, tiene un `SostratController.cs`/`DbSostratContext.cs` (Entity Framework) que lee directamente ~50 tablas de SÒSTRAT (Manifiestos, Aduanas, MMPP, Buques, Ferrocarril), con actividad de mantenimiento reciente (mayo 2026), y **ningún dossier de la serie lo menciona**. La propuesta original (`bc-aduanas-contenedores-v1.md`) incluso afirmaba —incorrectamente— que CTA no tenía "paquete propio en el código".
+
+**Rastreo sistemático (con acuerdo explícito de Débora sobre alcance/profundidad/uso de subagentes)**: grep de contenido sobre los ~69 repos de `GitHub-Repos\otros\` en busca de referencias a SÒSTRAT, filtrado a 9 repos con dependencia real y directa (no solo textual). Lanzados 8 subagentes en paralelo, cada uno cargando el prompt de `agents/apb-agent-ddd-v1.0.md` como metodología, para verificar uno a uno con evidencia de código (fichero:línea, lectura/escritura, actividad reciente vía `git log`).
+
+**Resultado — 9 aplicaciones reales con dependencia directa no documentada, 3 de ellas con escritura**: ver detalle completo y evidencia en el nuevo documento [`discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md`](ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md).
+
+1. `APB.API.CPR` (Precintos) — lee/escribe `INSPECCIO` (SCPP, no PIF) + SOAP a Portic.
+2. `APB.API.IPB` (Pesaje/báscula) — **escribe** en 15+ tablas de Transporte Terrestre/MARPOL.
+3. `APB.API.CTS`/`APB.APP.CTA` (Gestión de Contenedores) — lee ~50 tablas de Manifiestos+Aduanas+MMPP+Buques+Ferrocarril, solo lectura, desarrollo activo.
+4. `APB.API.AUT` — lee/escribe `AUTORITZACIO` de PPS en tiempo real desde tótems físicos — bloqueante crítico del patrón Strangler Fig.
+5. `APB.API.REB` + `apb.p51` — leen/escriben `Rebut` de Facturación; P51 **crea recibos en SÒSTRAT** vía SOAP.
+6. `APB.API.LRT` (+ `APB.API.LRG` como cliente indirecto) — lee Buques, **escribe** en Escalas (triple escritor junto con ARGOS).
+7. `APB.API.OPS` — puente de solo lectura vía Data Warehouse sobre Suministro Eléctrico, no duplica el build pero requiere decisión de convivencia.
+8. `APB.API.CRE`/`APB.APP.CRE`/`APB.API.VXL`/`APB.API.SLC` — **hallazgo mayor**: ya es la implementación .NET real y activa (~3 meses) de lo que `bc-cruceros-v1` (dossier de aplicación final todavía sin escribir) debería documentar.
+
+**Causa raíz identificada (carencia real del framework, no solo de esta ejecución)**: `agents/apb-agent-ddd-v1.0.md` nunca incluye un paso de rastreo de consumidores externos de la BBDD de origen — solo analiza el sistema a transformar y el catálogo de dominios. Añadido como mejora propuesta al agente en `PLAN_FASES_FUTURAS.md` #99.
+
+**Documentación actualizada**: nuevo `EXTERNAL_CONSUMERS_AUDIT.md`; notas añadidas a `dossier-00`, `dossier-05`, `dossier-09`, `dossier-12`, `dossier-13`, `dossier-15`, `dossier-17`, `dossier-18`, `dossier-19`, `dossier-21` (§14 de cada uno) y a `proposals/bc-cruceros-v1.md`; `INDEX.md §3/§4` ampliado; `PLAN_FASES_FUTURAS.md` #98 (bloqueante crítico) y #99 (mejora de agente).
+
+**Respuesta actualizada a "¿puedo pasar a validación humana y ponerme a desarrollar?"**: **no todavía**. Además del residuo de cobertura y la falta de validación humana ya señalados en `readiness-assessment.md` v5, existe ahora un bloqueante nuevo y más urgente: 9 aplicaciones reales en producción/desarrollo activo dependen directamente de datos que varias extracciones (Transporte Terrestre, PPS, Facturación, Buques, Escalas, Suministro Eléctrico, SCPP, Manifiestos, Aduanas, Cruceros) van a tocar. Ninguna decisión de *ejecución* debe tomarse sobre esas extracciones sin coordinar antes con los equipos propietarios de esas 9 aplicaciones.
+
+### 30.7 — Auditoría de consistencia cruzada acotada (2026-07-14, misma sesión)
+
+Cierre de la Tarea #7: en vez de re-derivar desde cero eventos/APIs/pantallas/modelos/backlog de las 24 dossiers (esfuerzo no proporcionado dado que cada dossier ya se generó con re-verificación de código real), se hizo una lectura completa de los 7 dossiers marcados `PROVISIONAL`/alto riesgo (Mano de Estiba #03, Aguada #07, Concesiones #14, Facturación #15, Clavegueram #16, Efficiency Network #22, Operadores Portuarios #23) buscando específicamente inconsistencias entre lo que cada dossier reporta en su propio §9/§10 (APIs/Eventos) y los ficheros de specs/catálogo reales.
+
+**Confirmación general**: los 7 dossiers ya son rigurosos por diseño — cada uno documenta explícitamente sus propios gaps de cobertura API/evento/pantalla en vez de darlos por cerrados (p. ej. Clavegueram §9 señala que solo 2 de 4 acciones de negocio tienen endpoint; Mano de Estiba señala la ausencia de pantalla de sincronización). No se encontró ningún caso de "gap silencioso" no auto-reportado.
+
+**2 inconsistencias cruzadas concretas encontradas y corregidas**:
+1. `events-catalog.md §19` (`ConsumClaveguerLiquidado`, 9 campos) vs. `specs/asyncapi-fase4.yaml` (`ConsumClaveguerData`, 4 campos) — ya señalada por `dossier-16-clavegueram.md §10` sin resolver. Corregido: `asyncapi-fase4.yaml` ampliado a los mismos 9 campos.
+2. **Residuo de la corrección de `eseffnetwork`** (Sesión 30.5): quedaban 2 menciones sin corregir a `Usuari.eseffnetwork=true` (boolean) en `jira-backlog.md:459` y `proposals/bc-efficiency-network-v1.md:77`, pese a que `dossier-23-operadores-portuarios.md` y el spec ya estaban corregidos a `String "S"/"N"`. Ambas corregidas.
+
+**Conclusión de la Tarea #7**: la calidad interna de la serie es alta — el riesgo real para "pasar a desarrollo" no está en la exactitud campo a campo de los dossiers (ya verificada exhaustivamente durante su generación), sino en los 2 bloqueantes ya identificados: el residuo de cobertura/validación humana (`readiness-assessment.md` v5) y los 9 consumidores externos no documentados (§30.6).
+
+### 30.8 — Re-derivación completa desde código + informe ejecutivo (2026-07-14, misma sesión)
+
+El usuario pidió explícitamente la re-derivación completa desde código fuente de eventos/APIs/pantallas/backlog de las 24 dossiers (no solo consistencia cruzada entre documentos, como en 30.7), un informe ejecutivo y la actualización de toda la documentación necesaria.
+
+**Incidente de plataforma**: se lanzaron 8 agentes en paralelo (3 dossiers cada uno, mismo patrón que la auditoría de consumidores externos de 30.6) para cubrir las 24 dossiers. Los 8 fallaron a mitad de ejecución por un límite de sesión de la API ("session limit · resets 15:50 Europe/Madrid"); solo 2 devolvieron resultado parcial, marcado por el propio sistema como no fiable. Se preguntó al usuario cómo proceder (esperar al reset y relanzar / proceder directamente sin subagentes / reducir alcance); eligió **proceder directamente, sin más subagentes, de forma secuencial y priorizando los dossiers de mayor riesgo**.
+
+**Alcance ejecutado**: verificación directa contra el checkout real de `SOSTRAT-Sostrat-MJ8` (grep/lectura de `struts-config.xml` y satélites, DTOs Java) para 10 dossiers de los 14 priorizados como alto riesgo: #05 PPS, #09 Transporte Terrestre, #12 Manifiestos, #13 Aduanas, #14 Concesiones, #16 Clavegueram, #20 Trámites Cliente, #21 Suministro Eléctrico, #22 Efficiency Network, #23 Operadores Portuarios. Los 12 dossiers restantes (00,01,02,04,06,08,10,11,15,17,18,19) no se re-verificaron con este nivel de profundidad esta sesión, por presupuesto — decisión explícita del usuario, documentada con transparencia en `INFORME_EJECUTIVO.md §3`. De estos, #03/#07/#15 ya habían pasado la auditoría acotada de 30.7.
+
+**2 correcciones reales encontradas y aplicadas** (detalle completo en `INFORME_EJECUTIVO.md §4`):
+1. **`dossier-16-clavegueram.md`**: la corrección de 30.7 (4→9 campos en `ConsumClaveguerData`) fue insuficiente — el propio dossier-16 §5 ya documentaba 25 campos reales en `ClvgConsums.java` y señalaba `codiusaigua`/`idservei` como críticos y ausentes. Ampliado a 11 campos (`specs/asyncapi-fase4.yaml`, `events-catalog.md §19`, `dossier-16 §5/§10/§16`).
+2. **`dossier-23-operadores-portuarios.md`**: su checklist (§14/§16) seguía listando como pendientes 2 correcciones (`eseffnetwork`, `comptefaceenlace`) que ya se habían aplicado esa misma sesión sobre `specs/openapi-operadores-portuarios.yaml` — el documento contradecía el estado real del repositorio. Corregido.
+
+**8 de los 10 dossiers auditados no tenían ningún error** — incluida una verificación no trivial de la matemática de deduplicación de rutas Struts de dossier-09 (50 + 39 − 33 = 56 rutas únicas), confirmada exacta cifra a cifra contra el checkout real. No se encontró ningún caso de dato inventado sin base en código en toda la muestra.
+
+**Entregable nuevo**: `discovery/ddd-sostrat-mj8/INFORME_EJECUTIVO.md` — síntesis de toda la Sesión 30 con recomendación explícita: NO-GO para desarrollo, GO para validación humana formal, con agenda mínima de 6 puntos.
+
+### 30.9 — Continuación de la re-derivación tras "continuar" (2026-07-14, misma sesión)
+
+El usuario pidió explícitamente continuar el trabajo de 30.8. Se verificaron 6 dossiers adicionales en profundidad (#01 Datos Maestros de Equipamiento, #04 Depotsis, #11 PIF —verificación de PK, usada como referencia cruzada para #19—, #18 Servicios Auxiliares de Cruceros, más una segunda pasada más detallada sobre #09/#19 ya tocados en 30.8), llevando la cobertura total de re-derivación de esta sesión de 10 a **20 de los 24 dossiers**.
+
+**3 correcciones reales adicionales encontradas y aplicadas**:
+1. **`dossier-19-inspeccion-scpp.md`**: el encabezado de §3 afirmaba "23 rutas Struts confirmadas", pero el propio desglose del párrafo (16+1+3) sumaba 20 — inconsistencia interna nunca corregida en la generación original. Verificado de nuevo contra `struts-config.xml`: 20 es el número correcto.
+2. **`dossier-19-inspeccion-scpp.md`** (mismo dossier, error distinto): afirmaba dos veces que la PK de `Inspeccio` (3 partes) sigue "el mismo patrón" que `OperacioPif`. `OperacioPifPk.java` confirma que esa PK real es de **2 partes**, no 3 — el propio `dossier-11-pif.md §5` ya lo documentaba bien. Corregido en las 2 secciones donde aparecía la comparación errónea.
+3. **`dossier-01-datos-maestros-equipamiento.md` / `specs/openapi-datos-maestros-equipamiento.yaml`**: el propio dossier ya señalaba desde su generación (2026-07-13) que el campo `matriculaiso` estaba mal modelado en el contrato REST (tratado como matrícula ISO 6346 real con patrón `^[A-Z]{4}[0-9]{7}$}`, cuando el DTO real lo usa como flag `S`/`N`, confirmado sin excepción en 30+ puntos del checkout) — esta corrección, señalada como pendiente, nunca se había aplicado hasta ahora. Corregida: patrón movido a `refequipament`, `matriculaiso` retipado `enum: [S,N]`, retirado de `required` en el alta.
+
+**8 de los 10 dossiers restantes verificados en esta ronda no tenían ningún error** (incluida una confirmación exacta de la duplicación de 13/17 rutas entre Depotsis y Aduanas en `struts-config-depotsis.xml`). Ninguna de las 5 correcciones totales de la sesión (30.8+30.9) es un caso de dato inventado — todas son correcciones parciales previas no propagadas, o afirmaciones puntuales de comparación/recuento incorrectas.
+
+**Quedan sin re-derivar en profundidad esta sesión**: `#00` Escalas, `#06` MARPOL, `#08` Marinas/Pesca, `#10` MMPP (`PLAN_FASES_FUTURAS.md` #100, `HANDOFF_TECNICOS.md` DC8). `INFORME_EJECUTIVO.md` actualizado a v1.1.0 reflejando el alcance final.
+
+---
+
+### 30.10 — Cierre de la re-derivación: 24/24 dossiers (2026-07-14, misma sesión)
+
+Tercera petición del usuario de "continuar". Se verificaron los 4 dossiers restantes (#00 Escalas, #06 MARPOL, #08 Marinas/Pesca, #10 MMPP) contra el checkout real, completando la re-derivación desde código de la serie completa de 24 dossiers.
+
+- **#10 MMPP** y **#08 Marinas/Pesca**: verificados exactos en todos los puntos comprobados (recuento de rutas — 58/36, 9+6 —, bloques de código muerto citados literalmente por número de línea). Sin correcciones.
+- **#06 MARPOL/Residuos**: el propio dossier ya había confirmado en su generación original que las 7 constantes de `ResidusEscala.idestat` están nombradas literalmente en código, pero esa corrección nunca se propagó — 6 ficheros distintos (`openapi-marpol-residuos.yaml`, `asyncapi-fase2.yaml`, `events-catalog.md`, `jira-backlog.md`, `testing-strategy-fase2-4.md`, `threat-model-fase2-4.md`) seguían repitiendo la advertencia obsoleta "solo el valor 1 confirmado". Corregidos los 6.
+- **#00 Escalas**: afirmaba 112 rutas Struts del paquete `escalas`; el recuento exacto da 96, coincidente con `coverage-audit.md:34`, que el dossier no había cruzado. Corregido.
+
+**Cierre definitivo de `PLAN_FASES_FUTURAS.md` #100 y `HANDOFF_TECNICOS.md` DC8**: la re-derivación desde código de las 24/24 dossiers está completa. Balance total de la sesión (30.7+30.8+30.9+30.10): **7 correcciones puntuales encontradas y aplicadas, 0 casos de dato inventado**. `INFORME_EJECUTIVO.md` actualizado a v1.2.0 con el cierre.
+
+### 30.11 — Cierre de pendientes no dependientes de revisión humana + preparación del catálogo de dominios (2026-07-14, misma sesión)
+
+El usuario preguntó directamente si el backlog/API/eventos/modelo de datos/pantallas cubrían el 100% de lo existente, si los dominios se habían actualizado tras el hallazgo de CTA, si el backlog estaba en Jira y si las specs estaban listas para SDD. Las respuestas (documentación honesta con huecos declarados, no oculta; dominios investigados pero nunca llevados al repositorio real; backlog solo en markdown, nunca creado en Jira; specs existentes pero en `status: "discovered"`) llevaron a pedir cerrar lo que no dependía de revisión humana.
+
+**1. Catálogo de dominios (`apb-domain-catalog`)**: confirmado que las 30 propuestas de esta serie nunca habían llegado al repositorio corporativo real — todas seguían en `status: "discovered"` desde su creación. `pr-instructions.md` documenta una restricción explícita del framework (`autonomy_level 1`: *"este agente no abre el PR por sí mismo"*). Tras confirmar el alcance exacto con el usuario (preparar y commitear localmente, sin push), se copiaron los 24 bounded contexts elegibles a la estructura real de `domain-catalog/domains/`, se cambió `status` a `"proposed"`, se actualizó `bounded_contexts:` en los 14 `domain.md` afectados, y se hizo commit local en una rama nueva (`feat/sostrat-bounded-contexts`, commit `7d8ebe3`) — sin push. El puntero del submodule en el repo principal queda intencionadamente sin commitear (apunta a un commit que no existe todavía en `origin`).
+
+**2. Mejora del propio agente**: `agents/apb-agent-ddd-v1.0.md` actualizado a v1.1.0 con una nueva Fase 0 ("Rastreo de consumidores externos", 4 pasos) que cierra la carencia estructural identificada en 30.6 (9 aplicaciones externas pasaron desapercibidas). `pr-instructions.md` actualizado a v7 con la tabla de consumidores externos por fichero de contexto. Cierra `PLAN_FASES_FUTURAS.md` #99.
+
+**3. Cierre del residuo de `coverage-audit.md`**: los 105 elementos del paquete raíz, los 8 módulos pequeños de §1.2, los 3 gaps SOAP y los jobs de Spring Batch (90 confirmados por recuento exacto, no la estimación previa de "100") se clasificaron uno a uno leyendo el import real de servicio/DTO de cada clase/tasklet — misma metodología que el resto de la serie. Residuo final: **1 sola ruta genuinamente sin clasificar** (`DatosBasicos`). **Hallazgo nuevo**: `Posicionament` (19 rutas Struts + 2 jobs batch, `CN_Posicionament_Impl.java`, 1.873 líneas) es una capacidad de negocio real sin ningún bounded context propuesto — confirma y amplía lo que `dossier-19-inspeccion-scpp.md §7` ya señalaba sobre el acoplamiento síncrono PIF/SCPP/Posicionament. No se ha escrito la propuesta de bounded context (es una investigación nueva, del mismo alcance que cualquiera de los 24 dossiers, no una tarea de clasificación) — registrado como `PLAN_FASES_FUTURAS.md` #102. Cierra `PLAN_FASES_FUTURAS.md` #101, `HANDOFF_TECNICOS.md` DC9.
+
+`readiness-assessment.md` actualizado a v7, `INFORME_EJECUTIVO.md` a v1.3.0. Validación estricta, 68/68 tests y catálogo del framework sin drift confirmados antes de cada commit.
+
+### 30.12 — Arquitectura de eventos EDI/VUA + enriquecimiento del knowledge base (2026-07-15, misma sesión)
+
+Continuación tras el cierre formal de la 30.11. El usuario preguntó cómo se sustituyen los batch de SÒSTRAT y la mensajería EDI/Ventanilla Única en la nueva arquitectura — respuesta: no estaba diseñado, vacío real sin ninguna mención en `decomposition-roadmap.md`/`STANDARD_ARCHITECTURE.md`. Pidió a continuación analizar la mejor transformación a arquitectura de eventos (modo plan): un agente Explore investigó el código real (`sostrat`/`sostrat-BATCH`/`sostratWSCXF`) y confirmó que no hay un único "gateway EDI" sino 3 arquitecturas distintas coexistiendo; un agente Plan diseñó la partición en dos capas + dos excepciones (`bc-integracion-edi-portic-v1` de transporte, parsing repartido sin mover nada, `bc-vua-sapl-v1` y `bc-dms-emswe-v1` como bounded contexts propios). Hallazgo colateral importante: el catálogo real describía VUA/SAPL como si fuera la EMSWe europea — es aduana **nacional** (AEAT); el circuito FAL/EMSWe real es DMS. Con alcance acordado explícitamente con el usuario (documento de análisis + 3 proposals nuevos, resto diferido a `PLAN_FASES_FUTURAS.md` #103), se entregó `edi-event-architecture-analysis.md` + 3 `proposals/bc-*.md` nuevos. Commit `d459ab5`.
+
+A continuación, el usuario pidió un fichero de contexto de negocio para los agentes — se confirmó que ya existía (`context/apb/knowledge/APB_KNOWLEDGE_BASE.md`, consultado por los 40 agentes vía `prov-apb-knowledge-v1.0`) y se enriqueció en dos pasadas: (1) correcciones de arquitectura (PIF vs. SCPP, `Posicionament`, 90 batch jobs, modelo EDI real, VUA≠EMSWe, 9 consumidores externos — commit `3e851b0`); (2) tras aclarar el usuario que pedía conocimiento **funcional** de negocio ("qué es una escala, un COARRI..."), una segunda pasada mucho más profunda sobre §2 (Escala, Título/Garantía, Mercancías, 3 secciones nuevas: Servicios al Buque, Operadores Portuarios/Efficiency Network, Transporte Terrestre) y ~20 términos nuevos en el diccionario §12.1 — commit `01da78e`. Se estableció además un proceso de mantenimiento continuo: nueva regla §14.14 en el propio knowledge base, paso 11 en la Fase 3 del workflow de `apb-agent-ddd-v1.0` (v1.2.0), y una nueva entrada en el checklist de cierre de sesión (memoria persistente) para que ningún análisis futuro deje este conocimiento aislado en `discovery/`.
+
+Por último, el usuario pidió registrar como pendiente el modelo de permisos DOCKS (roles/grupos EntraID) que facilitará más adelante — `PLAN_FASES_FUTURAS.md` #104, `HANDOFF_TECNICOS.md` DC12, commit `6462897`.
+
+### 30.13 — Incorporación del modelo de roles DOCKS en Entra ID (2026-07-15, misma sesión)
+
+El usuario facilitó el documento "Roles de Aplicación DOCKS en Entra ID" (modelo real de autorización, cerrando `PLAN_FASES_FUTURAS.md` #104 registrado en 30.12) y pidió proponer dónde incorporarlo. Tras explorar el repo (dos agentes Explore en paralelo) se confirmó que el propio pendiente #104/DC12 ya señalaba el destino exacto (`APB_KNOWLEDGE_BASE.md` §3.4 + `STANDARD_ARCHITECTURE.md`). Se detectó de paso una posible discrepancia de nombrado de grupo entre la KB (`GRP_{ENTORNO}_{APP}_{ROL}`) y `subagents/apb-sub-ops-entra-v1.0.md` (`APB-{Sistema}-{Rol}`); el usuario aclaró que no es una inconsistencia real (son grupos de naturaleza distinta — rol de aplicación DOCKS vs. grupo de seguridad genérico de IT), así que el subagente no se toca. El usuario también confirmó dejar fuera de alcance el bounded context IAM en `domain-catalog` (submodule con bump pendiente sin confirmar) — queda como trabajo DDD futuro.
+
+Contenido incorporado: `APB_KNOWLEDGE_BASE.md` §3.4 ampliada de la convención de nombre de grupo (2 líneas) al modelo completo — transición CAS/LDAP→EntraID (Permisos→Roles, Roles→Grupos), catálogo de 7 roles estándar (`APPLICATION_AUDIT`, `FRAMEWORK_ADMINISTRATOR`, `APPLICATION_CLIENT[_EXT]`, `APPLICATION_USER[_EXT]`, `APPLICATION_ADMINISTRATOR`; rol "Gestor" marcado explícitamente como pendiente de decisión, tal como lo deja el documento fuente), fin de `API_CALL_*` en favor de App Roles entre APIs, convención de nomenclatura de roles — más referencias cruzadas en §3.6, §7.3 y §12.3 (v1.2.0→1.3.0). Propagado a `STANDARD_ARCHITECTURE.md` (v1.0.0→1.1.0), `GUIDE_API_SECURITY_v1.0.md` §4.2 y `apb-arch-security-design-v1.0.md` paso 3 (v1.0.0→1.0.1), todos remitiendo a la KB como fuente única para no crear una segunda versión divergente. Cierra `PLAN_FASES_FUTURAS.md` #104 y `HANDOFF_TECNICOS.md` DC12 (pendiente el movimiento íntegro a `PLAN_FASES_COMPLETADAS.md` en el próximo cierre de sesión, junto con #99-#101, que tampoco se han movido aún).
+
+---
+
+*Cierre de Sesión 30 (2026-07-15).*

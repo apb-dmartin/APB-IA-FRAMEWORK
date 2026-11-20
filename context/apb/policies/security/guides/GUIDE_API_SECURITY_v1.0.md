@@ -66,7 +66,7 @@ Una gestión adecuada de la autenticación es esencial para prevenir accesos no 
 
 El control de acceso en las APIs garantiza que cada usuario o sistema solo pueda realizar las acciones para las que ha sido autorizado.
 
-Para ello, se aplica el principio de mínimo privilegio y se prioriza el uso de modelos basados en roles (RBAC), que permiten estructurar y administrar los permisos de forma coherente.
+Para ello, se aplica el principio de mínimo privilegio y se prioriza el uso de modelos basados en roles (RBAC), que permiten estructurar y administrar los permisos de forma coherente. Para APIs DOCKS, el catálogo de roles estándar (App Roles de Entra ID asignados a grupos) está documentado en `APB_KNOWLEDGE_BASE.md` §3.4 — partir de ahí antes de definir roles nuevos.
 
 La autorización debe validarse en cada petición, asegurando que el acceso a recursos y operaciones se comprueba de forma continua y no solo en el momento de autenticación.
 

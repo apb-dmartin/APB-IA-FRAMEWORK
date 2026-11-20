@@ -1,0 +1,221 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Datos Maestros de Equipamiento API
+  description: |
+    Datos maestros compartidos de equipamiento (contenedores y otros equipos de
+    transporte de mercancías). Fuente única de verdad para el dato de identidad
+    de un contenedor, consumida por Manifiestos, MMPP, PIF, Depotsis,
+    Aduanas/Control de Contenedores y Facturación y Liquidaciones — sustituye el
+    acceso directo a la tabla `EQUIPAMENT` que hoy hacen 6 dominios distintos.
+
+    Grounded en `sostrat/src/org/apb/sostrat/dataaccess/dto/mmpp/maestros/Equipament.java`
+    (tabla `EQUIPAMENT`, PK `idequipament`) — maestro deliberadamente delgado, 6
+    campos únicamente. No incluye peso, estado ni situación aduanera: esos
+    atributos son propios de cada bounded context consumidor (ver
+    `../events-catalog.md` §13 para la justificación de diseño).
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-mercancias-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/mmpp/maestros/Equipament.java, EquipamentPk.java, TipusEquipament.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/equipamiento/v1
+    description: APIM (producción)
+  - url: https://apim-pre.portdebarcelona.cat/equipamiento/v1
+    description: APIM (preproducción)
+security:
+  - entraId: []
+tags:
+  - name: container-equipment
+    description: Dato maestro de equipamiento (contenedores)
+paths:
+  /container-equipment:
+    get:
+      operationId: listContainerEquipment
+      summary: Listar equipamiento
+      tags: [container-equipment]
+      parameters:
+        - name: refequipament
+          in: query
+          description: Filtro por referencia de negocio del equipo
+          schema: { type: string }
+        - name: matriculaiso
+          in: query
+          description: "Corregido 2026-07-14 (dossier-01-datos-maestros-equipamiento.md §2/§14) — no es la matrícula, es un flag S/N que indica si refequipament cumple el formato ISO 6346"
+          schema: { type: string, enum: [S, N] }
+        - name: cursor
+          in: query
+          description: Cursor de paginación (cursor-based, no offset)
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de equipamiento
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ContainerEquipment" }
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      operationId: createContainerEquipment
+      summary: Registrar un nuevo equipo/contenedor
+      tags: [container-equipment]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContainerEquipmentCreate" }
+      responses:
+        "201":
+          description: Equipo creado
+          headers:
+            Location: { schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContainerEquipment" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409":
+          description: "Conflicto — `refequipament` ya existe (corregido 2026-07-14: `matriculaiso` es un flag S/N calculado, no puede tener conflicto de unicidad)"
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/ProblemDetails" }
+  /container-equipment/{idequipament}:
+    parameters:
+      - name: idequipament
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getContainerEquipment
+      summary: Consultar un equipo por su identificador
+      tags: [container-equipment]
+      responses:
+        "200":
+          description: Equipo encontrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContainerEquipment" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: updateContainerEquipment
+      summary: Actualizar atributos maestros de un equipo
+      tags: [container-equipment]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContainerEquipmentUpdate" }
+      responses:
+        "200":
+          description: Equipo actualizado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContainerEquipment" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            equipamiento.read: Lectura de equipamiento
+            equipamiento.write: Escritura de equipamiento
+  schemas:
+    ContainerEquipment:
+      type: object
+      required: [idequipament, refequipament, matriculaiso, idtipequipament]
+      properties:
+        idequipament:
+          type: integer
+          format: int64
+          description: "Grounded: Equipament.idequipament (PK, columna IDEQUIPAMENT)"
+        refequipament:
+          type: string
+          maxLength: 50
+          pattern: "^[A-Z]{4}[0-9]{7}$"
+          description: "Corregido 2026-07-14 (dossier-01-datos-maestros-equipamiento.md §2/§9/§14) — es este campo, no matriculaiso, el que lleva la matrícula/referencia real del contenedor (p.ej. MSCU1234567); el patrón ISO 6346 (norma, no confirmado literalmente en el código) pertenece aquí. Grounded: Equipament.refequipament (columna REFEQUIPAMENT)."
+        matriculaiso:
+          type: string
+          enum: [S, N]
+          description: "Corregido 2026-07-14 — NO es la matrícula: es un flag S/N que indica si refequipament cumple el dígito de control ISO 6346 (AuxiliarISO6346.validarMatricula, mod-11). Confirmado sin excepciones en 30+ puntos de asignación de todo el checkout (dossier-01 §2). Grounded: Equipament.matriculaiso (columna MATRICULAISO)."
+        idtipequipament:
+          type: integer
+          description: "Grounded: Equipament.idtipequipament (columna IDTIPEQUIPAMENT) — FK a TipusEquipament"
+        propietari:
+          type: string
+          nullable: true
+          description: "Grounded: Equipament.propietari (columna PROPIETARI)"
+        idoridade:
+          type: string
+          nullable: true
+          description: "Grounded: Equipament.idoridade (columna IDORIDADE)"
+      example:
+        idequipament: 145820
+        refequipament: "MSCU1234567"
+        matriculaiso: "S"
+        idtipequipament: 2
+        propietari: "MSC MEDITERRANEAN SHIPPING COMPANY"
+        idoridade: "ES"
+    ContainerEquipmentCreate:
+      type: object
+      required: [refequipament, idtipequipament]
+      description: "matriculaiso no forma parte del alta (required) — corregido 2026-07-14: es un valor calculado por el servicio (AuxiliarISO6346), no un dato de entrada de negocio (dossier-01 §2/§3)."
+      properties:
+        refequipament: { type: string, maxLength: 50, pattern: "^[A-Z]{4}[0-9]{7}$" }
+        idtipequipament: { type: integer }
+        propietari: { type: string, nullable: true }
+        idoridade: { type: string, nullable: true }
+    ContainerEquipmentUpdate:
+      type: object
+      properties:
+        refequipament: { type: string, maxLength: 50, pattern: "^[A-Z]{4}[0-9]{7}$" }
+        idtipequipament: { type: integer }
+        propietari: { type: string, nullable: true }
+        idoridade: { type: string, nullable: true }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      description: RFC 7807 Problem Details
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    Unauthorized:
+      description: No autenticado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

@@ -2,7 +2,7 @@
 id: "apb-agent-risk-exception-v1.0"
 name: "Risk & Exception Agent"
 description: "Agente especializado en gestión de riesgos y excepciones a estándares. Responsable de analizar riesgos de seguridad, evaluar solicitudes de excepción a políticas, proponer mitigaciones, y mantener el registro de excepciones aprobadas con su justificación."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Ciberseguridad <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -103,6 +103,27 @@ Ninguno. Este agente no delega en subagentes especializados.
 - Usa referencias a Azure Key Vault para credenciales de sistemas de gestión de riesgos
 - Cumple con procedimientos de gestión de excepciones de APB
 
+## 🔗 Relación con otros componentes
+
+> **Añadido tras hallazgo de Débora (2026-07-06):** el informe
+> `discovery/examples/INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md` se atribuyó
+> a este agente, pero este agente **no tiene asignada** la skill que lo
+> generó (`apb-gov-org-risk-report-v1.0`) — no aparece en su lista de
+> `skills:`. El análisis multi-marco (ENS/ISO/NIST/OWASP/RGPD/LCSP/WCAG)
+> con recomendación explícita APROBAR/APROBAR CON CONDICIONES/DENEGAR y
+> aplicación completa de `PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0`
+> (`context/apb/policies/compliance/PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0.md`)
+> **no es el alcance de este agente**.
+
+| Situación | Componente a invocar |
+|---|---|
+| Análisis de riesgo de seguridad puntual, sin necesidad de recomendación formal de excepción multi-marco | `apb-agent-risk-exception-v1.0` (este agente) — `apb-sec-risk-analysis-v1.0` / `apb-sec-risk-policies-v1.0` |
+| Auditoría de cumplimiento organizativa completa, con informe multi-marco, ticket JSM, flujo de 3 aprobaciones y recomendación formal de excepción | [`apb-agent-compliance-audit-v1.0`](apb-agent-compliance-audit-v1.0.md) — orquesta `apb-gov-org-risk-report-v1.0` |
+
+Si una tarea pide explícitamente un "informe de análisis de riesgos" con
+recomendación de excepción, invoca `apb-agent-compliance-audit-v1.0`, no
+este agente.
+
 ## 📝 Ejemplo de Invocación
 
 ```yaml
@@ -182,6 +203,7 @@ Agente especializado en gestión de riesgos y excepciones a estándares. Respons
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.1.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Añadida sección «Relación con otros componentes»: aclara que este agente no tiene asignada `apb-gov-org-risk-report-v1.0` y que el análisis multi-marco con recomendación de excepción es competencia de `apb-agent-compliance-audit-v1.0`. Motivo: el informe ARQ-3684 se atribuyó incorrectamente a este agente |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

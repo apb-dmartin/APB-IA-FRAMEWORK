@@ -35,7 +35,7 @@ Adaptación de la skill `skills/engineering/triage/` del repositorio público `m
 - **Gap real:** el catálogo carecía de una skill de triaje de issues como máquina de estados;
   la más cercana (`third-mattpocock-grill-prd-issues-v1.0`) va de requisitos→PRD→issues nuevos,
   no de **clasificar y enrutar** issues entrantes.
-- Encaja con el flujo Jira APB (`prov-jira-software-v1.0`) — el mapeo de etiquetas a los estados
+- Encaja con el flujo Jira APB (`prov-atlassian-v1.0`) — el mapeo de etiquetas a los estados
   reales del tablero Jira de cada equipo se define al pasar a `candidate`.
 - Complementa a [[apb-agent-quality-compliance-v1.0]] (dedup contra Jira) y a los agentes de
   incidencias/soporte.

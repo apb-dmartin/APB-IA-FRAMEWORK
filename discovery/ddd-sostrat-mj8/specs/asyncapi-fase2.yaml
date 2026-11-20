@@ -1,0 +1,152 @@
+# [IA-GEN] Generado por APB AI Framework (apb-doc-event-specs-v1.0 / apb-arch-event-driven-v1.0) - pendiente revision humana
+asyncapi: "2.6.0"
+info:
+  title: APB SÒSTRAT — Eventos de Fase 2 (PPS, MARPOL, Aguada, Marinas y Pesca, Transporte Terrestre)
+  version: "1.0.0"
+  description: |
+    Contratos de evento para los 5 servicios de Fase 2. Ver `../events-catalog.md`
+    §14-17 para la evidencia de código completa de cada campo. Envelope
+    CloudEvents 1.0 en todos los eventos.
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-doc-event-specs-v1.0"
+defaultContentType: application/json
+servers:
+  serviceBus: { url: "apb-sostrat.servicebus.windows.net", protocol: amqp, description: Azure Service Bus }
+channels:
+  evt.sostrat.pases-y-permisos:
+    subscribe:
+      operationId: onPpsEvent
+      message: { oneOf: [ { $ref: "#/components/messages/SolicitudRegistrada" }, { $ref: "#/components/messages/TarjetaCaducadaDetectada" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.pases-y-permisos.dlq" } }
+  evt.sostrat.marpol-residuos:
+    subscribe:
+      operationId: onMarpolEvent
+      message: { oneOf: [ { $ref: "#/components/messages/ListaResiduosMarpolGenerada" }, { $ref: "#/components/messages/ResiduoPesado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.marpol-residuos.dlq" } }
+  evt.sostrat.aguada:
+    description: "⚠️ PROVISIONAL — ver x-blocking-gap. No implementar publish/subscribe real hasta cerrar el gap de evidencia."
+    subscribe:
+      operationId: onAguadaEvent
+      message: { $ref: "#/components/messages/SolicitudAguadaProcesada" }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.aguada.dlq" } }
+  evt.sostrat.marinas-pesca:
+    subscribe:
+      operationId: onMarinasPescaEvent
+      message: { oneOf: [ { $ref: "#/components/messages/AtracadaMarinaRegistrada" }, { $ref: "#/components/messages/AlbaranPescaImportado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.marinas-pesca.dlq" } }
+  evt.sostrat.transporte-terrestre:
+    subscribe:
+      operationId: onTransporteTerrestreEvent
+      message: { oneOf: [ { $ref: "#/components/messages/PreavisoRegistrado" }, { $ref: "#/components/messages/AutorizacionConcedida" }, { $ref: "#/components/messages/PreavisoCodecoProcesado" }, { $ref: "#/components/messages/PreavisoCopinoRespondido" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.transporte-terrestre.dlq" } }
+components:
+  messages:
+    SolicitudRegistrada:
+      name: SolicitudRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/SolicitudPpsData" }
+      x-business-rules: [ "port+idsolicitud es inmutable una vez asignado." ]
+    TarjetaCaducadaDetectada:
+      name: TarjetaCaducadaDetectada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/TarjetaAuditData" }
+      x-error-handling:
+        - scenario: "Consumidor de notificaciones no disponible"
+          handling: "Reintento estándar; no es crítico para la integridad de datos, solo para el aviso al titular."
+    ListaResiduosMarpolGenerada:
+      name: ListaResiduosMarpolGenerada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ResidusLotData" }
+      x-business-rules: [ "Generado por el circuito batch de residuos, no por un POST directo de usuario final." ]
+    ResiduoPesado:
+      name: ResiduoPesado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ResidusLineaData" }
+      x-business-rules:
+        - "Corregido 2026-07-14 (dossier-06-marpol-residuos.md §5) — idestat de la recogida asociada (ResidusEscala) tiene 7 valores posibles, todos con constante confirmada literalmente en el código: 1=Recibido, 2=Anulado, 3=No pagado, 4=Confirmado, 5=Enviado, 6=Pagado, 7=Reclamado. Pendiente: la semántica de transiciones válidas entre estados, ver dossier-06 §13/§14."
+    SolicitudAguadaProcesada:
+      name: SolicitudAguadaProcesada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/SolicitudAguadaReadModelData" }
+      x-blocking-gap: "DTO transaccional real (SaSolicitud) no existe en el checkout — este payload está grounded solo en la vista de lectura VTcSaSolicitud, NO usar como contrato definitivo de escritura."
+    AtracadaMarinaRegistrada:
+      name: AtracadaMarinaRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/MarinaBerthData" }
+    AlbaranPescaImportado:
+      name: AlbaranPescaImportado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/AlbaraData" }
+    PreavisoRegistrado:
+      name: PreavisoRegistrado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PreavisData" }
+    AutorizacionConcedida:
+      name: AutorizacionConcedida
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/AutorizacionData" }
+    PreavisoCodecoProcesado:
+      name: PreavisoCodecoProcesado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PreavisoEdiCorrelationData" }
+      x-business-rules:
+        - "Cerrado 2026-07-21 (PLAN_FASES_FUTURAS.md #103) — sustituye el placeholder anterior 'MensajeCodecoProcesado' (ver events-catalog.md §16). Recibido vía bc-integracion-edi-portic-v1 (filtro circuito='CODECO'), reutiliza la PK de Preavis + correlación edimessageid/edicorrelationid del diseño de gateway (edi-event-architecture-analysis.md §5)."
+    PreavisoCopinoRespondido:
+      name: PreavisoCopinoRespondido
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PreavisoEdiCorrelationData" }
+      x-business-rules:
+        - "Añadido 2026-07-21 (PLAN_FASES_FUTURAS.md #103) — respuesta EDI del circuito COPINO (con APERAK) a un preaviso existente. Recibido vía bc-integracion-edi-portic-v1 (filtro circuito='COPINO'), mismo patrón de correlación que PreavisoCodecoProcesado."
+  schemas:
+    CloudEventEnvelope:
+      type: object
+      required: [specversion, type, source, id, time, data]
+      properties:
+        specversion: { type: string, enum: ["1.0"] }
+        type: { type: string }
+        source: { type: string, format: uri-reference }
+        id: { type: string, format: uuid }
+        time: { type: string, format: date-time }
+        data: { type: object }
+    SolicitudPpsData:
+      type: object
+      required: [port, idsolicitud, idempresa]
+      properties: { port: { type: string }, idsolicitud: { type: string }, idempresa: { type: string }, datsol: { type: string, format: date-time }, ntargetes: { type: integer, format: int64 }, preu: { type: number, format: double } }
+    TarjetaAuditData:
+      type: object
+      required: [seqaudit, idestat]
+      properties: { seqaudit: { type: integer, format: int64 }, dataaudit: { type: string, format: date-time }, idestat: { type: string }, numeracionTargeta: { type: string, nullable: true } }
+    ResidusLotData:
+      type: object
+      required: [idlot]
+      properties: { idlot: { type: integer, format: int64 }, datalot: { type: string, format: date-time }, idempresa: { type: string, nullable: true }, idestat: { type: integer }, importlot: { type: number, format: double, nullable: true } }
+    ResidusLineaData:
+      type: object
+      required: [idlinea, idresidu]
+      properties: { idlinea: { type: integer }, idresidu: { type: integer, format: int64 }, idtipus: { type: string, nullable: true }, quantitat: { type: number, format: double, nullable: true }, importe: { type: number, format: double, nullable: true } }
+    SolicitudAguadaReadModelData:
+      type: object
+      description: "⚠️ Grounded en vista, no en entidad transaccional real"
+      properties: { idsubport: { type: string }, idsolicitud: { type: integer, format: int64 }, anyescala: { type: integer, nullable: true }, numescala: { type: integer, nullable: true }, quantitat: { type: number, format: float, nullable: true } }
+    MarinaBerthData:
+      type: object
+      required: [seqdades]
+      properties: { seqdades: { type: integer, format: int64 }, nomvaixell: { type: string, nullable: true }, matricula: { type: string, nullable: true }, dataentrada: { type: string, format: date-time, nullable: true } }
+    AlbaraData:
+      type: object
+      required: [idalbara, idport]
+      properties: { idalbara: { type: string }, idport: { type: string }, importtotal: { type: number, format: double, nullable: true }, idarmador: { type: integer, format: int64, nullable: true } }
+    PreavisData:
+      type: object
+      required: [portpreavis, seqpreavis]
+      properties: { portpreavis: { type: string }, seqpreavis: { type: integer, format: int64 }, tipuspreavis: { type: string, nullable: true }, estat: { type: string, nullable: true } }
+    AutorizacionData:
+      type: object
+      required: [portautoritzacio, seqautoritzacio]
+      properties: { portautoritzacio: { type: string }, seqautoritzacio: { type: integer, format: int64 }, emptransport: { type: string, nullable: true }, estat: { type: string, nullable: true } }
+    PreavisoEdiCorrelationData:
+      type: object
+      description: "Añadido 2026-07-21 (PLAN_FASES_FUTURAS.md #103) — reutiliza la PK de Preavis (ver PreavisData) más las extensiones de correlación EDI del gateway bc-integracion-edi-portic-v1 (edimessageid=MissatgeEdi.nummissatge, edicorrelationid=MissatgeEdi.nummisorigen)."
+      required: [portpreavis, seqpreavis]
+      properties: { portpreavis: { type: string }, seqpreavis: { type: integer, format: int64 }, estat: { type: string, nullable: true }, estatresposta: { type: string, nullable: true, description: "Solo aplica a PreavisoCopinoRespondido, ver events-catalog.md §16" }, edimessageid: { type: string, nullable: true }, edicorrelationid: { type: string, nullable: true } }

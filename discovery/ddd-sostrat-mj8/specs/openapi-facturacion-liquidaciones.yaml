@@ -1,0 +1,264 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Facturación y Liquidaciones API
+  description: |
+    Cálculo y liquidación de tasas portuarias, y facturación (estándar y
+    Facturae). Mapea a `dom-facturacion-v1` (dominio real de todo el puerto,
+    T0-T5/P33/REB/ODP — este contrato cubre solo el alcance identificado en
+    SÒSTRAT: `Liquidacio.java`/`Factura.java`). Incluye Clavegueram
+    (`ClvgConsums.java`) como sub-recurso, reparentado provisionalmente a
+    este servicio (ver `bc-clavegueram-v1.md` — tiene dominio propio
+    `dom-clavegueram-v1` en el catálogo, la integración de despliegue con
+    Facturación es una decisión operativa, no de modelado).
+
+    **Requiere el evento `TituloActualizado`** (publicado por el servicio de
+    Concesiones) consumido en lugar de escritura directa en tablas de Título
+    — ver EPIC-12 en jira-backlog.md, prerequisito bloqueante de este spec.
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-facturacion-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/Liquidacio.java, LiquidacioLinia.java, Factura.java, dataaccess/dto/clavegueram/ClvgConsums.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/facturacion-liquidaciones/v1
+security: [ { entraId: [] } ]
+tags: [ { name: settlements }, { name: invoices }, { name: sewage-consumptions } ]
+paths:
+  /settlements:
+    get:
+      operationId: listSettlements
+      tags: [settlements]
+      parameters:
+        - { name: idestatliq, in: query, schema: { $ref: "#/components/schemas/EstatLiquidacio" } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de liquidaciones, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/Settlement" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createSettlement
+      tags: [settlements]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SettlementCreate" } } } }
+      responses:
+        "201": { description: Liquidación generada (idestatliq=GE), content: { application/json: { schema: { $ref: "#/components/schemas/Settlement" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /settlements/{portliquidacio}/{anyliquidacio}/{numliquidacio}:
+    parameters:
+      - { name: portliquidacio, in: path, required: true, schema: { type: string } }
+      - { name: anyliquidacio, in: path, required: true, schema: { type: integer } }
+      - { name: numliquidacio, in: path, required: true, schema: { type: integer, format: int64 } }
+    get:
+      operationId: getSettlement
+      tags: [settlements]
+      responses:
+        "200": { description: Liquidación encontrada, content: { application/json: { schema: { $ref: "#/components/schemas/Settlement" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /settlements/{portliquidacio}/{anyliquidacio}/{numliquidacio}/accept:
+    parameters:
+      - { name: portliquidacio, in: path, required: true, schema: { type: string } }
+      - { name: anyliquidacio, in: path, required: true, schema: { type: integer } }
+      - { name: numliquidacio, in: path, required: true, schema: { type: integer, format: int64 } }
+    post:
+      operationId: acceptSettlement
+      tags: [settlements]
+      description: Transición idestatliq → AC. Solo válido desde GE o SE.
+      responses:
+        "200": { description: Liquidación aceptada, content: { application/json: { schema: { $ref: "#/components/schemas/Settlement" } } } }
+        "409": { description: "La liquidación ya está en estado FA o AN (estado terminal)", content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+  /settlements/{portliquidacio}/{anyliquidacio}/{numliquidacio}/cancel:
+    parameters:
+      - { name: portliquidacio, in: path, required: true, schema: { type: string } }
+      - { name: anyliquidacio, in: path, required: true, schema: { type: integer } }
+      - { name: numliquidacio, in: path, required: true, schema: { type: integer, format: int64 } }
+    post:
+      operationId: cancelSettlement
+      tags: [settlements]
+      description: Transición idestatliq → AN.
+      responses:
+        "200": { description: Liquidación anulada, content: { application/json: { schema: { $ref: "#/components/schemas/Settlement" } } } }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /invoices:
+    post:
+      operationId: createInvoice
+      tags: [invoices]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/InvoiceCreate" } } } }
+      responses:
+        "201": { description: Factura emitida, content: { application/json: { schema: { $ref: "#/components/schemas/Invoice" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /invoices/{portfactura}/{anyfactura}/{idserfactura}/{numfactura}:
+    parameters:
+      - { name: portfactura, in: path, required: true, schema: { type: string } }
+      - { name: anyfactura, in: path, required: true, schema: { type: integer } }
+      - { name: idserfactura, in: path, required: true, schema: { type: string } }
+      - { name: numfactura, in: path, required: true, schema: { type: integer, format: int64 } }
+    get:
+      operationId: getInvoice
+      tags: [invoices]
+      responses:
+        "200": { description: Factura encontrada, content: { application/json: { schema: { $ref: "#/components/schemas/Invoice" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /invoices/{portfactura}/{anyfactura}/{idserfactura}/{numfactura}/pdf:
+    parameters:
+      - { name: portfactura, in: path, required: true, schema: { type: string } }
+      - { name: anyfactura, in: path, required: true, schema: { type: integer } }
+      - { name: idserfactura, in: path, required: true, schema: { type: string } }
+      - { name: numfactura, in: path, required: true, schema: { type: integer, format: int64 } }
+    get:
+      operationId: getInvoicePdf
+      tags: [invoices]
+      description: "Streaming del PDF firmado (Grounded: Factura.pdfsignat, BLOB) — nunca se incluye en el JSON principal"
+      responses:
+        "200": { description: PDF de la factura, content: { application/pdf: { schema: { type: string, format: binary } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /sewage-consumptions:
+    get:
+      operationId: listSewageConsumptions
+      tags: [sewage-consumptions]
+      description: Grounded en ClvgConsums.java (tabla CLVG_CONSUMS)
+      parameters:
+        - { name: polissa, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de consumos, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/SewageConsumption" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createSewageConsumption
+      tags: [sewage-consumptions]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/SewageConsumptionCreate" } } } }
+      responses:
+        "201": { description: Lectura registrada, content: { application/json: { schema: { $ref: "#/components/schemas/SewageConsumption" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { facturacion.read: Lectura, facturacion.write: Escritura } } }
+  schemas:
+    EstatLiquidacio:
+      type: string
+      enum: [GE, SE, AC, FA, AN, ES]
+      description: "Grounded: Liquidacio constantes ID_ESTAT_* — GE=Generada, SE=Seleccionada, AC=Aceptada, FA=Facturada, AN=Anulada, ES=Esborrany(borrador)"
+    Settlement:
+      type: object
+      required: [portliquidacio, anyliquidacio, numliquidacio, idestatliq]
+      properties:
+        portliquidacio: { type: string, description: "Grounded: Liquidacio.portliquidacio (PK parte 1, tabla LIQUIDACIO)" }
+        anyliquidacio: { type: integer, description: "Grounded: Liquidacio.anyliquidacio (PK parte 2)" }
+        numliquidacio: { type: integer, format: int64, description: "Grounded: Liquidacio.numliquidacio (PK parte 3)" }
+        idestatliq: { $ref: "#/components/schemas/EstatLiquidacio" }
+        idestatliqant: { $ref: "#/components/schemas/EstatLiquidacio" }
+        datliquidacio: { type: string, format: date-time, nullable: true, description: "Grounded: Liquidacio.datliquidacio" }
+        portescala: { type: string, nullable: true, description: "Grounded: Liquidacio.portescala" }
+        anyescala: { type: integer, nullable: true, description: "Grounded: Liquidacio.anyescala" }
+        idvaixell: { type: integer, nullable: true, description: "Grounded: Liquidacio.idvaixell" }
+        nomvaixell: { type: string, nullable: true, description: "Grounded: Liquidacio.nomvaixell" }
+        idtarifa: { type: string, nullable: true, description: "Grounded: Liquidacio.idtarifa" }
+        hihatitol: { type: string, nullable: true, description: "Grounded: Liquidacio.hihatitol" }
+        idtitol: { type: integer, nullable: true, description: "Grounded: Liquidacio.idtitol — consumido vía evento TituloActualizado, no acceso directo" }
+        impbasec: { type: number, format: double, nullable: true, description: "Grounded: Liquidacio.impbasec" }
+        impivac: { type: number, format: double, nullable: true, description: "Grounded: Liquidacio.impivac" }
+        imptotalc: { type: number, format: double, nullable: true, description: "Grounded: Liquidacio.imptotalc" }
+      example:
+        portliquidacio: "B"
+        anyliquidacio: 2026
+        numliquidacio: 887201
+        idestatliq: "GE"
+        portescala: "B"
+        anyescala: 2026
+        nomvaixell: "MSC ANNA"
+        idtarifa: "T3"
+        imptotalc: 4820.55
+    SettlementCreate:
+      type: object
+      required: [portescala, anyescala, idtarifa]
+      properties:
+        portescala: { type: string }
+        anyescala: { type: integer }
+        numescala: { type: integer }
+        idvaixell: { type: integer }
+        idtarifa: { type: string }
+        idtitol: { type: integer }
+    SettlementLine:
+      type: object
+      description: "Grounded: LiquidacioLinia.java (tabla LIQUIDACIO_LINIA)"
+      properties:
+        numlinliquidacio: { type: integer, description: "Grounded: LiquidacioLinia.numlinliquidacio (PK parte 4)" }
+        concepte: { type: string, nullable: true, description: "Grounded: LiquidacioLinia.concepte" }
+        unitats1: { type: number, format: double, nullable: true, description: "Grounded: LiquidacioLinia.unitats1" }
+        quota: { type: number, format: double, nullable: true, description: "Grounded: LiquidacioLinia.quota" }
+        impbase: { type: number, format: double, nullable: true, description: "Grounded: LiquidacioLinia.impbase" }
+        impiva: { type: number, format: double, nullable: true, description: "Grounded: LiquidacioLinia.impiva" }
+    Invoice:
+      type: object
+      required: [portfactura, anyfactura, idserfactura, numfactura]
+      properties:
+        portfactura: { type: string, description: "Grounded: Factura.portfactura (PK parte, tabla FACTURA)" }
+        anyfactura: { type: integer, description: "Grounded: Factura.anyfactura" }
+        idserfactura: { type: string, description: "Grounded: Factura.idserfactura" }
+        numfactura: { type: integer, format: int64, description: "Grounded: Factura.numfactura" }
+        datfactura: { type: string, format: date-time, nullable: true, description: "Grounded: Factura.datfactura" }
+        datvenciment: { type: string, format: date-time, nullable: true, description: "Grounded: Factura.datvenciment" }
+        nomclient: { type: string, nullable: true, description: "Grounded: Factura.nomclient (truncado a 50 caracteres en el legacy)" }
+        nif: { type: string, nullable: true, description: "Grounded: Factura.nif" }
+        idestfacturacio: { type: string, nullable: true, description: "Grounded: Factura.idestfacturacio" }
+        impbase: { type: number, format: double, nullable: true, description: "Grounded: Factura.impbase" }
+        imptotal: { type: number, format: double, nullable: true, description: "Grounded: Factura.imptotal" }
+        numregface: { type: string, nullable: true, description: "Grounded: Factura.numregface" }
+        estatface: { type: string, nullable: true, description: "Grounded: Factura.estatface" }
+      example:
+        portfactura: "B"
+        anyfactura: 2026
+        idserfactura: "A"
+        numfactura: 44201
+        datfactura: "2026-07-14T00:00:00Z"
+        nomclient: "MSC MEDITERRANEAN SHIPPING COMPANY"
+        nif: "N0000000A"
+        idestfacturacio: "EMESA"
+        imptotal: 4820.55
+        estatface: "REGISTRADA"
+    InvoiceCreate:
+      type: object
+      required: [nomclient, nif, impbase]
+      properties:
+        nomclient: { type: string, maxLength: 50 }
+        nif: { type: string }
+        adreca: { type: string }
+        impbase: { type: number, format: double }
+        idtipiva: { type: string }
+    SewageConsumption:
+      type: object
+      required: [idconsum, polissa]
+      properties:
+        idconsum: { type: integer, format: int64, description: "Grounded: ClvgConsums.idconsum (PK, tabla CLVG_CONSUMS)" }
+        idcarrega: { type: integer, format: int64, nullable: true, description: "Grounded: ClvgConsums.idcarrega" }
+        polissa: { type: string, description: "Grounded: ClvgConsums.polissa" }
+        nif: { type: string, nullable: true, description: "Grounded: ClvgConsums.nif" }
+        titular: { type: string, nullable: true, description: "Grounded: ClvgConsums.titular" }
+        consum: { type: number, format: double, nullable: true, description: "Grounded: ClvgConsums.consum" }
+        lecturaant: { type: number, format: double, nullable: true, description: "Grounded: ClvgConsums.lecturaant" }
+        lecturaact: { type: number, format: double, nullable: true, description: "Grounded: ClvgConsums.lecturaact" }
+        estat: { type: string, nullable: true, description: "Grounded: ClvgConsums.estat" }
+      example:
+        idconsum: 55021
+        polissa: "POL-8821"
+        nif: "B08123456"
+        titular: "Terminal BEST"
+        consum: 128.4
+        lecturaant: 4200.0
+        lecturaact: 4328.4
+        estat: "LIQUIDAT"
+    SewageConsumptionCreate:
+      type: object
+      required: [polissa, lecturaact]
+      properties:
+        polissa: { type: string }
+        nif: { type: string }
+        titular: { type: string }
+        lecturaact: { type: number, format: double }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    Conflict: { description: Transición de estado inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

@@ -1,0 +1,187 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Trámites de Cliente API
+  description: |
+    Gestión de trámites/gestiones que un cliente (operador portuario) inicia
+    ante el puerto — descubierto en la auditoría de cobertura 2026-07-13.
+    Grounded en `sostrat/src/org/apb/sostrat/dataaccess/dto/TramitClient.java`
+    (tabla `TRAMIT_CLIENT`).
+
+    **Corrección 2026-07-14** (`dossier-20-tramites-cliente.md §9/§14`): la
+    v1.0.0 de este contrato usaba nombres de campo sistemáticamente
+    incorrectos — `assumpte` (no existe en el DTO real; el campo real más
+    cercano es `dadesaddicionals`, datos libres, no un "asunto"),
+    `idtipustramit`→`idtiptramit`, `idestat`→`idestattramit`,
+    `datcreacio`→`datacreacio`, `datlectura`→`datalectura`. Corregidos todos
+    contra el DTO real (`TramitClient.java`, `TramitClientTipus.java`,
+    `TramitClientEstat.java`).
+  version: "1.1.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-administracion-electronica-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/TramitClient.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/client-procedures/v1
+    description: APIM (producción)
+security:
+  - entraId: []
+tags:
+  - name: client-procedures
+    description: Trámites de cliente
+paths:
+  /client-procedures:
+    get:
+      operationId: listClientProcedures
+      summary: Listar trámites de cliente
+      tags: [client-procedures]
+      parameters:
+        - name: idusuari
+          in: query
+          schema: { type: string }
+        - name: idtiptramit
+          in: query
+          schema: { type: string }
+          description: "Corregido 2026-07-14 (antes idtipustramit)"
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de trámites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/ClientProcedure" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createClientProcedure
+      summary: Iniciar un trámite de cliente
+      tags: [client-procedures]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClientProcedureCreate" }
+      responses:
+        "201":
+          description: Trámite iniciado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClientProcedure" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /client-procedures/{idtramit}:
+    parameters:
+      - name: idtramit
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getClientProcedure
+      summary: Consultar un trámite de cliente
+      tags: [client-procedures]
+      responses:
+        "200":
+          description: Trámite encontrado
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClientProcedure" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      operationId: resolveClientProcedure
+      summary: Resolver un trámite de cliente
+      tags: [client-procedures]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resolucio: { type: string }
+      responses:
+        "200":
+          description: Trámite resuelto
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClientProcedure" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            client-procedures.read: Lectura
+            client-procedures.write: Escritura
+  schemas:
+    ClientProcedure:
+      type: object
+      description: "Corregido 2026-07-14 — nombres de campo alineados con TramitClient.java. Ver info.description y dossier-20-tramites-cliente.md §9."
+      required: [idtramit, idusuari]
+      properties:
+        idtramit: { type: integer, format: int64, description: "Grounded: TramitClient.idtramit (PK, columna IDTRAMIT)" }
+        idusuari: { type: string, description: "Grounded: TramitClient.idusuari — FK hacia Usuari/Operadores Portuarios" }
+        sentittramit: { type: string, nullable: true, description: "Corregido 2026-07-14 — Grounded: TramitClient.sentittramit (columna SENTITTRAMIT), valores S/E observados en código, semántica exacta no confirmada textualmente — pendiente de confirmar con el equipo SÒSTRAT" }
+        dadesaddicionals: { type: string, nullable: true, description: "Añadido 2026-07-14 — Grounded: TramitClient.dadesaddicionals (datos adicionales libres; NO es un campo 'assumpte'/asunto, ese campo no existe en el DTO real)" }
+        idtiptramit: { type: string, nullable: true, description: "Corregido 2026-07-14 (antes idtipustramit) — Grounded: TramitClient.idtiptramit, FK a TramitClientTipus (tabla TRAMIT_CLIENT_TIPUS)" }
+        idestattramit: { type: string, nullable: true, description: "Corregido 2026-07-14 (antes idestat) — Grounded: TramitClient.idestattramit, valores PD/LE/RA/RE de CN_TramitClientEstat (máquina de estados de 4 valores)" }
+        idtramitorigen: { type: integer, format: int64, nullable: true, description: "Añadido 2026-07-14 — Grounded: TramitClient.idtramitorigen, auto-referencia para la cadena 'trámite respuesta'" }
+        datacreacio: { type: string, format: date-time, nullable: true, description: "Corregido 2026-07-14 (antes datcreacio)" }
+        datalectura: { type: string, format: date-time, nullable: true, description: "Corregido 2026-07-14 (antes datlectura) — se rellena automáticamente al pasar a estado LE" }
+        dataresolucio: { type: string, format: date-time, nullable: true, description: "Se rellena automáticamente al pasar a RA/RE" }
+        observacions: { type: string, nullable: true }
+      example:
+        idtramit: 30982
+        idusuari: "U0044213"
+        sentittramit: "E"
+        idtiptramit: "SOL-DOC"
+        idestattramit: "PD"
+        datacreacio: "2026-07-10T08:12:00Z"
+    ClientProcedureCreate:
+      type: object
+      description: "Corregido 2026-07-14 — mismo grounding que ClientProcedure"
+      required: [idusuari, idtiptramit]
+      properties:
+        idusuari: { type: string }
+        idtiptramit: { type: string }
+        sentittramit: { type: string }
+        dadesaddicionals: { type: string }
+        idtramitorigen: { type: integer, format: int64 }
+        observacions: { type: string }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

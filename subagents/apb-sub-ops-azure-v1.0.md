@@ -2,7 +2,7 @@
 id: "apb-sub-ops-azure-v1.0"
 name: "Azure Monitor Subagent"
 description: "Subagent especializado en monitorización con Azure Monitor. Responsable de configurar Application Insights, Log Analytics workspaces, dashboards, alertas y métricas personalizadas para servicios en Azure."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "operation"
@@ -10,6 +10,11 @@ parent_agent: "apb-agent-sre-v1.0"
 specialty: "Application Insights, Log Analytics, dashboards"
 created_date: "2026-06-20"
 review_date: "2026-06-22"
+skills:
+  - "apb-ops-observability-v1.0"
+  - "apb-ops-slo-design-v1.0"
+depends_on:
+  - "prov-azure-monitor-v1.0"
 ---
 
 # Azure Monitor Subagent
@@ -139,6 +144,7 @@ inputs:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.0.1 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente/subagente↔skill/provider) | Añadidos `skills:` (`apb-ops-observability-v1.0`, `apb-ops-slo-design-v1.0` — ya listadas en la tabla «Skills Asignadas» pero ausentes del frontmatter) y `depends_on:` (`prov-azure-monitor-v1.0`, ya usado en el Prompt de Sistema) |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

@@ -2,21 +2,28 @@
 id: "prov-jira-software-v1.0"
 name: "Provider: Jira Software REST API"
 description: "Proveedor de acción para Jira Software (proyectos de desarrollo de software): gestión de epics, historias, sprints y backlog. Diferente de prov-atlassian-v1.0 que cubre Jira Service Management (incidencias y service desk). Usado por agentes de desarrollo y gestión de proyectos."
-version: "1.0.0"
-status: "draft"
+version: "1.1.0"
+status: "deprecated"
+deprecated_reason: "Fusionado en prov-atlassian-v1.0 v2.0.0 (decisión de Débora, 2026-07-06) — todas sus acciones (get_issue, search_issues/JQL, add_to_sprint, link_issues, etc.) viven ahora en ese provider único."
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
 provider_type: "action"
 access_mode: "read-write"
 created_date: "2026-06-29"
-review_date: "2026-06-29"
+review_date: "2026-07-06"
 ---
 
-# Provider: Jira Software REST API
+# Provider: Jira Software REST API — DEPRECADO
+
+> **⚠️ DEPRECADO (2026-07-06):** fusionado en
+> [`prov-atlassian-v1.0`](prov-atlassian-v1.0.md) v2.0.0. No cablear ningún componente
+> nuevo a este provider — `validate_repo.py` check #25 lo bloquea. Este fichero se
+> conserva como histórico; su contenido (acciones, inputs, outputs) es idéntico al
+> que ahora vive fusionado en `prov-atlassian-v1.0`.
 
 ## Descripción
 
-Proveedor de acceso a Jira Software mediante la Atlassian REST API v3. Cubre proyectos Jira Software (tableros Scrum/Kanban, backlog, sprints, epics, historias, subtareas) para proyectos de desarrollo de software. **No debe confundirse con `prov-atlassian-v1.0`**, que cubre Jira Service Management (gestión de incidencias, service desk, tickets de operaciones). Este provider es para el ciclo de vida de desarrollo de software: planificación de sprints, gestión del backlog y seguimiento de epics.
+Proveedor de acceso a Jira Software mediante la Atlassian REST API v3. Cubre proyectos Jira Software (tableros Scrum/Kanban, backlog, sprints, epics, historias, subtareas) para proyectos de desarrollo de software. **No debe confundirse con `prov-atlassian-v1.0`**, que cubre Jira Service Management (gestión de incidencias, service desk, tickets de operaciones), Confluence y Compass. Este provider es para el ciclo de vida de desarrollo de software: planificación de sprints, gestión del backlog y seguimiento de epics.
 
 ## Casos de Uso
 

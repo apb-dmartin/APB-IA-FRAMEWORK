@@ -1,0 +1,108 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+# ⚠️ SPEC PROVISIONAL — NO IMPLEMENTAR TAL CUAL. Ver x-blocking-gap abajo.
+openapi: 3.0.3
+info:
+  title: APB Aguada API (PROVISIONAL — bloqueada por gap de evidencia)
+  description: |
+    ⚠️ **NO es un contrato definitivo.** Las clases DTO transaccionales reales
+    (`SaSolicitud`, `SaSolicitudPk`, `SaSolicitudAudit`, `SaRegistreSuministre`,
+    paquete `org.apb.sostrat.dataaccess.dto.aguada`) **no existen como código
+    fuente en el checkout de SOSTRAT-Sostrat-MJ8** — solo están compiladas
+    dentro de `sostrat-BATCH/lib/sostrat.jar`. Este schema se basa en la vista
+    de solo lectura `dataaccess/views/dto/aguada/VTcSaSolicitud.java`
+    (`V_TC_SA_SOLICITUD`), que es un modelo de consulta denormalizado, NO el
+    contrato de escritura real.
+
+    **No implementar contra este spec sin antes recuperar el código fuente
+    real** (solicitar a IN2 o decompilar `sostrat.jar` como último recurso —
+    ver `jira-backlog.md` EPIC-06, tarea crítica bloqueante).
+  version: "0.1.0-provisional"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-suministros-buques-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/views/dto/aguada/VTcSaSolicitud.java (VISTA, no la entidad transaccional real)"
+  x-blocking-gap: "DTO fuente real ausente del checkout — ver bc-aguada-v1.md notes"
+servers:
+  - url: https://apim.portdebarcelona.cat/aguada/v1
+    description: NO desplegar hasta cerrar el gap de evidencia
+security: [ { entraId: [] } ]
+tags: [ { name: water-supply-requests } ]
+paths:
+  /water-supply-requests:
+    get:
+      operationId: listWaterSupplyRequests
+      tags: [water-supply-requests]
+      description: ⚠️ Basado en vista de solo lectura, no en el modelo transaccional real
+      parameters:
+        - { name: idestatsol, in: query, schema: { type: string } }
+        - { name: anyescala, in: query, schema: { type: integer } }
+        - { name: numescala, in: query, schema: { type: integer } }
+      responses:
+        "200":
+          description: Página de solicitudes (modelo de lectura provisional)
+          content:
+            application/json:
+              schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/WaterSupplyRequestReadModel" } }, pagination: { $ref: "#/components/schemas/Pagination" } } }
+    post:
+      operationId: createWaterSupplyRequest
+      tags: [water-supply-requests]
+      description: |
+        ⚠️ **NO IMPLEMENTAR** — no hay evidencia del shape real de escritura
+        (`SaSolicitud` no está en el checkout). Este endpoint se documenta
+        como placeholder de la intención de negocio, no como contrato.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WaterSupplyRequestCreateProvisional" }
+      responses:
+        "501":
+          description: No implementado — bloqueado por gap de evidencia (ver info.x-blocking-gap)
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/ProblemDetails" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { aguada.read: Lectura, aguada.write: "Escritura — NO USAR hasta cerrar el gap" } } }
+  schemas:
+    WaterSupplyRequestReadModel:
+      type: object
+      description: "Grounded en VTcSaSolicitud.java (vista V_TC_SA_SOLICITUD) — modelo de LECTURA, no de escritura"
+      properties:
+        idsubport: { type: string }
+        idsolicitud: { type: integer, format: int64 }
+        idtipussum: { type: string, nullable: true }
+        anyescala: { type: integer, nullable: true }
+        numescala: { type: integer, nullable: true }
+        seqatracada: { type: integer, nullable: true }
+        idvaixell: { type: integer, nullable: true }
+        nomvaixell: { type: string, nullable: true }
+        datasol: { type: string, format: date-time, nullable: true }
+        idestatsol: { type: string, nullable: true }
+        quantitat: { type: number, format: float, nullable: true }
+        usuari: { type: string, nullable: true }
+      example:
+        idsubport: "B"
+        idsolicitud: 30987
+        idtipussum: "AIGUA"
+        anyescala: 2026
+        numescala: 5521
+        nomvaixell: "MSC ANNA"
+        datasol: "2026-07-14T05:00:00Z"
+        idestatsol: "PENDENT"
+        quantitat: 45.0
+    WaterSupplyRequestCreateProvisional:
+      type: object
+      description: "⚠️ Campos hipotéticos, NO grounded en DTO transaccional real — no usar para implementar"
+      properties:
+        anyescala: { type: integer }
+        numescala: { type: integer }
+        idtipussum: { type: string }
+        quantitat: { type: number, format: float }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }

@@ -7,18 +7,20 @@ description: >
   (incluyendo sistemas legacy) necesario para dar respuestas de calidad.
   NO modifica los estándares DOCKS ni las políticas tecnológicas aprobadas:
   el legacy se documenta como contexto, nunca como patrón a seguir en desarrollos nuevos.
-version: "1.0.0"
+version: "1.3.0"
 status: "approved"
 owner: "Debora Martin <deboramv@gmail.com>"
 domain: "knowledge"
 provider_type: "knowledge"
 access_mode: "read-only"
 created_date: "2026-06-30"
-review_date: "2026-06-30"
+review_date: "2026-07-15"
 sources:
   - "APB_Knowledge_Base_IA.md (v1.0)"
   - "APB_Knowledge_Base_IA_v2.md (v2.0)"
   - "APB_Knowledge_Base_IA_v3.md (v3.0)"
+  - "discovery/ddd-sostrat-mj8/ (v1.1.0, 2026-07-15) — descomposición DDD de SÒSTRAT: 24 dossiers de aplicación verificados contra código real, auditoría de 9 consumidores externos, cierre de cobertura de código (coverage-audit.md), análisis de arquitectura de eventos para EDI/Ventanilla Única"
+  - "Documento 'Roles de Aplicación DOCKS en Entra ID' (Débora Martin, 2026-07-15) — modelo de roles/grupos de autorización DOCKS, PLAN_FASES_FUTURAS.md #104"
 ---
 
 # APB Knowledge Base — Contexto Corporativo
@@ -98,16 +100,19 @@ del Ministerio de Transportes, dentro del sistema de Puertos del Estado.
 ### 2.1. La Escala (Port Call)
 
 Una **escala** es la visita completa de un buque al puerto, desde el preaviso hasta la salida.
-Es el concepto central del negocio portuario.
+Es el concepto central del negocio portuario — **todos** los demás procesos de negocio de SÒSTRAT
+(residuos, agua, mercancías peligrosas, transporte terrestre, ferrocarril, cruceros, servicios
+auxiliares) se cuelgan de una escala concreta vía su clave compuesta.
 
-**Identificadores:**
+**Identificadores reales (grounded en `Escala.java`, tabla `ESCALA`):**
 
 | Campo | Descripción |
 |-------|-------------|
-| YearPortCall | Año de la escala |
-| NumPortCall | Número secuencial de escala |
-| IdSubPort | Subpuerto (generalmente "B" = Barcelona) |
-| Aspecto | R = Real, S = Solicitado |
+| `idsubport` | Subpuerto (generalmente `"B"` = Barcelona) — 1ª parte de la PK compuesta |
+| `anyescala` | Año de la escala — 2ª parte de la PK |
+| `numescala` | Número secuencial de escala — 3ª parte de la PK |
+| `EscalaAspecte` | Tabla separada (~90 campos técnicos de buque por versión de la escala) — no un simple flag R/S, es una entidad propia con su propio historial de versiones |
+| YearPortCall / NumPortCall / IdSubPort | Nombres del DTO equivalente en ARGOS (`PortCallCreatedDto.cs`) — mismo concepto de negocio, terminología catalana (`ESCALA`/`ASPECTE`) heredada literalmente en el nombre del campo `Aspecte` |
 
 **Ciclo de vida:**
 
@@ -125,6 +130,12 @@ Preaviso (BERMAN F11) → Autorizada → Confirmada → Iniciada → [Fondeada] 
 | ATA | Actual Time of Arrival |
 | ETD | Estimated Time of Departure |
 | ATD | Actual Time of Departure |
+
+**Hallazgos funcionales importantes (descomposición DDD 2026-07)**:
+- **La facturación está entrelazada con la gestión de la escala, no separada**: `EscalaAction.java` (7.549 líneas, la god class más grande de todo SÒSTRAT) tiene ~73-81 referencias directas a `Liquidacio`/`Facturacio` — dar de alta o modificar una escala dispara lógica de facturación en el mismo flujo. Cualquier análisis que asuma "Escalas no calcula tasas" está equivocado para el legacy actual (aunque sí es la separación correcta para el destino DOCKS).
+- **ARGOS (`APB.API.TES`, microservicio `MS_PORTCALL`) ya es hoy la maestría operativa real de la escala** — SÒSTRAT sigue escribiendo `ESCALA`/`ATRACADA` y emitiendo los eventos `MSG0004`/`MSG0017`, pero migrar Escalas no es "construir un servicio nuevo": es decidir cómo se retira SÒSTRAT como fuente de verdad y se traspasa esa responsabilidad a ARGOS, que ya la ejerce.
+- **`APB.API.LRT`** (ecosistema de Líneas Regulares) también **escribe** directamente en `ESCALA` — hay hoy un tercer escritor real (SÒSTRAT, ARGOS futuro, LRT), no dos.
+- **Sistemas satélite de la escala, poco conocidos fuera del código**: `SistemaPantallas` (pantallas informativas de escala/atraque) e `InformationPortcdmWS` (notificación PortCDM — Port Collaborative Decision Making) viven ambos en `service/escalas`, no en un módulo separado.
 
 ### 2.2. El Atraque (Berth)
 
@@ -165,17 +176,24 @@ Asigna un buque a un punto de amarre en un muelle.
 - 20MIN DEPARTURE / READY TO SAIL
 - SHIP ANCHORED CALL
 
-### 2.4. Concesiones y Ocupaciones
+### 2.4. Título, Ocupaciones y Garantías (lo que el negocio llama "Concesiones")
 
-Las **concesiones** son títulos que otorgan derecho de uso de terreno portuario.
+> **Corrección de nomenclatura (dossier-14-concesiones.md)**: el concepto real en el modelo de datos y el código es **Título** (`Titol`, tabla `TITOL`), no "Concesión" — "Concesión" es un tipo posible de título entre varios (Concesión, Autorización, Ocupación, Licencia, Evento), la hipótesis inicial de nombrar todo el módulo "Concesiones" sobregeneraliza un caso particular.
+
+El **Título** otorga derecho de uso de terreno/actividad portuaria. Un título puede tener **ocupaciones** (`TitolOcupacio`, uso de dominio público — parcela con perímetro) y/o **actividades** (`TitolActivitat`, actividad portuaria autorizada), no son excluyentes.
 
 | Campo | Descripción |
 |-------|-------------|
-| IDTITOL | Identificador del título |
-| Tipo | Concesión, Autorización, Licencia, Evento |
-| Ocupació | Parcela con perímetro georreferenciado |
+| `idsubport`+`idtitol` | PK compuesta real del título |
+| `idestattitol` | Estado del título — catálogo real (`TITOL_ESTAT`) confirmado en código, pero sus valores concretos (más allá del nombre del campo) no estaban confirmados en el checkout auditado |
+| `idtitolprecedent` | Referencia autoreferencial — un título puede suceder a otro (renovación) |
+| Ocupació | Parcela con perímetro georreferenciado, asociada a `TitolOcupacio` |
 | Zona portuaria / zona de valor | Clasificación del espacio |
 | Vigencia / caducidad / renovación | Fechas de validez del título |
+
+**Garantía** (`Garantia`, tabla `GARANTIA`) es un aval financiero **siempre asociado a un título** (`IDTITOL`) — no tiene identidad de agregado propia, se modela como sub-recurso de Título, no como colección independiente. Incluye evidencias documentales (`GarantiaEvidencia`) y auditoría de cambios (`GarantiaAudit`).
+
+**Hallazgo estructural importante**: en el código legacy, `Liquidación` **escribe directamente** sobre `TITOL_MINIM_DADES` al eliminar una liquidación (`CN_Liquidacion_Impl.java:434`, `UPDATE TITOL_MINIM_DADES SET PORTLIQUIDACIO=NULL...`) — es el ejemplo de acoplamiento por escritura cruzada más citado de toda la descomposición DDD, y la razón por la que el evento `TituloActualizado` se considera "fundacional" para poder separar Concesiones y Facturación en dos servicios con bases de datos propias.
 
 ### 2.5. Tasas y Tarifas Portuarias
 
@@ -197,12 +215,15 @@ Las **concesiones** son títulos que otorgan derecho de uso de terreno portuario
 
 ### 2.6. Operativa de Mercancías
 
-- **Manifiestos**: declaración de carga del buque (0811 = descarga, 0812 = carga).
-- **Declaraciones sumarias (CUSCAR)**: información anticipada para Aduana.
-- **Mercancías Peligrosas (MMPP/ADR/IMO)**: gestión especial con requisitos de seguridad.
-- **SCPP**: Servicio de Control y Posicionamiento de Contenedores para inspección aduanera.
-- **PIF**: Punto de Inspección Fronterizo (control sanitario).
-- **Gate-in / Gate-out**: entrada/salida de contenedores de terminal (mensajes CODECO).
+- **Manifiesto** (`Manifest`, tabla `MANIFEST`): declaración de carga del buque, con líneas de detalle llamadas **Partida** (`PartidaVersio`, versionada) — cada partida es una línea de mercancía concreta dentro del manifiesto, con su propia clasificación arancelaria (`numonu`/`classemmpp` cuando aplica). Tipos reales de declaración: `0811` (descarga), `0812` (carga).
+- **COARRI**: mensaje EDIFACT que informa de operaciones reales de terminal (carga/descarga física de un contenedor). En SÒSTRAT sirve para **conciliar** lo que el terminal reporta contra lo que dice el manifiesto — de ahí que su tabla de negocio real sea `CONCILIACION_MANIFIESTO`, no una entidad propia. Existe también un **COARRI ferroviario** (mensaje `RAIL20`) para movimientos de contenedores por tren, con la misma función de conciliación pero en el dominio de Ferrocarril.
+- **CODECO** (gate-in/gate-out): mensaje de entrada/salida de un contenedor de una terminal. En SÒSTRAT alimenta el módulo de **Transporte Terrestre** (preavisos/autorizaciones de camión) — no es una entidad de mercancía en sí, es el evento que dispara la autorización de acceso físico del transportista.
+- **Declaraciones sumarias (CUSCAR)** y familia (`CUSREP`/`CUSRES`/`CUSRP2`): información anticipada para Aduana sobre la carga de un manifiesto, mismo motor batch que IFCSUM.
+- **Mercancías Peligrosas (MMPP/ADR/IMO)**: dos procesos de negocio distintos, no uno solo — **notificación** a las autoridades (circuito EDI `IFTDGN`, con respuesta APERAK) y **autorización** de manipulación/inspección (circuito EDI `HAZMAT`, alimenta el listado de carga). El modelo de datos (`MmppNotif`) duplica literalmente el bloque de datos de transporte para "entrada" y "salida" — 61 campos totales, la mitad simétricos.
+- **SCPP** (Servicio de Control y Posicionamiento de Contenedores): gestiona la **capacidad** del recinto de inspección (lugares, turnos, calendario de capacidad ya comprometida) y el **resultado** formal de cada inspección concreta. No confundir con PIF.
+- **PIF** (Punto de Inspección Fronteriza): gestiona la **operación real** de un camión/contenedor concreto en el finger de muelle — 6 estados confirmados en código (`CR`=creada, `AP`=aprobada, `PF`=?, `FI`=finalizada, `AN`=anulada, `AF`=?; nombres completos de `PF`/`AF` no confirmados con evidencia adicional). PIF y SCPP están tan acoplados síncronamente en el código real (validación de turno de SCPP dentro de la transacción de alta de una operación PIF) que la recomendación de la descomposición DDD es desplegarlos como **un único servicio con dos agregados**, no como dos microservicios separados.
+- **Posicionamiento**: capacidad de negocio real (no solo un detalle técnico) que asigna la posición física de un camión/contenedor en el recinto PIF, con su propio circuito EDI y su propia máquina de incidencias (`Incidencia`/`IncidenciaEQ`) — acoplada síncronamente tanto a PIF como a SCPP, pero sin bounded context propio identificado todavía en el catálogo.
+- **Depotsis** (T6): depósito de mercancía en muelle libre — una **solicitud** de depósito versionada (no editable in-place: cada cambio crea una nueva versión numerada), que agrupa una o varias **operaciones** de desconsolidación de mercancía.
 
 **Tipos de transporte ant/post:** ZZ1 = marítimo, ZZ2 = terrestre (camión), ZZ5 = tránsito marítimo, ZZ6 = ferrocarril.
 
@@ -242,6 +263,27 @@ Las **concesiones** son títulos que otorgan derecho de uso de terreno portuario
 - Terminal (`MANAGE_TERMINAL`)
 
 Funcionalidades específicas: Bunkering, Shore Power (OPS), Anexo I Terminal y Consignatario, Informe de fecha fin operaciones, Facturación electricidad (DSS_DWH).
+
+### 2.11. Servicios al Buque (residuos, agua, electricidad, alcantarillado)
+
+Cuatro servicios distintos que un buque puede contratar durante su escala, cada uno con su propio ciclo de vida y tarifa — no son variantes de lo mismo:
+
+- **MARPOL (recogida de residuos)**: gestiona el ciclo completo desde la solicitud hasta el pago de una recogida de residuos de buque. **7 estados de negocio confirmados en código** (`ResidusEscala.idestat`): `1`=Recibido, `2`=Anulado, `3`=No pagado, `4`=Confirmado, `5`=Enviado, `6`=Pagado, `7`=Reclamado (la semántica de qué transiciones son válidas entre ellos no está confirmada, solo los nombres). Tiene su **propio tarifario** (`TARIFAS_RESIDUS`, por rango y tipo de residuo), **distinto y adicional** a la bonificación de la tasa L7 que se calcula del lado de Facturación según el tipo de residuo entregado — MARPOL y Facturación comparten el "hecho de negocio" (tipo de residuo) pero no el cálculo. Circuito EDI: WASDIS, con respuesta APERAK propia.
+- **Aguada**: suministro de agua potable al buque. Bloqueado documentalmente — el DTO fuente real (`SaSolicitud`) no existe en el checkout auditado, requiere recuperarlo del proveedor (IN2).
+- **Shore Power / OPS** (Suministro Eléctrico): suministro eléctrico a un buque atracado, con lecturas de consumo real. Tarifa `P11000` (BE1 fijo + BE2 variable). Existe un puente de solo lectura hacia un Data Warehouse externo (`APB.API.OPS`, tabla `OPS_B_SESSIONS` en `DSS_DWH`) que replica estas sesiones — decisión pendiente de si el nuevo servicio lo alimenta o se retira.
+- **Clavegueram (alcantarillado)**: liquidación de consumos de alcantarillado de empresas adheridas al puerto — el bounded context más pequeño de toda la serie (3 rutas), pero con acoplamiento real de código hacia Facturación (tarifa fija `L6-50-10`, motor `CN_LiquidadorBase_Impl` compartido con Aguada/Depotsis/Suministros).
+
+### 2.12. Terceros / Operadores Portuarios y Efficiency Network
+
+El maestro de terceros de SÒSTRAT es `Usuari` (tabla `USUARI`, 118 campos confirmados) — cubre consignatarios, armadores, agentes de aduanas, transitarios y cualquier operador económico con relación comercial con APB. Es un dato maestro consumido por **al menos 30 módulos distintos** (fan-out real confirmado — más que el propio maestro de buques), pese a que la documentación previa solo citaba 3 consumidores.
+
+Incluye datos bancarios (`CompteBancari`, mandato SEPA — dato financiero sensible, sujeto a PSD2), circuitos EDI propios (`UsuariCircuitEDI`) y presencia web (`nomweb`/`urlweb`/`logoweb`).
+
+**Efficiency Network** ("Business Club") es un programa de certificaciones de sostenibilidad para empresas adheridas — funcionalmente parece un programa aparte, pero en código `EmpresaBC extends Usuari` (herencia real de clase): toda empresa adherida al programa **es**, estructuralmente, un Operador Portuario con datos adicionales. El campo `Usuari.eseffnetwork` (String `"S"`/`"N"`, no booleano) marca la adhesión desde el propio maestro de terceros.
+
+### 2.13. Transporte Terrestre
+
+Gestiona los preavisos y autorizaciones de camiones que acceden al recinto portuario para recoger/entregar mercancía, más un sub-dominio de **parquing** (plazas de aparcamiento con tarifa propia) con paquete Java diferenciado. Alimentado por los circuitos EDI CODECO (gate-in/gate-out) y COPINO (recogida/entrega, con respuesta APERAK). Tiene acoplamiento de código real (no solo documental) hacia PPS (`CN_Targetas`) y Escalas (`AlineacioDades`).
 
 ---
 
@@ -306,10 +348,68 @@ Checkout → Restore → Build → Unit Test → APB Validations
 | Reliability | ≥ C |
 | Security | ≥ C |
 
-### 3.4. Convención de Grupos de Permisos
+### 3.4. Modelo de Roles y Permisos (Entra ID)
 
+**Transición del modelo de autorización** (migración CAS/LDAP → Entra ID):
+
+| OnPremises | Entra ID |
+|------------|----------|
+| Permisos asignados a roles de aplicación | Roles definidos por aplicación, comprobados en el token emitido por Entra ID |
+| Roles asignados directamente a usuarios | Roles asignados a **grupos**; los usuarios se incorporan a los grupos |
+
+Es decir: `Permisos (OnPrem) → Roles (Entra ID)` y `Roles (OnPrem) → Grupos de
+usuarios (Entra ID)`. La autorización se resuelve comprobando los roles
+contenidos en el token, no consultando permisos individuales por usuario.
+
+**Convención de nombre de grupo** (el grupo es quien porta el rol, no lo
+sustituye — ver más abajo la convención de nombre de *rol*):
 Formato: `GRP_{ENTORNO}_{APP}_{ROL}`
 Ejemplo: `GRP_PRO_ARG_TWO` (Producción, ARGOS, Tower Operator)
+
+**Catálogo de roles por defecto:**
+
+| Rol nuevo | Rol/permiso anterior | Propósito | Alcance |
+|-----------|----------------------|-----------|---------|
+| `APPLICATION_AUDIT` | Rol `APPLICATION_AUDITOR` / permiso `ACCESS_AUDITOR` | Acceso de solo lectura a toda la aplicación para auditorías internas, revisiones de cumplimiento | Todas las operaciones de consulta (GET) |
+| `FRAMEWORK_ADMINISTRATOR` | Rol `FRAMEWORK_ADMINISTRADOR` | Administradores del framework DOCKS | Acceso total — administración del framework, configuración global, soporte avanzado de plataforma |
+| `APPLICATION_CLIENT` | — | Aplicación que se autentica sin identidad de usuario (Cl@ve, Application-to-Application, procesos automáticos). Ej.: E33, EPS | No representa una persona física; flujo de credenciales de aplicación |
+| `APPLICATION_USER_EXT` | — | Persona física externa que accede a APIs/aplicaciones del Puerto. Ej.: P33, EQV, CTA | Asociado a identidad personal; control de acceso de terceros |
+| `APPLICATION_CLIENT_EXT` | — | Aplicación externa que consume APIs del Puerto sin usuario detrás. Ej.: API CTA | Autenticación por credenciales de aplicación; no asociado a usuario físico |
+| `APPLICATION_USER` (opcional) | Rol `APPLICATION_USUARI` / permiso `ACCESS_USUARI` | Funcionalidades operativas de un usuario estándar | Normalizado al inglés para estandarización y soporte |
+| `APPLICATION_ADMINISTRATOR` (opcional) | Rol `APPLICATION_ADMINISTRADOR` / permiso `ACCESS_ADMINISTRADOR` | Administración completa de la aplicación | Acceso administrativo total de la app |
+
+> ⚠️ **Pendiente de decisión**: el rol "Gestor de la aplicación" (permiso
+> anterior `ACCESS_GESTOR`) no tiene definición final aprobada — queda por
+> decidir si se fusiona con `APPLICATION_ADMINISTRATOR` o se mantiene como
+> rol independiente. No usar como referencia hasta que se cierre esa decisión.
+
+**Roles propios de aplicación**: además de los roles estándar, cada
+aplicación puede mantener roles personalizados de negocio propios (ej.
+`VIA_SGOIRI`), que se conservan durante la migración y siguen asignándose
+como App Roles de Entra ID.
+
+**Autorización API-to-API**: el modelo legacy de permisos `API_CALL_*` para
+conceder acceso entre aplicaciones desaparece en Entra ID. Se sustituye por
+App Registrations + permisos de aplicación + App Roles asignados entre APIs.
+Ejemplo:
+```
+API_BKO_DEV
+ └── APPLICATION_ADMINISTRATOR
+      └── API_EME_DEV
+API_BKO_DEV
+ └── APPLICATION_ADMINISTRATOR
+      └── API_MES_DEV
+```
+La comunicación API-to-API se basa en roles de aplicación, no en permisos
+específicos `API_CALL_*`.
+
+**Convención de nomenclatura de roles** (distinta de la convención de nombre
+de grupo anterior — el rol se define a nivel de aplicación en Entra ID; el
+grupo es el vehículo por el que se asigna a usuarios): MAYÚSCULAS,
+separación mediante `_`, inglés, sin acentos ni caracteres especiales. Ej.
+válidos: `APPLICATION_AUDIT`, `APPLICATION_USER`, `APPLICATION_ADMINISTRATOR`,
+`FRAMEWORK_ADMINISTRATOR`, `APPLICATION_CLIENT`, `APPLICATION_CLIENT_EXT`,
+`APPLICATION_USER_EXT`.
 
 ### 3.5. Entornos
 
@@ -322,7 +422,9 @@ Ejemplo: `GRP_PRO_ARG_TWO` (Producción, ARGOS, Tower Operator)
 ### 3.6. Migración EntraID
 
 - AuthScheme: `TGT` → `EntraIdOrTGT` → `EntraID`
-- Permisos: roles en App Registration de Entra ID.
+- Permisos: roles en App Registration de Entra ID. La asignación real es
+  Rol → Grupo → Usuario (nunca Rol → Usuario directo) — ver catálogo completo
+  de roles y modelo de grupos en §3.4.
 - SCIM para provisioning automático.
 - SSO con GitHub Enterprise.
 
@@ -382,6 +484,12 @@ Ver §2.10 para detalle funcional.
 > ⚠️ **Legacy.** Stack Java no aprobado para nuevos desarrollos. Los agentes deben conocer
 > SÒSTRAT para entender integraciones, tickets y dominios funcionales, pero NO deben
 > recomendar su stack (Java/Struts/Oracle/CAS) para ningún nuevo artefacto.
+>
+> **Fuente de verdad detallada**: `discovery/ddd-sostrat-mj8/` contiene la descomposición DDD
+> completa de SÒSTRAT (24 dossiers de aplicación, uno por bounded context, cada uno
+> verificado campo a campo contra el código real — no solo generado). Empezar por
+> `discovery/ddd-sostrat-mj8/app-dossiers/INDEX.md` y `INFORME_EJECUTIVO.md` antes de
+> analizar cualquier módulo de SÒSTRAT en profundidad — evita repetir análisis ya hecho.
 
 **Jira:** SOSO, SOSI, ESCA, ESCADOS, ESCAIIB, FACT, FACTSTD, CONCB, FER, MARPOL, MERC, MERCA, MERCB, MMPP, PIF, PESCA, PPS, TRANSTE, AIGUADA, CTA, MANEST, MEDI, TERC, EST, TREDI, COARRI, WASDIS, PAXLST, DEPOTSIS, MVM, INTDBPRO, MILL, CLAVEG, SOSGIS, BUNKER, MARDEP
 **GitHub:** SOSTRAT-Sostrat-MJ8, SOSTRAT-Sostrat-JEE
@@ -402,7 +510,7 @@ Ver §2.10 para detalle funcional.
 | MARPOL | Servicios MARPOL (recogida residuos buques) |
 | MERC / MERCA / MERCB | Mercancías (manifiestos EDI, liquidación T2/T3) |
 | MMPP | Mercancías Peligrosas (autorizaciones, notificaciones) |
-| PIF | SCPP — posicionamiento contenedores inspección aduanera |
+| PIF | Puesto de Inspección Fronteriza — operación real de camión/contenedor en el finger de muelle (agregado `OperacioPif`). Candidato confirmado a fusión con SCPP (capacidad/turnos/resultado de inspección, agregado `LlocDInspeccio`/`Inspeccio`) por acoplamiento síncrono transaccional real — ver `dossier-11-pif.md`/`dossier-19-inspeccion-scpp.md`. Ambos comparten además acoplamiento síncrono con **Posicionament** (`CN_Posicionament_Impl.java`, posicionamiento físico de contenedores), capacidad de negocio real identificada sin bounded context propio todavía (`PLAN_FASES_FUTURAS.md #102`) |
 | TRANSTE | Transporte terrestre (preavisos, autorizaciones) |
 | PPS | Pases y Permisos de acceso |
 | PESCA | Actividad pesquera |
@@ -414,6 +522,8 @@ Ver §2.10 para detalle funcional.
 | DEPOTSIS | Depósito en muelle libre T6 |
 | MANEST | Mans d'Estiba (control estibadores) |
 | MEDI | Medio Ambiente |
+
+**⚠️ Consumidores externos reales de la base de datos de SÒSTRAT (hallazgo 2026-07-14)**: al menos **9 aplicaciones .NET ya en producción** (`APB.API.CPR`, `APB.API.IPB`, `APB.API.CTS`/`APB.APP.CTA`, `APB.API.AUT`, `APB.API.REB`/`apb.p51`, `APB.API.LRT`, `APB.API.OPS`, ecosistema `APB.API.CRE`/`APB.APP.CRE`/`APB.API.VXL`/`APB.API.SLC`) leen o **escriben directamente** sobre tablas Oracle de SÒSTRAT sin pasar por ningún API/evento formal — 3 de ellas con escritura directa confirmada. Ningún análisis de dominio/bounded context de SÒSTRAT debe darse por completo sin comprobar este universo de aplicaciones externas primero (ver `discovery/ddd-sostrat-mj8/EXTERNAL_CONSUMERS_AUDIT.md` para el detalle completo por app/tabla). Esta es precisamente la razón por la que `apb-agent-ddd-v1.0` incorporó una Fase 0 de rastreo de consumidores externos (ver §11).
 
 **Tablas clave de SÒSTRAT (solo para entender integraciones):**
 
@@ -430,7 +540,7 @@ Ver §2.10 para detalle funcional.
 | EQUIPAMENT | Contenedores / equipos |
 | OPS_B_SESSIONS (DSS_DWH) | Sesiones de Shore Power (facturación electricidad) |
 
-**Procesos batch especiales (SpringBatch):** ~80 tareas. Circuitos principales: BERMAN, WASDIS, COARRI/CODECO, GEISER/FACE, Notifica, TarifasResidus, Conciliación terrestre.
+**Procesos batch especiales (SpringBatch):** **90 jobs confirmados** por recuento exacto sobre 67 ficheros `sostrat-batch-*.xml` (auditoría 2026-07-14, `coverage-audit.md §8.3` — corrige la estimación previa de "~80"). Circuitos principales: BERMAN, WASDIS, COARRI, CODECO, COPINO, HAZMAT/IFTDGN (MMPP), IFCSUM/CUSCAR (Manifiestos), PAXLST, TarifasResidus (MARPOL), Conciliación de terminales, **VUA/SAPL** (Ventanilla Única Aduanera **española/AEAT**, el job más frecuente del sistema, cada 1 minuto) y **DMS** (Declaración Marítima de Sanidad — este es el circuito real de la **EMSWe europea**, no VUA). Ver §5.1 para el detalle de arquitectura EDI y la corrección VUA≠EMSWe.
 
 ### 4.4. APIs del Framework ARQ (DOCKS)
 
@@ -562,6 +672,13 @@ Plataforma de intercambio electrónico de la comunidad portuaria de Barcelona. H
 
 **Segmentos EDI clave:** UNB (cabecera intercambio), UNH (cabecera mensaje), BGM (tipo documento), DTM (fechas), RFF (referencias), LOC (ubicación), TDT (detalles transporte), NAD (nombres/direcciones), MEA (medidas: calado, peso), FTX (texto libre / ISPS).
 
+**Arquitectura real del "gateway EDI" en SÒSTRAT (analizada 2026-07-15, ver `discovery/ddd-sostrat-mj8/edi-event-architecture-analysis.md`)**: no es un único gateway — coexisten 3 arquitecturas bajo el mismo nombre:
+1. **Cola genérica `MISSATGE_EDI` + adaptador por dominio** (COARRI, CODECO, COPINO, WASDIS, HAZMAT, IFTDGN, IFCSUM/CUSCAR, PAXLST, BERMAN, Facturas). El transporte físico con Portic (`sendMessageOracle`, WSDL `ApbEdiWS.wsdl`/`PortICWS.wsdl`) y el modelo de auditoría (`MissatgeEdi`, `TipusMissatgeEdi` — tabla real de ruteo circuito→sentido, `CircuitEdi`, `ProcesEdi`, `ErrorEdi`) sí son genuinamente compartidos; el parsing de negocio y la generación de APERAK están duplicados por dominio (7 implementaciones distintas, sin clase base común).
+2. **Intercambio de ficheros XML ad-hoc**: **VUA/SAPL** (Ventanilla Única Aduanera **española**, AEAT — 4 XSD reales de la AEAT, batch cada 1 min) y **DMS** (Declaración Marítima de Sanidad — **este es el circuito real de la EMSWe europea**, formulario FAL). Ninguno de los dos usa `MISSATGE_EDI`.
+3. **Consulta SOAP síncrona bajo demanda** (parte de CODECO en transporte terrestre, vía `PortICWS`).
+
+**⚠️ Corrección importante de terminología**: VUA/SAPL (implementado en `service/pif/impl/sapl`) **no es** la Ventanilla Única Europea pese al nombre — es la aduana **nacional** española (AEAT). El circuito que sí implementa la *European Maritime Single Window environment* (EMSWe, Directiva UE 2019/1239) es **DMS**. No confundir ambos al hablar con negocio o al diseñar el bounded context correspondiente.
+
 ### 5.2. Administración General del Estado (AGE)
 
 | Sistema | Función |
@@ -676,7 +793,7 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 
 | Sistema | Mecanismo |
 |---------|-----------|
-| Aplicaciones DOCKS (Cloud) | Microsoft Entra ID + grupos APIM |
+| Aplicaciones DOCKS (Cloud) | Microsoft Entra ID + grupos APIM — catálogo de roles y modelo de grupos en §3.4 |
 | SÒSTRAT (legacy) | CAS (Apereo) + LDAP + Active Directory |
 | Alfresco (legacy) | CAS + Kerberos + LDAP |
 | Acceso físico al puerto | KABA + DormaKaba + huellas digitales (biometría) |
@@ -808,20 +925,36 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 | Shore Power (OPS) | Suministro eléctrico al buque desde tierra |
 | Aguada / Aiguada | Suministro de agua potable al buque |
 | Manifest / Manifiest | Declaración de carga del buque |
+| Partida | Línea de mercancía concreta dentro de un manifiesto, con su propia clasificación arancelaria (versionada — `PartidaVersio`) |
 | Conocimiento (B/L) | Bill of Lading — documento de embarque |
 | DUA | Documento Único Administrativo (aduanas) |
 | Gate-in / Gate-out | Entrada/salida de contenedores de terminal |
+| COARRI | Mensaje EDIFACT de operaciones reales de terminal (carga/descarga) — en SÒSTRAT se usa para **conciliar** contra el manifiesto, no como entidad de negocio propia. Existe también un COARRI ferroviario (`RAIL20`), ver §12.2 |
+| CODECO | Mensaje EDIFACT de entrada/salida de contenedor de terminal (gate-in/gate-out) — alimenta las autorizaciones de Transporte Terrestre |
+| COPINO | Mensaje EDIFACT de recogida/entrega de mercancía y vacíos — circuito bidireccional con respuesta APERAK, dominio de Transporte Terrestre |
+| HAZMAT | Circuito EDI de autorización/inspección de mercancías peligrosas (alimenta el listado de carga MMPP) |
+| IFTDGN | Circuito EDI de notificación de mercancías peligrosas a las autoridades (con respuesta APERAK), distinto de HAZMAT |
+| IFCSUM | Mensaje EDIFACT de manifiesto resumen de carga (familia CUSCAR/CUSREP/CUSRES/CUSRP2) |
+| APERAK | Mensaje EDIFACT de acuse/confirmación de aplicación — en SÒSTRAT hay **7 implementaciones distintas**, una por circuito de negocio (WASDIS, MMPP, Facturas, Posicionamiento, Preavisos, PAXLST...), sin código base compartido |
 | Contenedor | Unidad estándar de transporte (TEU = 20 pies, FEU = 40 pies) |
 | Precinto | Sello de seguridad en contenedores |
-| SCPP | Servicio de Control y Posicionamiento de Contenedores |
-| PIF | Puesto de Inspección Fronteriza |
+| Depotsis | Depósito de mercancía en muelle libre (terminal T6) — solicitud versionada + operaciones de desconsolidación asociadas |
+| Título (Titol) | Documento que otorga derecho de uso de terreno/actividad portuaria — término correcto en el modelo real; "Concesión" es solo uno de sus tipos posibles (junto a Autorización, Ocupación, Licencia, Evento), no un sinónimo exacto |
+| Operador Portuario | Maestro de terceros con relación comercial con APB (consignatarios, armadores, agentes de aduanas, transitarios) — entidad real `Usuari`, 118 campos, consumida por 30+ módulos |
+| Efficiency Network | Programa de certificaciones de sostenibilidad ("Business Club") — estructuralmente una especialización del maestro de Operadores Portuarios (`EmpresaBC extends Usuari`), no un programa aislado |
+| SCPP | Servicio de Control y Posicionamiento de Contenedores — capacidad/turnos/resultado de inspección (`LlocDInspeccio`/`Inspeccio`), candidato a fusión con PIF |
+| PIF | Puesto de Inspección Fronteriza — operación real de camión/contenedor (`OperacioPif`), distinto de SCPP aunque acoplado |
+| Posicionament | Posicionamiento físico de un camión/contenedor en el recinto PIF — capacidad de negocio real identificada en SÒSTRAT sin bounded context propuesto todavía (`CN_Posicionament_Impl.java`) |
+| VUA / SAPL | Ventanilla Única Aduanera **española** (AEAT) — coordinación de alta/baja/notificación de entrada-salida de contenedores para aduana. **No es la EMSWe europea** pese al nombre similar |
+| DMS | Declaración Marítima de Sanidad (Maritime Declaration of Health) — este es el circuito real que implementa la **EMSWe** europea (formulario FAL) |
+| MissatgeEdi / TipusMissatgeEdi | Modelo genérico de mensajería EDI de SÒSTRAT — cabecera de mensaje y tabla real de ruteo circuito→sentido, compartidos por la mayoría de circuitos EDIFACT (no por VUA ni DMS) |
 | Preavis | Aviso previo de transporte terrestre |
 | ISPS | International Ship and Port Facility Security Code |
 | Liquidació | Cálculo de la tasa portuaria aplicable |
 | Baremo | Tabla de precios aplicable (BE1 = fijo, BE2 = variable) |
 | Sujeto pasivo | Quién paga la tasa (consignatario o terminal) |
-| Concesión | Derecho de uso de espacio portuario |
-| Garantia | Aval financiero asociado a una concesión |
+| Concesión | Derecho de uso de espacio portuario — en el modelo real es un **tipo de Título** (ver `Título` más arriba), no un sinónimo genérico |
+| Garantia | Aval financiero asociado a un título — sin identidad de agregado propia, siempre referencia a `IDTITOL` |
 | ADR | Acuerdo Europeo sobre Transporte de Mercancías Peligrosas |
 
 ### 12.2. Ferrocarril
@@ -842,7 +975,8 @@ Herramienta: GestorDocMigrationTool (portdebarcelona/GestorDocMigrationTool).
 | Portal DOCKS | Portal web unificado que aloja las aplicaciones DOCKS |
 | APIBASE / ArqApiBase | Plantilla base para APIs .NET del framework |
 | ARQBASE / ArqBase | Plantilla base para aplicaciones .NET |
-| App Registration | Registro de aplicación en Microsoft Entra ID |
+| App Registration | Registro de aplicación en Microsoft Entra ID — ahí se definen los App Roles de la aplicación |
+| App Role | Rol de aplicación definido en Entra ID (ej. `APPLICATION_USER`, `APPLICATION_ADMINISTRATOR`) y asignado a grupos, no a usuarios directamente. Catálogo completo en §3.4 |
 | EntraID | Microsoft Entra ID (antiguo Azure AD) — estándar de autenticación |
 | Service Bus | Azure Service Bus — mensajería asíncrona entre microservicios |
 | Topic / Subscription | Patrón publicación/suscripción en Service Bus |
@@ -983,7 +1117,19 @@ Estas reglas complementan y nunca reemplazan las del framework (`STANDARD_ARCHIT
 11. **Contexto trilingüe** — adaptar al idioma del usuario; respetar nombres catalanes/ingleses de sistemas.
 12. **Sin secretos** — no generar ni sugerir tokens, passwords ni credenciales en ningún artefacto.
 13. **Legacy es contexto, no prescripción** — el conocimiento de SÒSTRAT, Alfresco y sistemas legacy sirve para entender el negocio e integraciones, nunca para copiar su patrón tecnológico.
+14. **Mantenimiento continuo obligatorio** — todo análisis de aplicación/dominio (DDD, arquitectura, testing, threat-model...) que descubra terminología de negocio nueva, corrija un hecho ya documentado aquí, o identifique un sistema/integración no listado, debe proponer la actualización correspondiente de este documento como parte del cierre de esa sesión — no dejarlo solo en el fichero de análisis de origen (`discovery/`). Ver `agents/apb-agent-ddd-v1.0.md` Fase 3 para el paso concreto en el caso DDD.
 
 ---
 
-*Documento generado el 2026-06-30. Fuentes: APB_Knowledge_Base_IA.md (v1.0), APB_Knowledge_Base_IA_v2.md (v2.0), APB_Knowledge_Base_IA_v3.md (v3.0) — 150 proyectos Jira, 520+ repos GitHub org:portdebarcelona, Confluence APLIS, tickets 2023-2026.*
+## Historial de Versiones
+
+| Versión | Fecha | Cambio |
+|---------|-------|--------|
+| 1.0.0 | 2026-06-30 | Creación — consolidación de APB_Knowledge_Base_IA.md v1-v3 (150 proyectos Jira, 520+ repos GitHub, Confluence APLIS, tickets 2023-2026) |
+| 1.1.0 | 2026-07-15 | Enriquecida con hallazgos de la descomposición DDD de SÒSTRAT (`discovery/ddd-sostrat-mj8/`, 24 dossiers + auditorías): distinción real PIF vs. SCPP y su candidatura a fusión; hallazgo `Posicionament` sin bounded context; recuento exacto de 90 jobs batch (corrige "~80"); arquitectura real de la mensajería EDI (modelo `MissatgeEdi`/`TipusMissatgeEdi` compartido, parsing de negocio repartido); corrección terminológica VUA (AEAT, nacional) vs. DMS (circuito real de la EMSWe europea); 9 aplicaciones externas con dependencia directa no documentada sobre datos de SÒSTRAT. Añadida regla de mantenimiento continuo (§14.14). |
+| 1.2.0 | 2026-07-15 | Segunda pasada, a petición explícita del usuario ("me refería a actualizar conocimiento funcional de negocio, nomenclaturas... qué es una escala, un COARRI, etc."): enriquece el conocimiento **funcional** (no solo arquitectura) de §2 con hallazgos reales de código — Escala (facturación entrelazada, EscalaAspecte, 3 escritores reales), Título/Garantía (corrige "Concesión" como término genérico erróneo), Mercancías (definiciones grounded de COARRI/CODECO/WASDIS/HAZMAT/IFTDGN/Depotsis/PIF-SCPP), nuevas §2.11-2.13 (Servicios al Buque, Operadores Portuarios/Efficiency Network, Transporte Terrestre). Añade ~20 términos nuevos al diccionario §12.1 (Partida, COARRI, CODECO, COPINO, HAZMAT, IFTDGN, IFCSUM, APERAK, Depotsis, Título, Operador Portuario) y corrige 2 entradas existentes (Concesión, Garantia). |
+| 1.3.0 | 2026-07-15 | Incorpora el modelo de roles/permisos DOCKS en Entra ID facilitado por Débora (cierre de `PLAN_FASES_FUTURAS.md` #104 / `HANDOFF_TECNICOS.md` DC12): §3.4 pasa de la mera convención de nombre de grupo a documentar la transición CAS/LDAP→EntraID (Permisos→Roles, Roles→Grupos), el catálogo de 7 roles estándar (`APPLICATION_AUDIT`, `FRAMEWORK_ADMINISTRATOR`, `APPLICATION_CLIENT[_EXT]`, `APPLICATION_USER[_EXT]`, `APPLICATION_ADMINISTRATOR`), el rol "Gestor" marcado como pendiente de decisión, el fin de `API_CALL_*` en favor de App Roles entre APIs, y la convención de nomenclatura de roles. Referencias cruzadas añadidas en §3.6, §7.3 y §12.3 (nuevo término App Role). |
+
+---
+
+*Documento generado el 2026-06-30, actualizado el 2026-07-15. Fuentes: APB_Knowledge_Base_IA.md (v1.0), APB_Knowledge_Base_IA_v2.md (v2.0), APB_Knowledge_Base_IA_v3.md (v3.0) — 150 proyectos Jira, 520+ repos GitHub org:portdebarcelona, Confluence APLIS, tickets 2023-2026 — y `discovery/ddd-sostrat-mj8/` (descomposición DDD de SÒSTRAT, Sesión 30, 2026-07-11 a 2026-07-15).*

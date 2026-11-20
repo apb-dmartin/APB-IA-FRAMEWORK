@@ -1,0 +1,141 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Transporte Terrestre API
+  description: |
+    Gestión de preavisos y autorizaciones de transporte terrestre de
+    mercancías. Grounded en `dataaccess/dto/transporteterrestre/Preavis.java`
+    (+PreavisBase.java, tabla PREAVIS_TT, PK portpreavis+seqpreavis) y
+    `AutorizacionGenerica.java` (tabla AUTORITZACIO_GEN_TT, PK
+    portautoritzacio+seqautoritzacio). No incluye el sub-contexto Parquing,
+    pendiente de descomposición interna (ver jira-backlog.md EPIC-07).
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-transporte-terrestre-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/transporteterrestre/Preavis.java, PreavisBase.java, AutorizacionGenerica.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/transporte-terrestre/v1
+security: [ { entraId: [] } ]
+tags: [ { name: land-transport-preadvices }, { name: land-transport-authorizations } ]
+paths:
+  /land-transport-preadvices:
+    get:
+      operationId: listPreadvices
+      tags: [land-transport-preadvices]
+      parameters:
+        - { name: estat, in: query, schema: { type: string } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de preavisos, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/LandTransportPreadvice" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createPreadvice
+      tags: [land-transport-preadvices]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/LandTransportPreadviceCreate" } } } }
+      responses:
+        "201": { description: Preaviso registrado, content: { application/json: { schema: { $ref: "#/components/schemas/LandTransportPreadvice" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /land-transport-preadvices/{portpreavis}/{seqpreavis}:
+    parameters:
+      - { name: portpreavis, in: path, required: true, schema: { type: string } }
+      - { name: seqpreavis, in: path, required: true, schema: { type: integer, format: int64 } }
+    get:
+      operationId: getPreadvice
+      tags: [land-transport-preadvices]
+      responses:
+        "200": { description: Preaviso encontrado, content: { application/json: { schema: { $ref: "#/components/schemas/LandTransportPreadvice" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /land-transport-preadvices/{portpreavis}/{seqpreavis}/authorize:
+    parameters:
+      - { name: portpreavis, in: path, required: true, schema: { type: string } }
+      - { name: seqpreavis, in: path, required: true, schema: { type: integer, format: int64 } }
+    post:
+      operationId: authorizePreadvice
+      tags: [land-transport-preadvices]
+      responses:
+        "200": { description: Preaviso autorizado, content: { application/json: { schema: { $ref: "#/components/schemas/LandTransportPreadvice" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { description: "El preaviso ya fue rechazado o autorizado previamente", content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+  /land-transport-authorizations:
+    post:
+      operationId: createAuthorization
+      tags: [land-transport-authorizations]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/LandTransportAuthorizationCreate" } } } }
+      responses:
+        "201": { description: Autorización registrada, content: { application/json: { schema: { $ref: "#/components/schemas/LandTransportAuthorization" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { transporte-terrestre.read: Lectura, transporte-terrestre.write: Escritura } } }
+  schemas:
+    LandTransportPreadvice:
+      type: object
+      required: [portpreavis, seqpreavis]
+      properties:
+        portpreavis: { type: string, description: "Grounded: PreavisBase.portpreavis (PK parte 1, tabla PREAVIS_TT)" }
+        seqpreavis: { type: integer, format: int64, description: "Grounded: PreavisBase.seqpreavis (PK parte 2)" }
+        idconsignatari: { type: string, nullable: true, description: "Grounded: PreavisBase.idconsignatari" }
+        tipuspreavis: { type: string, nullable: true, description: "Grounded: PreavisBase.tipuspreavis" }
+        trasllat: { type: string, nullable: true, description: "Grounded: PreavisBase.trasllat" }
+        datoperacio: { type: string, format: date-time, nullable: true, description: "Grounded: PreavisBase.datoperacio" }
+        matcontenidor: { type: string, nullable: true, description: "Grounded: PreavisBase.matcontenidor" }
+        refcontenidor: { type: string, nullable: true, description: "Grounded: PreavisBase.refcontenidor" }
+        estat: { type: string, nullable: true, description: "Grounded: PreavisBase.estat" }
+        datlimit: { type: string, format: date-time, nullable: true, description: "Grounded: PreavisBase.datlimit" }
+        motivorechazo: { type: string, nullable: true, description: "Grounded: PreavisBase.motivorechazo" }
+      example:
+        portpreavis: "B"
+        seqpreavis: 90211
+        idconsignatari: "CONS-4471"
+        tipuspreavis: "ENTRADA"
+        trasllat: "N"
+        datoperacio: "2026-07-14T11:00:00Z"
+        matcontenidor: "MSCU1234567"
+        estat: "PENDENT"
+    LandTransportPreadviceCreate:
+      type: object
+      required: [idconsignatari, tipuspreavis]
+      properties:
+        idconsignatari: { type: string }
+        tipuspreavis: { type: string }
+        trasllat: { type: string }
+        matcontenidor: { type: string }
+        refcontenidor: { type: string }
+    LandTransportAuthorization:
+      type: object
+      required: [portautoritzacio, seqautoritzacio]
+      properties:
+        portautoritzacio: { type: string, description: "Grounded: AutorizacionGenerica.portautoritzacio (PK parte 1, tabla AUTORITZACIO_GEN_TT)" }
+        seqautoritzacio: { type: integer, format: int64, description: "Grounded: AutorizacionGenerica.seqautoritzacio (PK parte 2)" }
+        emptransport: { type: string, nullable: true, description: "Grounded: AutorizacionGenerica.emptransport" }
+        nifemppeticionari: { type: string, nullable: true, description: "Grounded: AutorizacionGenerica.nifemppeticionari" }
+        datiniautoritzacio: { type: string, format: date-time, nullable: true, description: "Grounded: AutorizacionGenerica.datiniautoritzacio" }
+        datfiautoritzacio: { type: string, format: date-time, nullable: true, description: "Grounded: AutorizacionGenerica.datfiautoritzacio" }
+        estat: { type: string, nullable: true, description: "Grounded: AutorizacionGenerica.estat" }
+        datcaducitat: { type: string, format: date-time, nullable: true, description: "Grounded: AutorizacionGenerica.datcaducitat" }
+      example:
+        portautoritzacio: "B"
+        seqautoritzacio: 55190
+        emptransport: "TRANSCOEX SA"
+        nifemppeticionari: "B12345678"
+        datiniautoritzacio: "2026-07-14T00:00:00Z"
+        datfiautoritzacio: "2026-12-31T23:59:59Z"
+        estat: "VIGENT"
+    LandTransportAuthorizationCreate:
+      type: object
+      required: [emptransport, nifemppeticionari, datiniautoritzacio, datfiautoritzacio]
+      properties:
+        emptransport: { type: string }
+        nifemppeticionari: { type: string }
+        datiniautoritzacio: { type: string, format: date-time }
+        datfiautoritzacio: { type: string, format: date-time }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

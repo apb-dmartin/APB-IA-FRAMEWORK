@@ -1,0 +1,213 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Mano de Estiba API
+  description: |
+    Gestión de la contratación, comandas y operativa del personal de estiba
+    portuaria (estibadores).
+
+    Grounded en `sostrat/src/org/apb/sostrat/dataaccess/views/dto/manoEstiba/MaestContractacio.java`
+    (tabla `MAEST_CONTRACTACIO`, PK `idcontractacio`) y `MaestComanda.java`
+    (tabla `MAEST_COMANDA`, PK `idcomanda`). Ya existe un microservicio externo
+    ("MST") referenciado desde `ticketgranting-api-client` — este contrato debe
+    validarse contra ese servicio antes de implementar, para no duplicar
+    funcionalidad ya construida.
+  version: "1.0.0"
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-mano-estiba-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/views/dto/manoEstiba/MaestContractacio.java, MaestComanda.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/mano-estiba/v1
+    description: APIM (producción) — confirmar si debe apuntar al servicio externo MST en su lugar
+security:
+  - entraId: []
+tags:
+  - name: stevedore-contracts
+    description: Contrataciones de personal de estiba
+  - name: stevedore-work-orders
+    description: Comandas de personal de estiba
+paths:
+  /stevedore-contracts:
+    get:
+      operationId: listStevedoreContracts
+      summary: Listar contrataciones
+      tags: [stevedore-contracts]
+      parameters:
+        - name: idestatcontractacio
+          in: query
+          schema: { type: string }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        "200":
+          description: Página de contrataciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: "#/components/schemas/StevedoreContract" }
+                  pagination: { $ref: "#/components/schemas/Pagination" }
+    post:
+      operationId: createStevedoreContract
+      summary: Registrar una contratación de personal de estiba
+      tags: [stevedore-contracts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StevedoreContractCreate" }
+      responses:
+        "201":
+          description: Contratación registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StevedoreContract" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /stevedore-contracts/{idcontractacio}:
+    parameters:
+      - name: idcontractacio
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getStevedoreContract
+      summary: Consultar una contratación
+      tags: [stevedore-contracts]
+      responses:
+        "200":
+          description: Contratación encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StevedoreContract" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /stevedore-work-orders:
+    post:
+      operationId: createStevedoreWorkOrder
+      summary: Asignar una comanda de personal de estiba
+      tags: [stevedore-work-orders]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/StevedoreWorkOrderCreate" }
+      responses:
+        "201":
+          description: Comanda registrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StevedoreWorkOrder" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404":
+          description: La contratación referenciada (`idcontractacio`) no existe
+          content:
+            application/problem+json:
+              schema: { $ref: "#/components/schemas/ProblemDetails" }
+  /stevedore-work-orders/{idcomanda}:
+    parameters:
+      - name: idcomanda
+        in: path
+        required: true
+        schema: { type: integer, format: int64 }
+    get:
+      operationId: getStevedoreWorkOrder
+      summary: Consultar una comanda
+      tags: [stevedore-work-orders]
+      responses:
+        "200":
+          description: Comanda encontrada
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StevedoreWorkOrder" }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token
+          scopes:
+            mano-estiba.read: Lectura
+            mano-estiba.write: Escritura
+  schemas:
+    StevedoreContract:
+      type: object
+      required: [idcontractacio, idtipuscontractacio, idestatcontractacio]
+      properties:
+        idcontractacio: { type: integer, format: int64, description: "Grounded: MaestContractacio.idcontractacio (PK, columna IDCONTRACTACIO)" }
+        datacontractacio: { type: string, format: date-time, description: "Grounded: MaestContractacio.datacontractacio (columna DATACONTRACTACIO)" }
+        idtipuscontractacio: { type: string, description: "Grounded: MaestContractacio.idtipuscontractacio (columna IDTIPUSCONTRACTACIO) — dominio de valores real en tabla relacionada TipusContractacioMaest, no confirmado en esta extracción" }
+        idestatcontractacio: { type: string, description: "Grounded: MaestContractacio.idestatcontractacio (columna IDESTATCONTRACTACIO) — dominio de valores real en tabla relacionada EstatContractacioMaest, no confirmado" }
+        dataactualitzacio: { type: string, format: date-time, nullable: true, description: "Grounded: MaestContractacio.dataactualitzacio (columna DATAACTUALITZACIO)" }
+      example:
+        idcontractacio: 55210
+        datacontractacio: "2026-07-14T06:00:00Z"
+        idtipuscontractacio: "ORDINARIA"
+        idestatcontractacio: "ACTIVA"
+    StevedoreContractCreate:
+      type: object
+      required: [idtipuscontractacio]
+      properties:
+        datacontractacio: { type: string, format: date-time }
+        idtipuscontractacio: { type: string }
+    StevedoreWorkOrder:
+      type: object
+      required: [idcomanda, idcontractacio, idtipuscomanda, idestatcomanda]
+      properties:
+        idcomanda: { type: integer, format: int64, description: "Grounded: MaestComanda.idcomanda (PK, columna IDCOMANDA)" }
+        idcontractacio: { type: integer, format: int64, description: "Grounded: MaestComanda.idcontractacio (columna IDCONTRACTACIO, FK)" }
+        idcomandaportic: { type: integer, format: int64, nullable: true, description: "Grounded: MaestComanda.idcomandaportic (columna IDCOMANDAPORTIC) — referencia a PortIC" }
+        nifempresa: { type: string, description: "Grounded: MaestComanda.nifempresa (columna NIFEMPRESA)" }
+        idtipuscomanda: { type: string, description: "Grounded: MaestComanda.idtipuscomanda (columna IDTIPUSCOMANDA)" }
+        idestatcomanda: { type: string, description: "Grounded: MaestComanda.idestatcomanda (columna IDESTATCOMANDA)" }
+        rojillosreenganche: { type: integer, format: int64, nullable: true, description: "Grounded: MaestComanda.rojillosreenganche (columna ROJILLOSREENGANCHE)" }
+      example:
+        idcomanda: 90112
+        idcontractacio: 55210
+        idcomandaportic: 700456
+        nifempresa: "B08123456"
+        idtipuscomanda: "ORDINARIA"
+        idestatcomanda: "PENDIENTE"
+    StevedoreWorkOrderCreate:
+      type: object
+      required: [idcontractacio, idtipuscomanda, nifempresa]
+      properties:
+        idcontractacio: { type: integer, format: int64 }
+        idcomandaportic: { type: integer, format: int64 }
+        nifempresa: { type: string }
+        idtipuscomanda: { type: string }
+    Pagination:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        hasMore: { type: boolean }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, format: uri }
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/problem+json:
+          schema: { $ref: "#/components/schemas/ProblemDetails" }

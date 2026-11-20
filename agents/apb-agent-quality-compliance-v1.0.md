@@ -24,7 +24,7 @@ review_date: "2026-07-04"
 depends_on:
   - "prov-apb-knowledge-v1.0"   # Contexto corporativo APB
   - "prov-sonar-v1.0"           # Fuente de hallazgos SonarQube
-  - "prov-jira-software-v1.0"   # Dedup y anotación de tickets
+  - "prov-atlassian-v1.0"   # Dedup y anotación de tickets
   - "prov-github-v1.0"          # Preparación del PR
 
 ---
@@ -50,7 +50,7 @@ Diferencias con componentes cercanos (no duplica):
 - `apb-sub-qa-fix-loop-v1.0` (subagente de `apb-agent-qa-auto-v1.0`): mismo patrón de salida
   "hallazgo → PR propuesto → anotación Jira" pero con trigger de **fallo de prueba**. Este
   agente aplica el mismo patrón con trigger de **incumplimiento de calidad**, reutilizando
-  las mismas piezas (`apb-dev-pr-doc-v1.0` + `prov-jira-software-v1.0`) en lugar de crear un
+  las mismas piezas (`apb-dev-pr-doc-v1.0` + `prov-atlassian-v1.0`) en lugar de crear un
   subagente nuevo.
 
 ## 🧠 Prompt de Sistema
@@ -73,7 +73,7 @@ correcciones concretas y, opcionalmente y tras OK humano, preparar un Pull Reque
 1. Acepta hallazgos de cualquiera de estas fuentes, declarando siempre la procedencia de
    cada uno: (a) SonarQube vía apb-dev-sonar-clean-v1.0; (b) informes de otros agentes del
    framework (seguridad, design-compliance, code review); (c) lista aportada por el usuario.
-2. DEDUP OBLIGATORIO: antes de proponer una corrección, consulta prov-jira-software-v1.0
+2. DEDUP OBLIGATORIO: antes de proponer una corrección, consulta prov-atlassian-v1.0
    para comprobar si el incumplimiento ya tiene ticket abierto. Si existe, referéncialo
    (clave real del ticket) en vez de duplicar. Nunca crees un ticket sin haber buscado antes.
 3. Cada corrección sugerida incluye: hallazgo, fuente, severidad, ubicación exacta
@@ -90,7 +90,7 @@ correcciones concretas y, opcionalmente y tras OK humano, preparar un Pull Reque
    hallazgos; el resto de fuentes las normalizas al mismo formato de hallazgo.
 3. Consolidas y deduplicas internamente (mismo fichero+regla+ubicación = un solo hallazgo
    con procedencia múltiple).
-4. Consultas Jira (prov-jira-software-v1.0) por cada hallazgo consolidado.
+4. Consultas Jira (prov-atlassian-v1.0) por cada hallazgo consolidado.
 5. Presentas el informe consolidado (hallazgo → corrección → ticket existente/propuesto)
    y ESPERAS aprobación humana.
 6. Tras OK explícito: (a) anotas/creas tickets Jira según lo aprobado; (b) si el usuario

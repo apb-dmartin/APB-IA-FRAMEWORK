@@ -1,0 +1,119 @@
+# [IA-GEN] Generado por APB AI Framework (apb-doc-event-specs-v1.0 / apb-arch-event-driven-v1.0) - pendiente revision humana
+asyncapi: "2.6.0"
+info:
+  title: APB SÒSTRAT — Eventos de Fase 3 (MMPP, PIF, Manifiestos, Aduanas/Control de Contenedores)
+  version: "1.0.0"
+  description: |
+    Contratos de evento para los 4 servicios de Fase 3. Ver `../events-catalog.md`
+    §9-10, §8, §12 para la evidencia de código de cada campo.
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-doc-event-specs-v1.0"
+defaultContentType: application/json
+servers:
+  serviceBus: { url: "apb-sostrat.servicebus.windows.net", protocol: amqp, description: Azure Service Bus }
+channels:
+  evt.sostrat.mmpp:
+    subscribe:
+      operationId: onMmppEvent
+      message: { oneOf: [ { $ref: "#/components/messages/AutorizacionMMPPConcedida" }, { $ref: "#/components/messages/NotificacionMMPPEnviada" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.mmpp.dlq" } }
+  evt.sostrat.pif:
+    subscribe:
+      operationId: onPifEvent
+      message: { $ref: "#/components/messages/OperacionPifRegistrada" }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.pif.dlq" } }
+  evt.sostrat.manifiestos:
+    subscribe:
+      operationId: onManifiestosEvent
+      message: { oneOf: [ { $ref: "#/components/messages/ManifiestoRegistrado" }, { $ref: "#/components/messages/ManifiestoCircuitoProcesado" }, { $ref: "#/components/messages/PartidaActualizada" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.manifiestos.dlq" } }
+  evt.sostrat.aduanas-contenedores:
+    subscribe:
+      operationId: onAduanasEvent
+      message: { oneOf: [ { $ref: "#/components/messages/TrasladoContenedorActualizado" }, { $ref: "#/components/messages/DatosTerminalConciliados" }, { $ref: "#/components/messages/ErrorConciliacionDetectado" } ] }
+    bindings: { amqp: { deadLetterExchange: "evt.sostrat.aduanas-contenedores.dlq" } }
+components:
+  messages:
+    AutorizacionMMPPConcedida:
+      name: AutorizacionMMPPConcedida
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/AutorizacionMmppData" }
+    NotificacionMMPPEnviada:
+      name: NotificacionMMPPEnviada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/NotificacionMmppData" }
+      x-error-handling:
+        - scenario: "Fallo en el circuito EDI de envío a autoridades"
+          handling: "Reintento con backoff; tras agotar reintentos, DLQ + alerta a operaciones (plazo regulatorio en juego)."
+    OperacionPifRegistrada:
+      name: OperacionPifRegistrada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/OperacionPifData" }
+      x-business-rules: [ "idestatoperaciopif transiciona entre CR/AP/PF/FI/AN/AF — nombres completos no confirmados, ver events-catalog.md §10." ]
+    ManifiestoRegistrado:
+      name: ManifiestoRegistrado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ManifiestoData" }
+    ManifiestoCircuitoProcesado:
+      name: ManifiestoCircuitoProcesado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ManifiestoData" }
+    PartidaActualizada:
+      name: PartidaActualizada
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/PartidaData" }
+      x-business-rules: [ "Crea una nueva versión (versio+1), nunca sobrescribe la anterior — patrón versionado confirmado en PartidaVersio.java." ]
+    TrasladoContenedorActualizado:
+      name: TrasladoContenedorActualizado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/MovimientoContenedorData" }
+      x-error-handling:
+        - scenario: "Consumidor externo (naviera Grimaldi, vía SOAP en sostratWSCXF hoy) no puede recibir eventos AMQP directamente"
+          handling: "Requiere ACL/adaptador SOAP↔evento durante la transición — no migrar el consumidor externo de golpe."
+    DatosTerminalConciliados:
+      name: DatosTerminalConciliados
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ProtermContData" }
+    ErrorConciliacionDetectado:
+      name: ErrorConciliacionDetectado
+      contentType: application/json
+      payload: { $ref: "#/components/schemas/CloudEventEnvelope", x-data-schema: "#/components/schemas/ErrorProcConcData" }
+      x-business-rules: [ "coderror tiene un catálogo de ~40 constantes CODERR_* no replicado aquí por volumen — ver events-catalog.md §12 y ErrorProcConc.java." ]
+  schemas:
+    CloudEventEnvelope:
+      type: object
+      required: [specversion, type, source, id, time, data]
+      properties: { specversion: { type: string, enum: ["1.0"] }, type: { type: string }, source: { type: string, format: uri-reference }, id: { type: string, format: uuid }, time: { type: string, format: date-time }, data: { type: object } }
+    AutorizacionMmppData:
+      type: object
+      required: [idautoritzacio]
+      properties: { idautoritzacio: { type: integer, format: int64 }, idnotificacio: { type: integer, format: int64, nullable: true }, idresolucio: { type: string, nullable: true } }
+    NotificacionMmppData:
+      type: object
+      required: [idnotificacio, idestat]
+      properties: { idnotificacio: { type: integer, format: int64 }, idestat: { type: string }, idsubport: { type: string, nullable: true }, anyescala: { type: integer, nullable: true }, numescala: { type: integer, nullable: true }, viaedi: { type: string, nullable: true } }
+    OperacionPifData:
+      type: object
+      required: [anyoperaciopif, seqoperaciopif]
+      properties: { anyoperaciopif: { type: integer }, seqoperaciopif: { type: integer }, idestatoperaciopif: { type: string, enum: [CR, AP, PF, FI, AN, AF] }, matriculacamio: { type: string, nullable: true } }
+    ManifiestoData:
+      type: object
+      required: [idmanifest]
+      properties: { idmanifest: { type: integer, format: int64 }, veractual: { type: integer, nullable: true }, codedi: { type: string, nullable: true }, idsubport: { type: string, nullable: true }, anyescala: { type: integer, nullable: true }, numescala: { type: integer, nullable: true } }
+    PartidaData:
+      type: object
+      required: [idpartida, versio]
+      properties: { idpartida: { type: integer, format: int64 }, versio: { type: integer }, estat: { type: string, nullable: true }, codaranzelari: { type: string, nullable: true }, numonu: { type: string, nullable: true } }
+    MovimientoContenedorData:
+      type: object
+      required: [identificador, tipoMovimiento]
+      properties: { identificador: { type: string }, tipoMovimiento: { type: string }, fechaCargaDescarga: { type: string, format: date-time, nullable: true } }
+    ProtermContData:
+      type: object
+      required: [idregistre]
+      properties: { idregistre: { type: integer, format: int64 }, refequipament: { type: string, nullable: true }, operacio: { type: string, nullable: true }, estado: { type: string, nullable: true } }
+    ErrorProcConcData:
+      type: object
+      required: [iderror, tipuserror]
+      properties: { iderror: { type: integer, format: int64 }, tipuserror: { type: string, enum: [CN, CV, TER, SSI, CNC, STI, ALI, COA] }, errorwarning: { type: string, enum: [E, W] }, coderror: { type: integer, format: int64, nullable: true } }

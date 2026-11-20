@@ -7,6 +7,7 @@ status: "draft"
 owner: "QA <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
 autonomy_level: 2
+max_duration_minutes: 30
 skills:
   - "apb-qa-test-plan-v1.0"
   - "apb-qa-test-strategy-v1.0"

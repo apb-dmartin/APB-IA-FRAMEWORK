@@ -1,7 +1,7 @@
 # Estándar de Arquitectura APB
 
 > **ID:** `apb-std-architecture-v1.0`
-> **Versión:** 1.0.0
+> **Versión:** 1.1.0
 > **Estado:** draft
 
 ---
@@ -23,6 +23,7 @@
 ### APIs
 - REST homologado (NO SOAP/WSDL)
 - Azure Entra ID para autenticación
+- Autorización: App Roles de Entra ID asignados a grupos (`GRP_{ENTORNO}_{APP}_{ROL}`), no permisos directos a usuario. Catálogo de roles estándar y modelo completo en `APB_KNOWLEDGE_BASE.md` §3.4
 - HTTPS/TLS obligatorio
 - Rate limiting
 

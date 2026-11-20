@@ -1,8 +1,8 @@
 ---
 id: "adapter-rovo-v1.0"
 name: "Atlassian Rovo Adapter"
-description: "Adaptador de doble sentido entre el APB AI Framework y Atlassian Rovo: (1) expone agentes y skills del framework como Rovo Agents personalizados, accesibles desde Jira y Confluence; (2) permite que el framework invoque capacidades de Rovo (búsqueda semántica en Confluence/Jira, análisis de tickets, resumen de espacios) como herramientas dentro de un workflow. Complementa prov-atlassian-v1.0 añadiendo la capa de IA de Rovo sobre el ecosistema Atlassian ya conectado."
-version: "1.0.0"
+description: "Adaptador de doble sentido entre el APB AI Framework y Atlassian Rovo: (1) expone agentes y skills del framework como Rovo Agents personalizados, accesibles desde Jira y Confluence; (2) permite que el framework invoque capacidades de Rovo (búsqueda semántica en Confluence/Jira, análisis de tickets, resumen de espacios) como herramientas dentro de un workflow. Complementa prov-atlassian-v1.0 (Jira) y prov-confluence-v1.0 (Confluence) añadiendo la capa de IA de Rovo sobre el ecosistema Atlassian ya conectado."
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -16,8 +16,9 @@ adapted_components:
   - "apb-gov-jira-evidence-v1.0"
   - "apb-disc-reverse-doc-v1.0"
   - "prov-atlassian-v1.0"
+  - "prov-confluence-v1.0"
 created_date: "2026-06-24"
-review_date: "2026-06-24"
+review_date: "2026-07-06"
 ---
 
 # Atlassian Rovo Adapter
@@ -28,20 +29,27 @@ review_date: "2026-06-24"
 
 Atlassian Rovo es la capa de IA de Atlassian sobre el ecosistema Jira + Confluence. A partir de julio 2026 APB comenzará a utilizarlo. Este adaptador define cómo el APB AI Framework se integra con Rovo en las dos direcciones posibles:
 
-- **Dirección A (framework → Rovo):** el framework invoca capacidades de Rovo —búsqueda semántica en Confluence, análisis de tickets Jira, resumen de espacios— como herramientas dentro de sus workflows. Esto complementa `prov-atlassian-v1.0`, que ya gestiona operaciones CRUD sobre Jira/Confluence.
+- **Dirección A (framework → Rovo):** el framework invoca capacidades de Rovo —búsqueda semántica en Confluence, análisis de tickets Jira, resumen de espacios— como herramientas dentro de sus workflows. Esto complementa `prov-atlassian-v1.0` (Jira Software + JSM) y `prov-confluence-v1.0` (Confluence), que ya gestionan operaciones CRUD.
 
 - **Dirección B (Rovo → framework):** los usuarios de APB que ya trabajan en Jira o Confluence pueden invocar agentes del framework a través de **Rovo Agents** personalizados, sin salir de su entorno Atlassian habitual.
 
 ---
 
-## Diferencia entre `prov-atlassian-v1.0` y `adapter-rovo-v1.0`
+## Diferencia entre los providers Atlassian y `adapter-rovo-v1.0`
 
 | Componente | Qué hace | Cuándo usarlo |
 |-----------|----------|---------------|
-| `prov-atlassian-v1.0` | CRUD sobre Jira/Confluence vía REST API: crear tickets, actualizar issues, escribir páginas | El framework necesita crear/modificar objetos Atlassian |
+| `prov-atlassian-v1.0` | CRUD REST + JQL sobre Jira (Software y Service Management): crear/leer/actualizar tickets, buscar precedentes | El framework necesita crear/modificar/buscar objetos Jira |
+| `prov-confluence-v1.0` | CRUD REST v2 sobre Confluence: páginas, espacios, adjuntos | El framework necesita publicar o actualizar documentación |
 | `adapter-rovo-v1.0` | Capa de IA de Rovo: búsqueda semántica, resúmenes, análisis, agentes conversacionales | El framework necesita razonar sobre el contenido de Jira/Confluence, o el usuario quiere invocar el framework desde Rovo |
 
-Los dos componentes se complementan: `prov-atlassian-v1.0` escribe los resultados, `adapter-rovo-v1.0` los descubre y razona sobre ellos.
+Los tres componentes se complementan: los dos providers escriben/leen los datos, `adapter-rovo-v1.0` los descubre y razona sobre ellos.
+
+> **Nota (2026-07-06):** hasta el 2026-07-06, `prov-jira-software-v1.0` existía como
+> provider separado de `prov-atlassian-v1.0`, con capacidades solapadas. Se fusionaron
+> en `prov-atlassian-v1.0` v2.0.0 (`prov-jira-software-v1.0` queda deprecado). Esta
+> fusión no afecta a `adapter-rovo-v1.0`: ninguno de los dos usa MCP ni Rovo como
+> transporte — ambos son REST puro; Rovo sigue siendo esta integración aparte.
 
 ---
 
@@ -59,7 +67,7 @@ El framework llama a la **Rovo API** (o equivalente Graph semántico de Atlassia
 | Chat con contexto de proyecto | `POST /rovo/v1/chat` con `context.project_key` | Preguntas sobre el estado de un proyecto para `apb-agent-tech-discovery-v1.0` |
 | Resumen de historial Jira | `POST /rovo/v1/issues/summarize` con filtros | Reconstrucción de specs desde histórico para agente de spec desde histórico (#37) |
 
-Todas las llamadas usan el token de `prov-atlassian-v1.0` (mismas credenciales, distinto endpoint de Rovo).
+Las llamadas sobre Jira usan el token de `prov-atlassian-v1.0`; las llamadas sobre Confluence usan las credenciales OAuth2/token de `prov-confluence-v1.0` — mismas cuentas de servicio, distinto endpoint de Rovo en cada caso.
 
 ### Dirección B — Rovo invoca el framework
 
@@ -210,6 +218,15 @@ La Forge App se publica en el marketplace privado del tenant Atlassian APB — n
 - Todo artefacto generado a través de Rovo lleva el aviso visible `Generado por APB AI Framework` en la página Confluence o ticket Jira de destino
 - Los datos personales procesados en Rovo se rigen por las mismas políticas RGPD que el resto del framework (`context/apb/policies/compliance/`)
 - Este adapter sustituye el mecanismo manual de copiar prompts del framework en Rovo — no crea un segundo framework paralelo
+
+---
+
+## Historial de Cambios
+
+| Versión | Fecha | Autor | Cambio |
+|---------|-------|-------|--------|
+| 1.0.0 | 2026-06-24 | Claude (Anthropic/Claude Code) | Creación inicial — Sesión 15 |
+| 1.1.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora (revisión de exactitud tras fusión de providers) | Corregidas referencias a `prov-atlassian-v1.0`: ya no cubre Confluence (fusión v2.0.0 + corrección v2.1.0 lo acotan a Jira Software+JSM+Compass) — añadido `prov-confluence-v1.0` como componente adaptado y como credencial correcta para las llamadas Rovo sobre Confluence. Confirmado que ni este adapter ni los providers Atlassian usan MCP como transporte — son mecanismos distintos (REST puro vs. API/Forge de Rovo, pendiente de activación julio 2026) |
 
 ---
 

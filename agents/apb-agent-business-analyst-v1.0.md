@@ -2,7 +2,7 @@
 id: "apb-agent-business-analyst-v1.0"
 name: "Business Analyst Agent"
 description: "Agente especializado en descubrimiento y análisis de negocio. Responsable de comprender el dominio funcional, identificar actores, procesos y requisitos de negocio, y generar documentación de descubrimiento que sirva de base para la ingeniería de especificaciones."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "Análisis Funcional <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -20,6 +20,7 @@ skills:
   - "apb-pm-risk-register-v1.0"
   - "apb-pm-stakeholder-map-v1.0"
   - "apb-disc-design-approval-v1.0"
+  - "apb-qa-anonymize-v1.0"
 runtime:
   - "copilot"
   - "claude"
@@ -186,6 +187,7 @@ Agente especializado en descubrimiento y análisis de negocio. Responsable de co
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.0.1 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente↔skill) | Añadida `apb-qa-anonymize-v1.0` a `skills:` — el Prompt de Sistema ya exigía anonimizar información sensible según esa skill, pero no estaba declarada |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

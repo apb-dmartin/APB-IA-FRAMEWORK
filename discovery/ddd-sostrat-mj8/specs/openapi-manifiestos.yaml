@@ -1,0 +1,134 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Manifiestos API
+  description: |
+    Gestión de manifiestos de mercancías y sus partidas. Grounded en
+    `dataaccess/dto/manifiestos/gestion/Manifest.java` (tabla MANIFEST, PK
+    idmanifest, raíz delgada versionada) y `PartidaVersio.java` (tabla
+    PARTIDA_VERSIO, PK idpartida+versio, detalle real). Requiere refactor
+    interno previo de `CN_Manifest_Impl`/`CN_Partida_Impl` antes de extraer
+    (ver jira-backlog.md EPIC-08) — este spec asume ese refactor completado.
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-mercancias-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/manifiestos/gestion/Manifest.java, PartidaVersio.java, dataaccess/dto/Mercaderia.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/manifiestos/v1
+security: [ { entraId: [] } ]
+tags: [ { name: cargo-manifests } ]
+paths:
+  /cargo-manifests:
+    get:
+      operationId: listCargoManifests
+      tags: [cargo-manifests]
+      parameters:
+        - { name: idsubport, in: query, schema: { type: string } }
+        - { name: anyescala, in: query, schema: { type: integer } }
+        - { name: numescala, in: query, schema: { type: integer } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de manifiestos, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/CargoManifest" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createCargoManifest
+      tags: [cargo-manifests]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CargoManifestCreate" } } } }
+      responses:
+        "201": { description: Manifiesto registrado, content: { application/json: { schema: { $ref: "#/components/schemas/CargoManifest" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /cargo-manifests/{idmanifest}:
+    parameters: [ { name: idmanifest, in: path, required: true, schema: { type: integer, format: int64 } } ]
+    get:
+      operationId: getCargoManifest
+      tags: [cargo-manifests]
+      responses:
+        "200": { description: Manifiesto encontrado, content: { application/json: { schema: { $ref: "#/components/schemas/CargoManifest" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /cargo-manifests/{idmanifest}/items/{idpartida}:
+    parameters:
+      - { name: idmanifest, in: path, required: true, schema: { type: integer, format: int64 } }
+      - { name: idpartida, in: path, required: true, schema: { type: integer, format: int64 } }
+    patch:
+      operationId: updateManifestItem
+      tags: [cargo-manifests]
+      description: Crea una nueva versión de la partida (patrón versionado, no sobreescribe versiones previas)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CargoManifestItemUpdate" } } } }
+      responses:
+        "200": { description: Partida actualizada (nueva versión), content: { application/json: { schema: { $ref: "#/components/schemas/CargoManifestItem" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { manifiestos.read: Lectura, manifiestos.write: Escritura } } }
+  schemas:
+    CargoManifest:
+      type: object
+      required: [idmanifest, veractual]
+      properties:
+        idmanifest: { type: integer, format: int64, description: "Grounded: Manifest.idmanifest (PK, tabla MANIFEST)" }
+        veractual: { type: integer, description: "Grounded: Manifest.veractual — versión vigente" }
+        codedi: { type: string, nullable: true, description: "Grounded: Manifest.codedi" }
+        idtipdeclaracio: { type: string, nullable: true, description: "Grounded: Manifest.idtipdeclaracio" }
+        idsubport: { type: string, nullable: true, description: "Grounded: Manifest.idsubport" }
+        anyescala: { type: integer, nullable: true, description: "Grounded: Manifest.anyescala" }
+        numescala: { type: integer, nullable: true, description: "Grounded: Manifest.numescala" }
+      example:
+        idmanifest: 120884
+        veractual: 3
+        codedi: "0811"
+        idtipdeclaracio: "IMPORT"
+        idsubport: "B"
+        anyescala: 2026
+        numescala: 5521
+    CargoManifestCreate:
+      type: object
+      required: [idsubport, anyescala, numescala]
+      properties:
+        codedi: { type: string }
+        idtipdeclaracio: { type: string }
+        idsubport: { type: string }
+        anyescala: { type: integer }
+        numescala: { type: integer }
+    CargoManifestItem:
+      type: object
+      required: [idpartida, versio]
+      properties:
+        idpartida: { type: integer, format: int64, description: "Grounded: PartidaVersio.idpartida (PK parte 1, tabla PARTIDA_VERSIO)" }
+        versio: { type: integer, description: "Grounded: PartidaVersio.versio (PK parte 2)" }
+        estat: { type: string, nullable: true, description: "Grounded: PartidaVersio.estat" }
+        embalums: { type: integer, nullable: true, description: "Grounded: PartidaVersio.embalums" }
+        pes: { type: integer, format: int64, nullable: true, description: "Grounded: PartidaVersio.pes" }
+        volum: { type: integer, format: int64, nullable: true, description: "Grounded: PartidaVersio.volum" }
+        codaranzelari: { type: string, nullable: true, description: "Grounded: PartidaVersio.codaranzelari — FK a Mercaderia (PK real de esa tabla)" }
+        numonu: { type: string, nullable: true, description: "Grounded: PartidaVersio.numonu — número ONU si es mercancía peligrosa" }
+        classemmpp: { type: string, nullable: true, description: "Grounded: PartidaVersio.classemmpp" }
+      example:
+        idpartida: 998211
+        versio: 2
+        estat: "ACTIVA"
+        embalums: 4
+        pes: 12400
+        volum: 28
+        codaranzelari: "8703239000"
+        numonu: null
+        classemmpp: null
+    CargoManifestItemUpdate:
+      type: object
+      properties:
+        estat: { type: string }
+        embalums: { type: integer }
+        pes: { type: integer, format: int64 }
+        volum: { type: integer, format: int64 }
+        codaranzelari: { type: string }
+        numonu: { type: string }
+        classemmpp: { type: string }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

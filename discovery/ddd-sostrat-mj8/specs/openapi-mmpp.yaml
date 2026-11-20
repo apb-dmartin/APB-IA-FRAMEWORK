@@ -1,0 +1,132 @@
+# [IA-GEN] Generado por APB AI Framework (apb-arch-api-contract-v1.0) - pendiente revision humana
+openapi: 3.0.3
+info:
+  title: APB Mercancías Peligrosas (MMPP) API
+  description: |
+    Autorizaciones y notificaciones de mercancías peligrosas. Grounded en
+    `dataaccess/dto/mmpp/gestion/MmppAutoritzacio.java` (tabla MMPP_AUTORITZACIO,
+    PK idautoritzacio) y `MmppNotif.java` (tabla MMPP_NOTIF, PK idnotificacio).
+    Consume el servicio de Datos Maestros de Equipamiento (Fase 0) en lugar de
+    alojar el maestro de contenedores directamente (ver events-catalog.md §13).
+  version: "1.0.0"
+  contact: { name: Arquitectura APB, email: arquitectura@portdebarcelona.cat }
+  x-ai-generated: true
+  x-ai-skill: "apb-arch-api-contract-v1.0"
+  x-source-domain: "dom-mercancias-peligrosas-v1"
+  x-source-evidence: "sostrat/src/org/apb/sostrat/dataaccess/dto/mmpp/gestion/MmppAutoritzacio.java, MmppNotif.java"
+servers:
+  - url: https://apim.portdebarcelona.cat/mmpp/v1
+security: [ { entraId: [] } ]
+tags: [ { name: dangerous-goods-authorizations }, { name: dangerous-goods-notifications } ]
+paths:
+  /dangerous-goods-notifications:
+    get:
+      operationId: listNotifications
+      tags: [dangerous-goods-notifications]
+      parameters:
+        - { name: idestat, in: query, schema: { type: string } }
+        - { name: numescala, in: query, schema: { type: integer } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        "200": { description: Página de notificaciones, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: "#/components/schemas/DangerousGoodsNotification" } }, pagination: { $ref: "#/components/schemas/Pagination" } } } } } }
+    post:
+      operationId: createNotification
+      tags: [dangerous-goods-notifications]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/DangerousGoodsNotificationCreate" } } } }
+      responses:
+        "201": { description: Notificación registrada, content: { application/json: { schema: { $ref: "#/components/schemas/DangerousGoodsNotification" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+  /dangerous-goods-notifications/{idnotificacio}/send:
+    parameters: [ { name: idnotificacio, in: path, required: true, schema: { type: integer, format: int64 } } ]
+    post:
+      operationId: sendNotification
+      tags: [dangerous-goods-notifications]
+      description: Dispara el circuito EDI de notificación a autoridades (viaedi=S)
+      responses:
+        "200": { description: Notificación enviada, content: { application/json: { schema: { $ref: "#/components/schemas/DangerousGoodsNotification" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /dangerous-goods-authorizations:
+    post:
+      operationId: createAuthorization
+      tags: [dangerous-goods-authorizations]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/DangerousGoodsAuthorizationCreate" } } } }
+      responses:
+        "201": { description: Autorización registrada, content: { application/json: { schema: { $ref: "#/components/schemas/DangerousGoodsAuthorization" } } } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { description: "idnotificacio referenciada no existe", content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+  /dangerous-goods-authorizations/{idautoritzacio}:
+    parameters: [ { name: idautoritzacio, in: path, required: true, schema: { type: integer, format: int64 } } ]
+    get:
+      operationId: getAuthorization
+      tags: [dangerous-goods-authorizations]
+      responses:
+        "200": { description: Autorización encontrada, content: { application/json: { schema: { $ref: "#/components/schemas/DangerousGoodsAuthorization" } } } }
+        "404": { $ref: "#/components/responses/NotFound" }
+components:
+  securitySchemes:
+    entraId:
+      type: oauth2
+      flows: { clientCredentials: { tokenUrl: "https://login.microsoftonline.com/portdebarcelona.cat/oauth2/v2.0/token", scopes: { mmpp.read: Lectura, mmpp.write: Escritura } } }
+  schemas:
+    DangerousGoodsNotification:
+      type: object
+      required: [idnotificacio, idestat]
+      properties:
+        idnotificacio: { type: integer, format: int64, description: "Grounded: MmppNotif.idnotificacio (PK, tabla MMPP_NOTIF)" }
+        idestat: { type: string, description: "Grounded: MmppNotif.idestat" }
+        idsubport: { type: string, nullable: true, description: "Grounded: MmppNotif.idsubport" }
+        anyescala: { type: integer, nullable: true, description: "Grounded: MmppNotif.anyescala" }
+        numescala: { type: integer, nullable: true, description: "Grounded: MmppNotif.numescala" }
+        datarecdocument: { type: string, format: date-time, nullable: true, description: "Grounded: MmppNotif.datarecdocument" }
+        dataemidocument: { type: string, format: date-time, nullable: true, description: "Grounded: MmppNotif.dataemidocument" }
+        idtipustransentrada: { type: string, nullable: true, description: "Grounded: MmppNotif.idtipustransentrada" }
+        idvaixellentrada: { type: integer, nullable: true, description: "Grounded: MmppNotif.idvaixellentrada" }
+        viaedi: { type: string, nullable: true, description: "Grounded: MmppNotif.viaedi" }
+      example:
+        idnotificacio: 66211
+        idestat: "PENDENT"
+        idsubport: "B"
+        anyescala: 2026
+        numescala: 5521
+        datarecdocument: "2026-07-14T04:00:00Z"
+        idtipustransentrada: "MARITIM"
+        idvaixellentrada: 8821
+        viaedi: "N"
+    DangerousGoodsNotificationCreate:
+      type: object
+      required: [idsubport, anyescala, numescala]
+      properties:
+        idsubport: { type: string }
+        anyescala: { type: integer }
+        numescala: { type: integer }
+        idtipustransentrada: { type: string }
+        idvaixellentrada: { type: integer }
+    DangerousGoodsAuthorization:
+      type: object
+      required: [idautoritzacio, idnotificacio]
+      properties:
+        idautoritzacio: { type: integer, format: int64, description: "Grounded: MmppAutoritzacio.idautoritzacio (PK, tabla MMPP_AUTORITZACIO)" }
+        idnotificacio: { type: integer, format: int64, description: "Grounded: MmppAutoritzacio.idnotificacio (FK)" }
+        idresolucio: { type: string, nullable: true, description: "Grounded: MmppAutoritzacio.idresolucio" }
+        dataautoritzada: { type: string, format: date-time, nullable: true, description: "Grounded: MmppAutoritzacio.dataautoritzada" }
+        datafiautoritzada: { type: string, format: date-time, nullable: true, description: "Grounded: MmppAutoritzacio.datafiautoritzada" }
+        idmotiurebuig: { type: string, nullable: true, description: "Grounded: MmppAutoritzacio.idmotiurebuig" }
+        descmotiurebuig: { type: string, nullable: true, description: "Grounded: MmppAutoritzacio.descmotiurebuig" }
+      example:
+        idautoritzacio: 71029
+        idnotificacio: 66211
+        idresolucio: "APROVADA"
+        dataautoritzada: "2026-07-14T05:00:00Z"
+    DangerousGoodsAuthorizationCreate:
+      type: object
+      required: [idnotificacio]
+      properties:
+        idnotificacio: { type: integer, format: int64 }
+        idresolucio: { type: string }
+    Pagination: { type: object, properties: { nextCursor: { type: string, nullable: true }, hasMore: { type: boolean } } }
+    ProblemDetails:
+      type: object
+      properties: { type: { type: string, format: uri }, title: { type: string }, status: { type: integer }, detail: { type: string }, instance: { type: string, format: uri } }
+  responses:
+    BadRequest: { description: Solicitud inválida, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }
+    NotFound: { description: Recurso no encontrado, content: { application/problem+json: { schema: { $ref: "#/components/schemas/ProblemDetails" } } } }

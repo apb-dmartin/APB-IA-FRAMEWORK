@@ -2,7 +2,7 @@
 id: "apb-sub-obs-powerbi-v1.0"
 name: "Power BI Dashboard Subagent"
 description: "Subagente especializado en el diseño y generación de dashboards Power BI. Busca plantillas de la comunidad de Power BI antes de crear desde cero, genera la spec JSON del informe, define KPIs y métricas visuales, y avisa si los datos requeridos no están disponibles en la fuente especificada."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "operation"
@@ -10,6 +10,8 @@ parent_agent: "apb-agent-observability-v1.0"
 specialty: "Power BI, DAX, Power Query, plantillas comunidad"
 created_date: "2026-06-25"
 review_date: "2026-06-25"
+depends_on:
+  - "prov-azure-monitor-v1.0"
 ---
 
 # Power BI Dashboard Subagent
@@ -128,6 +130,7 @@ Si un KPI solicitado no tiene datos disponibles en la fuente especificada, el su
 | Versión | Fecha | Autor | Cambio |
 |---|---|---|---|
 | 1.0.0 | 2026-06-25 | Arquitectura APB / Claude Code | Creación inicial — Sesión 17 |
+| 1.0.1 | 2026-07-06 | Claude (Anthropic), a petición de Débora (auditoría de cableado agente/subagente↔skill/provider) | Añadido `depends_on: [prov-azure-monitor-v1.0]` — ya usado en el Prompt de Sistema como fuente de datos de telemetría del framework, pero no declarado |
 
 ---
 

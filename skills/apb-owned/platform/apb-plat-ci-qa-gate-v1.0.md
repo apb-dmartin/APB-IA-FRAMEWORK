@@ -2,7 +2,7 @@
 id: "apb-plat-ci-qa-gate-v1.0"
 name: "Gate QA Pre-Despliegue para Pipelines"
 description: "Define y evalúa un gate de calidad previo al despliegue para pipelines de aplicaciones APB (Jenkins + GitHub Actions, estándar APB): integra en una única decisión GO/NO-GO los resultados de tests, cobertura, seguridad (Sonar) y validación de contenido Markdown desplegado. Cubre el punto #34 (validación QA en flujos de despliegue, incluido Markdown)."
-version: "1.0.0"
+version: "1.0.1"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "platform"
@@ -25,7 +25,9 @@ depends_on:
 > `context/apb/knowledge/APB_KNOWLEDGE_BASE.md` (provider: `prov-apb-knowledge-v1.0`).
 > El estándar CI/CD de APB es **Jenkins + GitHub Actions**. Los umbrales de calidad se rigen por
 > `context/apb/policies/quality/PROCEDURE_RISK_EVALUATION.md` (Quality Gate Sonar, cobertura) y
-> `context/apb/standards/STANDARD_QA.md`. Stack aprobado:
+> `context/apb/standards/STANDARD_QA.md`. Si un criterio falla y se solicita excepción, carga
+> `context/apb/policies/compliance/PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0.md` (flujo de
+> 3 aprobaciones, §9.3) — el gate no la concede, solo la referencia. Stack aprobado:
 > `context/apb/standards/STANDARD_ARCHITECTURE.md`
 
 ---

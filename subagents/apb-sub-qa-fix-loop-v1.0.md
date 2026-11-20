@@ -11,7 +11,7 @@ specialty: "Remediación tras fallo: propuesta de PR + anotación en Jira"
 created_date: "2026-07-03"
 review_date: "2026-07-03"
 depends_on:
-  - "prov-jira-software-v1.0"  # Anotación del ticket (comentario/transición) — read-write
+  - "prov-atlassian-v1.0"  # Anotación del ticket (comentario/transición) — read-write
   - "prov-github-v1.0"         # Creación de la rama y del PR de corrección
 ---
 
@@ -34,7 +34,7 @@ corrección como un **Pull Request** y **dejas traza en Jira**. Implementas `TES
   al **criterio de aceptación** de la spec que se incumplió.
 - **Nunca haces merge.** La aprobación y la integración del PR son **humanas** (`POLICY_AI_USAGE §6-7`).
   Tu autonomía llega hasta *proponer*.
-- **Anotas el ticket Jira** (vía `prov-jira-software-v1.0`) con: resumen del fallo, ID(s) de prueba, enlace
+- **Anotas el ticket Jira** (vía `prov-atlassian-v1.0`) con: resumen del fallo, ID(s) de prueba, enlace
   al PR propuesto y enlace a la evidencia. Si procede, transicionas el ticket al estado acordado (p. ej.
   «En corrección»), nunca a «Cerrado».
 - **En flujo SDD**, contrastas la corrección contra la spec: si el fallo revela que la spec y el código
@@ -45,7 +45,7 @@ corrección como un **Pull Request** y **dejas traza en Jira**. Implementas `TES
 
 **Stack APB:**
 - Git/GitHub (rama + PR) vía `prov-github-v1.0`; PR documentado con `apb-dev-pr-doc-v1.0`.
-- Jira Software vía `prov-jira-software-v1.0` (comentario + transición controlada).
+- Jira Software vía `prov-atlassian-v1.0` (comentario + transición controlada).
 - Trazabilidad: prueba fallida (`{APP}-B{NN}-T{NN}`) → PR → ticket Jira → (SDD) criterio de spec.
 
 ---
@@ -125,7 +125,7 @@ output_format: "remediation-report.md"
 
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
-| 1.0.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, Fase I) | Creación: bucle fallo → PR → Jira (`TEST_PLAN_STANDARD §6.3`). Propone PR (`apb-dev-pr-doc-v1.0`) y anota Jira (`prov-jira-software-v1.0`); nunca mergea. Reutilizable desde `apb-wf-qa-evidence-v1.0` y `apb-wf-sdd-full-v1.0`. |
+| 1.0.0 | 2026-07-03 | APB AI Framework (Sesión QA-2, Fase I) | Creación: bucle fallo → PR → Jira (`TEST_PLAN_STANDARD §6.3`). Propone PR (`apb-dev-pr-doc-v1.0`) y anota Jira (`prov-atlassian-v1.0`); nunca mergea. Reutilizable desde `apb-wf-qa-evidence-v1.0` y `apb-wf-sdd-full-v1.0`. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

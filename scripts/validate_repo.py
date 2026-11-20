@@ -20,13 +20,22 @@ import re
 import argparse
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 try:
     import yaml
 except ImportError:
     print("❌ ERROR: PyYAML no está instalado. Ejecute: pip install pyyaml")
     sys.exit(1)
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _frontmatter import (  # noqa: E402
+    ComponentRecord,
+    IGNORED_DIR_NAMES,
+    iter_component_files,
+    parse_frontmatter,
+    scan_components,
+)
 
 # ──────────────────────────────────────────────────────────────────────────
 # CONFIGURACIÓN — derivada de context/apb/SCHEMA.md
@@ -97,8 +106,6 @@ REQUIRED_FIELDS_BY_TYPE = {
     "adapter": ["runtime_target"],
 }
 
-FRONTMATTER_PATTERN = re.compile(r"^---\s*\n(.*?)\n---\s*\n", re.DOTALL)
-
 SECRET_PATTERNS = [
     re.compile(r'password\s*=\s*[\'"][^\'"]+[\'"]', re.IGNORECASE),
     re.compile(r'api[_-]?key\s*[:=]\s*[\'"][^\'"]+[\'"]', re.IGNORECASE),
@@ -117,8 +124,6 @@ OLD_BRAND_PATTERNS = [
     re.compile(r"Islas Baleares"),
     re.compile(r"Administraci[oó]n P[uú]blica de las Islas Baleares"),
 ]
-
-IGNORED_DIR_NAMES = {"templates", ".git", "node_modules"}
 
 # Nivel del check #18 (Estándar de Prompting). "WARNING" solo durante un
 # retrofit en curso; el estado permanente es "ERROR" (anti-repetición:
@@ -172,27 +177,11 @@ class ValidationResult:
 # ──────────────────────────────────────────────────────────────────────────
 # UTILIDADES
 # ──────────────────────────────────────────────────────────────────────────
-
-def parse_frontmatter(content: str) -> Tuple[Dict, bool]:
-    """Extrae y parsea el frontmatter YAML real. Devuelve (metadata, found)."""
-    match = FRONTMATTER_PATTERN.match(content)
-    if not match:
-        return {}, False
-    try:
-        data = yaml.safe_load(match.group(1))
-        if not isinstance(data, dict):
-            return {}, False
-        return data, True
-    except yaml.YAMLError:
-        return {}, False
-
-
-def iter_component_files(folder_path: Path):
-    """Itera .md de un árbol, ignorando carpetas de templates/.git."""
-    for filepath in sorted(folder_path.rglob("*.md")):
-        if any(part in IGNORED_DIR_NAMES for part in filepath.parts):
-            continue
-        yield filepath
+# parse_frontmatter / iter_component_files / IGNORED_DIR_NAMES viven en
+# scripts/_frontmatter.py (compartido con analyze_autonomy_landscape.py y
+# generate_catalog.py) y quedan re-exportados aquí vía el import de arriba,
+# así que 'vr.parse_frontmatter'/'vr.iter_component_files' (usado por
+# tests/test_validate_repo.py) sigue funcionando sin cambios.
 
 
 def id_pattern_for(component_type: str, rel_path: str) -> re.Pattern:
@@ -301,6 +290,21 @@ def validate_component_file(
         result.add(ValidationIssue(
             "ERROR", rel_path, f"Nivel de autonomía no válido: {autonomy}. Permitidos: 0-4"
         ))
+
+    # 9. Timeout policy (SYSTEM.md §5.1) — obligatorio para agent/subagent con autonomy_level >= 2
+    if component_type in ("agent", "subagent") and isinstance(autonomy, int) and autonomy >= 2:
+        max_duration = metadata.get("max_duration_minutes")
+        if max_duration is None:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                f"Nivel de autonomía {autonomy} >= 2 requiere declarar "
+                f"'max_duration_minutes' (SYSTEM.md §5.1, timeout policy)."
+            ))
+        elif not isinstance(max_duration, int) or isinstance(max_duration, bool) or max_duration <= 0:
+            result.add(ValidationIssue(
+                "ERROR", rel_path,
+                f"'max_duration_minutes' debe ser un entero positivo, se obtuvo: {max_duration!r}."
+            ))
 
     # 9. Pin de versión real para wrappers/skills de terceros (nunca "HEAD";
     #    "unverified" es admisible solo junto con verified_date, GOVERNANCE.md §4.2)
@@ -443,19 +447,29 @@ def validate_component_file(
     result.add(ValidationIssue("INFO", rel_path, f"Componente validado: {comp_id or '(sin id)'}"))
 
 
-def validate_components(repo_path: Path, result: ValidationResult) -> Dict[str, str]:
+def validate_components(
+    repo_path: Path, result: ValidationResult,
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+) -> Dict[str, str]:
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
     all_ids: Dict[str, str] = {}
     for folder, component_type in COMPONENT_FOLDERS.items():
         folder_path = repo_path / folder
         if not folder_path.exists():
             result.add(ValidationIssue("WARNING", folder, "Carpeta no encontrada, se omite"))
             continue
-        for filepath in iter_component_files(folder_path):
-            validate_component_file(filepath, repo_path, component_type, result, all_ids)
+        for record in scanned.values():
+            if record.folder != folder:
+                continue
+            validate_component_file(record.path, repo_path, component_type, result, all_ids)
     return all_ids
 
 
-def validate_references(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+def validate_references(
+    repo_path: Path, result: ValidationResult, all_ids: Dict[str, str],
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
     """Verifica que toda referencia cruzada apunte a un ID que realmente
     existe en el repo. Cubre dos fuentes:
     1. Campos de frontmatter (skills, agents, subagents, depends_on, consumed_by).
@@ -463,17 +477,21 @@ def validate_references(repo_path: Path, result: ValidationResult, all_ids: Dict
        prosa) — donde históricamente han aparecido más roturas por IDs
        inventados o renombrados sin propagar el cambio.
     """
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
     reference_fields = ["skills", "subagents", "agents", "depends_on", "consumed_by"]
     body_id_pattern = re.compile(r"`((?:apb|third|prov|wrap|adapter)-[a-z0-9-]+-v\d+\.\d+)`")
 
-    for folder, component_type in COMPONENT_FOLDERS.items():
+    for folder in COMPONENT_FOLDERS:
         folder_path = repo_path / folder
         if not folder_path.exists():
             continue
-        for filepath in iter_component_files(folder_path):
-            rel_path = str(filepath.relative_to(repo_path))
-            content = filepath.read_text(encoding="utf-8")
-            metadata, found = parse_frontmatter(content)
+        for record in scanned.values():
+            if record.folder != folder:
+                continue
+            rel_path = record.rel_path
+            content = record.content
+            metadata, found = record.metadata, record.found
             if not found:
                 continue
 
@@ -519,7 +537,10 @@ def validate_references(repo_path: Path, result: ValidationResult, all_ids: Dict
                         ))
 
 
-def validate_no_deprecated_wiring(repo_path: Path, result: ValidationResult):
+def validate_no_deprecated_wiring(
+    repo_path: Path, result: ValidationResult,
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
     """Check #25 (Sesión 19, 2026-07-04, anti-repetición): ningún componente
     activo puede declarar en su wiring de frontmatter ('skills', 'subagents',
     'agents', 'depends_on') un componente con status 'deprecated' o 'retired'.
@@ -530,26 +551,25 @@ def validate_no_deprecated_wiring(repo_path: Path, result: ValidationResult):
     Los componentes que están ellos mismos deprecated/retired quedan exentos
     (su wiring es histórico). 'consumed_by' no se comprueba: que una skill
     deprecada conserve la lista de sus antiguos consumidores es inocuo."""
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
     wiring_fields = ["skills", "subagents", "agents", "depends_on"]
 
     # Mapa id → status de todos los componentes
     id_status: Dict[str, str] = {}
-    for folder in COMPONENT_FOLDERS:
-        folder_path = repo_path / folder
-        if not folder_path.exists():
-            continue
-        for fp in iter_component_files(folder_path):
-            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
-            if found and meta.get("id"):
-                id_status[meta["id"]] = str(meta.get("status", "")).strip().lower()
+    for record in scanned.values():
+        if record.found and record.metadata.get("id"):
+            id_status[record.metadata["id"]] = str(record.metadata.get("status", "")).strip().lower()
 
     for folder in COMPONENT_FOLDERS:
         folder_path = repo_path / folder
         if not folder_path.exists():
             continue
-        for fp in iter_component_files(folder_path):
-            rel_path = str(fp.relative_to(repo_path))
-            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        for record in scanned.values():
+            if record.folder != folder:
+                continue
+            rel_path = record.rel_path
+            meta, found = record.metadata, record.found
             if not found:
                 continue
             own_status = str(meta.get("status", "")).strip().lower()
@@ -570,29 +590,44 @@ def validate_no_deprecated_wiring(repo_path: Path, result: ValidationResult):
                         ))
 
 
-def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+def validate_agent_subagent_consistency(
+    repo_path: Path, result: ValidationResult, all_ids: Dict[str, str],
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
     """Verifica que la relación agente↔subagente sea coherente en ambos
     sentidos: si un agente declara un subagent en su lista 'subagents', ese
     subagent debe declarar el ID (no el nombre) de ese mismo agente en su
-    campo 'parent_agent'."""
-    agent_to_subagents: Dict[str, str] = {}
+    campo 'parent_agent'.
+
+    Un subagente puede ser referenciado (reutilizado) por varios agentes en su
+    array 'subagents' sin cambiar su propio 'parent_agent' — el subagente solo
+    tiene un dueño formal, pero puede ser invocado por otros agentes. Por eso
+    se acumulan todos los agentes que referencian cada subagente en un set, en
+    vez de sobreescribir con el último visto en orden alfabético de fichero."""
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
+    agent_to_subagents: Dict[str, Set[str]] = {}
     agents_folder = repo_path / "agents"
     if not agents_folder.exists():
         return
-    for filepath in iter_component_files(agents_folder):
-        metadata, found = parse_frontmatter(filepath.read_text(encoding="utf-8"))
+    for record in scanned.values():
+        if record.folder != "agents":
+            continue
+        metadata, found = record.metadata, record.found
         if not found:
             continue
         agent_id = metadata.get("id")
         for sub_id in (metadata.get("subagents") or []):
-            agent_to_subagents[sub_id] = agent_id
+            agent_to_subagents.setdefault(sub_id, set()).add(agent_id)
 
     subagents_folder = repo_path / "subagents"
     if not subagents_folder.exists():
         return
-    for filepath in iter_component_files(subagents_folder):
-        rel_path = str(filepath.relative_to(repo_path))
-        metadata, found = parse_frontmatter(filepath.read_text(encoding="utf-8"))
+    for record in scanned.values():
+        if record.folder != "subagents":
+            continue
+        rel_path = record.rel_path
+        metadata, found = record.metadata, record.found
         if not found:
             continue
         sub_id = metadata.get("id")
@@ -606,16 +641,20 @@ def validate_agent_subagent_consistency(repo_path: Path, result: ValidationResul
             ))
             continue
 
-        expected_parent = agent_to_subagents.get(sub_id)
-        if expected_parent and declared_parent != expected_parent:
+        expected_parents = agent_to_subagents.get(sub_id)
+        if expected_parents and declared_parent not in expected_parents:
             result.add(ValidationIssue(
                 "ERROR", rel_path,
-                f"Inconsistencia agente↔subagente: '{expected_parent}' lista este "
-                f"subagent, pero 'parent_agent' aquí es '{declared_parent}'."
+                f"Inconsistencia agente↔subagente: {sorted(expected_parents)} "
+                f"listan este subagent, pero 'parent_agent' aquí es "
+                f"'{declared_parent}' (no coincide con ninguno)."
             ))
 
 
-def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
+def validate_bidirectional_wiring(
+    repo_path: Path, result: ValidationResult,
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
     """Verifica el cableado bidireccional entre agentes/subagentes y entre
     agentes/skills APB:
     - Si un subagente declara 'parent_agent: X', el agente X debe listarlo en
@@ -624,13 +663,17 @@ def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
       'skills:'. Si no → WARNING.
     Complementa a validate_agent_subagent_consistency (que verifica el sentido
     contrario: agente lista subagente pero subagente no declara padre)."""
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
 
     # Construir mapa agente → set de subagentes declarados
     agent_subagents: Dict[str, set] = {}
     agents_folder = repo_path / "agents"
     if agents_folder.exists():
-        for fp in iter_component_files(agents_folder):
-            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        for record in scanned.values():
+            if record.folder != "agents":
+                continue
+            meta, found = record.metadata, record.found
             if not found:
                 continue
             aid = meta.get("id")
@@ -640,8 +683,10 @@ def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
     # Construir mapa agente → set de skills declaradas
     agent_skills: Dict[str, set] = {}
     if agents_folder.exists():
-        for fp in iter_component_files(agents_folder):
-            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        for record in scanned.values():
+            if record.folder != "agents":
+                continue
+            meta, found = record.metadata, record.found
             if not found:
                 continue
             aid = meta.get("id")
@@ -651,9 +696,11 @@ def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
     # Check 1: subagente declara parent_agent pero padre no lo lista
     subagents_folder = repo_path / "subagents"
     if subagents_folder.exists():
-        for fp in iter_component_files(subagents_folder):
-            rel = str(fp.relative_to(repo_path))
-            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        for record in scanned.values():
+            if record.folder != "subagents":
+                continue
+            rel = record.rel_path
+            meta, found = record.metadata, record.found
             if not found:
                 continue
             sub_id = meta.get("id")
@@ -673,9 +720,11 @@ def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
         folder_path = repo_path / folder
         if not folder_path.exists():
             continue
-        for fp in iter_component_files(folder_path):
-            rel = str(fp.relative_to(repo_path))
-            meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+        for record in scanned.values():
+            if record.folder != folder:
+                continue
+            rel = record.rel_path
+            meta, found = record.metadata, record.found
             if not found:
                 continue
             skill_id = meta.get("id")
@@ -693,40 +742,103 @@ def validate_bidirectional_wiring(repo_path: Path, result: ValidationResult):
                     ))
 
 
-def validate_no_circular_dependencies(repo_path: Path, result: ValidationResult):
-    """Detecta dependencias circulares directas (A depende de B y B depende
-    de A) en el campo 'depends_on' de las skills. 'depends_on' representa
-    una relación de prerrequisito de ejecución, por lo que no debe ser
-    simétrica; relaciones bidireccionales genuinas (skills complementarias)
-    deben documentarse en el cuerpo como 'relacionadas', no como depends_on."""
-    depends_map: Dict[str, List[str]] = {}
-    for folder in ["skills/apb-owned", "skills/third_party"]:
+CYCLE_EDGE_FIELDS = ["skills", "subagents", "agents", "depends_on"]
+
+
+def validate_no_circular_dependencies(
+    repo_path: Path, result: ValidationResult, all_ids: Dict[str, str] = None,
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
+    """Detecta dependencias circulares — de cualquier longitud, no solo
+    directas de 2 nodos — en el grafo de wiring de TODO el repo (no solo
+    skills): aristas desde 'skills', 'subagents', 'agents' y 'depends_on' de
+    cualquier componente. 'consumed_by' se excluye deliberadamente: es la
+    relación inversa de 'skills'/'depends_on' del consumidor, incluirla
+    duplicaría/invertiría aristas ya cubiertas.
+
+    Recorre el grafo con DFS de 3 colores (blanco/gris/negro) para detectar
+    back-edges (ciclos de cualquier longitud, no solo A↔B). Relaciones
+    bidireccionales genuinas (skills/agentes complementarios) deben
+    documentarse en el cuerpo como 'relacionados', no como referencia cruzada
+    en estos campos."""
+    graph: Dict[str, List[str]] = {}
+    edge_field: Dict[Tuple[str, str], str] = {}
+
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
+
+    if all_ids is None:
+        all_ids = {}
+        for record in scanned.values():
+            if record.found and record.metadata.get("id"):
+                all_ids[record.metadata["id"]] = record.rel_path
+
+    for folder in COMPONENT_FOLDERS:
         folder_path = repo_path / folder
         if not folder_path.exists():
             continue
-        for filepath in iter_component_files(folder_path):
-            metadata, found = parse_frontmatter(filepath.read_text(encoding="utf-8"))
+        for record in scanned.values():
+            if record.folder != folder:
+                continue
+            metadata, found = record.metadata, record.found
             if not found:
                 continue
             comp_id = metadata.get("id")
-            if comp_id:
-                depends_map[comp_id] = metadata.get("depends_on") or []
+            if not comp_id:
+                continue
+            graph.setdefault(comp_id, [])
+            for field_name in CYCLE_EDGE_FIELDS:
+                refs = metadata.get(field_name) or []
+                if isinstance(refs, str):
+                    refs = [refs]
+                for ref_id in refs:
+                    if ref_id in all_ids:
+                        graph[comp_id].append(ref_id)
+                        edge_field[(comp_id, ref_id)] = field_name
 
-    reported = set()
-    for a, deps in depends_map.items():
-        for b in deps:
-            if a in depends_map.get(b, []) and (b, a) not in reported:
-                reported.add((a, b))
-                result.add(ValidationIssue(
-                    "ERROR", f"{a} / {b}",
-                    f"Dependencia circular en 'depends_on': '{a}' y '{b}' se "
-                    f"declaran mutuamente como dependencia. Si la relación es "
-                    f"complementaria (no de prerrequisito), documentarla en el "
-                    f"cuerpo del documento, no en 'depends_on'."
-                ))
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color: Dict[str, int] = {node: WHITE for node in graph}
+    reported_cycles = set()
+
+    def report_cycle(cycle: List[str]):
+        chain = " → ".join(cycle)
+        edges_detail = "; ".join(
+            f"{cycle[i]} --[{edge_field.get((cycle[i], cycle[i + 1]), '?')}]--> {cycle[i + 1]}"
+            for i in range(len(cycle) - 1)
+        )
+        result.add(ValidationIssue(
+            "ERROR", cycle[0],
+            f"Dependencia circular detectada: {chain}. Cadena de wiring: "
+            f"{edges_detail}. Romper el ciclo eliminando o invirtiendo una de "
+            f"estas referencias (revisar cuál componente debería depender del "
+            f"otro, no al revés)."
+        ))
+
+    def dfs(node: str, path: List[str]):
+        color[node] = GRAY
+        path.append(node)
+        for neighbor in graph.get(node, []):
+            if color.get(neighbor, WHITE) == WHITE:
+                dfs(neighbor, path)
+            elif color.get(neighbor) == GRAY:
+                cycle_start = path.index(neighbor)
+                cycle = path[cycle_start:] + [neighbor]
+                key = frozenset(cycle)
+                if key not in reported_cycles:
+                    reported_cycles.add(key)
+                    report_cycle(cycle)
+        path.pop()
+        color[node] = BLACK
+
+    for node in list(graph.keys()):
+        if color[node] == WHITE:
+            dfs(node, [])
 
 
-def validate_version_drift(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
+def validate_version_drift(
+    repo_path: Path, result: ValidationResult, all_ids: Dict[str, str],
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
     """Check E-T3: si un agente referencia una skill cuya major version es
     inferior a la última disponible en el repo, emite WARNING para que el
     equipo actualice la referencia o ancle explícitamente la versión antigua.
@@ -734,6 +846,8 @@ def validate_version_drift(repo_path: Path, result: ValidationResult, all_ids: D
     Ejemplo: agente usa 'apb-foo-v1.0' pero el repo tiene 'apb-foo-v2.0'
     → WARNING. Ignorado si la skill referenciada no existe en all_ids (ya lo
     detecta validate_references como ERROR de referencia rota)."""
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
 
     _v_pattern = re.compile(r"^(.+)-v(\d+)\.\d+$")
 
@@ -751,9 +865,11 @@ def validate_version_drift(repo_path: Path, result: ValidationResult, all_ids: D
     if not agents_folder.exists():
         return
 
-    for fp in iter_component_files(agents_folder):
-        rel = str(fp.relative_to(repo_path))
-        meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+    for record in scanned.values():
+        if record.folder != "agents":
+            continue
+        rel = record.rel_path
+        meta, found = record.metadata, record.found
         if not found:
             continue
         for skill_ref in (meta.get("skills") or []):
@@ -823,13 +939,18 @@ def validate_harness_cold_start(repo_path: Path, result: ValidationResult):
     result.add(ValidationIssue("INFO", "SYSTEM.md", "Harness / Cold-Start verificado"))
 
 
-def validate_test_plan_methodology(repo_path: Path, result: ValidationResult):
+def validate_test_plan_methodology(
+    repo_path: Path, result: ValidationResult,
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
     """20. Metodología de planes de pruebas (punto #82, sesión QA-2 2026-07-02).
 
     Toda skill apb-owned de plan de pruebas (id contiene 'test-plan') debe
     referenciar el estándar corporativo TEST_PLAN_STANDARD, para que la
     metodología (orden de fuentes, procedencia múltiple, secciones obligatorias,
     gobernanza, no-regresión) no derive en silencio. Mensaje 'bolígrafo rojo'."""
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
     standard_rel = "context/apb/standards/TEST_PLAN_STANDARD.md"
     standard_path = repo_path / standard_rel
 
@@ -837,18 +958,20 @@ def validate_test_plan_methodology(repo_path: Path, result: ValidationResult):
     if not qa_folder.exists():
         return
     referencing = []
-    for fp in iter_component_files(qa_folder):
-        meta, found = parse_frontmatter(fp.read_text(encoding="utf-8"))
+    for record in scanned.values():
+        if not record.rel_path.replace("\\", "/").startswith("skills/apb-owned/qa/"):
+            continue
+        meta, found = record.metadata, record.found
         if not found:
             continue
         cid = str(meta.get("id", ""))
         if "test-plan" not in cid:
             continue
         referencing.append(cid)
-        body = fp.read_text(encoding="utf-8")
+        body = record.content
         if "TEST_PLAN_STANDARD" not in body:
             result.add(ValidationIssue(
-                "ERROR", str(fp.relative_to(repo_path)),
+                "ERROR", record.rel_path,
                 "Skill de plan de pruebas sin referencia a 'TEST_PLAN_STANDARD'. "
                 f"Añadir el enlace al estándar ({standard_rel}) en el cuerpo (punto #82)."
             ))
@@ -1111,6 +1234,146 @@ def validate_plan_deliverables_exist(repo_path: Path, result: ValidationResult, 
     result.add(ValidationIssue("INFO", rel, "Reconciliación plan↔repo (entregables CERRADA) verificada"))
 
 
+def validate_procedure_load_instructions(
+    repo_path: Path, result: ValidationResult,
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
+    """27. Procedimientos nombrados sin instrucción de carga (hallazgo Débora,
+    2026-07-06, sobre discovery/examples/INFORME_RIESGOS_ARQ-3684_APB.API.FIL.md).
+
+    La skill apb-gov-org-risk-report-v1.0 nombraba PROCEDURE_NONCOMPLIANCE_MANAGEMENT_v1.0
+    en prosa (sin ruta literal al fichero) mientras que PROCEDURE_RISK_EVALUATION sí tenía
+    ruta y un paso "Aplica" explícito en el mismo prompt — y el informe generado aplicó a
+    fondo el segundo procedimiento e ignoró casi por completo el primero. Nombrar un
+    PROCEDURE_* por su nombre sin la ruta literal al fichero en el mismo componente es
+    indistinguible, para el modelo, de una referencia decorativa. Este check exige que
+    cualquier skill/agente/workflow que mencione un PROCEDURE_* por nombre incluya también,
+    en el mismo fichero, la ruta relativa literal del documento (para forzar su apertura
+    real en vez de operar solo a partir del nombre)."""
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
+    policies_folder = repo_path / "context" / "apb" / "policies"
+    if not policies_folder.exists():
+        return
+
+    procedure_paths: Dict[str, Path] = {
+        fp.stem: fp for fp in policies_folder.rglob("PROCEDURE_*.md")
+    }
+    if not procedure_paths:
+        return
+
+    scan_specs = [
+        (repo_path / "skills", {"skills/apb-owned", "skills/third_party"}),
+        (repo_path / "agents", {"agents"}),
+        (repo_path / "workflows", {"workflows"}),
+    ]
+    checked_any = False
+    for folder, folder_keys in scan_specs:
+        if not folder.exists():
+            continue
+        for record in scanned.values():
+            if record.folder not in folder_keys:
+                continue
+            body = record.content
+            rel = record.rel_path
+            for name, proc_path in procedure_paths.items():
+                if name not in body:
+                    continue
+                checked_any = True
+                proc_rel = str(proc_path.relative_to(repo_path)).replace("\\", "/")
+                if proc_rel in body:
+                    continue  # ruta literal presente: carga explícita asumida
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"Nombra el procedimiento '{name}' pero no incluye su ruta literal "
+                    f"('{proc_rel}') en el mismo fichero. Sin la ruta explícita, el modelo "
+                    "puede operar solo a partir del nombre sin abrir nunca el documento "
+                    "(check #27, hallazgo Débora 2026-07-06 sobre ARQ-3684)."
+                ))
+
+    if checked_any:
+        result.add(ValidationIssue(
+            "INFO", "scripts/validate_repo.py",
+            "Instrucciones de carga de procedimientos (PROCEDURE_*) verificadas (check #27)"
+        ))
+
+
+def validate_agent_skill_provider_wiring(
+    repo_path: Path, result: ValidationResult, all_ids: Dict[str, str],
+    scanned: Optional[Dict[str, ComponentRecord]] = None,
+):
+    """28. Skills/providers usados por un agente o subagente pero no
+    declarados (hallazgo Débora, 2026-07-06, auditoría posterior al bug de
+    ARQ-3684/check #27; formalizado en SCHEMA.md §3.3 el mismo día a
+    petición de Débora — 'skills'/'depends_on' pasan de convención informal
+    a campo condicional del schema para subagentes).
+
+    Generaliza el check #27: no solo procedimientos, sino cualquier skill o
+    provider real que el Prompt de Sistema de un agente/subagente use
+    operativamente sin declararlo en 'skills:'/'depends_on:'. Confirmado con
+    una auditoría manual: encontró 6 gaps reales repartidos en 4 agentes y 2
+    subagentes (apb-qa-anonymize-v1.0, apb-plat-doc-to-markdown-v1.0,
+    prov-atlassian-v1.0, prov-ms365-v1.0, prov-azure-cost-v1.0,
+    prov-azure-monitor-v1.0, apb-ops-slo-design-v1.0/apb-ops-observability-v1.0).
+
+    Deliberadamente EXCLUIDO: menciones a otros agentes o subagentes (tipo
+    'agent'/'subagent'). Son, con alta frecuencia, referencias cruzadas
+    legítimas (traspaso de alcance "deriva a X", comparación "a diferencia de
+    X", reutilización sin re-parentar "no se duplica el subagente X") y no
+    defectos de cableado — incluirlas dispararía falsos positivos sistemáticos,
+    confirmado empíricamente durante el diseño de este check."""
+    id_token_re = re.compile(
+        r"\b(apb-[a-z0-9]+(?:-[a-z0-9]+)*-v\d+\.\d+|"
+        r"third-[a-z0-9]+(?:-[a-z0-9]+)*-v\d+\.\d+|"
+        r"prov-[a-z0-9]+(?:-[a-z0-9]+)*-v\d+\.\d+)\b"
+    )
+    prompt_heading_re = re.compile(r"^##\s*.*Prompt de Sistema\s*$", re.MULTILINE)
+    flaggable_types = {"skill", "provider"}
+
+    if scanned is None:
+        scanned = scan_components(repo_path, COMPONENT_FOLDERS)
+    scan_folders = ["agents", "subagents"]
+
+    for folder in scan_folders:
+        if not (repo_path / folder).exists():
+            continue
+        for record in scanned.values():
+            if record.folder != folder:
+                continue
+            text = record.content
+            rel = record.rel_path
+            meta, found = record.metadata, record.found
+            if not found:
+                continue
+            declared = (
+                set(meta.get("skills") or [])
+                | set(meta.get("subagents") or [])
+                | set(meta.get("depends_on") or [])
+                | {meta.get("id"), meta.get("parent_agent")}
+            )
+
+            heading_match = prompt_heading_re.search(text)
+            if not heading_match:
+                continue
+            fence_match = re.search(r"```(.*?)```", text[heading_match.end():], re.DOTALL)
+            if not fence_match:
+                continue
+            prompt_text = fence_match.group(1)
+
+            mentioned = set(id_token_re.findall(prompt_text))
+            for mid in sorted(mentioned):
+                if mid in declared:
+                    continue
+                if all_ids.get(mid) not in flaggable_types:
+                    continue  # no existe, o es agent/subagent/workflow/... (referencia cruzada legítima)
+                result.add(ValidationIssue(
+                    "ERROR", rel,
+                    f"El Prompt de Sistema usa '{mid}' ({all_ids[mid]}) pero no está en "
+                    "'skills:'/'depends_on:' del frontmatter. Declararlo explícitamente "
+                    "(check #28, generalización del hallazgo de ARQ-3684/check #27)."
+                ))
+
+
 def validate_catalog(repo_path: Path, result: ValidationResult, all_ids: Dict[str, str]):
     catalog_path = repo_path / "catalog" / "CATALOG.md"
     if not catalog_path.exists():
@@ -1174,22 +1437,31 @@ def main():
 
     result = ValidationResult()
 
+    # Único escaneo de disco de todo el run — reutilizado por las funciones de
+    # validación que antes releían/reparseaban el mismo frontmatter YAML varias
+    # veces cada una (ver discovery/ESTRATEGIA_OPTIMIZACION_TOKENS_2026-07-06.md,
+    # Estrategia 1). Cada función sigue aceptando scanned=None para uso aislado
+    # (p. ej. desde tests o desde otros scripts).
+    scanned = scan_components(repo_path, COMPONENT_FOLDERS)
+
     validate_root_files(repo_path, result)
     validate_folder_structure(repo_path, result)
-    all_ids = validate_components(repo_path, result)
-    validate_references(repo_path, result, all_ids)
-    validate_no_deprecated_wiring(repo_path, result)
-    validate_agent_subagent_consistency(repo_path, result, all_ids)
-    validate_bidirectional_wiring(repo_path, result)
-    validate_version_drift(repo_path, result, all_ids)
-    validate_no_circular_dependencies(repo_path, result)
+    all_ids = validate_components(repo_path, result, scanned=scanned)
+    validate_references(repo_path, result, all_ids, scanned=scanned)
+    validate_no_deprecated_wiring(repo_path, result, scanned=scanned)
+    validate_agent_subagent_consistency(repo_path, result, all_ids, scanned=scanned)
+    validate_bidirectional_wiring(repo_path, result, scanned=scanned)
+    validate_version_drift(repo_path, result, all_ids, scanned=scanned)
+    validate_no_circular_dependencies(repo_path, result, all_ids, scanned=scanned)
     validate_harness_cold_start(repo_path, result)
-    validate_test_plan_methodology(repo_path, result)
+    validate_test_plan_methodology(repo_path, result, scanned=scanned)
     validate_unified_plan_conservation(repo_path, result)
     validate_agnostic_root_routing(repo_path, result)
     validate_execution_and_approval_methodology(repo_path, result)
     validate_execution_report_evidence_methodology(repo_path, result)
     validate_plan_deliverables_exist(repo_path, result, all_ids)
+    validate_procedure_load_instructions(repo_path, result, scanned=scanned)
+    validate_agent_skill_provider_wiring(repo_path, result, all_ids, scanned=scanned)
     validate_catalog(repo_path, result, all_ids)
 
     print()

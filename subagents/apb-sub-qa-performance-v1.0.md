@@ -2,14 +2,14 @@
 id: "apb-sub-qa-performance-v1.0"
 name: "Performance Testing Subagent"
 description: "Subagente especializado en testing de performance con k6 para APIs y portales APB. Genera escenarios de carga calibrados con el tráfico portuario real, ejecuta los tests y analiza los resultados comparando contra el baseline, identificando regresiones de rendimiento y los endpoints críticos que concentran la latencia."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "qa"
 parent_agent: "apb-agent-qa-auto-v1.0"
 specialty: "k6, testing de performance, análisis de latencia y throughput"
 created_date: "2026-06-29"
-review_date: "2026-12-29"
+review_date: "2026-07-07"
 ---
 
 # Performance Testing Subagent
@@ -100,6 +100,9 @@ baseline_results: null  # JSON de resultados anteriores para comparativa
 - NO ejecutar en producción — siempre en staging.
 - NO usar credenciales reales de producción — usar usuarios de test de Azure Key Vault.
 - NO escalar a más de 200 VUs sin aprobación del equipo de plataforma (riesgo de afectar recursos compartidos).
+- NO ejecutar carga real (no `smoke`) contra un entorno compartido desde un portátil individual — el
+  destino de ejecución debe ser `ci-runner` o `azure-qa` (`TEST_PLAN_STANDARD §8.1`/§9.1). Si ninguno está
+  disponible, declarar el bloqueante en el informe en vez de ejecutar un smoke test como si fuera la prueba completa.
 
 ## 🔒 Seguridad y Cumplimiento
 
@@ -128,6 +131,7 @@ inputs:
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-29 | Arquitectura APB / Claude Code | Creación inicial — Sesión Enriquecimiento B |
+| 1.1.0 | 2026-07-07 | Claude (Anthropic), a petición de Débora | Añade restricción de destino de ejecución (`TEST_PLAN_STANDARD §8.1`): carga real nunca desde portátil individual contra entorno compartido, requiere `ci-runner`/`azure-qa` o se declara el bloqueante. |
 
 
 ## 🧭 Estándar de Prompting (PROMPTING_STANDARD v1.0)

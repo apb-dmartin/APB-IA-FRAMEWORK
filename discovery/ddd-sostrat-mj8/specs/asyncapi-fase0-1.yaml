@@ -1,0 +1,251 @@
+# [IA-GEN] Generado por APB AI Framework (apb-doc-event-specs-v1.0 / apb-arch-event-driven-v1.0) - pendiente revision humana
+asyncapi: "2.6.0"
+info:
+  title: APB SÒSTRAT — Eventos de Fase 0-1 (Datos Maestros de Equipamiento, Ferrocarril, Mano de Estiba, Depotsis)
+  version: "1.0.0"
+  description: |
+    Contratos de evento formales para los 4 servicios de Fase 0-1 del roadmap de
+    descomposición de SÒSTRAT (ver `../decomposition-roadmap.md`). Payload
+    grounded en las clases DTO reales del monolito legacy — ver
+    `../events-catalog.md` para la evidencia de código completa de cada campo.
+    Envelope CloudEvents 1.0 en todos los eventos.
+  contact:
+    name: Arquitectura APB
+    email: arquitectura@portdebarcelona.cat
+  x-ai-generated: true
+  x-ai-skill: "apb-doc-event-specs-v1.0"
+defaultContentType: application/json
+servers:
+  serviceBus:
+    url: "apb-sostrat.servicebus.windows.net"
+    protocol: amqp
+    description: Azure Service Bus (namespace evt.sostrat.*)
+channels:
+  evt.sostrat.datos-maestros-equipamiento:
+    description: Eventos del dato maestro de Equipamiento
+    subscribe:
+      operationId: onEquipamientoEvent
+      message:
+        oneOf:
+          - $ref: "#/components/messages/EquipamientoRegistrado"
+          - $ref: "#/components/messages/EquipamientoActualizado"
+    bindings:
+      amqp:
+        deadLetterExchange: "evt.sostrat.datos-maestros-equipamiento.dlq"
+  evt.sostrat.ferrocarril-portuario:
+    description: Eventos de operaciones ferroviarias
+    subscribe:
+      operationId: onRailOperationEvent
+      message:
+        oneOf:
+          - $ref: "#/components/messages/OperacionFerroviariaRegistrada"
+          - $ref: "#/components/messages/OperacionFerroviariaAnulada"
+    bindings:
+      amqp:
+        deadLetterExchange: "evt.sostrat.ferrocarril-portuario.dlq"
+  evt.sostrat.mano-de-estiba:
+    description: Eventos de contratación y comandas de estiba
+    subscribe:
+      operationId: onManoEstibaEvent
+      message:
+        oneOf:
+          - $ref: "#/components/messages/ContratacionRegistrada"
+          - $ref: "#/components/messages/ComandaAsignada"
+    bindings:
+      amqp:
+        deadLetterExchange: "evt.sostrat.mano-de-estiba.dlq"
+  evt.sostrat.depotsis:
+    description: Eventos de solicitudes de depósito en muelle libre
+    subscribe:
+      operationId: onDepotsisEvent
+      message:
+        $ref: "#/components/messages/SolicitudDepotsisRegistrada"
+    bindings:
+      amqp:
+        deadLetterExchange: "evt.sostrat.depotsis.dlq"
+components:
+  messages:
+    EquipamientoRegistrado:
+      name: EquipamientoRegistrado
+      title: Equipamiento Registrado
+      summary: Se ha registrado un nuevo equipo/contenedor en el dato maestro.
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/EquipamientoData"
+      examples:
+        - name: alta-contenedor
+          payload:
+            specversion: "1.0"
+            type: "com.apb.sostrat.datos-maestros-equipamiento.EquipamientoRegistrado.v1"
+            source: "/sostrat/datos-maestros-equipamiento"
+            id: "3f1b8e2a-1e4a-4b2a-9c3d-0a1b2c3d4e5f"
+            time: "2026-07-14T08:00:00Z"
+            datacontenttype: "application/json"
+            data:
+              idequipament: 145820
+              refequipament: "REF-000145820"
+              matriculaiso: "MSCU1234567"
+              idtipequipament: 2
+              propietari: "MSC MEDITERRANEAN SHIPPING COMPANY"
+              idoridade: "ES"
+      x-business-rules:
+        - "idequipament es inmutable una vez asignado."
+        - "matriculaiso, si se informa, debe ser única en el sistema (no validado a nivel de evento, sí a nivel de API — ver openapi-datos-maestros-equipamiento.yaml)."
+      x-error-handling:
+        - scenario: "Consumidor no puede resolver idtipequipament contra su copia local del catálogo TipusEquipament"
+          handling: "Reintento con backoff exponencial (3 intentos); tras agotar reintentos, mensaje a DLQ evt.sostrat.datos-maestros-equipamiento.dlq para revisión manual."
+    EquipamientoActualizado:
+      name: EquipamientoActualizado
+      title: Equipamiento Actualizado
+      summary: Se han actualizado los atributos maestros de un equipo existente.
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/EquipamientoData"
+      x-business-rules:
+        - "NO debe incluir campos operativos (peso, estado aduanero) — esos viven en los eventos propios de cada bounded context consumidor, no aquí. Ver events-catalog.md §13 para el anti-patrón que este límite evita repetir."
+      x-error-handling:
+        - scenario: "Evento llega para un idequipament que el consumidor no conoce todavía"
+          handling: "Tratar como alta implícita (upsert), no como error — el orden de entrega entre Registrado/Actualizado no está garantizado por defecto en Service Bus estándar (requiere sesiones si se necesita orden estricto)."
+    OperacionFerroviariaRegistrada:
+      name: OperacionFerroviariaRegistrada
+      title: Operación Ferroviaria Registrada
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/OperacionFerroviariaData"
+      examples:
+        - name: entrada-tren
+          payload:
+            specversion: "1.0"
+            type: "com.apb.sostrat.ferrocarril-portuario.OperacionFerroviariaRegistrada.v1"
+            source: "/sostrat/ferrocarril-portuario"
+            id: "7c2d9f1a-3b5e-4c6d-8e9f-1a2b3c4d5e6f"
+            time: "2026-07-14T07:15:00Z"
+            datacontenttype: "application/json"
+            data:
+              seqoperacio: 88213
+              datoperacio: "2026-07-14T08:30:00Z"
+              idtipoperacio: "ENTRADA"
+              lontren: 620
+              taratren: 1450
+              idopeferroviari: "RENFE-MERC"
+              portescalatren: "B"
+              anyescalatren: 2026
+              numescalatren: 4821
+      x-business-rules:
+        - "idtipoperacio solo transiciona entre ENTRADA/SALIDA/MANIOBRA/INTERVENCION (Constantes.OPERACIONES_FERROVIARIAS_TIPO_OPERACION_*)."
+      x-error-handling:
+        - scenario: "portescalatren/anyescalatren/numescalatren no resuelve a una escala real en el consumidor"
+          handling: "DLQ — requiere confirmar con Arquitectura APB el mapeo exacto de campos hacia EscalaPk (idsubport/anyescala/numescala), no confirmado 1:1 por nombre (ver decomposition-roadmap.md Fase 5, hallazgo ARGOS)."
+    OperacionFerroviariaAnulada:
+      name: OperacionFerroviariaAnulada
+      title: Operación Ferroviaria Anulada
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/OperacionFerroviariaData"
+      x-business-rules:
+        - "Solo aplicable a operaciones que no estén ya en un estado terminal (anulada/finalizada) — ver POST /rail-operations/{seqoperacio}/cancel en openapi-ferrocarril-portuario.yaml para la validación síncrona equivalente."
+    ContratacionRegistrada:
+      name: ContratacionRegistrada
+      title: Contratación de Estiba Registrada
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/ContratacionData"
+      x-error-handling:
+        - scenario: "Consumidor externo 'MST' ya gestiona este evento de forma nativa"
+          handling: "Confirmar con el equipo propietario de MST si este evento debe publicarse desde SÒSTRAT o si MST ya es la fuente de verdad — ver jira-backlog.md EPIC-02, tarea técnica pendiente."
+    ComandaAsignada:
+      name: ComandaAsignada
+      title: Comanda de Estiba Asignada
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/ComandaData"
+    SolicitudDepotsisRegistrada:
+      name: SolicitudDepotsisRegistrada
+      title: Solicitud de Depósito Registrada
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/CloudEventEnvelope"
+        x-data-schema: "#/components/schemas/SolicitudDepotsisData"
+      x-business-rules:
+        - "El servicio de Facturación y Liquidaciones (dom-facturacion-v1) es el consumidor principal de este evento — calcula la liquidación asociada al depósito sin acceso directo a la BBDD de Depotsis."
+  schemas:
+    CloudEventEnvelope:
+      type: object
+      required: [specversion, type, source, id, time, data]
+      properties:
+        specversion: { type: string, enum: ["1.0"] }
+        type: { type: string, description: "com.apb.sostrat.<bc>.<Evento>.v1" }
+        source: { type: string, format: uri-reference }
+        id: { type: string, format: uuid }
+        time: { type: string, format: date-time }
+        datacontenttype: { type: string, enum: ["application/json"] }
+        data: { type: object }
+    EquipamientoData:
+      type: object
+      required: [idequipament, refequipament, matriculaiso, idtipequipament]
+      properties:
+        idequipament: { type: integer, format: int64 }
+        refequipament: { type: string }
+        matriculaiso: { type: string }
+        idtipequipament: { type: integer }
+        propietari: { type: string, nullable: true }
+        idoridade: { type: string, nullable: true }
+    OperacionFerroviariaData:
+      type: object
+      required: [seqoperacio, idtipoperacio]
+      properties:
+        seqoperacio: { type: integer, format: int64 }
+        datoperacio: { type: string, format: date-time }
+        idtipoperacio: { type: string, enum: [ENTRADA, SALIDA, MANIOBRA, INTERVENCION] }
+        lontren: { type: integer, nullable: true }
+        taratren: { type: integer, nullable: true }
+        idopeferroviari: { type: string, nullable: true }
+        idopeterminal: { type: string, nullable: true }
+        portescalatren: { type: string, nullable: true }
+        anyescalatren: { type: integer, nullable: true }
+        numescalatren: { type: integer, nullable: true }
+        carrega: { type: string, nullable: true }
+        descarrega: { type: string, nullable: true }
+        facturable: { type: string, nullable: true }
+        observacions: { type: string, nullable: true }
+    ContratacionData:
+      type: object
+      required: [idcontractacio, idtipuscontractacio, idestatcontractacio]
+      properties:
+        idcontractacio: { type: integer, format: int64 }
+        datacontractacio: { type: string, format: date-time }
+        idtipuscontractacio: { type: string }
+        idestatcontractacio: { type: string }
+        dataactualitzacio: { type: string, format: date-time, nullable: true }
+    ComandaData:
+      type: object
+      required: [idcomanda, idcontractacio, idtipuscomanda, idestatcomanda]
+      properties:
+        idcomanda: { type: integer, format: int64 }
+        idcontractacio: { type: integer, format: int64 }
+        idcomandaportic: { type: integer, format: int64, nullable: true }
+        nifempresa: { type: string }
+        idtipuscomanda: { type: string }
+        idestatcomanda: { type: string }
+    SolicitudDepotsisData:
+      type: object
+      required: [idsolicitud, versio, estat]
+      properties:
+        idsolicitud: { type: integer, format: int64 }
+        versio: { type: integer }
+        idocupacio: { type: integer, format: int64, nullable: true }
+        numescala: { type: integer, nullable: true }
+        anyescala: { type: integer, nullable: true }
+        idsubport: { type: string, nullable: true }
+        idestibador: { type: string, nullable: true }
+        codaranzprod: { type: string, nullable: true }
+        estat: { type: string }
+        quantitat: { type: number, format: double, nullable: true }
+        datainioperacions: { type: string, format: date-time, nullable: true }
+        datafioperacions: { type: string, format: date-time, nullable: true }
