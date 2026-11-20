@@ -5,11 +5,11 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 359
+- **Total Components**: 362
 
 ## Component Breakdown
 
-### Skills APB-Owned (181 total)
+### Skills APB-Owned (182 total)
 
 | ID | Dominio | Estado | Archivo |
 |---|---|---|---|
@@ -87,6 +87,7 @@
 | `apb-doc-onboarding-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-onboarding-v1.0.md` |
 | `apb-doc-post-mortem-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-post-mortem-v1.0.md` |
 | `apb-doc-release-notes-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-release-notes-v1.0.md` |
+| `apb-doc-repo-rag-qa-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-repo-rag-qa-v1.0.md` |
 | `apb-doc-swagger-v1.0` | documentation | draft | `skills/apb-owned/documentation/apb-doc-swagger-v1.0.md` |
 | `apb-dev-verify-before-done-v1.0` | governance | draft | `skills/apb-owned/governance/apb-dev-verify-before-done-v1.0.md` |
 | `apb-gov-ai-model-lifecycle-v1.0` | governance | draft | `skills/apb-owned/governance/apb-gov-ai-model-lifecycle-v1.0.md` |
@@ -256,11 +257,12 @@
 | `third-superclaude-framework-v1.0` | https://github.com/SuperClaude-Org/SuperClaude_Framework | MIT | approved | `skills/third_party/superclaude/third-superclaude-framework-v1.0.md` |
 | `third-trailofbits-risk-analysis-v1.0` | https://github.com/trailofbits/skills | MIT | approved | `skills/third_party/trailofbits/third-trailofbits-risk-analysis-v1.0.md` |
 
-### Agentes (37 total)
+### Agentes (39 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
 | `apb-agent-accessibility-auditor-v1.0` | Accessibility Auditor | draft | `agents/apb-agent-accessibility-auditor-v1.0.md` |
+| `apb-agent-apb-stack-expert-v1.0` | APB Stack Expert | draft | `agents/apb-agent-apb-stack-expert-v1.0.md` |
 | `apb-agent-api-product-manager-v1.0` | API Product Manager | draft | `agents/apb-agent-api-product-manager-v1.0.md` |
 | `apb-agent-business-analyst-v1.0` | Business Analyst Agent | draft | `agents/apb-agent-business-analyst-v1.0.md` |
 | `apb-agent-catalog-manager-v1.0` | AI Catalog Manager Agent | draft | `agents/apb-agent-catalog-manager-v1.0.md` |
@@ -281,6 +283,7 @@
 | `apb-agent-knowledge-manager-v1.0` | Knowledge Manager | draft | `agents/apb-agent-knowledge-manager-v1.0.md` |
 | `apb-agent-meta-builder-v1.0` | Meta Builder Agent | draft | `agents/apb-agent-meta-builder-v1.0.md` |
 | `apb-agent-modernization-v1.0` | Modernization Architect | draft | `agents/apb-agent-modernization-v1.0.md` |
+| `apb-agent-mother-framework-expert-v1.0` | Mother Framework Expert | draft | `agents/apb-agent-mother-framework-expert-v1.0.md` |
 | `apb-agent-observability-v1.0` | Observability Agent | draft | `agents/apb-agent-observability-v1.0.md` |
 | `apb-agent-platform-engineer-v1.0` | Platform Engineer Agent | draft | `agents/apb-agent-platform-engineer-v1.0.md` |
 | `apb-agent-pm-v1.0` | Project Management Agent | draft | `agents/apb-agent-pm-v1.0.md` |
