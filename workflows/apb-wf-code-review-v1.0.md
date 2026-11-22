@@ -2,7 +2,7 @@
 id: "apb-wf-code-review-v1.0"
 name: "Code Review Asistido"
 description: "Revisión de código asistida por IA con cumplimiento de estándares, validación de calidad, seguridad y generación de evidencias para gobierno."
-version: "1.2.0"
+version: "1.3.0"
 status: "draft"
 owner: "Desarrollo APB <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -12,6 +12,7 @@ agents:
   - "apb-agent-governance-v1.0"
   - "apb-agent-qa-auto-v1.0"
   - "apb-agent-security-architect-v1.0"
+  - "apb-agent-quality-compliance-v1.0"
 human_checkpoints:
   - "Validación humana antes de cada fase crítica del workflow"
 created_date: "2026-06-20"
@@ -41,8 +42,9 @@ graph TD
     E --> F[QA Automation Agent]
     F --> P{¿Hallazgos POLICY_QA_v1.0?}
     P -->|Sí| Q[QA Policy Fix-Loop Subagent]
-    Q --> G
-    P -->|No| G{Decisión}
+    Q --> R
+    P -->|No| R[Quality Compliance Agent]
+    R --> G{Decisión}
     G -->|Aprobado| H[Merge]
     G -->|Rechazado| I[Correcciones]
     I --> B
@@ -57,6 +59,7 @@ graph TD
 | 3 | Security Testing Subagent | Análisis de seguridad | `apb-dev-openspec-review`, `apb-sec-owasp` |
 | 4 | QA Automation Agent | Validación de calidad | `apb-qa-unit-test-gen`, `apb-qa-test-auto` |
 | 4b (condicional) | QA Policy Fix-Loop Subagent (`apb-sub-qa-policy-fix-loop-v1.0`, delegado por Code Reviewer Agent) | Remediación de hallazgos `POLICY_QA_v1.0` detectados en la Fase 2 | `apb-dev-pr-doc-v1.0` |
+| 4c | Quality Compliance Agent (`apb-agent-quality-compliance-v1.0`) | Consolida el resto de hallazgos de calidad del PR (Sonar, Security Testing, QA Automation — los que NO son específicamente `POLICY_QA_v1.0` de la Fase 2b), deduplica contra Jira, propone corrección/PR y entrega el informe de cierre en HTML | `apb-dev-sonar-clean-v1.0`, `apb-dev-pr-doc-v1.0`, `apb-plat-deliver-artifact-v1.0` |
 
 ## 📡 Contratos de Output Inter-Agente
 
@@ -90,7 +93,20 @@ graph TD
 - Si la Fase 2 (Code Review Automática) produjo hallazgos en la tabla «Hallazgos POLICY_QA_v1.0»
   (ver `apb-dev-code-review-gate-v1.0`), se invoca `apb-sub-qa-policy-fix-loop-v1.0` con esos hallazgos
 - El subagente propone un PR de corrección y anota el ticket Jira; **nunca mergea**
-- Si no hay hallazgos de `POLICY_QA_v1.0`, esta fase se omite y se pasa directo a la Fase 5
+- Si no hay hallazgos de `POLICY_QA_v1.0`, esta fase se omite y se pasa directo a la Fase 4c
+
+### Fase 4c: Consolidación y corrección de calidad (Quality Compliance Agent)
+- Se invoca `apb-agent-quality-compliance-v1.0` con el resto de hallazgos de calidad acumulados
+  en el PR hasta este punto: Sonar (Fase 2), Security Testing (Fase 3) y QA Automation (Fase 4) —
+  los que no entraron ya en la Fase 4b por ser específicamente `POLICY_QA_v1.0`
+- El agente deduplica cada hallazgo contra Jira antes de proponer nada (nunca duplica un ticket
+  ya abierto), presenta el plan consolidado y espera aprobación humana explícita
+- Tras el OK: anota/crea los tickets Jira aprobados y, si se pidió, prepara el PR de corrección
+  con `apb-dev-pr-doc-v1.0` — **nunca mergea**
+- Genera el informe de cierre en HTML (propuesto vs. ejecutado, con claves Jira/PR reales,
+  `HTML_DELIVERABLE_STANDARD`) y lo entrega vía `apb-plat-deliver-artifact-v1.0`, con Jira como
+  destino disponible además de descarga directa
+- Si no hay hallazgos pendientes de consolidar, esta fase se omite y se pasa directo a la Fase 5
 
 ### Fase 5: Decisión
 - Aprobación si pasa todos los gates
@@ -109,6 +125,8 @@ graph TD
 - Pull request aprobado o rechazado con feedback
 - Informe de code review
 - Evidencias de calidad y seguridad
+- Informe de cierre en HTML del Quality Compliance Agent (Fase 4c), si hubo hallazgos que
+  consolidar: propuesto vs. ejecutado, con claves Jira/PR reales
 - Registro en catálogo de gobierno
 
 ## 🔄 Puntos de Decisión
@@ -119,7 +137,10 @@ graph TD
 - **DP4:** ¿Pasa validación de estándares? Si no, aplicar correcciones.
 - **DP5:** ¿Decisión de aprobación? Requiere validación humana final.
 - **DP6 (condicional):** ¿Hay hallazgos de `POLICY_QA_v1.0` en la Fase 2? Si sí, invocar Fase 4b
-  (`apb-sub-qa-policy-fix-loop-v1.0`) antes de llegar a DP5; si no, saltar directo a DP5.
+  (`apb-sub-qa-policy-fix-loop-v1.0`) antes de llegar a Fase 4c; si no, saltar directo a Fase 4c.
+- **DP7 (condicional):** ¿Quedan hallazgos de calidad (Sonar/Security/QA) sin consolidar tras la
+  Fase 4b? Si sí, invocar Fase 4c (`apb-agent-quality-compliance-v1.0`) antes de DP5; si no,
+  saltar directo a DP5.
 
 ## 🚫 Límites y Escapes
 
@@ -146,6 +167,7 @@ graph TD
 | Fase 2: Code Review Automática | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
 | Fase 3: Validación de Seguridad | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
 | Fase 4: Validación de Calidad | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
+| Fase 4c: Consolidación (Quality Compliance Agent) | Jira/GitHub no disponibles para dedup o PR | No bloqueante para el resto del workflow | Declara «evidencia no disponible: <motivo>» en el informe HTML, sigue con lo que tenga y pasa a Fase 5 | Humano |
 | Fase 5: Decisión | Error técnico o datos insuficientes | Según severidad | Notificar al operador y documentar el estado alcanzado | Humano |
 
 > **Principio general:** ante cualquier fallo no contemplado, el workflow se detiene, conserva el estado alcanzado y notifica al responsable humano con el contexto completo. Nunca continúa asumiendo que el fallo se resolverá solo.
@@ -188,6 +210,7 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
 | 1.1.0 | 2026-11-18 | APB AI Framework | Añadida Fase 4b condicional: si la Fase 2 produce hallazgos de `POLICY_QA_v1.0`, se invoca `apb-sub-qa-policy-fix-loop-v1.0` (propone PR + anota Jira, nunca mergea) antes de la Fase 5 de Decisión. |
 | 1.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Obtención automática de evidencia (github, jira, sonarqube) antes de pedir datos al usuario, según `EXTERNAL_EVIDENCE_STANDARD`; solo se pide el identificador mínimo |
+| 1.3.0 | 2026-11-22 | Claude (Anthropic), a petición de Débora | Añadida Fase 4c: integra `apb-agent-quality-compliance-v1.0` (ya existía, no cableado a ningún workflow) para consolidar y deduplicar contra Jira el resto de hallazgos de calidad (Sonar/Security/QA) que no entraron en la Fase 4b por ser específicos de `POLICY_QA_v1.0`, con PR opcional y el nuevo informe de cierre en HTML de ese agente (v1.2.0) como output. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

@@ -1,8 +1,8 @@
 ---
 id: "apb-agent-quality-compliance-v1.0"
 name: "Quality Compliance Agent"
-description: "Agente que consolida incumplimientos de calidad de múltiples fuentes (SonarQube, hallazgos de otros agentes del framework, aportados por el usuario), comprueba contra Jira si ya existe ticket antes de proponer nada (dedup), sugiere correcciones concretas y ofrece preparar un Pull Request con ellas — nunca merge automático."
-version: "1.1.0"
+description: "Agente corrector de QA: consolida incumplimientos de calidad de múltiples fuentes (SonarQube, hallazgos de otros agentes del framework, aportados por el usuario), comprueba contra Jira si ya existe ticket antes de proponer nada (dedup), sugiere correcciones concretas y ofrece preparar un Pull Request con ellas para revisión humana (nunca merge automático), y entrega un informe HTML navegable de lo propuesto y lo efectivamente ejecutado, con opción de anotarlo en Jira."
+version: "1.2.0"
 status: "draft"
 owner: "QA / Desarrollo <arquitectura@portdebarcelona.cat>"
 domain: "qa"
@@ -10,6 +10,7 @@ autonomy_level: 1
 skills:
   - "apb-dev-sonar-clean-v1.0"
   - "apb-dev-pr-doc-v1.0"
+  - "apb-plat-deliver-artifact-v1.0"
   - "apb-ops-telemetry-emit-v1.0"
 subagents: []
 runtime:
@@ -95,7 +96,13 @@ correcciones concretas y, opcionalmente y tras OK humano, preparar un Pull Reque
    y ESPERAS aprobación humana.
 6. Tras OK explícito: (a) anotas/creas tickets Jira según lo aprobado; (b) si el usuario
    pidió PR, preparas la propuesta con apb-dev-pr-doc-v1.0 y la dejas para revisión humana.
-7. Emites TELEMETRY_BLOCK (apb-ops-telemetry-emit-v1.0) al final del output.
+7. Generas el informe de cierre en HTML (artifact_type: "report", conforme a
+   `HTML_DELIVERABLE_STANDARD`) con lo PROPUESTO (plan consolidado) y lo EFECTIVAMENTE
+   EJECUTADO hasta este punto (qué tickets quedaron creados/anotados con sus claves reales,
+   si el PR se llegó a abrir y su enlace, qué queda pendiente de revisión humana) y lo entregas
+   vía apb-plat-deliver-artifact-v1.0, ofreciendo Jira como uno de los destinos posibles
+   (añadirlo como adjunto/comentario del ticket) junto con descarga directa.
+8. Emites TELEMETRY_BLOCK (apb-ops-telemetry-emit-v1.0) al final del output.
 
 ### Límites
 - No apruebas tu propio plan (SYSTEM.md §2.1 regla 2).
@@ -123,6 +130,8 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 - Sugerencia de correcciones concretas por hallazgo (fichero/línea/regla)
 - Preparación opcional de PR con las correcciones tras OK humano (nunca merge)
 - Reutilización del patrón fallo→PR→Jira de `apb-sub-qa-fix-loop-v1.0` sin duplicarlo
+- Informe de cierre en HTML navegable (propuesto vs. ejecutado, con claves Jira/enlace de PR
+  reales) conforme a `HTML_DELIVERABLE_STANDARD`, con opción de entregarlo también a Jira
 
 ## 📋 Skills Asignadas
 
@@ -130,13 +139,15 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 |----|--------|---------|-----------|
 | `apb-dev-sonar-clean-v1.0` | Mejora de Código para Cumplimiento Sonar | Development | Nivel 2 |
 | `apb-dev-pr-doc-v1.0` | Documentación y preparación de Pull Requests | Development | Nivel 1 |
+| `apb-plat-deliver-artifact-v1.0` | Entrega del informe HTML de cierre (descarga y/o Jira) | Platform | Nivel 1 |
 | `apb-ops-telemetry-emit-v1.0` | Emisión de telemetría de invocación | Operation | Nivel 1 |
 
 ## 🔀 Workflows en los que Participa
 
-- Ninguno formalizado todavía. Candidato natural a incorporarse a `apb-wf-code-review-v1.0`
-  como paso posterior (hallazgos de la revisión → corrección con dedup Jira), si se decide en
-  una sesión futura — no se cablea especulativamente ahora.
+- `apb-wf-code-review-v1.0` (Fase 4c, desde la v1.3.0 del workflow): consolida los hallazgos de
+  Sonar/Security Testing/QA Automation que no fueron ya cubiertos por la Fase 4b
+  (`apb-sub-qa-policy-fix-loop-v1.0`, específica de `POLICY_QA_v1.0`), los deduplica contra
+  Jira, propone corrección/PR tras OK humano y entrega el informe de cierre en HTML.
 
 ## 🧩 Subagentes Delegados
 
@@ -160,6 +171,10 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 - Tickets Jira anotados/creados solo tras OK explícito, con sus claves reales
 - PR propuesto (rama + descripción generada con `apb-dev-pr-doc-v1.0`), pendiente de revisión
   humana — solo si se pidió
+- Informe de cierre en HTML autocontenido (`HTML_DELIVERABLE_STANDARD`), con tabla de lo
+  PROPUESTO vs. lo EFECTIVAMENTE EJECUTADO (tickets con clave real, enlace del PR si se abrió,
+  qué sigue pendiente de revisión humana), entregado vía `apb-plat-deliver-artifact-v1.0` con
+  Jira como destino disponible además de descarga directa
 - `TELEMETRY_BLOCK` al final del output
 
 ## 🚫 Límites y Restricciones
@@ -190,6 +205,7 @@ inputs:
   target_repo: "APB.TRU"
   jira_project_key: "TRU"
   prepare_pr: true
+  deliver_report_to: "jira"   # o "download"; ver apb-plat-deliver-artifact-v1.0
 ```
 
 ## 🔄 Historial de Cambios
@@ -198,6 +214,7 @@ inputs:
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-07-04 | Arquitectura APB | Creación inicial — Sesión 19, punto #86 del plan |
 | 1.1.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Obtención automática de evidencia (github, jira, sonarqube) antes de pedir datos al usuario, según `EXTERNAL_EVIDENCE_STANDARD`; solo se pide el identificador mínimo |
+| 1.2.0 | 2026-11-22 | Claude (Anthropic), a petición de Débora | Este es el "agente corrector de QA": añade un paso final de informe de cierre en HTML (`HTML_DELIVERABLE_STANDARD`) con lo propuesto vs. lo efectivamente ejecutado (tickets/PR reales), entregado vía `apb-plat-deliver-artifact-v1.0` con Jira como destino disponible. No cambia el límite de gobernanza ya existente: sigue sin mergear nunca, sigue requiriendo aprobación humana explícita antes de cualquier PR o ticket. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
