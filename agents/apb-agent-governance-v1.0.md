@@ -236,6 +236,12 @@ Agente especializado en gobierno de arquitectura, cumplimiento y estándares cor
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
+Cuando el output es un documento (informe de validación de cumplimiento, recomendaciones de
+mejora de gobierno), entrégalo como UN ÚNICO HTML autocontenido (no Markdown) siguiendo
+`context/apb/standards/HTML_DELIVERABLE_STANDARD.md`: documento `<!DOCTYPE html>` completo, CSS
+inline en `<head>`, sin red/CDN/JavaScript, banner de marcado IA visible. Tu respuesta es el HTML
+entero y nada más — sin explicación antes ni después, sin bloque de código envolviendo el HTML.
+Secciones (como `<h2>` del mismo documento, o como listas/tablas cuando no son prosa):
 - Informe de validación de cumplimiento
 - Actualización de estándares (propuestas)
 - Métricas de gobierno del framework

@@ -89,13 +89,12 @@ Ninguno. Este agente no delega en subagentes especializados.
 
 ## 📤 Output Generado
 
-- Evaluación de solicitud de excepción (destino: preguntar)
-- Análisis de riesgos con scoring (destino: preguntar)
-- Plan de mitigación propuesto (destino: preguntar)
-- Registro de excepción con trazabilidad (destino: preguntar)
-- Informe para comité de gobierno (si aplica) (destino: preguntar)
+- Informe de riesgo y excepción (`informe-riesgo-excepcion.html`) (tipo: fichero, destino: preguntar)
+  — HTML autocontenido con la evaluación de la excepción, el análisis de riesgos con scoring, el
+  plan de mitigación propuesto, el registro de excepción con trazabilidad y, si aplica, el informe
+  para comité de gobierno, todo como secciones del mismo documento (ver «Formato de Salida»).
 
-> Todos requieren aprobación humana antes de entregarse (`output_requires_approval: true` en el frontmatter).
+> Requiere aprobación humana antes de entregarse (`output_requires_approval: true` en el frontmatter).
 > «destino: preguntar» — Mother pide siempre el destino al usuario entre los aplicables a un `risk-report`
 > según `apb-plat-deliver-artifact-v1.0`: Jira, SharePoint, descarga directa (Confluence y correo, cuando
 > estén disponibles como destino en el portal). GitHub **no** es un destino válido para este entregable.
@@ -203,11 +202,18 @@ Agente especializado en gestión de riesgos y excepciones a estándares. Respons
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
+Entrega UN ÚNICO documento HTML autocontenido (no Markdown) que cubra, como secciones `<h2>`
+dentro del mismo documento:
 - Evaluación de solicitud de excepción
-- Análisis de riesgos con scoring
-- Plan de mitigación propuesto
+- Análisis de riesgos con scoring (tabla: riesgo, probabilidad, impacto, score, severidad)
+- Plan de mitigación propuesto (tabla: acción, responsable, fecha, estado)
 - Registro de excepción con trazabilidad
 - Informe para comité de gobierno (si aplica)
+
+Sigue `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra: documento
+`<!DOCTYPE html>` completo, CSS inline en `<head>`, sin red/CDN/JavaScript, banner de marcado IA
+visible, scoring de riesgo con color + texto (nunca solo color). Tu respuesta es el HTML entero y
+nada más — sin explicación antes ni después, sin bloque de código envolviendo el HTML.
 
 ## Obtención automática de evidencia (EXTERNAL_EVIDENCE_STANDARD)
 
@@ -232,7 +238,7 @@ Con esto, antes de pedir al usuario `vulnerability_assessment` (input opcional d
 | 1.1.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Añadida sección «Relación con otros componentes»: aclara que este agente no tiene asignada `apb-gov-org-risk-report-v1.0` y que el análisis multi-marco con recomendación de excepción es competencia de `apb-agent-compliance-audit-v1.0`. Motivo: el informe ARQ-3684 se atribuyó incorrectamente a este agente |
 | 1.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Obtención automática de evidencia (jira) antes de pedir datos al usuario, según `EXTERNAL_EVIDENCE_STANDARD`; solo se pide el identificador mínimo |
 | 1.3.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Hallazgos de la ejecución `8ec973a26ab14febbdad754de24abee6`: (1) `output_requires_approval: true` — todos los outputs son borrador y faltaba declararlo para que Mother genere el checkpoint `ApprovalKind.Artifact` (antes el aviso de IA solo salía en el texto del informe, sin bloquear nada en el portal); (2) `(destino: preguntar)` en cada output — no había destino sugerido ni se pedía ninguno; (3) añadidas las filas `sonarqube`/`github` a la tabla de evidencia automática (EXTERNAL_EVIDENCE_STANDARD) — la v1.2.0 solo cubrió `jira`, dejando sin usar la evidencia de vulnerabilidades/código que el estándar ya define para este caso |
-| 1.4.0 | 2026-11-22 | Claude (Anthropic), a petición de Débora | Alineado con las herramientas que realmente recibe. Las skills de análisis de riesgo y de Jira declaran ahora `prov-sonar-v1.0` y `prov-atlassian-v1.0`. Se quita `prov-github-v1.0` y la fila de código/CI/CD: la verificación de código es de Security Architect. Motivo: las declaraciones `depends_on` a nivel de agente no las usa Mother (solo las de skills), así que las filas de Sonar/GitHub del agente no llegaban a ejecutarse |
+| 1.4.0 | 2026-11-22 | Claude (Anthropic), a petición de Débora | Alineado con las herramientas que realmente recibe. Las skills de análisis de riesgo y de Jira declaran ahora `prov-sonar-v1.0` y `prov-atlassian-v1.0` (opción 1). Se quita `prov-github-v1.0` y la fila de código/CI/CD: la verificación de código es de Security Architect. Motivo: las declaraciones `depends_on` a nivel de agente no las usa Mother (solo las de skills), así que las filas de Sonar/GitHub del agente no llegaban a ejecutarse |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*

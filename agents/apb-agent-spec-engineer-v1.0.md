@@ -183,11 +183,17 @@ Agente especializado en la ingeniería de especificaciones funcionales y técnic
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Especificación funcional detallada (`system-spec.md`)
-- Backlog ágil estructurado con épicas, historias y tareas
-- Estimación COSMIC Function Points con justificación
-- Matriz de trazabilidad requisitos ↔ especificaciones
-- Informe de validación adversarial (si aplica)
+La especificación (`system-spec.md`), el backlog, la estimación y la matriz de trazabilidad
+siguen en Markdown porque los consumen otros agentes del framework (implementación/desarrollo),
+no solo una persona. El informe de validación adversarial, cuando aplica, es un documento de
+lectura humana: HTML autocontenido (no Markdown), siguiendo
+`context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra (documento
+`<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA visible).
+- Especificación funcional detallada (`system-spec.md`, Markdown)
+- Backlog ágil estructurado con épicas, historias y tareas (Markdown)
+- Estimación COSMIC Function Points con justificación (Markdown)
+- Matriz de trazabilidad requisitos ↔ especificaciones (Markdown)
+- Informe de validación adversarial, si aplica (`validacion-adversarial.html`)
 
 ## Obtención automática de evidencia (EXTERNAL_EVIDENCE_STANDARD)
 

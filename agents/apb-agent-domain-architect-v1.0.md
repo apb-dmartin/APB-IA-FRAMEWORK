@@ -170,6 +170,11 @@ Agente especializado en modelado de dominio y diseño dirigido por el dominio (D
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
+Entrega el documento (modelo de dominio, context map, resultado de Event Storming y
+recomendaciones) como UN ÚNICO HTML autocontenido (no Markdown), siguiendo
+`context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra (documento
+`<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA visible).
+Los diagramas de agregados/entidades que no sean texto van como SVG inline dentro del mismo HTML.
 - Modelo de dominio DDD con bounded contexts identificados
 - Context map con relaciones entre dominios
 - Diagrama de agregados y entidades

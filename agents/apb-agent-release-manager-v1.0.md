@@ -179,11 +179,14 @@ Agente especializado en gestión de releases y despliegues. Responsable de evalu
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
+Cada uno de estos documentos es HTML autocontenido (no Markdown), siguiendo
+`context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra (documento
+`<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA visible):
 - Release Readiness Assessment completo
 - Plan de despliegue con rollback strategy
-- Notas de release (`release-notes.md`)
+- Notas de release (`release-notes.html`)
 - Checklist de despliegue validado
-- Informe post-release con métricas
+- Informe post-release con métricas (tabla)
 
 ## Obtención automática de evidencia (EXTERNAL_EVIDENCE_STANDARD)
 

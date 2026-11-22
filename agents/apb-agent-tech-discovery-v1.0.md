@@ -179,11 +179,15 @@ Agente especializado en descubrimiento y evaluación de tecnologías. Responsabl
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
+Entrega el informe (evaluación, comparativa con scoring, recomendación, catálogo, riesgos EOL)
+como UN ÚNICO HTML autocontenido (no Markdown), siguiendo
+`context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra (documento
+`<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA visible):
 - Informe de evaluación tecnológica
-- Comparativa de alternativas con scoring
+- Comparativa de alternativas con scoring (tabla)
 - Recomendación de adopción con justificación
-- Actualización propuesta del catálogo de tecnologías
-- Informe de riesgos de tecnologías en end-of-life
+- Actualización propuesta del catálogo de tecnologías (tabla)
+- Informe de riesgos de tecnologías en end-of-life (tabla)
 ```
 
 ## 🔄 Historial de Cambios

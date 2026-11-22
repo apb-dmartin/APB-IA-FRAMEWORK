@@ -138,6 +138,9 @@ Tu misión es garantizar que todo diseño, código y despliegue cumpla con los r
 
 ## 📤 Output Generado
 
+Cada uno de estos, cuando se entrega como documento, es HTML autocontenido (no Markdown) — ver
+«Formato de Salida» y `context/apb/standards/HTML_DELIVERABLE_STANDARD.md`:
+
 - Modelo de amenazas (STRIDE)
 - Informe de cumplimiento ENS
 - Informe OWASP con findings
@@ -227,12 +230,14 @@ Agente especializado en seguridad por diseño. Garantiza que todo diseño, códi
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Modelo de amenazas (STRIDE)
-- Informe de cumplimiento ENS
-- Informe OWASP con findings
-- Informe forense con causa raíz
-- Informe de riesgos con matriz y mitigaciones
-- Estado de validación: PASS / PASS_WITH_WARNINGS / FAIL / BLOCKED
+Entrega UN ÚNICO documento HTML autocontenido (no Markdown) para el informe que corresponda a la
+tarea (modelo de amenazas STRIDE, cumplimiento ENS, OWASP, forense, o riesgos con matriz y
+mitigaciones), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra:
+documento `<!DOCTYPE html>` completo, CSS inline en `<head>`, sin red/CDN/JavaScript, banner de
+marcado IA visible, severidad/estado con color + texto (nunca solo color). Al final del
+documento, un estado de validación textual: PASS / PASS_WITH_WARNINGS / FAIL / BLOCKED. Tu
+respuesta es el HTML entero y nada más — sin explicación antes ni después, sin bloque de código
+envolviendo el HTML.
 ```
 
 ## 🔄 Historial de Cambios

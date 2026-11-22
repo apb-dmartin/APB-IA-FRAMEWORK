@@ -184,12 +184,16 @@ Agente especializado en generación y mantenimiento de documentación técnica y
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- ADRs estructurados y versionados
+Los documentos de texto (ADRs, manual del sistema, documentación Tagg, índice) se entregan como
+HTML autocontenido (no Markdown), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md`
+al pie de la letra (documento `<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript,
+banner de marcado IA visible). Swagger/OpenAPI sigue siendo YAML/JSON (no aplica el estándar HTML).
+- ADRs estructurados y versionados (`adr-{numero}.html`)
 - Documentación Swagger/OpenAPI actualizada
-- Manual del sistema completo
-- Documentación Tagg para AipiManager
+- Manual del sistema completo (`manual-sistema.html`)
+- Documentación Tagg para AipiManager (`doc-tagg-aipimanager.html`)
 - Evidencias registradas en Jira
-- Índice de documentación del proyecto
+- Índice de documentación del proyecto (`indice-documentacion.html`)
 ```
 
 ## 🔄 Historial de Cambios

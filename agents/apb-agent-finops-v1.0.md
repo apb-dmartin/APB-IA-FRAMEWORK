@@ -182,10 +182,14 @@ Agente especializado en optimización de costes cloud y gobierno financiero de l
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Informe de estimación de costes cloud (`cloud-cost-estimate.md`)
-- Análisis de optimización con recomendaciones
+Los informes (estimación de costes, optimización, allocación, validación de políticas) son HTML
+autocontenido (no Markdown), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al
+pie de la letra (documento `<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript,
+banner de marcado IA visible; tablas de costes con `<table>`).
+- Informe de estimación de costes cloud (`cloud-cost-estimate.html`)
+- Análisis de optimización con recomendaciones (tabla)
 - Configuración de budgets y alertas
-- Informe de allocación de costes por servicio
+- Informe de allocación de costes por servicio (tabla)
 - Validación de cumplimiento de políticas de coste
 ```
 

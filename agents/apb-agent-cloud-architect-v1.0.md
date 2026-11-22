@@ -180,10 +180,14 @@ Agente especializado en diseño de soluciones cloud-native en Azure. Responsable
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Diseño de infraestructura cloud (`cloud-infra-design.md`)
+El diseño de infraestructura, el informe de readiness y el análisis FinOps son documentos: HTML
+autocontenido (no Markdown), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al
+pie de la letra (documento `<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner
+de marcado IA visible). Los templates Terraform siguen siendo código (HCL), no HTML.
+- Diseño de infraestructura cloud (`cloud-infra-design.html`)
 - Templates Terraform para provisioning
-- Informe de readiness cloud con gap analysis
-- Análisis FinOps con recomendaciones de optimización
+- Informe de readiness cloud con gap analysis (tabla)
+- Análisis FinOps con recomendaciones de optimización (tabla)
 - Diagramas de arquitectura cloud (Azure-specific)
 ```
 
