@@ -2,7 +2,7 @@
 id: "apb-agent-compliance-audit-v1.0"
 name: "Compliance Audit Agent"
 description: "Agente que orquesta la auditoría completa de cumplimiento de políticas IT corporativas APB sobre un sistema, proyecto o artefacto. Coordina la detección de incumplimientos en todas las áreas de política y marcos normativos (ENS, ISO 27001, NIST CSF, OWASP, RGPD, LCSP, WCAG), genera el informe de análisis de riesgos multidimensional con recomendación explícita (APROBAR CON CONDICIONES / DENEGAR / ESCALAR) y plan de mitigación concreto, y entrega el informe a los validadores correctos para su decisión y firma. La decisión final es siempre humana."
-version: "1.4.0"
+version: "1.5.0"
 status: "draft"
 owner: "Arquitectura APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
@@ -71,6 +71,7 @@ bloqueantes: el agente no debe proceder con la auditoría si faltan.
 - Excepciones activas en Jira (opcional, tipo: texto-largo): claves de excepciones ya abiertas para este sistema, si las hay.
 - Áreas de política a auditar (opcional, tipo: select[Todas,Seguridad,QA,IA,Arquitectura,Infraestructura]): scope de la auditoría; por defecto, todas.
 - Incumplimientos ya conocidos (opcional, tipo: texto-largo): hallazgos previos o sospechas, si los hay; vacío si es auditoría proactiva.
+- Documentación funcional del sistema (opcional, tipo: documento): memoria funcional, especificación o manual de usuario ya existente del sistema auditado, si lo hay — contexto adicional para valorar exposición/tratamiento de datos sin tener que reescribirlo en el campo de texto libre.
 - Contexto de negocio (opcional, tipo: texto-largo): urgencia operativa, entrega comprometida, limitación externa — mejora mucho la calidad del informe; pídelo siempre que se pueda.
 - Fecha límite para la decisión (opcional, tipo: fecha): plazo orientativo si existe.
 - Repositorios y evidencias disponibles (opcional, tipo: texto-largo): URLs/ids de repos (rama o commit), y evidencias de CI/CD, SonarQube o Jira/JSM ya exportadas — a pegar aquí cuando el agente no tenga acceso de lectura directo (MCP de GitHub/Jira/SonarQube sin credenciales configuradas).
@@ -467,6 +468,7 @@ REGLAS DEL AGENTE
 | 1.3.0 | 2026-11-20 | Arquitectura APB | Añade `## 📥 Input Esperado` (los 11 campos del GRILL de contexto, tipados) para que Mother genere un formulario estructurado en vez de depender de texto libre; una ejecución sin nivel ENS / Legacy-Compliance ya no se bloquea tras lanzarse sin avisar antes qué faltaba. *(nota de fusión: esta entrada usaba el número de versión "1.2.0", duplicado con la fila de 2026-07-06; renumerada a 1.3.0 al fusionar con la 1.4.0)* |
 | 1.4.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | La FASE 0 pasa a referenciar `EXTERNAL_EVIDENCE_STANDARD` (estándar compartido por todos los consumidores de Jira/GitHub/Sonar); sin cambio de comportamiento |
 | 1.4.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora (ejecución bloqueada por falta de evidencia) | Añadida FASE 0 al Prompt de Sistema: recopilación automática best-effort de evidencia con los MCP `github`/`sonarqube`/`jira` (ya vinculados a todo agente como opcionales en `AgentTools:Bindings`, patrón `*`) antes de depender solo del GRILL manual para repos, CI/CD, Quality Gate de Sonar y excepciones Jira. Si el MCP falla (sin token/VPN/alcance), se declara como limitación de evidencia en el informe en vez de bloquear la auditoría completa |
+| 1.5.0 | 2026-11-22 | Claude (Anthropic), a petición de Débora | Añade campo `Documentación funcional del sistema` (opcional, tipo `documento`) al GRILL de entrada, para adjuntar memoria/especificación existente en vez de solo texto libre — Mother ya soporta adjuntos tipados (ver `ExecutionInfoTab`/`handleFileUpload`); sin cambio de comportamiento del agente si no se adjunta nada |
 
 ---
 

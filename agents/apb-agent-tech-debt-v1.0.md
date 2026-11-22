@@ -224,8 +224,12 @@ Agente especializado en analizar deuda técnica acumulada, vulnerabilidades de d
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Informe consolidado de hallazgos por categoría y severidad
-- Plan de remediación priorizado, presentado para aprobación humana
+El informe de hallazgos y el plan de remediación se entregan como UN ÚNICO HTML autocontenido
+(no Markdown), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra
+(documento `<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA
+visible, severidad con color + texto):
+- Informe consolidado de hallazgos por categoría y severidad (tabla)
+- Plan de remediación priorizado, presentado para aprobación humana (tabla: acción, responsable, fecha)
 - Tickets Jira creados (solo tras OK explícito), con sus claves reales
 ```
 

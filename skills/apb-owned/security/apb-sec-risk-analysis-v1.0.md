@@ -2,7 +2,7 @@
 id: "apb-sec-risk-analysis-v1.0"
 name: "Análisis de Riesgos + Informe"
 description: "Realizar análisis de riesgos de seguridad de la información siguiendo metodologías estandarizadas (ISO 27005, NIST SP 800-30, MAGERIT). Identificar activos, amenazas, vulnerabilidades, evaluar riesgos y proponer tratamientos. Genera un informe de riesgos con matriz de impacto, plan de tratamiento..."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Ciberseguridad APB <arquitectura@portdebarcelona.cat>"
 domain: "security"
@@ -11,6 +11,7 @@ created_date: "2026-06-20"
 review_date: "2026-06-22"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-sonar-v1.0"  # SonarQube: Quality Gate y hallazgos de seguridad estática (paso 4 de identificación de vulnerabilidades)
 
 ---
 

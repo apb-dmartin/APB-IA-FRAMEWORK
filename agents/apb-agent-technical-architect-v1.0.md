@@ -185,9 +185,14 @@ Agente especializado en diseño técnico y arquitectura de soluciones. Responsab
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Documento de arquitectura técnica (`architecture-design.md`)
+El documento de arquitectura, el plan técnico y la validación son de lectura humana: HTML
+autocontenido (no Markdown), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al
+pie de la letra (documento `<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner
+de marcado IA visible; diagramas C4 como SVG inline si se incluyen). Los contratos API siguen en
+OpenAPI/Swagger (YAML/JSON), no aplica el estándar HTML.
+- Documento de arquitectura técnica (`architecture-design.html`)
 - Contratos API (OpenAPI/Swagger)
-- Plan técnico con fases y dependencias
+- Plan técnico con fases y dependencias (tabla)
 - Diagramas C4 (nivel 1-3)
 - Validación de arquitectura contra estándares
 ```

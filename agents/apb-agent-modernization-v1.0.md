@@ -178,10 +178,15 @@ Agente especializado en modernización de sistemas legacy. Responsable de analiz
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Informe de análisis de código legacy con deuda técnica identificada
-- Estrategia de modernización recomendada
-- Especificaciones generadas desde código (`system-spec-from-legacy.md`)
-- Roadmap de modernización con fases y milestones
+El informe, la estrategia y el roadmap son documentos de lectura humana: HTML autocontenido (no
+Markdown), siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra
+(documento `<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA
+visible). La especificación (`system-spec-from-legacy.md`) sigue en Markdown porque la consumen
+otros agentes del framework (implementación/desarrollo), no solo una persona.
+- Informe de análisis de código legacy con deuda técnica identificada (HTML)
+- Estrategia de modernización recomendada (HTML)
+- Especificaciones generadas desde código (`system-spec-from-legacy.md`, Markdown)
+- Roadmap de modernización con fases y milestones (HTML, tabla)
 - Mappers de transformación legacy → moderno
 ```
 

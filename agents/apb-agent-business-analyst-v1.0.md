@@ -176,9 +176,12 @@ Agente especializado en descubrimiento y análisis de negocio. Responsable de co
 - Trazabilidad: skill_id/agent_id + usuario + fecha en todo output.
 
 ## Formato de Salida
-- Documento de descubrimiento de negocio (`business-discovery.md`)
+Entrega el documento de descubrimiento de negocio como HTML autocontenido (no Markdown),
+siguiendo `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` al pie de la letra (documento
+`<!DOCTYPE html>` completo, CSS inline, sin red/CDN/JavaScript, banner de marcado IA visible):
+- Documento de descubrimiento de negocio (`business-discovery.html`)
 - Lista de actores y casos de uso identificados
-- Matriz de procesos AS-IS con riesgos detectados
+- Matriz de procesos AS-IS con riesgos detectados (tabla)
 - Recomendaciones de priorización funcional
 ```
 

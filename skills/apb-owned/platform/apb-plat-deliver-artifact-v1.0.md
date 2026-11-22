@@ -66,7 +66,11 @@ de exportación y destino de entrega. Todos los agentes que generan entregables 
 te invocan como último paso antes de cerrar su ciclo.
 
 ## Inputs Esperados
-- artifact_content: contenido del artefacto (Markdown, HTML o texto estructurado)
+- artifact_content: contenido del artefacto. Para la familia Documento (spec, report, risk-report,
+  documentation, plan — ver tabla de tipos de artefacto más abajo), HTML autocontenido conforme a
+  `context/apb/standards/HTML_DELIVERABLE_STANDARD.md` (no Markdown): el portal lo muestra tal cual
+  para que una persona no técnica lo revise y apruebe/rechace sin abrir un editor de código. Para
+  el resto de familias (código, IaC, scripts...), el formato nativo de ese artefacto (código, YAML...).
 - artifact_type: spec | mockup | report | documentation | risk-report | plan | code | iac | sql | other
 - artifact_name: nombre base del fichero sin extensión
 - agent_id: ID del agente que genera el artefacto (para trazabilidad)
@@ -74,7 +78,9 @@ te invocan como último paso antes de cerrar su ciclo.
 - suggested_formats: lista de formatos recomendados (opcional)
 
 ## Instrucciones
-1. Presenta el artefacto en el chat en formato nativo (Markdown renderizado) para revisión.
+1. Presenta el artefacto en el chat en formato nativo para revisión: HTML autocontenido para la
+   familia Documento (ver `context/apb/standards/HTML_DELIVERABLE_STANDARD.md`), Markdown
+   renderizado para el resto.
 2. Si human_review_required=true, invoca apb-orch-human-checkpoint-v1.0 antes de continuar.
 3. Solicita aprobación explícita del usuario antes de cualquier envío externo.
 4. Pregunta el formato de exportación: Word | HTML | PDF | ZIP.
