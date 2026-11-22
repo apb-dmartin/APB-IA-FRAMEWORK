@@ -2,7 +2,7 @@
 id: "apb-gov-jira-evidence-v1.0"
 name: "Registro de Evidencias en Jira"
 description: "Integrar la generación de evidencias del framework APB con Jira, creando tickets, comentarios y attachments que vinculen automáticamente las evidencias generadas con los proyectos y épicas correspondientes. Facilita el tracking de compliance y la trazabilidad en el SDLC."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "Gobierno TI APB <arquitectura@portdebarcelona.cat>"
 domain: "governance"
@@ -11,6 +11,7 @@ created_date: "2026-06-20"
 review_date: "2026-06-22"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-atlassian-v1.0"  # Jira: lectura de excepciones y cambios activos (evidencia automática para apb-agent-risk-exception-v1.0)
 
 ---
 

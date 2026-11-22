@@ -2,7 +2,7 @@
 id: "apb-agent-risk-exception-v1.0"
 name: "Risk & Exception Agent"
 description: "Agente especializado en gestión de riesgos y excepciones a estándares. Responsable de analizar riesgos de seguridad, evaluar solicitudes de excepción a políticas, proponer mitigaciones, y mantener el registro de excepciones aprobadas con su justificación."
-version: "1.3.0"
+version: "1.4.0"
 status: "draft"
 owner: "Ciberseguridad <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
@@ -30,7 +30,6 @@ review_date: "2026-06-22"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
   - "prov-atlassian-v1.0"  # Jira (evidencia automática)
-  - "prov-github-v1.0"  # Repos del sistema analizado (evidencia automática)
   - "prov-sonar-v1.0"  # Quality Gate / hallazgos de seguridad estática (evidencia automática)
 
 ---
@@ -219,9 +218,9 @@ Antes de pedir al usuario cualquiera de estos datos, obtenlo con la herramienta 
 | Excepciones y cambios activos del sistema | `jira` | JQL por proyecto/componente y tipo (excepción de riesgo, cambio) en estado abierto | el proyecto Jira o el nombre del sistema |
 | Ticket / historia de usuario | `jira` | issue por clave: resumen, descripción, criterios de aceptación, estado, épica, sprint y enlaces | la clave del ticket (p. ej. `ARQ-123`) |
 | Vulnerabilidades y hallazgos de seguridad estática del sistema analizado | `sonarqube` | Quality Gate de la rama/proyecto + security hotspots e issues abiertos por severidad (BLOCKER/CRITICAL) — alimenta el paso 4 «Identificación de vulnerabilidades» de `apb-sec-risk-analysis-v1.0` | el `project_key` de Sonar o el nombre del repo (se intenta casar por nombre antes de preguntar) |
-| Código/configuración del sistema afectado por la excepción | `github` | árbol del repo y ficheros relevantes en la rama/SHA indicada; `.github/workflows/` si la excepción afecta a CI/CD | `owner/repo` + rama o SHA |
+Código, configuración y CI/CD del sistema afectado no se consultan en este agente: la verificación de código corresponde a Security Architect (`apb-agent-security-architect-v1.0`). Si la excepción depende de código concreto, pide al usuario el resultado de esa verificación o el SHA/rama de referencia, sin intentar leer el repositorio.
 
-Con esto, antes de pedir al usuario `vulnerability_assessment` (input opcional de `apb-sec-risk-analysis-v1.0`) o el inventario de activos, el agente ya ha intentado obtenerlos de SonarQube y GitHub; solo pregunta lo que no pudo recuperar.
+Con esto, antes de pedir al usuario `vulnerability_assessment` (input opcional de `apb-sec-risk-analysis-v1.0`) o el inventario de activos, el agente ya ha intentado obtenerlos de SonarQube y Jira; solo pregunta lo que no pudo recuperar.
 
 ```
 
@@ -233,6 +232,7 @@ Con esto, antes de pedir al usuario `vulnerability_assessment` (input opcional d
 | 1.1.0 | 2026-07-06 | Claude (Anthropic), a petición de Débora | Añadida sección «Relación con otros componentes»: aclara que este agente no tiene asignada `apb-gov-org-risk-report-v1.0` y que el análisis multi-marco con recomendación de excepción es competencia de `apb-agent-compliance-audit-v1.0`. Motivo: el informe ARQ-3684 se atribuyó incorrectamente a este agente |
 | 1.2.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Obtención automática de evidencia (jira) antes de pedir datos al usuario, según `EXTERNAL_EVIDENCE_STANDARD`; solo se pide el identificador mínimo |
 | 1.3.0 | 2026-11-20 | Claude (Anthropic), a petición de Débora | Hallazgos de la ejecución `8ec973a26ab14febbdad754de24abee6`: (1) `output_requires_approval: true` — todos los outputs son borrador y faltaba declararlo para que Mother genere el checkpoint `ApprovalKind.Artifact` (antes el aviso de IA solo salía en el texto del informe, sin bloquear nada en el portal); (2) `(destino: preguntar)` en cada output — no había destino sugerido ni se pedía ninguno; (3) añadidas las filas `sonarqube`/`github` a la tabla de evidencia automática (EXTERNAL_EVIDENCE_STANDARD) — la v1.2.0 solo cubrió `jira`, dejando sin usar la evidencia de vulnerabilidades/código que el estándar ya define para este caso |
+| 1.4.0 | 2026-11-22 | Claude (Anthropic), a petición de Débora | Alineado con las herramientas que realmente recibe. Las skills de análisis de riesgo y de Jira declaran ahora `prov-sonar-v1.0` y `prov-atlassian-v1.0`. Se quita `prov-github-v1.0` y la fila de código/CI/CD: la verificación de código es de Security Architect. Motivo: las declaraciones `depends_on` a nivel de agente no las usa Mother (solo las de skills), así que las filas de Sonar/GitHub del agente no llegaban a ejecutarse |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
