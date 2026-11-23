@@ -13,6 +13,7 @@ depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
   - "prov-playwright-v1.0"  # Motor de referencia para tests E2E scriptados
   - "prov-azure-qa-runtime-v1.0"  # Destino azure-qa: contenedor sin instalación local
+  - "prov-dotnet-test-runner-v1.0"  # Ejecución real de la suite generada (unit/integración)
   - "prov-github-v1.0"  # GitHub (evidencia automática)
   - "prov-atlassian-v1.0"  # Jira (evidencia automática)
 

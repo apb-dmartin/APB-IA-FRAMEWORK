@@ -3,7 +3,7 @@
 > **ID:** `apb-index-v1.0`
 > **Versión:** 1.0.0
 > **Estado:** draft
-> **Fecha de actualización:** 2026-11-22
+> **Fecha de actualización:** 2026-11-23
 > **Framework:** APB AI v1.0.0-draft
 
 ---
@@ -23,10 +23,10 @@
 | Agentes | 42 / 42 |
 | Subagentes | 36 / 36 |
 | Workflows | 17 / 17 |
-| Providers | 23 / 23 |
+| Providers | 27 / 27 |
 | Wrappers | 7 / 7 |
 | Adaptadores | 4 / 4 |
-| **Total** | **371** |
+| **Total** | **375** |
 
 ---
 
@@ -58,7 +58,7 @@ APB-IA-FRAMEWORK/
 ├── skills/
 │   ├── apb-owned/             # 185 skills
 │   └── third-party/           # 57 skills
-├── providers/                  # 23 providers
+├── providers/                  # 27 providers
 ├── wrappers/                   # 7 wrappers
 ├── adapters/                   # 4 adaptadores
 │   ├── copilot/

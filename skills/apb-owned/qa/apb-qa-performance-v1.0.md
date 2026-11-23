@@ -11,6 +11,7 @@ created_date: "2026-06-29"
 review_date: "2026-12-29"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-k6-v1.0"  # Ejecución real del script k6 generado por esta skill
 
 ---
 

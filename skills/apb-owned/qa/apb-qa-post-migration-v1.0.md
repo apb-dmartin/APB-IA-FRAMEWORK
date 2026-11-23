@@ -11,6 +11,8 @@ created_date: "2026-06-20"
 review_date: "2026-06-22"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-dotnet-test-runner-v1.0"  # Tests funcionales y de regresión reales (no inspección estática)
+  - "prov-sql-readonly-v1.0"  # Comparación de datos origen/destino (conteo, checksum, muestreo)
 
 ---
 

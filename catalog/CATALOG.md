@@ -5,7 +5,7 @@
 > Para añadir o modificar un componente, edite su archivo y vuelva a ejecutar el script.
 
 ## Overview
-- **Total Components**: 371
+- **Total Components**: 375
 
 ## Component Breakdown
 
@@ -371,7 +371,7 @@
 | `apb-wf-spec-from-legacy-v1.0` | Spec Generation from Legacy | draft | `workflows/apb-wf-spec-from-legacy-v1.0.md` |
 | `apb-wf-vendor-procurement-v1.0` | Vendor Procurement LCSP | draft | `workflows/apb-wf-vendor-procurement-v1.0.md` |
 
-### Providers (23 total)
+### Providers (27 total)
 
 | ID | Nombre | Estado | Archivo |
 |---|---|---|---|
@@ -380,6 +380,7 @@
 | `prov-arqapibase-v1.0` | Provider: APB.ARQ.APIBASE | draft | `providers/prov-arqapibase-v1.0.md` |
 | `prov-arqbase-v1.0` | Provider: APB.ARQ.BASE | draft | `providers/prov-arqbase-v1.0.md` |
 | `prov-atlassian-v1.0` | Provider: Atlassian Jira (Software + Service Management) + Compass | draft | `providers/prov-atlassian-v1.0.md` |
+| `prov-axe-core-v1.0` | Provider: axe-core Accessibility Scan (BuiltInTool de Mother) | draft | `providers/prov-axe-core-v1.0.md` |
 | `prov-azure-cost-v1.0` | Provider: Azure Cost Management API | draft | `providers/prov-azure-cost-v1.0.md` |
 | `prov-azure-monitor-v1.0` | Provider: Azure Monitor Logs Ingestion API | draft | `providers/prov-azure-monitor-v1.0.md` |
 | `prov-azure-qa-runtime-v1.0` | Provider: Azure QA Runtime | draft | `providers/prov-azure-qa-runtime-v1.0.md` |
@@ -388,16 +389,19 @@
 | `prov-confluence-v1.0` | Provider: Atlassian Confluence REST API | draft | `providers/prov-confluence-v1.0.md` |
 | `prov-context7-v1.0` | Provider: Context7 (documentación actualizada para LLMs) | draft | `providers/prov-context7-v1.0.md` |
 | `prov-devexpress-v1.0` | Provider: DevExpress MCP | draft | `providers/prov-devexpress-v1.0.md` |
+| `prov-dotnet-test-runner-v1.0` | Provider: Dotnet Test Runner (BuiltInTool de Mother) | draft | `providers/prov-dotnet-test-runner-v1.0.md` |
 | `prov-entra-id-v1.0` | Provider: Microsoft Entra ID (Azure Active Directory) | draft | `providers/prov-entra-id-v1.0.md` |
 | `prov-github-v1.0` | Provider: GitHub MCP | draft | `providers/prov-github-v1.0.md` |
 | `prov-jira-software-v1.0` | Provider: Jira Software REST API | deprecated | `providers/prov-jira-software-v1.0.md` |
-| `prov-k6-v1.0` | Provider: k6 MCP | draft | `providers/prov-k6-v1.0.md` |
+| `prov-k6-v1.0` | Provider: k6 Load Test (BuiltInTool de Mother) | draft | `providers/prov-k6-v1.0.md` |
 | `prov-ms-learn-v1.0` | Provider: Microsoft Learn MCP | draft | `providers/prov-ms-learn-v1.0.md` |
 | `prov-ms365-v1.0` | Provider: Microsoft 365 (Graph API) | draft | `providers/prov-ms365-v1.0.md` |
 | `prov-otel-v1.0` | Provider: OpenTelemetry (instrumentación y telemetría) | draft | `providers/prov-otel-v1.0.md` |
 | `prov-playwright-v1.0` | Provider: Playwright MCP | draft | `providers/prov-playwright-v1.0.md` |
 | `prov-sentinel-v1.0` | Provider: Microsoft Sentinel | draft | `providers/prov-sentinel-v1.0.md` |
 | `prov-sonar-v1.0` | Provider: SonarQube (MCP oficial SonarSource) | candidate | `providers/prov-sonar-v1.0.md` |
+| `prov-sql-readonly-v1.0` | Provider: Consulta SQL de Solo Lectura (BuiltInTool de Mother) | draft | `providers/prov-sql-readonly-v1.0.md` |
+| `prov-zap-v1.0` | Provider: OWASP ZAP Baseline Scan | draft | `providers/prov-zap-v1.0.md` |
 
 ### Wrappers (7 total)
 
