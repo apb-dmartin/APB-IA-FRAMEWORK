@@ -13,6 +13,7 @@ consumed_by:
   - "apb-agent-design-compliance-v1.0"
 depends_on:
   - "prov-apb-knowledge-v1.0"  # Contexto corporativo APB
+  - "prov-axe-core-v1.0"  # Escaneo automatizado real de reglas WCAG sobre la sesión Playwright
 
 ---
 
