@@ -2,12 +2,20 @@
 id: "apb-agent-qa-auto-v1.0"
 name: "QA Automation Agent"
 description: "Agente especializado en calidad del software y automatización de pruebas. Responsable de generar planes y estrategias de testing, crear tests automatizados, anonimizar datos de prueba, validar post-migración, y evaluar la preparación para release."
-version: "1.0.0"
+version: "1.1.0"
 status: "draft"
 owner: "QA <arquitectura@portdebarcelona.cat>"
 domain: "orchestration"
 autonomy_level: 2
 max_duration_minutes: 90
+# Coste por vuelta estructuralmente alto (107 tools MCP + 20 skills + entrada grande habitual, ~99.000-250.000
+# tokens/vuelta medidos en real): sin esto, la Fase 2 es UNA llamada con hasta 40 vueltas de tool-calling y agota
+# Guardrails:Budget:MaxTokensPerExecution incluso con el override de este agente (ejecuciones
+# 1f3a27c7e41c459f8642c76e429556c9, f92ae0ab715f46db884361b407f732f6, 555d621354f946eab0b4fb06f46655ce y otras —
+# ver Mother-Portal-IA-SDLC-APB docs/GUARDRAILS_Y_MEMORIA.md §2.4). Con esto, la Fase 2 trocea el checklist de la
+# Fase 1 en sub-pasos independientes y acotados (WorkflowOrchestrator.ExecuteStepBatchedAsync), cada uno con su
+# propio tope de vueltas y con el progreso ya persistido si uno falla a mitad.
+batch_execution: true
 skills:
   - "apb-qa-test-plan-v1.0"
   - "apb-qa-test-strategy-v1.0"
@@ -232,6 +240,7 @@ el motivo del bloqueo y qué haría falta para desbloquearlo — nunca omitas la
 | Versión | Fecha | Autor | Cambio |
 |---------|-------|-------|--------|
 | 1.0.0 | 2026-06-21 | Arquitectura APB | Creación inicial |
+| 1.1.0 | 2026-11-24 | Claude (Anthropic), a petición de Débora | Activa `batch_execution: true`: la Fase 2 trocea el checklist de la Fase 1 en sub-pasos acotados en vez de una sola llamada con hasta 40 vueltas de tool-calling. El mecanismo ya existía en el orquestador (Mother-Portal-IA-SDLC-APB) desde hace días pero esta bandera, pensada para activarlo, nunca llegó a mergearse — causa raíz de gran parte de los agotamientos de `Guardrails:Budget:MaxTokensPerExecution` y 429 vistos en real para este agente. No cambia ningún límite de gobernanza ni `human_review_points`. |
 
 ---
 *Documento generado por el APB AI Framework. Requiere revisión humana antes de aprobación.*
